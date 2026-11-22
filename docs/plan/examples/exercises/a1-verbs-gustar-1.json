@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "id": "a1-verbs-gustar-1",
+  "topic": "a1-verbs-gustar",
+  "level": "A1",
+  "title": "gustar: check yourself",
+  "intro": "10 tasks: choose the form, fill the gaps, build sentences and translate.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-gustar-1-01",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": ["gustar", "pronouns"],
+      "prompt": "A mis hermanos ___ gusta el fútbol.",
+      "options": ["le", "les", "los", "se"],
+      "correct": 1,
+      "explanation": "Mis hermanos = ellos, so the pronoun is les.",
+      "optionNotes": ["Le is for one person.", null, "Los is a direct object pronoun.", "Se is reflexive."]
+    },
+    {
+      "id": "a1-verbs-gustar-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": ["gustar", "agreement"],
+      "prompt": "¿Te ___ estas canciones?",
+      "options": ["gusta", "gustas", "gustan", "gusto"],
+      "correct": 2,
+      "explanation": "Estas canciones is plural: gustan.",
+      "optionNotes": ["Gusta is for one thing or an action.", "Gustas would mean “you are pleasing (to me)”.", null, "Gusto would mean “I am pleasing”."]
+    },
+    {
+      "id": "a1-verbs-gustar-1-03",
+      "type": "gap-fill",
+      "tags": ["gustar", "pronouns"],
+      "text": "A nosotros {{1}} {{2}} mucho viajar.",
+      "gaps": [{ "accepted": ["nos"] }, { "accepted": ["gusta"] }],
+      "explanation": "A nosotros → nos. Viajar is an action (infinitive), so the verb is gusta."
+    },
+    {
+      "id": "a1-verbs-gustar-1-04",
+      "type": "gap-fill",
+      "tags": ["gustar", "articles"],
+      "text": "No me gustan {{1}} lunes, pero me gusta {{2}} fin de semana.",
+      "gaps": [{ "accepted": ["los"] }, { "accepted": ["el"] }],
+      "explanation": "Things you like or dislike in general take the definite article: los lunes, el fin de semana."
+    },
+    {
+      "id": "a1-verbs-gustar-1-05",
+      "type": "reorder",
+      "tags": ["gustar", "word-order"],
+      "context": "My mother doesn't like coffee.",
+      "answers": ["A mi madre no le gusta el café.", "No le gusta el café a mi madre."],
+      "explanation": "A + person, then no, then the pronoun le, then the verb."
+    },
+    {
+      "id": "a1-verbs-gustar-1-06",
+      "type": "find-error",
+      "tags": ["gustar", "agreement"],
+      "tokens": ["Me", "gusta", "los", "animales."],
+      "errorRange": [1, 1],
+      "fixes": ["gustan"],
+      "explanation": "Los animales is plural, so the verb is gustan."
+    },
+    {
+      "id": "a1-verbs-gustar-1-07",
+      "type": "translate",
+      "tags": ["gustar", "infinitive"],
+      "source": "I like dancing.",
+      "accepted": ["Me gusta bailar.", "A mí me gusta bailar."],
+      "hint": "to dance = bailar",
+      "explanation": "An action you like is an infinitive after gusta."
+    },
+    {
+      "id": "a1-verbs-gustar-1-08",
+      "type": "translate",
+      "tags": ["gustar", "questions"],
+      "source": "Do you like dogs? (to a friend)",
+      "accepted": ["¿Te gustan los perros?", "¿A ti te gustan los perros?"],
+      "hint": "dog = el perro",
+      "explanation": "Te for a friend, gustan for a plural noun, and the article los."
+    },
+    {
+      "id": "a1-verbs-gustar-1-09",
+      "type": "paradigm",
+      "tags": ["gustar", "pronouns"],
+      "prompt": "Who likes chocolate? Write the pronoun and the verb.",
+      "lemma": "gustar + el chocolate",
+      "gloss": "to like chocolate",
+      "cells": [
+        { "label": "a mí", "accepted": ["me gusta"], "given": true },
+        { "label": "a ti", "accepted": ["te gusta"] },
+        { "label": "a ella", "accepted": ["le gusta"] },
+        { "label": "a nosotros", "accepted": ["nos gusta"] },
+        { "label": "a vosotros (Spain)", "accepted": ["os gusta"] },
+        { "label": "a ustedes", "accepted": ["les gusta"] }
+      ],
+      "explanation": "Only the pronoun changes: me, te, le, nos, os, les. The verb stays gusta because el chocolate is one thing."
+    },
+    {
+      "id": "a1-verbs-gustar-1-10",
+      "type": "match",
+      "tags": ["gustar", "reactions"],
+      "mode": "response",
+      "prompt": "Match each sentence with the best reply.",
+      "pairs": [
+        ["¿Te gustan los gatos?", "Sí, me encantan."],
+        ["Me gusta bailar.", "A mí también."],
+        ["No me gusta el frío.", "A mí tampoco."],
+        ["¿Le gusta la habitación, señora?", "Sí, me gusta mucho, gracias."]
+      ],
+      "explanation": "También agrees with a positive sentence, tampoco with a negative one. Encantan is plural (los gatos); gusta is singular (la habitación)."
+    }
+  ]
+}

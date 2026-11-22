@@ -1,0 +1,6 @@
+# Read-only reference clone (never committed)
+reference/
+node_modules/
+tmp/
+# Data export files
+spanish-levels-map-*.json
