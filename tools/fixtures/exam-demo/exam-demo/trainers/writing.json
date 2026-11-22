@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "wordRange": [40, 80],
+  "warnBelow": 30,
+  "timeMinutes": 20,
+  "rubric": [],
+  "tasks": [
+    {
+      "id": "email-1",
+      "genre": "email",
+      "title": "An email to a friend",
+      "prompt": "Write to a friend about your last weekend.",
+      "bullets": ["where you went", "who you were with", "what you liked most"]
+    }
+  ]
+}

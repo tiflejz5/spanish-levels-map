@@ -183,7 +183,6 @@ window.LM = window.LM || {};
 
     // Pod poziomami: grupa „Egzaminy” z rejestru (E8, matury, B2…), na końcu Certyfikat C1 (własny moduł)
     if (LM.exams) LM.exams.renderNav();
-    if (LM.c1) LM.c1.renderNav();
   }
 
   // =====================================================================

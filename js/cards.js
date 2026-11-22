@@ -605,15 +605,7 @@ window.LM = window.LM || {};
       if (!session || session.current !== id) return;
       if (!desc) { session.taskFallback[id] = true; paintSession(); return; } // zadania nie ma (usunięty zestaw): karta z pełnym kontekstem
       const done = function (res) { finishExercise(id, res); };
-      if (desc.kind === "engine") {
-        LM.exercises.startSingle({ item: desc.item, back: { href: HOME, label: "Fiszki i błędy" }, progress: progressBlock, noJournal: true, onDone: done });
-      } else {
-        root.replaceChildren(el("div", { class: "fc-session-top" }, [
-          el("a", { class: "c1-back fc-back", href: HOME }, LM.ui.withIcon("chevron-left", "Fiszki i błędy")),
-          progressBlock()
-        ]));
-        LM.mistakeTask.mount(root, desc, entry, done);
-      }
+      LM.exercises.startSingle({ item: desc.item, back: { href: HOME, label: "Fiszki i błędy" }, progress: progressBlock, noJournal: true, onDone: done });
     }, function () { session.taskFallback[id] = true; paintSession(); });
   }
 
@@ -993,17 +985,15 @@ window.LM = window.LM || {};
 
   // ---------- Kafelek „Fiszki do egzaminu” na stronach egzaminów (paczka v6, spec 15, sekcja 4) ----------
 
-  const EXAM_DECKS = {
-    "egzamin-osmoklasisty": ["egz-e8"],
-    "matura-podstawowa": ["egz-matura"],
-    "matura-rozszerzona": ["egz-matura"],
-    "certyfikat-b2": ["egz-b2-first"],
-    "certyfikat-c1": ["czasowniki-frazowe", "kolokacje"]
-  };
+  /** Decks of an exam: the "decks" list of its registry entry (spec 06 E8: no exam is hard-coded). */
+  function examDecks(examId) {
+    const e = LM.exams ? LM.exams.byId(examId) : null;
+    return e && Array.isArray(e.decks) ? e.decks : [];
+  }
 
   /** Kafelek talii pod dany egzamin (id z rejestru egzaminów): nazwa, liczba kart, stan i „Włącz i ucz się” / „Ucz się”. */
   function examTile(examId) {
-    const ids = (EXAM_DECKS[examId] || []).filter(function (id) { return index().some(function (d) { return d.id === id; }); });
+    const ids = examDecks(examId).filter(function (id) { return index().some(function (d) { return d.id === id; }); });
     if (!ids.length) return null;
     const decks = ids.map(function (id) { return index().find(function (d) { return d.id === id; }); });
     const box = el("section", { class: "card fc-exam-tile", "aria-labelledby": "fc-exam-title-" + examId });
@@ -1026,7 +1016,7 @@ window.LM = window.LM || {};
       if (!profile) parts.push(el("p", { class: "tool-note", text: "Dodaj profil, żeby uczyć się z fiszek." }));
       parts.push(el("div", { class: "fc-actions" }, [
         profile
-          ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { ids.forEach(function (id) { if (enabled().indexOf(id) === -1) toggleDeck(id, true); }); location.hash = HASH + "/sesja"; } },
+          ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { ids.forEach(function (id) { if (enabled().indexOf(id) === -1) toggleDeck(id, true); }); location.hash = SESSION; } },
             LM.ui.withIcon("play", allOn ? "Ucz się" : "Włącz i ucz się"))
           : null,
         el("a", { class: "btn btn-secondary", href: HASH + "/deck/" + ids[0] }, LM.ui.withIcon("layers", "Przeglądaj karty"))

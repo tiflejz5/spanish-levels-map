@@ -5,7 +5,7 @@
  *   #/writing/models/<egzamin>/<id>        wzorzec z komentarzami (widok: js/writing-model.js)
  *
  * Dane: zadania z polem modelNotes w niezbednik/<egzamin>/trening/pisanie.json (LM.EXAMS[id].trainers
- * dla egzaminów z rejestru, LM.C1.trainers dla Certyfikatu C1). Tekstów `model` nie zmieniamy — komentarze
+ * dla egzaminów z rejestru). Tekstów `model` nie zmieniamy — komentarze
  * wskazują dokładne fragmenty (kotwice).
  *
  *   LM.writing.parseRoute(hash), render(), examList() → Promise z [{ exam, T, tasks }]
@@ -34,7 +34,7 @@ window.LM = window.LM || {};
   const TYPE_ORDER = ["punkty", "lacznik", "rejestr", "struktura", "zakres", "uwaga"];
 
   function reg() { return LM.EXAM_REGISTRY || { exams: [] }; }
-  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
+  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
   function genreLabel(g) { return GENRES[g] || g; }
   function hrefModel(examId, taskId) { return HASH + "/models/" + examId + "/" + taskId; }
 
@@ -57,9 +57,7 @@ window.LM = window.LM || {};
     if (cache) return Promise.resolve(cache);
     const list = reg().exams.filter(function (e) { return e.status === "active"; });
     return Promise.all(list.map(function (e) {
-      const load = e.existing
-        ? Promise.resolve(LM.C1 && LM.C1.trainers && LM.C1.trainers["trening-pisanie"])
-        : (LM.exams ? LM.exams.load(e).then(function (d) { return d && d.trainers && d.trainers["trening-pisanie"]; }) : Promise.resolve(null));
+      const load = LM.exams ? LM.exams.writingData(e) : Promise.resolve(null);
       return load.then(function (T) {
         const tasks = T && T.tasks ? T.tasks.filter(function (t) { return t.model && t.modelNotes; }) : [];
         return tasks.length ? { exam: e, T: T, tasks: tasks } : null;

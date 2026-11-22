@@ -109,6 +109,7 @@ window.LM = window.LM || {};
     ]));
 
     const article = el("article", { class: "md" }, LM.markdown.render(doc.blocks, { hiddenSections: HIDDEN_SECTIONS }));
+    if (LM.exams) LM.exams.insertExamBoxes(article, LM.exams.examBoxesFor(topic.id)); // "In the exam: …" boxes (registry links)
     if (LM.callouts) LM.callouts.apply(article); // highlighted sections and tables (js/callouts.js)
     view.appendChild(LM.toc ? LM.toc.wrap(article) : article); // table of contents with ≥ 4 sections (js/toc.js)
     // "Check yourself": exercise sets of the topic (index loaded on demand)

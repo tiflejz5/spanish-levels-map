@@ -134,4 +134,13 @@ window.LM = window.LM || {};
     dateStamp: dateStamp,
     isPlainObject: isPlainObject
   };
+  /**
+   * Plural form for a count: plural(n, one, few, many). Moved unchanged from the dropped js/c1-core.js so the callers keep
+   * working; stage 2 (English UI) replaces it with the two-form English helper of spec 04.
+   */
+  LM.plural = function (n, one, few, many) {
+    if (n === 1) return one;
+    const d = n % 10, t = n % 100;
+    return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
+  };
 })(window.LM);

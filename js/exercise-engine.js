@@ -1329,7 +1329,7 @@ window.LM = window.LM || {};
     ]));
   }
 
-  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
+  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
 
   /** Sugestia „Umiem” (spec 03, pkt 4): dwa ostatnie podejścia do zestawu ≥ 80%; nigdy nie zaznaczamy sami. */
   function umiemSuggestion() {

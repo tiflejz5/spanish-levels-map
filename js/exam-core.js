@@ -1,25 +1,21 @@
 /*
- * exam-core.js — moduł „Egzaminy” (spec 05).
+ * exam-core.js — the generic exams module (spec 06 E8, spec 12).
  *
- * Rejestr (dane/egzaminy-rejestr.js → LM.EXAM_REGISTRY, z dane/egzaminy-manifest.json) jest
- * jedynym źródłem etykiet, kodów, kolorów, statusów i opisów egzaminów. Kod nie zna ich nazw.
+ * The registry (content/exams/registry.json → data/exams-registry.js, LM.EXAM_REGISTRY) is the only source of exam
+ * labels, codes, colours, statuses and descriptions. The code knows no exam by name. Until stage E the registry is
+ * empty: no exam routes, and the sidebar group "Exams" is hidden. tools/fixtures/exam-demo/ keeps this code under test.
  *
- *   status „active” + folder w nowym formacie (np. Egzamin ósmoklasisty):
- *     #/<trasa>                          przegląd (strona „przeglad”, z odliczaniem)
- *     #/<trasa>/<strona>                 strona z strony/*.md
- *     #/<trasa>/cwiczenia                lista zestawów (silnik zadań, js/exercise-engine.js)
- *     #/<trasa>/trening-pisanie[/<id>]   trener pisania (js/writing-trainer.js)
- *     #/<trasa>/trening-mowienie         trener Speaking (js/speaking-trainer.js; B2 First)
- *   status „soon”: #/<trasa>             strona „W trakcie pracy”
- *   „existing” (Certyfikat C1): własny, niezmieniony moduł js/c1-*.js
+ * Routes (spec 02 §6), <id> = exam id from the registry:
+ *   #/exams/<id>                     overview page (manifest page "overview")
+ *   #/exams/<id>/<page>              a page of the manifest
+ *   #/exams/<id>/practice            exercise sets of the exam (each opens in the engine, #/practice/set/<set id>)
+ *   #/exams/<id>/writing[/<task>]    writing trainer (js/writing-trainer.js), trainer of type "writing"
+ *   #/exams/<id>/speaking            speaking trainer (js/speaking-trainer.js), trainer of type "speaking"
+ *   status "soon": #/exams/<id>      "work in progress" page
  *
- * Dane egzaminu (manifest, strony, trenery) ładujemy dopiero po wejściu do zakładki:
- * niezbednik/<id>-dane.js (tools/zbuduj-egzaminy.js). Dane użytkownika: LM.profileData
- * (slm.exams, per profil): data egzaminu, szkice pisania, odhaczone listy.
- *
- * Ramki „Na egzaminie …” na stronach tematów: osobna ramka dla każdego egzaminu z powiązaniem,
- * w kolejności z rejestru (C1 rysuje swój moduł — bez zmian).
- * Klimat wizualny: html[data-section="<id egzaminu>"] (tokeny w css/style.css).
+ * Exam data (manifest, pages, trainers) loads on entering the exam: data/exam-<id>.js (tools/build/exams.js).
+ * Per-profile data: LM.profileData (slm.exams): exam date, writing drafts, ticked lists.
+ * Visual scope: html[data-section="<exam id>"].
  */
 window.LM = window.LM || {};
 
@@ -34,10 +30,10 @@ window.LM = window.LM || {};
   function exams() { return reg().exams; }
   function byId(id) { return exams().find(function (e) { return e.id === id; }) || null; }
   function pd() { return LM.profileData; }
-  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
-  /** Egzamin obsługiwany przez ten moduł (nie istniejący C1). */
-  function isGeneric(e) { return e && !e.existing; }
-  function base(e) { return "#" + e.route; }
+  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
+  const ROOT = "#/exams/";
+  const OVERVIEW = "overview";
+  function base(e) { return ROOT + e.id; }
   function data(e) { return (LM.EXAMS && LM.EXAMS[e.id]) || null; }
 
   function load(e) {
@@ -49,24 +45,22 @@ window.LM = window.LM || {};
   // ADRESY
   // =====================================================================
 
+  /** "#/exams/<id>[/…]" → { examId, kind, … } or null (also for an id that is not in the registry). */
   function parseRoute(hash) {
-    const list = exams().filter(isGeneric);
-    for (let i = 0; i < list.length; i++) {
-      const e = list[i];
-      const m = new RegExp("^#" + e.route.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "(?:/(.*))?$").exec(hash || "");
-      if (!m) continue;
-      const parts = (m[1] || "").replace(/\/+$/, "").split("/").filter(Boolean);
-      if (e.status !== "active") return { examId: e.id, kind: "soon" };
-      if (!parts.length) return { examId: e.id, kind: "page", id: "przeglad" };
-      if (parts[0] === "cwiczenia") return parts[1] ? { examId: e.id, kind: "set", id: parts[1] } : { examId: e.id, kind: "exercises" };
-      if (parts[0] === "trening-pisanie") return { examId: e.id, kind: "writing", task: parts[1] || null };
-      if (parts[0] === "trening-mowienie") return { examId: e.id, kind: "speaking" };
-      return { examId: e.id, kind: "page", id: parts[0] };
-    }
-    return null;
+    const m = /^#\/exams\/([a-z0-9][a-z0-9-]*)(?:\/(.*))?$/.exec(hash || "");
+    if (!m) return null;
+    const e = byId(m[1]);
+    if (!e) return null;
+    const parts = (m[2] || "").replace(/\/+$/, "").split("/").filter(Boolean);
+    if (e.status !== "active") return parts.length ? null : { examId: e.id, kind: "soon" };
+    if (!parts.length) return { examId: e.id, kind: "page", id: OVERVIEW };
+    if (parts[0] === "practice") return parts.length === 1 ? { examId: e.id, kind: "exercises" } : null;
+    if (parts[0] === "writing") return parts.length <= 2 ? { examId: e.id, kind: "writing", task: parts[1] || null } : null;
+    if (parts[0] === "speaking") return parts.length === 1 ? { examId: e.id, kind: "speaking" } : null;
+    return parts.length === 1 ? { examId: e.id, kind: "page", id: parts[0] } : null;
   }
 
-  function hrefPage(e, id) { return id === "przeglad" ? base(e) : base(e) + "/" + id; }
+  function hrefPage(e, id) { return id === OVERVIEW ? base(e) : base(e) + "/" + id; }
 
   // =====================================================================
   // MANIFEST
@@ -82,9 +76,9 @@ window.LM = window.LM || {};
     return null;
   }
 
-  /** Trenery sekcji: „trainer” (E8, matury) albo lista „trainers” (B2: Writing i Speaking). */
+  /** Trainers of a section: "trainer" (one) or a "trainers" list; type "writing" or "speaking". */
   function sectionTrainers(s) { return Array.isArray(s.trainers) ? s.trainers : s.trainer ? [s.trainer] : []; }
-  function writingTrainerOf(s) { return sectionTrainers(s).find(function (t) { return t.id === "trening-pisanie"; }) || null; }
+  function writingTrainerOf(s) { return sectionTrainers(s).find(function (t) { return t.type === "writing"; }) || null; }
   function speakingTrainerOf(s) { return sectionTrainers(s).find(function (t) { return t.type === "speaking"; }) || null; }
 
   function trainerSection(e) {
@@ -192,6 +186,30 @@ window.LM = window.LM || {};
     return f ? { href: hrefPage(wikiExam, id), text: f.page.label, kind: "exam" } : null;
   };
 
+  /** Puts a node right after the intro (before the first ## section). */
+  function insertAfterIntro(article, node) {
+    if (!node) return;
+    const first = article.querySelector(".md-section");
+    if (first) article.insertBefore(node, first);
+    else article.appendChild(node);
+  }
+
+  /** Section before which the exam boxes go on a topic page (null = at the end of the article). */
+  function examBoxAnchor(article) {
+    const secs = Array.prototype.filter.call(article.children, function (n) { return n.classList && n.classList.contains("md-section"); });
+    const titles = secs.map(function (s) { const h = s.querySelector("h2"); return h ? h.textContent : ""; });
+    const i = LM.examLogic.examBoxAnchorIndex(titles);
+    return i < 0 ? null : secs[i];
+  }
+
+  /** Puts the exam boxes of a topic after the explanation (see LM.examLogic.examBoxAnchorIndex). */
+  function insertExamBoxes(article, node) {
+    if (!node) return;
+    const anchor = examBoxAnchor(article);
+    if (anchor) article.insertBefore(node, anchor);
+    else article.appendChild(node);
+  }
+
   function renderPage(view, e, id) {
     const found = findPage(e, id);
     const text = found && data(e).pages[id];
@@ -201,22 +219,22 @@ window.LM = window.LM || {};
     view.appendChild(el("div", { class: "c1-page-tools" }, [
       crumb(e, found.section.label),
       el("div", { class: "c1-page-actions" }, [
-        id === "przeglad" ? LM.examCover.pinButton(e) : null,
+        id === OVERVIEW ? LM.examCover.pinButton(e) : null,
         LM.notes ? LM.notes.button(e.code.toLowerCase() + ":" + id, { title: e.code + " · " + (doc.meta.title || found.page.label), route: location.hash }) : null
       ])
     ]));
     const article = el("article", { class: "md c1-page exam-page" }, LM.markdown.render(doc.blocks, { hiddenSections: HIDDEN_SECTIONS }));
     wikiExam = null; // kontekst linków [[id]] tylko na czas rysowania strony egzaminu
-    if (id === "przeglad") {
+    if (id === OVERVIEW) {
       // Nota o aktualności (stan na październik 2026 + link do CKE) — chyba że treść strony już ją ma
       const hasNote = /Stan na październik 2026/i.test(text);
-      LM.c1.insertAfterIntro(article, el("div", { class: "exam-overview-top" }, [LM.examDate.cardFor(e), hasNote ? null : sourcesNote(e)]));
+      insertAfterIntro(article, el("div", { class: "exam-overview-top" }, [LM.examDate.cardFor(e), hasNote ? null : sourcesNote(e)]));
     }
     wireTasks(e, article, id);
     if (LM.callouts) LM.callouts.apply(article);
     view.appendChild(article);
     if (/^(wypowiedz-pisemna|writing)(-|$)/.test(id) && LM.writing) view.appendChild(LM.writing.pageSection(e.id));
-    if (id === "przeglad" && LM.cards && LM.cards.examTile) { const ft = LM.cards.examTile(e.id); if (ft) view.appendChild(ft); }
+    if (id === OVERVIEW && LM.cards && LM.cards.examTile) { const ft = LM.cards.examTile(e.id); if (ft) view.appendChild(ft); }
     const nav = pageNav(e, id);
     if (nav) view.appendChild(nav);
     return doc.meta.title || found.page.label;
@@ -234,12 +252,7 @@ window.LM = window.LM || {};
     LM.exercises.loadIndex().then(function (index) {
       box.replaceChildren();
       section.exerciseGroups.forEach(function (g) {
-        const cards = g.sets.map(function (s) {
-          // Format C1 (cloze, słowotwórstwo): karta z wynikiem z slm.exercises, zestaw w zakładce egzaminu
-          if (data(e).exercises && data(e).exercises[s.id]) return c1SetCard(e, s, data(e).exercises[s.id]);
-          return index.sets[s.id];
-        }).filter(Boolean).map(function (meta) {
-          if (meta.nodeType) return meta;
+        const cards = g.sets.map(function (s) { return index.sets[s.id]; }).filter(Boolean).map(function (meta) {
           const card = LM.exercises.setCard(meta);
           if (meta.listening) card.insertBefore(el("p", { class: "exam-tts-note" }, [LM.icon("volume-2", { size: 14 }), " Głos syntezowany w przeglądarce"]), card.children[1]);
           if (meta.hasPassage) card.insertBefore(el("p", { class: "exam-tts-note" }, [LM.icon("file-text", { size: 14 }), " Tekst do przeczytania"]), card.children[1]);
@@ -252,43 +265,6 @@ window.LM = window.LM || {};
       });
     });
     return section.label;
-  }
-
-  /** Karta zestawu w formacie C1 (jak karty silnika zadań). */
-  function c1SetCard(e, s, ex) {
-    const score = pd() ? pd().setScore(s.id) : null;
-    const max = ex.maxScore || s.maxScore;
-    return el("article", { class: "card ex-set-card" }, [
-      el("h3", { class: "ex-set-title", text: ex.title || s.label }),
-      el("p", { class: "ex-set-meta", text: max + " " + plural(max, "luka", "luki", "luk") + " · " + (C1_FORMAT_LABEL[ex.type] || "zadanie z lukami") }),
-      el("p", { class: "ex-set-score" + (score ? "" : " is-empty") }, score
-        ? [el("span", null, ["Najlepszy: ", el("strong", { class: "num", text: score.best.score + "/" + score.best.total })]), el("span", null, ["Ostatni: ", el("span", { class: "num", text: score.last.score + "/" + score.last.total })])]
-        : "Jeszcze nie rozwiązany"),
-      el("a", { class: "btn btn-primary btn-small", href: base(e) + "/cwiczenia/" + s.id, "aria-label": (score ? "Zacznij ponownie: " : "Zacznij: ") + (ex.title || s.label) }, LM.ui.withIcon("play", score ? "Zacznij ponownie" : "Zacznij"))
-    ]);
-  }
-
-  const C1_FORMAT_LABEL = { "multiple-choice-cloze": "wybór słowa w tekście", "word-formation": "słowotwórstwo", "open-cloze": "luki otwarte", "transformation": "transformacje" };
-
-  /** Zestaw w formacie C1 w zakładce egzaminu: komponent C1, wynik w slm.exercises. */
-  function renderC1Set(view, e, id) {
-    let found = null;
-    sections(e).forEach(function (s) { (s.exerciseGroups || []).forEach(function (g) { g.sets.forEach(function (x) { if (x.id === id) found = { set: x, group: g }; }); }); });
-    const ex = data(e).exercises && data(e).exercises[id];
-    if (!found || !ex) { view.appendChild(notFound(e, "Nie znaleziono takiego zestawu ćwiczeń.")); return null; }
-    return LM.c1Exercises.renderWith(view, {
-      ex: ex,
-      found: found,
-      crumb: function (label) { return crumb(e, label); },
-      notFound: function (msg) { return notFound(e, msg); },
-      bestScore: function () { const s = pd().setScore(id); return s ? s.best.score : null; },
-      recordScore: function (score, max) { const r = pd().saveSetScore(id, score, max); return !!r && (r.improved || r.best === r.last && r.recent.length === 1); },
-      listHref: base(e) + "/cwiczenia",
-      hrefSet: function (sid) { return base(e) + "/cwiczenia/" + sid; },
-      refPrefix: e.code.toLowerCase() + ":" + id,
-      category: "Gramatyka",
-      afterScore: function () { renderNav(); }
-    });
   }
 
   // ---------- Trener pisania (wspólny silnik, konfiguracja egzaminu) ----------
@@ -320,7 +296,7 @@ window.LM = window.LM || {};
   function writingTrainer(e) {
     if (trainers[e.id]) return trainers[e.id];
     const L = LM.examLogic;
-    const href = function (taskId) { return base(e) + "/trening-pisanie" + (taskId ? "/" + taskId : ""); };
+    const href = function (taskId) { return base(e) + "/writing" + (taskId ? "/" + taskId : ""); };
     const cam = CAMBRIDGE_WRITING[e.id] || null;
     const wordsLabel = cam
       ? function (n) { return n + " " + plural(n, "słowo", "słowa", "słów"); }
@@ -329,7 +305,7 @@ window.LM = window.LM || {};
     const low = LOW_SCOPE[e.id] || LOW_DEFAULT;
     const genreName = function (g) { return cam ? cam.genres[g] || g : GENRES[g] || g; };
     trainers[e.id] = LM.writingTrainer.create({
-      trainer: function () { return data(e) && data(e).trainers["trening-pisanie"]; },
+      trainer: function () { const s = trainerSection(e); return s && data(e) ? data(e).trainers[writingTrainerOf(s).id] || null : null; },
       section: function () { return trainerSection(e); },
       crumb: function (label) { return crumb(e, label); },
       notFound: function (msg) { return notFound(e, msg); },
@@ -445,7 +421,7 @@ window.LM = window.LM || {};
   }
 
   function renderSoon(view, e) {
-    const active = exams().find(function (x) { return x.status === "active" && isGeneric(x); });
+    const active = exams().find(function (x) { return x.status === "active"; });
     view.appendChild(el("section", { class: "card soon-card", "aria-labelledby": "soon-title" }, [
       soonIllustration(),
       el("div", { class: "soon-body" }, [
@@ -486,11 +462,10 @@ window.LM = window.LM || {};
       });
       return;
     }
-    view.appendChild(masthead(e, !(route.kind === "page" && route.id === "przeglad")));
+    view.appendChild(masthead(e, !(route.kind === "page" && route.id === OVERVIEW)));
     let title = null;
     if (route.kind === "page") title = renderPage(view, e, route.id);
     else if (route.kind === "exercises") title = renderExercises(view, e);
-    else if (route.kind === "set") title = renderC1Set(view, e, route.id);
     else if (route.kind === "writing") title = writingTrainer(e).render(view, route.task);
     else if (route.kind === "speaking") {
       if (LM.speakingTrainer) title = speakingTrainer(e).render(view);
@@ -508,7 +483,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // NAWIGACJA: grupa „Egzaminy” (rejestr; C1 rysuje się w #c1-nav swoim modułem).
+  // NAVIGATION: sidebar group "Exams" from the registry; hidden while the registry is empty (spec 06 E8).
   // Aktywne egzaminy w #exams-nav, egzaminy „w trakcie pracy” na końcu grupy (#exams-soon-nav, pod C1).
   // =====================================================================
 
@@ -536,13 +511,11 @@ window.LM = window.LM || {};
   /** Kafelek egzaminu w pasku: 44×44, kod i odliczanie w kolorach egzaminu (C1: granat i złoto). */
   function examTile(e, here, soon) {
     const days = soon ? null : tileDays(e);
-    const c1 = !!e.existing;
-    const style = c1 ? "--exam-accent:var(--c1-navy);--exam-accent-2:var(--c1-gold)"
-      : e.accent ? "--exam-accent:" + e.accent + ";--exam-accent-2:" + (e.accent2 || e.accent) : null;
+    const style = e.accent ? "--exam-accent:" + e.accent + ";--exam-accent-2:" + (e.accent2 || e.accent) : null;
     const info = LM.examMy.info(e.id);
     const countdown = !soon && info.days !== null && info.days >= 0 ? LM.examDate.stateText(info.days) : "";
     return el("a", {
-      class: "sb-item exam-chip" + (c1 ? " is-c1" : "") + (soon ? " is-soon" : "") + (here ? " is-active" : ""),
+      class: "sb-item exam-chip" + (soon ? " is-soon" : "") + (here ? " is-active" : ""),
       href: base(e),
       style: style,
       "aria-current": here ? "page" : null,
@@ -560,12 +533,10 @@ window.LM = window.LM || {};
     ]);
   }
 
-  /** Egzamin otwarty na ekranie (generyczny lub C1) – zostaje w pasku, nawet jeśli nie jest „mój”. */
+  /** The exam on screen stays in the sidebar even when it is not one of "my exams". */
   function currentExamId() {
     const st = LM.state;
-    if (st && st.view === "exam" && st.toolRoute) return st.toolRoute.examId;
-    if (st && st.view === "c1") return "certyfikat-c1";
-    return null;
+    return st && st.view === "exam" && st.toolRoute ? st.toolRoute.examId : null;
   }
 
   function split() {
@@ -576,8 +547,13 @@ window.LM = window.LM || {};
     const box = document.getElementById("exams-nav");
     if (!box) return;
     box.replaceChildren();
-    const moreBox = document.getElementById("exams-soon-nav"); // za sekcjami C1: przycisk „+N”
+    const moreBox = document.getElementById("exams-soon-nav"); // the "+N" button
     if (moreBox) moreBox.replaceChildren();
+    // Empty registry (until stage E): the whole group is hidden (spec 06 E8)
+    const empty = !exams().length;
+    box.hidden = empty;
+    if (moreBox) moreBox.hidden = empty;
+    if (empty) return;
     const route = LM.state && LM.state.view === "exam" ? LM.state.toolRoute : null;
     const sp = split();
     const list = el("ul", { class: "sb-list exam-list" });
@@ -585,11 +561,11 @@ window.LM = window.LM || {};
       const e = byId(id);
       if (!e) return;
       const soon = e.status !== "active";
-      const here = e.existing ? LM.state.view === "c1" : !!(route && route.examId === e.id);
+      const here = !!(route && route.examId === e.id);
       const li = el("li", null, examTile(e, here, soon));
       list.appendChild(li);
-      // Sekcje aktywnego egzaminu, gdy w nim jesteśmy (tylko w rozwiniętym panelu); sekcje C1 rysuje js/c1-core.js w #c1-nav
-      if (here && !e.existing && data(e) && !soon) {
+      // Sections of the open exam (expanded sidebar only)
+      if (here && data(e) && !soon) {
         const current = sectionIdOf(e, route);
         const secs = el("div", { class: "sb-c1-sections exam-sections" });
         sections(e).forEach(function (s) {
@@ -597,10 +573,10 @@ window.LM = window.LM || {};
           const listId = "exam-sec-" + e.id + "-" + s.id;
           const ul = el("ul", { class: "c1-sec-list", id: listId, hidden: !open });
           (s.pages || []).forEach(function (p) { ul.appendChild(navItem(hrefPage(e, p.id), p.label, route.kind === "page" && route.id === p.id)); });
-          if (s.exerciseGroups) ul.appendChild(navItem(base(e) + "/cwiczenia", "Wszystkie zestawy", route.kind === "exercises"));
+          if (s.exerciseGroups) ul.appendChild(navItem(base(e) + "/practice", "Wszystkie zestawy", route.kind === "exercises"));
           // Trener pisania (trener Speaking B2 dochodzi w kolejnym etapie)
-          if (writingTrainerOf(s)) ul.appendChild(navItem(base(e) + "/trening-pisanie", writingTrainerOf(s).label, route.kind === "writing", null, "is-trainer"));
-          if (speakingTrainerOf(s)) ul.appendChild(navItem(base(e) + "/trening-mowienie", speakingTrainerOf(s).label, route.kind === "speaking", null, "is-trainer is-speaking"));
+          if (writingTrainerOf(s)) ul.appendChild(navItem(base(e) + "/writing", writingTrainerOf(s).label, route.kind === "writing", null, "is-trainer"));
+          if (speakingTrainerOf(s)) ul.appendChild(navItem(base(e) + "/speaking", speakingTrainerOf(s).label, route.kind === "speaking", null, "is-trainer is-speaking"));
           secs.appendChild(el("div", { class: "c1-sec" + (s.id === current ? " is-current" : "") }, [
             el("button", {
               type: "button", class: "c1-sec-toggle", "aria-expanded": open ? "true" : "false", "aria-controls": listId,
@@ -648,8 +624,7 @@ window.LM = window.LM || {};
       if (!e) return null;
       const soon = e.status !== "active";
       const mine = LM.examMy.isMine(id);
-      const style = e.existing ? "--exam-accent:var(--c1-navy);--exam-accent-2:var(--c1-gold)"
-        : e.accent ? "--exam-accent:" + e.accent + ";--exam-accent-2:" + (e.accent2 || e.accent) : null;
+      const style = e.accent ? "--exam-accent:" + e.accent + ";--exam-accent-2:" + (e.accent2 || e.accent) : null;
       const inner = [
         el("span", { class: "exam-chip-badge", "aria-hidden": "true", text: e.code }),
         el("span", { class: "exam-pop-label" }, [
@@ -788,7 +763,6 @@ window.LM = window.LM || {};
     const out = [];
     exams().forEach(function (e) {
       if (e.status !== "active") return;
-      if (e.existing) { if (e.id === "certyfikat-c1" && LM.c1) { const b = LM.c1.examBoxFor(itemId); if (b) out.push(b); } return; }
       const link = (reg().links[e.id] || []).find(function (l) { return l.itemId === itemId; });
       if (link) out.push(examBox(e, link));
     });
@@ -796,10 +770,18 @@ window.LM = window.LM || {};
     return out.length === 1 ? out[0] : el("div", { class: "exam-boxes" }, out);
   }
 
+  /** Writing-trainer data of an exam (the section trainer of type "writing"), loaded on demand; null without one. */
+  function writingData(e) {
+    return load(e).then(function (d) {
+      const s = d ? trainerSection(e) : null;
+      return s ? d.trainers[writingTrainerOf(s).id] || null : null;
+    });
+  }
+
   /** Dla silnika zadań: powrót z zestawu egzaminu do jego listy zestawów. */
   function setBack(examId) {
     const e = byId(examId);
-    return e ? { href: base(e) + "/cwiczenia", label: "Wróć do zestawów: " + e.label } : null;
+    return e ? { href: base(e) + "/practice", label: "Wróć do zestawów: " + e.label } : null;
   }
 
   LM.exams = {
@@ -808,6 +790,10 @@ window.LM = window.LM || {};
     renderNav: renderNav,
     closePopover: closePopover,
     examBoxesFor: examBoxesFor,
+    insertExamBoxes: insertExamBoxes,
+    insertAfterIntro: insertAfterIntro,
+    href: base,
+    writingData: writingData,
     setBack: setBack,
     byId: byId,
     list: exams,

@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "title": "Demo set 1",
+  "level": "B1",
+  "intro": "Two tasks for the fixture.",
+  "items": [
+    {
+      "id": "exam-demo-set-1-01",
+      "type": "multiple-choice",
+      "prompt": "Ayer ___ al cine con mis amigos.",
+      "options": ["voy", "fui", "iré", "iba a"],
+      "correct": 1,
+      "explanation": "Ayer points to one finished event in the past: fui.",
+      "optionNotes": ["Voy is present.", null, "Iré is future.", "Iba a talks about a plan in the past."]
+    },
+    {
+      "id": "exam-demo-set-1-02",
+      "type": "gap-fill",
+      "text": "Mañana {{1}} (nosotros, tener) un examen.",
+      "gaps": [{ "accepted": ["tenemos", "vamos a tener"] }],
+      "explanation": "With mañana, the present or ir a + infinitive both work."
+    }
+  ]
+}

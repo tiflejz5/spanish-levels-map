@@ -31,7 +31,7 @@ window.LM = window.LM || {};
 
   function pd() { return LM.profileData; }
   function learn() { return LM.learn; }
-  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
+  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
 
   function parseRoute(hash) {
     return /^#\/today\/?$/.test(hash || "") ? { kind: "today" } : null;

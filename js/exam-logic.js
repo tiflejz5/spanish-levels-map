@@ -79,25 +79,18 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Stan potrzebny do myExams z surowych danych: input = { registry, examsRecord: { exams: {id: {examDate}}, my },
-   * c1: { examDate, best }, isSetDone(setId) }. Egzamin „existing” (C1) bierze datę i wyniki z (C1, etap 1A: tylko pamięć).
-   * Zwraca { dates, doneSets, totalSets, my }.
+   * State for myExams from raw data: input = { registry, examsRecord: { exams: {id: {examDate}}, my }, isSetDone(setId) }.
+   * Returns { dates, doneSets, totalSets, my }.
    */
   function examMyState(input) {
     const rec = input.examsRecord || {};
-    const c1 = input.c1 || {};
     const out = { dates: {}, doneSets: {}, totalSets: {}, my: (rec.my && typeof rec.my === "object") ? rec.my : {} };
     ((input.registry && input.registry.exams) || []).forEach(function (e) {
       const ids = e.setIds || [];
       out.totalSets[e.id] = ids.length;
-      if (e.existing) {
-        out.dates[e.id] = typeof c1.examDate === "string" ? c1.examDate : "";
-        out.doneSets[e.id] = ids.filter(function (id) { return c1.best && typeof c1.best[id] === "number"; }).length;
-      } else {
-        const x = rec.exams && rec.exams[e.id];
-        out.dates[e.id] = x && typeof x.examDate === "string" ? x.examDate : "";
-        out.doneSets[e.id] = ids.filter(function (id) { return input.isSetDone && input.isSetDone(id); }).length;
-      }
+      const x = rec.exams && rec.exams[e.id];
+      out.dates[e.id] = x && typeof x.examDate === "string" ? x.examDate : "";
+      out.doneSets[e.id] = ids.filter(function (id) { return input.isSetDone && input.isSetDone(id); }).length;
     });
     return out;
   }

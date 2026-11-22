@@ -60,7 +60,7 @@ function bump() {
   console.log("Version stamp: " + next + " (package.json lmVersion, index.html ?v=, LM.VERSION)");
 }
 
-const MODULES = ["syllabus", "pages", "tests", "quizzes", "trail", "lab", "exercises", "decks", "writing", "exams", "search"];
+const MODULES = ["syllabus", "pages", "tests", "quizzes", "trail", "lab", "exams", "exercises", "decks", "writing", "search"];
 
 // 1. Validate (structural checks run inside the modules; content validators are separate files)
 if (!CHECK) runValidators();
