@@ -3617,7 +3617,6 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .fc-exam-tile { display: flex; flex-direction: column; gap: 8px; margin: var(--space-4, 16px) 0; }
 .fc-exam-deck { display: flex; flex-direction: column; gap: 2px; }
 .fc-exam-deck-title { margin: 0; }
-.fc-themes-link { margin: 16px 0 0; }
 .fiszki-view .chip-filter + .fc-deck-list { margin-top: 16px; }
 
 /* Ściąga poziomu (paczka v6, spec 16, sekcja 1): strona i karta na liście poziomu */
@@ -4333,13 +4332,6 @@ a.pw-row-label:hover { text-decoration: underline; }
   .sz-btn:hover .sz-circle { transform: none; }
 }
 
-.sz-branches { margin: 24px auto 0; max-width: 560px; }
-.sz-branch-list { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
-.sz-branch { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border: 1px dashed var(--line-control); border-radius: var(--radius); background: var(--surface); color: var(--ink); text-decoration: none; }
-.sz-branch:hover { border-color: var(--lvl); background: var(--surface-raised); }
-.sz-branch.is-pinned { border-style: solid; border-color: var(--lvl); background: var(--lvl-soft); }
-.sz-branch-icon { color: var(--lvl-ink); display: grid; place-content: center; }
-.sz-branch-body { flex: 1; display: flex; flex-direction: column; gap: 2px; }
 
 /* Arkusz przystanku: na telefonie dolny arkusz, na komputerze panel z prawej */
 .dialog.sz-sheet { position: fixed; inset: auto 0 0 0; margin: 0; width: 100%; max-width: none; max-height: 86vh; overflow: auto; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
