@@ -1,19 +1,19 @@
 /*
  * shortcuts.js — okienko skrótów klawiszowych („?”) i wspólny odsłuch zdań (paczka v8, S5).
  *
- *   ELM.shortcuts.open()        okienko z listą skrótów dla bieżącego widoku (zadania, powtórki, C1 i egzaminy, strony treści)
- *   ELM.shortcuts.speak(text)   czyta zdanie głosem angielskim (en-GB, potem en-US); drugie wywołanie w trakcie czytania przerywa
+ *   LM.shortcuts.open()        okienko z listą skrótów dla bieżącego widoku (zadania, powtórki, C1 i egzaminy, strony treści)
+ *   LM.shortcuts.speak(text)   czyta zdanie głosem angielskim (en-GB, potem en-US); drugie wywołanie w trakcie czytania przerywa
  *
  * Skróty nie działają w polach tekstowych (poza Enter, który ma własną obsługę w widokach).
- * Zadania: js/exercise-engine.js, sesja powtórek: js/fiszki.js, strony treści: js/niezbednik.js; tu: „?”,
+ * Zadania: js/exercise-engine.js, sesja powtórek: js/cards.js, strony treści: js/handbook.js; tu: „?”,
  * odsłuch wiersza w ćwiczeniach C1 (S, wiersz ostatnio wybrany) i Enter = „Sprawdź” w polach C1.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   const CONTEXTS = {
@@ -74,7 +74,7 @@ window.ELM = window.ELM || {};
   function contextNow() {
     if (document.querySelector(".ex-view .ex-card")) return "zadania";
     if (document.querySelector(".fc-session")) return "powtorki";
-    const v = ELM.state && ELM.state.view;
+    const v = LM.state && LM.state.view;
     if (v === "c1" || v === "exam") return "c1";
     if (v === "page") return "strona";
     return "ogolne";
@@ -95,7 +95,7 @@ window.ELM = window.ELM || {};
       })));
       list.appendChild(el("dd", { text: r[1] }));
     });
-    return ELM.dialogs.open({
+    return LM.dialogs.open({
       title: c.title, className: "dialog-shortcuts",
       body: [list, el("p", { class: "tool-note", text: "Skróty nie działają w polach tekstowych (poza Enter)." })],
       cancelValue: true,
@@ -118,14 +118,14 @@ window.ELM = window.ELM || {};
   function speak(text, rate) {
     const s = window.speechSynthesis;
     if (!s || typeof window.SpeechSynthesisUtterance !== "function") {
-      if (ELM.ui) ELM.ui.toast({ text: "Ta przeglądarka nie ma syntezatora mowy.", icon: "volume-x" });
+      if (LM.ui) LM.ui.toast({ text: "Ta przeglądarka nie ma syntezatora mowy.", icon: "volume-x" });
       return false;
     }
     if (current) { s.cancel(); current = null; return true; }
     const voice = enVoice();
     const all = s.getVoices();
     if (all.length && !voice) {
-      if (ELM.ui) ELM.ui.toast({ text: "Ta przeglądarka nie ma głosu angielskiego.", icon: "volume-x" });
+      if (LM.ui) LM.ui.toast({ text: "Ta przeglądarka nie ma głosu angielskiego.", icon: "volume-x" });
       return false;
     }
     const u = new window.SpeechSynthesisUtterance(text);
@@ -180,5 +180,5 @@ window.ELM = window.ELM || {};
     }
   });
 
-  ELM.shortcuts = { open: open, speak: speak, contextNow: contextNow, CONTEXTS: CONTEXTS };
-})(window.ELM);
+  LM.shortcuts = { open: open, speak: speak, contextNow: contextNow, CONTEXTS: CONTEXTS };
+})(window.LM);

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "decks": [
+    {
+      "id": "vocab-a1-food-shopping",
+      "title": "Food, drink and shopping",
+      "description": "Sample of 8 cards. The full deck has 30–40 cards for the topic a1-vocabulary-food-shopping.",
+      "level": "A1",
+      "file": "vocab-a1-food-shopping.json",
+      "count": 8,
+      "enabled": true
+    }
+  ]
+}

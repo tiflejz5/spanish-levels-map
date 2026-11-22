@@ -8,18 +8,18 @@
  *   - cytaty > (każda linia osobno — dobre do dialogów),
  *   - **pogrubienie**, *kursywa*, ***oba***, `kod`, linia ---,
  *   - linki [tekst](https://…) oraz wewnętrzne [tekst](#/a1),
- *   - linki [[id]] (rozwiązywane przez ELM.markdown.resolveWiki),
+ *   - linki [[id]] (rozwiązywane przez LM.markdown.resolveWiki),
  *   - listy zadań „- [ ] …” jako pola wyboru (input.md-task).
  *
  * BEZPIECZEŃSTWO: wynik budujemy z elementów DOM i węzłów tekstowych.
  * Surowy HTML z pliku .md NIE jest interpretowany (pokaże się jako tekst).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const el = ELM.utils.el;
+  const el = LM.utils.el;
 
   const RE_HEADING = /^(#{1,6})\s+(.*?)\s*#*\s*$/;
   const RE_LIST = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
@@ -200,12 +200,12 @@ window.ELM = window.ELM || {};
   }
 
   /**
-   * Linki [[id]] — zamieniane przez funkcję ELM.markdown.resolveWiki(id),
+   * Linki [[id]] — zamieniane przez funkcję LM.markdown.resolveWiki(id),
    * która zwraca { href, text } albo null (nieznane id → zwykły tekst
    * + ostrzeżenie w konsoli). Bez tej funkcji [[id]] zostaje bez zmian.
    */
   function appendWikiLinks(parent, text) {
-    const resolver = ELM.markdown.resolveWiki;
+    const resolver = LM.markdown.resolveWiki;
     if (typeof resolver !== "function" || text.indexOf("[[") === -1) { appendLinks(parent, text); return; }
     text.split(/(\[\[[^\]\s]+\]\])/).forEach(function (part) {
       const m = /^\[\[([^\]\s]+)\]\]$/.exec(part);
@@ -215,7 +215,7 @@ window.ELM = window.ELM || {};
         // Link [[id]] jako mały chip w kolorze poziomu strony docelowej (zestaw C1: granat i złoto)
         const cls = "wiki-link wiki-chip" + (target.kind === "c1" ? " is-c1" : target.level ? " lvl-" + target.level : "");
         parent.appendChild(el("a", { href: target.href, class: cls }, [
-          ELM.icon ? ELM.icon(target.kind === "c1" ? "award" : "notebook-text", { size: 14 }) : null,
+          LM.icon ? LM.icon(target.kind === "c1" ? "award" : "notebook-text", { size: 14 }) : null,
           target.level ? el("span", { class: "wiki-chip-level", text: target.level }) : null,
           el("span", { class: "wiki-chip-text", text: target.text })
         ]));
@@ -441,10 +441,10 @@ window.ELM = window.ELM || {};
     return { meta: fm.meta, blocks: parseBlocks(fm.body.split("\n")) };
   }
 
-  ELM.markdown = {
+  LM.markdown = {
     parse: parse,
     parseFrontmatter: parseFrontmatter,
     render: render,
     inline: inline
   };
-})(window.ELM);
+})(window.LM);

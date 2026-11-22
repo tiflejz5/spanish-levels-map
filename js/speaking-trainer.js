@@ -5,33 +5,33 @@
  *   "matura"  matura ustna: { criteria, intro, roleplay, picture, choice } — rozmowa wstępna + zadania 1–3 (czasy orientacyjne),
  *   "simple"  trening dodatkowy (E8, A2): { criteria, cards: [ { kind, task, questions, … } ] } — jedna lista kart.
  *
- *   ELM.speakingTrainer.create(cfg) → { render(view) → tytuł | null }
- *   ELM.speakingTrainer.makeTimer(opts) → { node, start, stop, reset, on(zdarzenie, fn), done }
+ *   LM.speakingTrainer.create(cfg) → { render(view) → tytuł | null }
+ *   LM.speakingTrainer.makeTimer(opts) → { node, start, stop, reset, on(zdarzenie, fn), done }
  *
  * cfg (js/exam-core.js):
  *   data()                  dane mowienie.json (albo null)
  *   section()               { label } sekcji trenerów z manifestu (albo null)
  *   crumb(label), notFound(msg)
- *   examId                  id egzaminu (historia sesji i widziane karty: ELM.profileData, klucz elm_speaking_v1)
+ *   examId                  id egzaminu (historia sesji i widziane karty: LM.profileData, klucz slm.speaking)
  *
- * Wspólne: losowanie kart bez powtórek („Losuj”; widziane karty w elm_speaking_v1.seen, po wyczerpaniu puli nowy cykl),
+ * Wspólne: losowanie kart bez powtórek („Losuj”; widziane karty w slm.speaking.seen, po wyczerpaniu puli nowy cykl),
  * timery (start / pauza, pasek, ogłoszenia 30 s i 10 s dla czytników ekranu), „Egzaminator czyta” (syntezator en-GB, tempo 0,9),
  * nagrywanie z js/recorder.js (do 3 prób, tylko lokalnie), samoocena wg kryteriów (1–5) zapisywana jako historia sesji per profil,
  * tryb „Cały egzamin” (B2 i matura): wszystkie części po kolei z timerami, na końcu odsłuch nagrań i samoocena.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   // Pytanie do partnera po Part 2 B2 (w arkuszu drugi zdający odpowiada krótko, ok. 30 s)
   const PARTNER_QUESTION = "Which of these situations would you prefer to be in? Why?";
 
   function mmss(s) { s = Math.max(0, s); return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
-  function hasProfile() { return !!(ELM.app && ELM.app.getActiveProfile && ELM.app.getActiveProfile()); }
+  function hasProfile() { return !!(LM.app && LM.app.getActiveProfile && LM.app.getActiveProfile()); }
 
   // =====================================================================
   // GŁOS EGZAMINATORA (Web Speech API, ten sam sposób co zadania słuchania)
@@ -104,7 +104,7 @@ window.ELM = window.ELM || {};
         api.stop();
         api.done = true;
         live.textContent = opts.label + ": czas minął.";
-        if (ELM.markActivity) ELM.markActivity();
+        if (LM.markActivity) LM.markActivity();
         fire("end");
         if (opts.onEnd) opts.onEnd();
       }
@@ -139,7 +139,7 @@ window.ELM = window.ELM || {};
     // Wybór zapamiętany do końca wizyty (zakładka, wylosowane karty, tryb Part 3, filtr rodzaju, głos egzaminatora)
     const ui = { tab: 0, cur: {}, mode3: "partner", kind: "all", mem: {}, examiner: false, full: null };
 
-    function pd() { return ELM.profileData; }
+    function pd() { return LM.profileData; }
 
     // ---------- jednostki (części) zależnie od formatu ----------
 
@@ -170,7 +170,7 @@ window.ELM = window.ELM || {};
       return (i + 1) + ". " + String(base).slice(0, 70);
     }
 
-    // ---------- losowanie bez powtórek (elm_speaking_v1.seen) ----------
+    // ---------- losowanie bez powtórek (slm.speaking.seen) ----------
 
     function seenKey(unit) { return cfg.examId + ":" + unit.key; }
     function seenList(unit) {
@@ -196,7 +196,7 @@ window.ELM = window.ELM || {};
       }
       const i = rest[Math.floor(Math.random() * rest.length)];
       markSeen(unit, idOf(unit, i));
-      if (restarted) ELM.ui.toast({ text: "Przerobiłeś wszystkie karty – zaczynamy od nowa.", icon: "check" });
+      if (restarted) LM.ui.toast({ text: "Przerobiłeś wszystkie karty – zaczynamy od nowa.", icon: "check" });
       ui.cur[unit.key] = i;
       return i;
     }
@@ -210,7 +210,7 @@ window.ELM = window.ELM || {};
 
     function render(view) {
       stopAll();
-      if (ELM.recorder) ELM.recorder.destroyAll();
+      if (LM.recorder) LM.recorder.destroyAll();
       const D = cfg.data();
       const found = cfg.section();
       if (!D || !found) { view.appendChild(cfg.notFound("Brak danych trenera mówienia.")); return null; }
@@ -229,7 +229,7 @@ window.ELM = window.ELM || {};
         view.appendChild(el("p", { class: "c1-lead", text: "Cztery części jak na egzaminie: losujesz pytania, kartę albo zadanie i mówisz na czas. Po sesji oceń się według czterech kryteriów – wynik zapisze się w historii Twojego profilu." }));
       }
       if (D.note && fmt === "matura") view.appendChild(el("p", { class: "tool-note", text: D.note }));
-      view.appendChild(el("p", { class: "tool-note sp-privacy" }, [ELM.icon("info", { size: 16 }), " Nagranie zostaje tylko w tej karcie przeglądarki – nic nie jest zapisywane ani wysyłane."]));
+      view.appendChild(el("p", { class: "tool-note sp-privacy" }, [LM.icon("info", { size: 16 }), " Nagranie zostaje tylko w tej karcie przeglądarki – nic nie jest zapisywane ani wysyłane."]));
 
       const tabDefs = units.map(function (u, i) { return { id: u.key, label: u.tab, unit: u, index: i }; });
       if (hasFull) tabDefs.push({ id: "full", label: "Cały egzamin", index: units.length });
@@ -277,7 +277,7 @@ window.ELM = window.ELM || {};
 
       function paintPanel() {
         stopAll();
-        if (ELM.recorder) ELM.recorder.destroyAll();
+        if (LM.recorder) LM.recorder.destroyAll();
         panel.replaceChildren();
         const t = tabDefs[ui.tab];
         if (t.id === "full") { fullExam(panel, D, units, paintHistory, paintPanel); return; }
@@ -326,13 +326,13 @@ window.ELM = window.ELM || {};
         const again = document.getElementById("sp-topic-" + unit.key); if (again) again.focus();
       } }, cands.map(function (c) { return el("option", { value: String(c), selected: c === i, text: labelOf(unit, c) }); }));
       controls.push(el("label", { class: "sp-field" }, [el("span", { class: "field-label", text: unit.type === "simple" ? "Karta" : "Temat" }), select]));
-      controls.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { draw(unit, cands); repaint(); } }, ELM.ui.withIcon("shuffle", "Losuj")));
+      controls.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { draw(unit, cands); repaint(); } }, LM.ui.withIcon("shuffle", "Losuj")));
       panel.appendChild(el("div", { class: "sp-controls" }, controls));
       const seen = seenList(unit).filter(function (id) { return cands.some(function (c) { return idOf(unit, c) === id; }); }).length;
       panel.appendChild(el("p", { class: "tool-note sp-seen", text: "Losowanie bez powtórek: przerobione karty " + Math.min(seen, cands.length) + " z " + cands.length + "." + (hasProfile() ? "" : " Bez profilu licznik działa tylko do zamknięcia karty.") }));
       panel.appendChild(examinerSwitch());
 
-      const rec = ELM.recorder ? ELM.recorder.create({ exam: cfg.examId, card: idOf(unit, i) }) : null;
+      const rec = LM.recorder ? LM.recorder.create({ exam: cfg.examId, card: idOf(unit, i) }) : null;
       const ctx = { rec: rec, repaint: repaint };
       paintItem(panel, unit, item, ctx);
       if (rec) panel.appendChild(rec.node);
@@ -357,13 +357,13 @@ window.ELM = window.ELM || {};
       let n = 0;
       const box = el("div", { class: "sp-question", "aria-live": "polite" });
       const nextBtn = el("button", { type: "button", class: "btn btn-secondary" });
-      const playBtn = el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(questions[n]); } }, ELM.ui.withIcon("play", "Odtwórz pytanie"));
+      const playBtn = el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(questions[n]); } }, LM.ui.withIcon("play", "Odtwórz pytanie"));
       function paint(auto) {
         box.replaceChildren(
           el("p", { class: "sp-q-count", text: (label || "Pytanie") + " " + (n + 1) + " z " + questions.length }),
           el("p", { class: "sp-q-text", lang: "en", text: questions[n] })
         );
-        nextBtn.replaceChildren.apply(nextBtn, ELM.ui.withIcon("arrow-right", n < questions.length - 1 ? "Następne pytanie" : "Od początku"));
+        nextBtn.replaceChildren.apply(nextBtn, LM.ui.withIcon("arrow-right", n < questions.length - 1 ? "Następne pytanie" : "Od początku"));
         if (auto) say(questions[n]);
       }
       nextBtn.addEventListener("click", function () { n = n < questions.length - 1 ? n + 1 : 0; paint(true); });
@@ -396,7 +396,7 @@ window.ELM = window.ELM || {};
       const lines = c.examinerLines || [];
       let shown = 1;
       const list = el("ol", { class: "sp-lines", "aria-label": "Kwestie egzaminatora", "aria-live": "polite" });
-      const more = el("button", { type: "button", class: "btn btn-secondary" }, ELM.ui.withIcon("arrow-right", "Dalej – kolejna kwestia egzaminatora"));
+      const more = el("button", { type: "button", class: "btn btn-secondary" }, LM.ui.withIcon("arrow-right", "Dalej – kolejna kwestia egzaminatora"));
       function paintLines(auto) {
         list.replaceChildren.apply(list, lines.slice(0, shown).map(function (l) {
           return el("li", { class: "sp-line" }, [el("span", { class: "sp-line-who", text: "Egzaminator" }), el("span", { lang: "en", text: l })]);
@@ -411,7 +411,7 @@ window.ELM = window.ELM || {};
       panel.appendChild(el("ul", { class: "sp-elements" }, c.elements.map(function (e) { return el("li", { text: e }); })));
       panel.appendChild(prepTimer(P.prepSeconds));
       panel.appendChild(list);
-      panel.appendChild(el("div", { class: "sp-actions" }, [more, el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(lines[Math.max(0, shown - 1)]); } }, ELM.ui.withIcon("play", "Odtwórz kwestię"))]));
+      panel.appendChild(el("div", { class: "sp-actions" }, [more, el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(lines[Math.max(0, shown - 1)]); } }, LM.ui.withIcon("play", "Odtwórz kwestię"))]));
       panel.appendChild(mainTimer(ctx, P.seconds, "Rozmowa (orientacyjnie)").node);
       panel.appendChild(phrasesBox(c.usefulPhrases));
     }
@@ -458,7 +458,7 @@ window.ELM = window.ELM || {};
         el("p", { lang: "en", text: "Both pictures show… · In the first one…, whereas in the second… · They might be… because… · It looks as if…" })
       ]));
       panel.appendChild(timer.node);
-      panel.appendChild(el("div", { class: "sp-actions" }, [partnerBtn, el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(c.question); } }, ELM.ui.withIcon("play", "Odtwórz pytanie"))]));
+      panel.appendChild(el("div", { class: "sp-actions" }, [partnerBtn, el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(c.question); } }, LM.ui.withIcon("play", "Odtwórz pytanie"))]));
       panel.appendChild(partner);
     }
 
@@ -472,7 +472,7 @@ window.ELM = window.ELM || {};
       const decision = el("div", { class: "sp-decision", hidden: true });
       decision.tabIndex = -1;
       const decisionTimer = makeTimer({ seconds: P.decisionSeconds, label: "Decyzja" });
-      const toDecision = el("button", { type: "button", class: "btn btn-secondary", onclick: showDecision }, ELM.ui.withIcon("arrow-right", "Przejdź do decyzji"));
+      const toDecision = el("button", { type: "button", class: "btn btn-secondary", onclick: showDecision }, LM.ui.withIcon("arrow-right", "Przejdź do decyzji"));
       function showDecision() {
         if (!decision.hidden) return;
         decision.hidden = false;
@@ -498,7 +498,7 @@ window.ELM = window.ELM || {};
         el("ul", { class: "sp-options", "aria-label": "Opcje do omówienia" }, t.options.map(function (o) { return el("li", { class: "sp-option", lang: "en", text: o }); }))
       ]));
       panel.appendChild(discussion.node);
-      panel.appendChild(el("div", { class: "sp-actions" }, [toDecision, el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(t.central); } }, ELM.ui.withIcon("play", "Odtwórz polecenie"))]));
+      panel.appendChild(el("div", { class: "sp-actions" }, [toDecision, el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(t.central); } }, LM.ui.withIcon("play", "Odtwórz polecenie"))]));
       panel.appendChild(decision);
     }
 
@@ -516,7 +516,7 @@ window.ELM = window.ELM || {};
       panel.appendChild(el("h3", { class: "c1-check-title", text: unit.P.title }));
       if (unit.lead) panel.appendChild(el("p", { class: "sp-intro", text: unit.lead }));
       panel.appendChild(examinerSwitch());
-      const rec = ELM.recorder ? ELM.recorder.create({ exam: cfg.examId, card: step.id }) : null;
+      const rec = LM.recorder ? LM.recorder.create({ exam: cfg.examId, card: step.id }) : null;
       step.rec = rec;
       paintItem(panel, unit, unit.pool[step.index], { rec: rec, repaint: repaint });
       if (rec) panel.appendChild(rec.node);
@@ -524,12 +524,12 @@ window.ELM = window.ELM || {};
       panel.appendChild(el("div", { class: "sp-actions" }, [
         el("button", { type: "button", class: "btn btn-primary", onclick: function () {
           stopAll();
-          if (rec && rec.isRecording()) { ELM.ui.toast({ text: "Zatrzymaj nagrywanie, zanim przejdziesz dalej.", icon: "info" }); return; }
+          if (rec && rec.isRecording()) { LM.ui.toast({ text: "Zatrzymaj nagrywanie, zanim przejdziesz dalej.", icon: "info" }); return; }
           if (last) f.done = true; else f.i++;
           panel.replaceChildren();
           stepRepaint();
-        } }, ELM.ui.withIcon(last ? "check" : "arrow-right", last ? "Zakończ egzamin" : "Dalej – " + f.steps[f.i + 1].unit.tab)),
-        el("button", { type: "button", class: "btn btn-link", onclick: function () { stopAll(); ELM.recorder && ELM.recorder.destroyAll(); ui.full = null; repaint(); } }, "Przerwij egzamin")
+        } }, LM.ui.withIcon(last ? "check" : "arrow-right", last ? "Zakończ egzamin" : "Dalej – " + f.steps[f.i + 1].unit.tab)),
+        el("button", { type: "button", class: "btn btn-link", onclick: function () { stopAll(); LM.recorder && LM.recorder.destroyAll(); ui.full = null; repaint(); } }, "Przerwij egzamin")
       ]));
       function stepRepaint() { panel.replaceChildren(); fullExam(panel, D, units, onSaved, repaint); panel.scrollIntoView({ block: "start" }); }
     }
@@ -546,7 +546,7 @@ window.ELM = window.ELM || {};
         });
         panel.appendChild(recs);
         panel.appendChild(selfAssessment(D, "cały egzamin", 1, true, onSaved));
-        panel.appendChild(el("div", { class: "sp-actions" }, [el("button", { type: "button", class: "btn btn-secondary", onclick: function () { ELM.recorder && ELM.recorder.destroyAll(); ui.full = null; repaint(); } }, "Zacznij od nowa")]));
+        panel.appendChild(el("div", { class: "sp-actions" }, [el("button", { type: "button", class: "btn btn-secondary", onclick: function () { LM.recorder && LM.recorder.destroyAll(); ui.full = null; repaint(); } }, "Zacznij od nowa")]));
         return;
       }
       const minutes = units.reduce(function (n, u) { return n + (u.P.seconds || 0) + (u.P.discussionSeconds || 0) + (u.P.decisionSeconds || 0) + (u.P.prepSeconds || 0); }, 0);
@@ -555,7 +555,7 @@ window.ELM = window.ELM || {};
       panel.appendChild(el("button", { type: "button", class: "btn btn-primary", onclick: function () {
         ui.full = { i: 0, done: false, steps: units.map(function (u) { const idx = draw(u, u.pool.map(function (c, k) { return k; })); return { unit: u, index: idx, id: idOf(u, idx), rec: null }; }) };
         repaint();
-      } }, ELM.ui.withIcon("play", "Rozpocznij egzamin")));
+      } }, LM.ui.withIcon("play", "Rozpocznij egzamin")));
     }
 
     // ---------- samoocena i historia ----------
@@ -636,5 +636,5 @@ window.ELM = window.ELM || {};
 
   window.addEventListener("hashchange", stopAll);
 
-  ELM.speakingTrainer = { create: create, makeTimer: makeTimer };
-})(window.ELM);
+  LM.speakingTrainer = { create: create, makeTimer: makeTimer };
+})(window.LM);

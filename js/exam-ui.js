@@ -1,29 +1,29 @@
 /*
  * exam-ui.js — wspólne elementy egzaminów (paczka v7, spec 19 sekcja B):
- *   ELM.examMy            „Moje egzaminy” per profil: list(), isMine(id), info(id), pin(id), unpin(id)
- *   ELM.examDate.card     jedna karta daty egzaminu (C1 i egzaminy z rejestru)
- *   ELM.examCover         okładki: full (strona startowa), compact (podstrony), mini (kafel: główna, Dziś)
+ *   LM.examMy            „Moje egzaminy” per profil: list(), isMine(id), info(id), pin(id), unpin(id)
+ *   LM.examDate.card     jedna karta daty egzaminu (C1 i egzaminy z rejestru)
+ *   LM.examCover         okładki: full (strona startowa), compact (podstrony), mini (kafel: główna, Dziś)
  * Czysta logika (myExams, formatDatePl, daysBetween) jest w js/exam-logic.js i ma testy.
- * Data C1 leży w elm_c1_v1 (js/c1-core.js), pozostałych egzaminów w elm_exams_v1 (js/profile-data.js).
+ * Data C1 leży w (C1, etap 1A: tylko pamięć) (js/c1-core.js), pozostałych egzaminów w slm.exams (js/profile-data.js).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
-  function L() { return ELM.examLogic; }
-  function pd() { return ELM.profileData; }
-  function registry() { return ELM.EXAM_REGISTRY || { exams: [] }; }
+  function L() { return LM.examLogic; }
+  function pd() { return LM.profileData; }
+  function registry() { return LM.EXAM_REGISTRY || { exams: [] }; }
   function byId(id) { return registry().exams.find(function (e) { return e.id === id; }) || null; }
   function plural(n, one, few, many) {
     if (n === 1) return one;
     const d = n % 10, t = n % 100;
     return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
   }
-  function c1store() { return ELM.c1 ? ELM.c1.store.data() : { examDate: "", best: {} }; }
+  function c1store() { return LM.c1 ? LM.c1.store.data() : { examDate: "", best: {} }; }
 
   // =====================================================================
   // DATA I STAN EGZAMINU
@@ -37,7 +37,7 @@ window.ELM = window.ELM || {};
   function setDate(e, value) {
     if (e.existing) {
       c1store().examDate = value || "";
-      ELM.c1.store.save();
+      LM.c1.store.save();
     } else if (pd()) {
       pd().examData(e.id).examDate = value || "";
       pd().saveExams();
@@ -104,8 +104,8 @@ window.ELM = window.ELM || {};
       const e = byId(node.getAttribute("data-exam-pin"));
       if (e) node.replaceWith(pinButton(e));
     });
-    if (ELM.exams) ELM.exams.renderNav();
-    if (ELM.c1) ELM.c1.renderNav();
+    if (LM.exams) LM.exams.renderNav();
+    if (LM.c1) LM.c1.renderNav();
   }
 
   // =====================================================================
@@ -113,7 +113,7 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   /**
-   * ELM.examDate.card({ examId, getDate, setDate, suggested, hint }): lewo duża liczba dni albo tekst stanu,
+   * LM.examDate.card({ examId, getDate, setDate, suggested, hint }): lewo duża liczba dni albo tekst stanu,
    * prawo pole daty z polskim zapisem i akcjami „Wstaw termin główny” / „Usuń datę”.
    */
   function dateCard(o) {
@@ -244,7 +244,7 @@ window.ELM = window.ELM || {};
         el("span", { class: "exam-cover-count" + (i.days === null ? " is-unset" : ""), text: i.days === null ? "Ustaw datę" : shortCountdown(i.days) }),
         progress ? el("span", { class: "exam-cover-progress", text: progress }) : null
       ]),
-      el("span", { class: "exam-cover-chev", "aria-hidden": "true" }, ELM.icon("chevron-right", { size: 20 }))
+      el("span", { class: "exam-cover-chev", "aria-hidden": "true" }, LM.icon("chevron-right", { size: 20 }))
     ]);
   }
 
@@ -257,7 +257,7 @@ window.ELM = window.ELM || {};
         el("span", { class: "exam-cover-title", text: e.label }),
         el("span", { class: "exam-cover-count", text: e.subtitle || "" })
       ]),
-      el("span", { class: "exam-cover-chev", "aria-hidden": "true" }, ELM.icon("chevron-right", { size: 20 }))
+      el("span", { class: "exam-cover-chev", "aria-hidden": "true" }, LM.icon("chevron-right", { size: 20 }))
     ]);
   }
 
@@ -276,7 +276,7 @@ window.ELM = window.ELM || {};
       type: "button", class: "btn btn-secondary",
       "aria-pressed": mine ? "true" : "false",
       onclick: function () { if (mine) unpin(e.id); else pin(e.id); }
-    }, ELM.ui.withIcon(mine ? "pin-off" : "pin", mine ? "Odepnij z Dziś i strony głównej" : "Przypnij do Dziś")));
+    }, LM.ui.withIcon(mine ? "pin-off" : "pin", mine ? "Odepnij z Dziś i strony głównej" : "Przypnij do Dziś")));
   }
 
   /** Sekcja „Twoje egzaminy” na stronie głównej (albo jedna linijka, gdy nic nie jest moje). */
@@ -310,7 +310,7 @@ window.ELM = window.ELM || {};
     return isMine(e.id) && i.days !== null && i.days > 0 ? stateText(i.days) : (e.subtitle || "");
   }
 
-  ELM.examMy = { navSub: navSub, list: list, isMine: isMine, info: info, pin: pin, unpin: unpin, getDate: getDate, setDate: setDate, byId: byId };
-  ELM.examDate = { card: dateCard, cardFor: dateCardFor, stateText: stateText };
-  ELM.examCover = { full: coverFull, compact: coverCompact, mini: coverMini, pinButton: pinButton, homeSection: homeSection, todayTiles: todayTiles, changed: changed, shortCountdown: shortCountdown };
-})(window.ELM);
+  LM.examMy = { navSub: navSub, list: list, isMine: isMine, info: info, pin: pin, unpin: unpin, getDate: getDate, setDate: setDate, byId: byId };
+  LM.examDate = { card: dateCard, cardFor: dateCardFor, stateText: stateText };
+  LM.examCover = { full: coverFull, compact: coverCompact, mini: coverMini, pinButton: pinButton, homeSection: homeSection, todayTiles: todayTiles, changed: changed, shortCountdown: shortCountdown };
+})(window.LM);

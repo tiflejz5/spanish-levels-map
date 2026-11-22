@@ -1,5 +1,5 @@
 /*
- * final-logic.js — czysta logika testów końcowych poziomów (bez DOM, testy w tools/testy.js).
+ * final-logic.js — czysta logika testów końcowych poziomów (bez DOM, testy w tools/tests.js).
  * Specyfikacja: docs/rozbudowa-v6/spec/13-test-poziomu-i-testy-koncowe.md, sekcja 2.
  *
  *   drawItems(pool, draw, categoryOf, rng)   losowanie `draw` zadań z puli; każda kategoria reprezentowana
@@ -9,12 +9,12 @@
  *   isPassed(score, total, percent)          próg liczony w punktach (score / total ≥ percent %)
  *   breakdown(results, categoryOf)           podział wyniku na kategorie i tematy z błędami
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  function X() { return ELM.exLogic; }
+  function X() { return LM.exLogic; }
 
   /** Czy wynik w punktach daje próg zaliczenia (np. 16 z 20 przy 80%). */
   function isPassed(score, total, percent) {
@@ -86,7 +86,7 @@ window.ELM = window.ELM || {};
   }
 
   /**
-   * Podział wyniku. results = [{ item, res }] (res z ELM.exLogic.evaluate; null → brak odpowiedzi).
+   * Podział wyniku. results = [{ item, res }] (res z LM.exLogic.evaluate; null → brak odpowiedzi).
    * Zwraca { categories: [{ key, score, total }] (w kolejności pierwszego wystąpienia),
    * topics: [{ topic, lost, wrong }] — tematy z utraconymi punktami, od najwięcej straconych }.
    * Zadania pominięte (max = 0) nie liczą się.
@@ -114,5 +114,5 @@ window.ELM = window.ELM || {};
     return { categories: cats, topics: topics };
   }
 
-  ELM.finalLogic = { isPassed: isPassed, allocate: allocate, drawItems: drawItems, breakdown: breakdown };
-})(window.ELM);
+  LM.finalLogic = { isPassed: isPassed, allocate: allocate, drawItems: drawItems, breakdown: breakdown };
+})(window.LM);

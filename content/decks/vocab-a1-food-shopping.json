@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "id": "vocab-a1-food-shopping",
+  "title": "Food, drink and shopping",
+  "description": "Sample of 8 cards. The full deck has 30–40 cards for the topic a1-vocabulary-food-shopping.",
+  "level": "A1",
+  "cards": [
+    { "id": "vocab-a1-food-shopping-001", "type": "typed", "front": "bread", "accepted": ["el pan", "pan"], "back": "el pan", "level": "A1", "tags": ["food"] },
+    { "id": "vocab-a1-food-shopping-002", "type": "typed", "front": "water", "accepted": ["el agua", "agua"], "back": "el agua", "note": "Feminine, but takes el in the singular: el agua fría, las aguas.", "level": "A1", "tags": ["drink"] },
+    { "id": "vocab-a1-food-shopping-003", "type": "cloze", "text": "Quería un café con {{leche}}, por favor.", "hint": "milk", "en": "I'd like a coffee with milk, please.", "level": "A1", "tags": ["drink", "ordering"] },
+    { "id": "vocab-a1-food-shopping-004", "type": "typed", "front": "juice", "accepted": ["el zumo", "zumo", "el jugo", "jugo"], "back": "el zumo (Spain) / el jugo (Latin America)", "level": "A1", "tags": ["drink"] },
+    { "id": "vocab-a1-food-shopping-005", "type": "cloze", "text": "¿Cuánto {{cuesta|vale}} este queso?", "hint": "costs", "en": "How much does this cheese cost?", "level": "A1", "tags": ["shopping"] },
+    { "id": "vocab-a1-food-shopping-006", "type": "typed", "front": "the check, the bill (in a restaurant)", "accepted": ["la cuenta", "cuenta"], "back": "la cuenta", "example": "La cuenta, por favor.", "exampleEn": "The check, please.", "level": "A1", "tags": ["ordering"] },
+    { "id": "vocab-a1-food-shopping-007", "type": "cloze", "text": "Por la mañana desayuno fruta y {{huevos}}.", "hint": "eggs", "en": "In the morning I have fruit and eggs for breakfast.", "level": "A1", "tags": ["food"] },
+    { "id": "vocab-a1-food-shopping-008", "type": "typed", "front": "potato", "accepted": ["la patata", "patata", "la papa", "papa"], "back": "la patata (Spain) / la papa (Latin America)", "level": "A1", "tags": ["food"] }
+  ]
+}

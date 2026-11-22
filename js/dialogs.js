@@ -3,12 +3,12 @@
  * komunikat) zbudowane na elemencie <dialog>.
  * Zastępują systemowe confirm()/prompt(), żeby pasowały wyglądem.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const el = ELM.utils.el;
+  const el = LM.utils.el;
   let counter = 0;
 
   /**
@@ -144,5 +144,5 @@ window.ELM = window.ELM || {};
     }).result;
   }
 
-  ELM.dialogs = { open: open, confirm: confirm, prompt: prompt, alert: alert };
-})(window.ELM);
+  LM.dialogs = { open: open, confirm: confirm, prompt: prompt, alert: alert };
+})(window.LM);

@@ -1,6 +1,6 @@
 /*
  * exercise-logic.js — czysta logika silnika zadań (bez DOM), testowana
- * w tools/testy.js. Specyfikacja: docs/rozbudowa-v2/spec/01-typy-zadan.md
+ * w tools/tests.js. Specyfikacja: docs/rozbudowa-v2/spec/01-typy-zadan.md
  * i 02-laboratorium-czasow-i-mieszane.md (algorytm zestawów mieszanych).
  *
  *   normalize(str)                    porównywanie odpowiedzi (sekcja 4 spec 01)
@@ -21,9 +21,9 @@
  * { text }, { text }, { text } albo { skipped: true } (dyktando bez głosu).
  *   pickMix(pool, opts, rng)          losowanie zestawu mieszanego
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const TYPES = ["multiple-choice", "reorder", "find-error", "short-answer", "gap-fill", "match", "transformation", "translate", "dictation"];
@@ -446,7 +446,7 @@ window.ELM = window.ELM || {};
   /**
    * Zestaw mieszany (spec 02, B.3).
    * pool: zadania (z polem topic); opts: { count, exclude: [id…], types: [typ…], weight: fn(zadanie) → waga }.
-   * Wagi (np. ELM.stats.mixWeight) zwiększają szansę wylosowania słabych / niewidzianych zadań w obrębie tematu.
+   * Wagi (np. LM.stats.mixWeight) zwiększają szansę wylosowania słabych / niewidzianych zadań w obrębie tematu.
    * 1. filtr typów, 2. wykluczenie ostatniej sesji (gdy starcza puli),
    * 3. round-robin po tematach (w temacie losowo), 4. kolejność: najwyżej 2 zadania tego samego typu pod rząd.
    * Zwraca { items, requested, available }.
@@ -558,7 +558,7 @@ window.ELM = window.ELM || {};
     }
   }
 
-  ELM.exLogic = {
+  LM.exLogic = {
     speechText: speechText,
     bestSetLabel: bestSetLabel,
     TYPES: TYPES,
@@ -586,4 +586,4 @@ window.ELM = window.ELM || {};
     weightedOrder: weightedOrder,
     limitRuns: limitRuns
   };
-})(window.ELM);
+})(window.LM);

@@ -1,25 +1,25 @@
 /*
  * toc.js — spis treści podstron (paczka v8, S3).
  *
- *   ELM.toc.wrap(article) → element do wstawienia zamiast artykułu
+ *   LM.toc.wrap(article) → element do wstawienia zamiast artykułu
  *
  * Podstrony z ≥ 4 sekcjami „##”: od 1200 px spis jest przyklejony z prawej strony (między --w-text a --w-wide)
  * ze scrollspy (aria-current="location" na bieżącej sekcji); węższy ekran dostaje <details> „Na tej stronie” nad treścią.
  * Adres w pasku zajmuje router, więc przejścia robi scrollIntoView (z focusem na nagłówku), a nie kotwice #id.
  * W druku spis jest ukryty (css/print.css). Mniej niż 4 sekcje: artykuł bez zmian.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const MIN_SECTIONS = 4;
 
   let observer = null;
 
-  function reduced() { return !!(ELM.reducedMotion && ELM.reducedMotion()); }
+  function reduced() { return !!(LM.reducedMotion && LM.reducedMotion()); }
 
   function go(heading) {
     heading.scrollIntoView({ behavior: reduced() ? "auto" : "smooth", block: "start" });
@@ -83,5 +83,5 @@ window.ELM = window.ELM || {};
     return el("div", { class: "page-with-toc" }, [inline, body]);
   }
 
-  ELM.toc = { wrap: wrap, MIN_SECTIONS: MIN_SECTIONS };
-})(window.ELM);
+  LM.toc = { wrap: wrap, MIN_SECTIONS: MIN_SECTIONS };
+})(window.LM);

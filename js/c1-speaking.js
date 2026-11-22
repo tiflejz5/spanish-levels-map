@@ -7,17 +7,17 @@
  *         decyzja z timerem 60 s, pod spodem pytania Part 4 (timer 5 min).
  * „Nagraj się”: wspólny moduł js/recorder.js (do 3 prób, odtwarzanie i pobieranie tylko lokalnie — nic nie jest wysyłane).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   const ui = { part: "2", index: { "2": 0, "3": 0 } }; // wybór zapamiętany do końca wizyty
 
-  function c1() { return ELM.c1; }
+  function c1() { return LM.c1; }
 
   // =====================================================================
   // PART 2
@@ -75,12 +75,12 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   function render(view) {
-    if (!ELM.recorder) {
+    if (!LM.recorder) {
       view.appendChild(el("p", { class: "tool-note", role: "status", text: "Wczytuję trener…" }));
-      ELM.loadModule("js/recorder.js").then(function () { if (view.isConnected) c1().render(ELM.state.c1Route); }, function (err) { console.warn(err.message); });
+      LM.loadModule("js/recorder.js").then(function () { if (view.isConnected) c1().render(LM.state.c1Route); }, function (err) { console.warn(err.message); });
       return "Trening Speaking";
     }
-    const S = ELM.C1 && ELM.C1.trainers["trening-speaking"];
+    const S = LM.C1 && LM.C1.trainers["trening-speaking"];
     const found = c1().findTrainer("trening-speaking");
     if (!S || !found) { view.appendChild(c1().notFound("Brak danych trenera Speaking.")); return null; }
 
@@ -91,7 +91,7 @@ window.ELM = window.ELM || {};
     function go(part, idx) {
       ui.part = part;
       ui.index[part] = (idx + (part === "2" ? S.part2 : S.part3).length) % (part === "2" ? S.part2 : S.part3).length;
-      c1().render(ELM.state.c1Route);
+      c1().render(LM.state.c1Route);
     }
 
     view.appendChild(c1().crumb(found.section.label));
@@ -109,19 +109,19 @@ window.ELM = window.ELM || {};
         }, p[1]);
       })),
       el("div", { class: "c1-speak-nav" }, [
-        el("button", { type: "button", class: "icon-btn", "aria-label": "Poprzedni zestaw", "data-tooltip": "Poprzedni zestaw", onclick: function () { go(ui.part, index - 1); } }, ELM.icon("chevron-left", { size: 20 })),
+        el("button", { type: "button", class: "icon-btn", "aria-label": "Poprzedni zestaw", "data-tooltip": "Poprzedni zestaw", onclick: function () { go(ui.part, index - 1); } }, LM.icon("chevron-left", { size: 20 })),
         el("span", { class: "c1-speak-count", text: "Zestaw " + (index + 1) + " / " + list.length + (task.theme ? ": " + task.theme : "") }),
-        el("button", { type: "button", class: "icon-btn", "aria-label": "Następny zestaw", "data-tooltip": "Następny zestaw", onclick: function () { go(ui.part, index + 1); } }, ELM.icon("chevron-right", { size: 20 }))
+        el("button", { type: "button", class: "icon-btn", "aria-label": "Następny zestaw", "data-tooltip": "Następny zestaw", onclick: function () { go(ui.part, index + 1); } }, LM.icon("chevron-right", { size: 20 }))
       ])
     ]));
 
     view.appendChild(ui.part === "2" ? renderPart2(task, S.timers) : renderPart3(task, S.timers));
-    ELM.recorder.destroyAll();
-    view.appendChild(ELM.recorder.create({ exam: "certyfikat-c1", card: task.id + "-part" + ui.part }).node);
+    LM.recorder.destroyAll();
+    view.appendChild(LM.recorder.create({ exam: "certyfikat-c1", card: task.id + "-part" + ui.part }).node);
     const page = c1().findPage("speaking");
-    if (page) view.appendChild(el("p", { class: "c1-back" }, el("a", { href: c1().hrefPage("speaking") }, ["Zwroty i kryteria oceny: " + page.page.label, ELM.icon("chevron-right", { size: 16 })])));
+    if (page) view.appendChild(el("p", { class: "c1-back" }, el("a", { href: c1().hrefPage("speaking") }, ["Zwroty i kryteria oceny: " + page.page.label, LM.icon("chevron-right", { size: 16 })])));
     return "Trening Speaking";
   }
 
-  ELM.c1Speaking = { render: render };
-})(window.ELM);
+  LM.c1Speaking = { render: render };
+})(window.LM);

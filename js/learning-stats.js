@@ -1,17 +1,17 @@
 /*
  * learning-stats.js — czysta logika dziennika podejść, statystyk i automatycznych
- * powtórek (bez DOM i bez localStorage; testy w tools/testy.js).
+ * powtórek (bez DOM i bez localStorage; testy w tools/tests.js).
  * Specyfikacja: docs/rozbudowa-v2/spec/03-powtorki-i-statystyki.md.
  *
  * Rekord podejść profilu: { items: [podejście…], aggregates: { <itemId>: { n, ok, topic, type, level } } }
  * Podejście: { t, day, itemId, setId, topic, level, type, tags, correct, mode, answer }
  *
  * Dzień „dziś” i bieżący czas przekazujemy jako argumenty (łatwe testy):
- * ELM.learn.today() wywołuje tylko kod widoku.
+ * LM.learn.today() wywołuje tylko kod widoku.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const MAX_ATTEMPTS = 3000;
@@ -20,7 +20,7 @@ window.ELM = window.ELM || {};
   const UMIEM_THRESHOLD = 0.8;   // dwa ostatnie podejścia do zestawu ≥ 80%
   const UMIEM_SNOOZE_DAYS = 14;  // po „Nie teraz” nie pytamy przez 14 dni
 
-  function learn() { return ELM.learn; }
+  function learn() { return LM.learn; }
 
   // =====================================================================
   // BUFOR KOŁOWY I KOMPAKTOWANIE
@@ -207,7 +207,7 @@ window.ELM = window.ELM || {};
     return { action: "review", review: learn().reviewKnown(entry.review, today) };
   }
 
-  ELM.stats = {
+  LM.stats = {
     MAX_ATTEMPTS: MAX_ATTEMPTS,
     MIN_SAMPLE: MIN_SAMPLE,
     DAILY_AUTO_LIMIT: DAILY_AUTO_LIMIT,
@@ -227,4 +227,4 @@ window.ELM = window.ELM || {};
     planWrong: planWrong,
     planCorrect: planCorrect
   };
-})(window.ELM);
+})(window.LM);

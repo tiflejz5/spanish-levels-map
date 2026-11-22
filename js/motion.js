@@ -1,7 +1,7 @@
 /*
  * motion.js — animacje GSAP w jednym miejscu (DESIGN.md, sekcja 4).
  *
- *   ELM.motion.run(plugins, setup)
+ *   LM.motion.run(plugins, setup)
  *     Ładuje GSAP (i wtyczki) na żądanie, a potem wywołuje setup(gsap, reduce)
  *     wewnątrz gsap.matchMedia(): przy prefers-reduced-motion reduce = true
  *     i animacje ruchu trzeba pominąć. Poprzednia animacja jest sprzątana
@@ -9,11 +9,11 @@
  *     Gdy GSAP nie da się wczytać albo ruch jest ograniczony, setup dostaje
  *     gsap = null — widok ma wtedy od razu stan końcowy.
  *
- *   ELM.motion.countUp(gsap, el, to)  — liczba odliczana od zera (tabular-nums)
+ *   LM.motion.countUp(gsap, el, to)  — liczba odliczana od zera (tabular-nums)
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   let current = null;
@@ -27,8 +27,8 @@ window.ELM = window.ELM || {};
     cleanup();
     const token = {};
     current = token;
-    if (ELM.reducedMotion && ELM.reducedMotion()) { setup(null, true); return Promise.resolve(); }
-    return ELM.loadGsap(plugins).then(function (gsap) {
+    if (LM.reducedMotion && LM.reducedMotion()) { setup(null, true); return Promise.resolve(); }
+    return LM.loadGsap(plugins).then(function (gsap) {
       if (current !== token) return; // w międzyczasie zmieniła się strona
       const mm = gsap.matchMedia();
       token.mm = mm;
@@ -53,5 +53,5 @@ window.ELM = window.ELM || {};
     });
   }
 
-  ELM.motion = { run: run, cleanup: cleanup, countUp: countUp };
-})(window.ELM);
+  LM.motion = { run: run, cleanup: cleanup, countUp: countUp };
+})(window.LM);

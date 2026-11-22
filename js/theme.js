@@ -3,19 +3,19 @@
  *
  * Trzy ustawienia: „auto” (jak w systemie, prefers-color-scheme),
  * „light” i „dark”. Przycisk w prawym górnym rogu przełącza je po kolei.
- * Wybór zapisujemy w localStorage pod kluczem elm_theme_v1 — globalnie dla
+ * Wybór zapisujemy w localStorage pod kluczem slm.theme — globalnie dla
  * urządzenia (nie w profilu i nie w eksporcie danych).
  *
  * Atrybut data-theme na <html> ustawia już mały skrypt w <head>
  * (index.html), zanim strona się narysuje — dzięki temu nie ma błysku
  * złego motywu. Ten plik obsługuje przycisk i zmiany „na żywo”.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const KEY = "elm_theme_v1";
+  const KEY = LM.storage.key("theme"); // device-wide, not exported (registry in js/profile-data.js)
   const ORDER = ["auto", "light", "dark"];
   const NAMES = { auto: "Automatycznie (jak w systemie)", light: "Jasny", dark: "Ciemny" };
   const THEME_COLOR = { light: "#faf6ee", dark: "#0e1526" };
@@ -63,7 +63,7 @@ window.ELM = window.ELM || {};
   const ICON = { light: "sun", dark: "moon", auto: "sun-moon" };
 
   function icon(kind) {
-    return ELM.icon ? ELM.icon(ICON[kind], { size: 20 }) : document.createTextNode("");
+    return LM.icon ? LM.icon(ICON[kind], { size: 20 }) : document.createTextNode("");
   }
 
   function nextPref() {
@@ -103,8 +103,8 @@ window.ELM = window.ELM || {};
     apply(false);
   }
 
-  ELM.theme = { init: init, get: function () { return { pref: pref, resolved: resolved() }; } };
+  LM.theme = { init: init, get: function () { return { pref: pref, resolved: resolved() }; } };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
-})(window.ELM);
+})(window.LM);

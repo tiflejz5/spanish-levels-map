@@ -2,22 +2,22 @@
  * recorder.js — wspólne nagrywanie głosu w trenerach mówienia (paczka v6, spec 18, sekcja 2.1):
  * C1 (js/c1-speaking.js), B2, matura ustna i trening E8 (js/speaking-trainer.js).
  *
- *   ELM.recorder.create({ exam, card, hint? }) → { node, attach(timer), isRecording(), count(), destroy() }
+ *   LM.recorder.create({ exam, card, hint? }) → { node, attach(timer), isRecording(), count(), destroy() }
  *
  *   - przyciski Nagraj / Zatrzymaj, odtwarzacz każdej próby, Nagraj ponownie, Usuń próbę, Pobierz
  *     (nazwa mowienie-<egzamin>-<karta>-<RRRR-MM-DD>.webm / .m4a / .ogg zależnie od przeglądarki),
  *   - do 3 prób na kartę w bieżącej sesji; po zmianie widoku nagrania znikają (URL.revokeObjectURL),
- *   - „Nagrywaj razem z timerem”: start timera = start nagrania, koniec czasu = stop (timer: ELM.speakingTrainer.makeTimer),
+ *   - „Nagrywaj razem z timerem”: start timera = start nagrania, koniec czasu = stop (timer: LM.speakingTrainer.makeTimer),
  *   - brak mikrofonu, odmowa albo brak MediaRecorder: komunikat, trener działa dalej,
  *   - wskaźnik „Nagrywanie 0:23” (aria-live tylko przy starcie i końcu),
  *   - NIC nie trafia do localStorage ani do sieci.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const MAX = 3;
 
@@ -58,19 +58,19 @@ window.ELM = window.ELM || {};
       button.classList.toggle("is-recording", !!session);
       const full = attempts.length >= MAX;
       button.disabled = !session && full;
-      button.replaceChildren.apply(button, session ? ELM.ui.withIcon("square", "Zatrzymaj nagrywanie") : ELM.ui.withIcon("mic", attempts.length ? "Nagraj ponownie" : "Nagraj się"));
+      button.replaceChildren.apply(button, session ? LM.ui.withIcon("square", "Zatrzymaj nagrywanie") : LM.ui.withIcon("mic", attempts.length ? "Nagraj ponownie" : "Nagraj się"));
       if (!session && full) status.textContent = "Masz już " + MAX + " próby. Usuń jedną, żeby nagrać kolejną.";
     }
 
     function paintList() {
       list.replaceChildren.apply(list, attempts.map(function (a, i) {
-        const name = "mowienie-" + slug(opts.exam) + "-" + slug(opts.card) + "-" + ELM.learn.today() + (attempts.length > 1 || i > 0 ? "-proba" + (i + 1) : "") + "." + extOf(a.mime);
+        const name = "mowienie-" + slug(opts.exam) + "-" + slug(opts.card) + "-" + LM.learn.today() + (attempts.length > 1 || i > 0 ? "-proba" + (i + 1) : "") + "." + extOf(a.mime);
         return el("li", { class: "rec-item" }, [
           el("span", { class: "rec-item-label", text: "Próba " + (i + 1) }),
           el("audio", { controls: true, src: a.url, "aria-label": "Próba " + (i + 1) }),
           el("span", { class: "rec-item-actions" }, [
-            el("a", { class: "btn btn-secondary btn-small", href: a.url, download: name }, ELM.ui.withIcon("download", "Pobierz")),
-            el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": "Usuń próbę " + (i + 1), onclick: function () { remove(i); } }, ELM.ui.withIcon("trash", "Usuń"))
+            el("a", { class: "btn btn-secondary btn-small", href: a.url, download: name }, LM.ui.withIcon("download", "Pobierz")),
+            el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": "Usuń próbę " + (i + 1), onclick: function () { remove(i); } }, LM.ui.withIcon("trash", "Usuń"))
           ])
         ]);
       }));
@@ -161,7 +161,7 @@ window.ELM = window.ELM || {};
       if (i !== -1) live.splice(i, 1);
     }
 
-    /** Łączy z timerem (ELM.speakingTrainer.makeTimer): start timera włącza nagrywanie, koniec czasu je zatrzymuje. */
+    /** Łączy z timerem (LM.speakingTrainer.makeTimer): start timera włącza nagrywanie, koniec czasu je zatrzymuje. */
     function attach(t) {
       timer = t;
       linkRow.hidden = false;
@@ -177,5 +177,5 @@ window.ELM = window.ELM || {};
 
   window.addEventListener("hashchange", destroyAll);
 
-  ELM.recorder = { create: create, destroyAll: destroyAll, supported: supported, MAX: MAX };
-})(window.ELM);
+  LM.recorder = { create: create, destroyAll: destroyAll, supported: supported, MAX: MAX };
+})(window.LM);

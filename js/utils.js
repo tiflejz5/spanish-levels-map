@@ -6,9 +6,9 @@
  * na danych użytkownika, więc np. <script>alert(1)</script>
  * wyświetli się jako zwykły tekst.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   /**
@@ -122,7 +122,7 @@ window.ELM = window.ELM || {};
     window.scrollTo(0, y);
   }
 
-  ELM.utils = {
+  LM.utils = {
     getScroll: getScroll,
     setScroll: setScroll,
     el: el,
@@ -134,4 +134,4 @@ window.ELM = window.ELM || {};
     dateStamp: dateStamp,
     isPlainObject: isPlainObject
   };
-})(window.ELM);
+})(window.LM);
