@@ -1,12 +1,12 @@
 /*
  * trail-store.js — stan Szlaku w localStorage (spec v7 13, sekcja 3).
  *
- *   Klucz per profil: elm.<profileId>.szlak
+ *   Klucz per profil: slm.trail.<profileId>
  *   { version: 1, start: { level, source: "test"|"manual"|"default", at } | null,
  *     stops: { <idPrzystanku>: { done, via: "quiz"|"umiem"|"skip"|"set", best?, at } },
  *     reviews: { <idPowtórki>: { best, of, at } } }
  *
- * Nowy klucz: istniejące klucze (elm_profiles_v1, elm_leveltest_v1, elm.<id>.fiszki…) bez zmian. Eksport / import / reset
+ * Nowy klucz: istniejące klucze (slm.profiles, slm.placement, slm.cards.<id>…) bez zmian. Eksport / import / reset
  * i usuwanie profilu działają jak w js/cards-store.js (część „szlak” kopii; stary plik jej nie ma → dane zostają).
  * Walidacja: LM.trailLogic.sanitizeState. Bez profilu: stan tymczasowy, niezapisywany.
  */
@@ -15,13 +15,11 @@ window.LM = window.LM || {};
 (function (LM) {
   "use strict";
 
-  const PREFIX = "elm.";
-  const SUFFIX = ".szlak";
   const memory = {}; // { profileId: stan }
 
   function L() { return LM.trailLogic; }
   function app() { return LM.app; }
-  function keyOf(pid) { return PREFIX + pid + SUFFIX; }
+  function keyOf(pid) { return LM.storage.profileKey("trail", pid); } // slm.trail.<profileId> (registry in js/profile-data.js)
   function activeId() { const p = app() && app().getActiveProfile(); return p ? p.id : null; }
   function stamp() { return new Date().toISOString(); }
 
@@ -33,7 +31,7 @@ window.LM = window.LM || {};
     let data = null;
     if (raw) {
       try { data = L().sanitizeState(JSON.parse(raw)); } catch (e) {
-        try { window.localStorage.setItem(keyOf(pid) + "_corrupt_backup", raw); } catch (e2) { /* trudno */ }
+        try { window.localStorage.setItem(keyOf(pid) + ".corrupt", raw); } catch (e2) { /* trudno */ }
         data = null;
       }
     }
@@ -105,13 +103,7 @@ window.LM = window.LM || {};
   // ---------- profile, eksport, import, reset ----------
 
   function storedIds() {
-    const out = [];
-    try {
-      for (let i = 0; i < window.localStorage.length; i++) {
-        const k = window.localStorage.key(i);
-        if (k && k.indexOf(PREFIX) === 0 && k.slice(-SUFFIX.length) === SUFFIX) out.push(k.slice(PREFIX.length, -SUFFIX.length));
-      }
-    } catch (e) { /* brak dostępu */ }
+    const out = LM.storage.storedProfileIds("trail");
     Object.keys(memory).forEach(function (pid) { if (out.indexOf(pid) === -1) out.push(pid); });
     return out;
   }

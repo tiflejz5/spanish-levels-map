@@ -219,31 +219,7 @@ window.LM = window.LM || {};
   function active() { return !!(LM.app && LM.app.getActiveProfile() && F() && LM.profileData); }
   function now() { return Date.now(); }
 
-  let migratedFor = null; // profil, dla którego migrację już sprawdziliśmy w tej karcie
 
-  let repairedFor = null;
-
-  /**
-   * Migracja jednorazowa (settings.migratedJournal) i naprawa kart zbudowanych starym journalCard (settings.journalCardsV2);
-   * obie idempotentne. Zwraca liczbę dodanych i przebudowanych kart.
-   */
-  function ensureMigrated() {
-    if (!active()) return 0;
-    const pid = LM.app.getActiveProfile().id;
-    const st = F().st();
-    let changed = 0;
-    if (!st.settings.migratedJournal && migratedFor !== pid) {
-      migratedFor = pid;
-      changed += L().migrateJournal(st, LM.profileData.entries(), now());
-    } else if (st.settings.migratedJournal) migratedFor = pid;
-    if (!st.settings.journalCardsV2 && repairedFor !== pid) {
-      repairedFor = pid;
-      changed += L().repairJournalCards(st, LM.profileData.entries());
-      changed++; // zmieniony znacznik settings.journalCardsV2 trzeba zapisać
-    } else if (st.settings.journalCardsV2) repairedFor = pid;
-    if (changed) F().saveState();
-    return changed;
-  }
 
   function noVoice() { return !!(LM.exercises && LM.exercises.noEnglishVoice && LM.exercises.noEnglishVoice()); }
 
@@ -270,7 +246,6 @@ window.LM = window.LM || {};
 
   function breakdown() {
     if (!active()) return Object.assign({}, EMPTY);
-    ensureMigrated();
     return summaryFrom(ctxNow(), now());
   }
 
@@ -284,7 +259,6 @@ window.LM = window.LM || {};
   /** Pełna kolejka (talie wbudowane muszą być wczytane: LM.cards.internal.loadDecks()). */
   function queue(at) {
     if (!active()) return [];
-    ensureMigrated();
     return queueFrom(ctxNow(), at || now());
   }
 
@@ -319,7 +293,7 @@ window.LM = window.LM || {};
     EX_NEW_PER_DAY: EX_NEW_PER_DAY, MINUTES: MINUTES, exKey: exKey, isEx: isEx, kindOf: kindOf,
     weakTasks: weakTasks, interleave: interleave, queueFrom: queueFrom, summaryFrom: summaryFrom, upcomingFrom: upcomingFrom, upcoming: upcoming,
     estimateMinutes: estimateMinutes, redirectFor: redirectFor, dueCount: dueCount, freshCount: freshCount,
-    ensureMigrated: ensureMigrated, queue: queue, count: count, breakdown: breakdown, nextDue: nextDue,
-    ctx: ctxNow, resetMigrationMemo: function () { migratedFor = null; repairedFor = null; }
+    queue: queue, count: count, breakdown: breakdown, nextDue: nextDue,
+    ctx: ctxNow
   };
 })(window.LM);

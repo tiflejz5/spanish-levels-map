@@ -6,7 +6,7 @@
  *   #/notatki                                 „Moje notatki”: lista, szukanie, usuwanie
  *
  * Klucze stron: id punktu niezbędnika („a2-czasy-past-simple”), „c1:<strona>”,
- * „lab:<czas>”, „set:<zestaw>”. Dane: LM.profileData (elm_notes_v1, per profil):
+ * „lab:<czas>”, „set:<zestaw>”. Dane: LM.profileData (slm.notes, per profil):
  * zwykły tekst, maks. 10 000 znaków, pusta treść = usunięcie.
  * Zapis automatyczny po 500 ms bezczynności, przy zamknięciu panelu i przy zmianie strony.
  * Panel: z boku na szerokim ekranie, dolna szuflada na wąskim. Esc zamyka (z zapisem).

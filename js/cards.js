@@ -10,7 +10,7 @@
  *   #/powtorki/talie/import          import TSV/CSV z podglądem
  *
  * Dane: talie wbudowane (dane/fiszki/talie/<id>.js, ładowane na żądanie; indeks
- * LM.DECKS_INDEX), stan i własne karty w LM.cardsStore (elm.<profileId>.fiszki).
+ * LM.DECKS_INDEX), stan i własne karty w LM.cardsStore (slm.cards.<profileId>).
  * Logika bez DOM: LM.cardsLogic, LM.cardsSchedule. Treści użytkownika tylko jako
  * tekst (textContent / węzły tekstowe), bez innerHTML.
  */
@@ -864,7 +864,6 @@ window.LM = window.LM || {};
     view.replaceChildren();
     document.title = "Fiszki i błędy · English Levels Map";
     if (!hasProfile()) { session = null; noProfile(view); return; }
-    LM.reviewQueue.ensureMigrated();
     // Nowa sesja przy każdym wejściu z innej strony; przerysowanie tej samej sesji zostawia stan
     if (route.kind === "session" && lastRoute !== location.hash && session) session.stale = true;
     // Sesja należy do profilu — po zmianie profilu zaczynamy od nowa

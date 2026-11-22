@@ -2,10 +2,10 @@
  * app.js — start aplikacji, stan, zdarzenia i automatyczny zapis.
  *
  * LM.state przechowuje wszystko, co aplikacja wie w danej chwili:
- *   content  — treści (zapisywane w elm_content_v1)
- *   profiles — profile z osobnym postępem (zapisywane w elm_profiles_v1)
+ *   content  — treści (tylko w pamięci od etapu 1A; z sylabusa od etapu 1B)
+ *   profiles — profile z osobnym postępem (zapisywane w slm.profiles)
  *   progress — postęp AKTYWNEGO profilu (odnośnik do profiles…progress)
- *   ui       — wybrany poziom / kategoria (elm_ui_v1)
+ *   ui       — wybrany poziom / kategoria (slm.ui)
  *   view     — co jest wyświetlane: "home" (strona główna, adres #/),
  *              "level" (lista poziomu, #/a1) albo "page" (podstrona, #/a1/…)
  *   route    — otwarta podstrona niezbędnika ({ file }) albo null
@@ -63,30 +63,14 @@ window.LM = window.LM || {};
 
       const prof = LM.store.loadProfiles();
       state.profiles = prof.data;
-      syncProgress();
-      if (prof.status === "new") LM.store.saveProfiles(state.profiles);
-      if (prof.migrated && getActiveProfile()) {
-        addBanner("info", "Wprowadzono profile. Dotychczasowe zaznaczenia „Umiem” (" + prof.migrated + ") przypisano do profilu „" + getActiveProfile().name + "”.");
-      }
-      if (prof.status === "corrupt") {
-        addBanner("warning", "Zapisane profile były uszkodzone. Uszkodzony zapis odłożono w kopii awaryjnej; jeśli masz kopię, zaimportuj ją w menu „Dane”.");
-      }
-
       state.ui = LM.store.loadUI();
-
-      const loaded = LM.store.loadContent();
-      if (loaded.status === "corrupt") {
-        showCorruptScreen(loaded);
+      state.content = LM.store.loadContent().data; // built-in checklist, memory only (stage 1B: LM.SYLLABUS)
+      syncProgress();
+      if (prof.status === "corrupt") {
+        showCorruptScreen();
         return;
       }
-      state.content = loaded.data;
-      // Zapisany pusty szkielet (np. z wcześniejszej wizyty) zastępujemy bazową listą.
-      // Nie ma w nim żadnej treści, więc nic nie ginie.
-      if (loaded.status === "ok" && LM.BASE_CONTENT && LM.store.isContentEmpty(state.content)) {
-        state.content = LM.createDefaultData();
-        LM.store.saveContent(state.content);
-      }
-      if (loaded.status === "new") LM.store.saveContent(state.content);
+      if (prof.status === "new") LM.store.saveProfiles(state.profiles);
 
       fixUi();
       if (LM.celebrate) LM.celebrate.baseline();
@@ -391,14 +375,10 @@ window.LM = window.LM || {};
   // ZAPIS
   // =====================================================================
 
-  /** Natychmiastowy zapis treści. */
+  /** Content is never stored (it comes from code and data/); kept so pending-save hooks stay harmless. */
   function saveContentNow() {
     clearTimeout(saveTimer);
     saveTimer = null;
-    if (!state.content) return;
-    if (!state.storageOk) return; // komunikat o braku pamięci jest już na banerze
-    const res = LM.store.saveContent(state.content);
-    if (!res.ok) reportSaveError("Nie zapisano treści! " + res.error);
   }
 
   /** Zapisuje zaległe zmiany, jeśli czekają w kolejce. */
@@ -443,37 +423,18 @@ window.LM = window.LM || {};
   // PODMIANA DANYCH (import / reset)
   // =====================================================================
 
-  function replaceContent(data) {
-    clearTimeout(saveTimer);
-    saveTimer = null;
-    state.content = data;
-    fixUi();
-    saveContentNow();
-    saveUI();
-    renderAll({ resetScroll: true });
-  }
-
-  /** Zastępuje postęp AKTYWNEGO profilu. */
-  function replaceProgress(progress) {
-    const active = getActiveProfile();
-    if (!active) return;
-    active.progress = progress;
-    profilesChanged();
-  }
-
   /**
-   * Zastępuje wszystkie profile (import / reset). learning — zaimportowane
-   * dane nauki (dziennik, aktywność, test) albo null (stary plik bez nich); fiszki — zaimportowane
-   * fiszki ({ <profileId>: stan }) albo null. Dane nauki i fiszki profili, których już nie ma, są usuwane.
+   * Replaces the profile list (import / reset, through LM.storage in js/profile-data.js). Data of the other registry
+   * entries is replaced by their own handlers. opts.save === false: do not write the list back (reset removed the key).
    */
-  function replaceProfiles(profilesData, learning, fiszki, szlak) {
+  function replaceProfiles(profilesData, opts) {
     state.profiles = profilesData;
-    const ids = profilesData.profiles.map(function (p) { return p.id; });
-    if (LM.profileData) LM.profileData.applyImport(learning || null, ids);
-    if (LM.cardsStore) LM.cardsStore.applyImport(fiszki || null, ids);
-    if (LM.trailStore) LM.trailStore.applyImport(szlak || null, ids);
-    if (!fiszki && LM.cardsStore) LM.cardsStore.clearMigrationFlags(); // stary plik: Dziennik z pliku dostaje karty „Moje błędy”
-    if (LM.reviewQueue) LM.reviewQueue.resetMigrationMemo();
+    if (opts && opts.save === false) {
+      syncProgress();
+      if (LM.celebrate) LM.celebrate.baseline();
+      if (state.content) renderAll();
+      return;
+    }
     profilesChanged();
   }
 
@@ -565,54 +526,53 @@ window.LM = window.LM || {};
     document.getElementById("banners").appendChild(banner);
   }
 
-  /** Ekran, gdy zapisane treści są uszkodzone — zamiast białej strony. */
-  function showCorruptScreen(loaded) {
+  /**
+   * Screen shown when the saved profile list is damaged, instead of a blank page. The damaged text was copied to
+   * "<key>.corrupt" by LM.store.loadProfiles; nothing else has been changed yet.
+   */
+  function showCorruptScreen() {
     document.getElementById("level-list").replaceChildren();
-    document.getElementById("sidebar-category-name").textContent = "";
-
+    const key = LM.storage.key("profiles");
+    let raw = "";
+    try { raw = window.localStorage.getItem(key + ".corrupt") || ""; } catch (e) { raw = ""; }
     const view = document.getElementById("view");
     view.replaceChildren(el("div", { class: "error-screen" }, [
-      el("h1", { text: "Nie udało się wczytać zapisanych treści" }),
-      el("p", { text: "Dane zapisane w tej przeglądarce są uszkodzone lub mają nieznany format. Nic nie zostało jeszcze usunięte." }),
-      el("p", { text: "Najlepiej zaimportuj ostatnią kopię zapasową (plik english-levels-content-….json). Możesz też pobrać uszkodzone dane do pliku albo zacząć od nowa od listy bazowej." }),
-      el("div", { class: "error-details", text: "Szczegóły: " + loaded.error }),
+      el("h1", { text: "Your saved profiles could not be read" }),
+      el("p", { text: "The data saved in this browser is damaged or has an unknown format. Nothing has been deleted yet." }),
+      el("p", { text: "Import your latest backup (" + LM.APP.exportName + "-….json), download the damaged data, or start again without profiles." }),
       el("div", { class: "error-actions" }, [
-        el("button", {
-          type: "button",
-          class: "btn btn-primary",
-          onclick: function () {
-            LM.store.backupCorrupt(loaded.raw);
-            LM.dataMenu.importAll();
-          }
-        }, "Importuj kopię treści…"),
+        el("button", { type: "button", class: "btn btn-primary", onclick: function () { LM.dataMenu.importAll(); } }, "Import a backup…"),
         el("button", {
           type: "button",
           class: "btn btn-secondary",
           onclick: function () {
-            const blob = new Blob([loaded.raw], { type: "text/plain" });
+            const blob = new Blob([raw], { type: "text/plain" });
             const url = URL.createObjectURL(blob);
-            const a = el("a", { href: url, download: "english-levels-uszkodzone-" + U.dateStamp() + ".txt" });
+            const a = el("a", { href: url, download: LM.APP.exportName + "-damaged-" + U.dateStamp() + ".txt" });
             document.body.appendChild(a);
             a.click();
             a.remove();
             setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
           }
-        }, "Pobierz uszkodzone dane"),
+        }, "Download the damaged data"),
         el("button", {
           type: "button",
           class: "btn btn-danger",
           onclick: function () {
             LM.dialogs.confirm({
-              title: "Zacząć od listy bazowej?",
-              message: "Uszkodzone dane zostaną odłożone w kopii awaryjnej (klucz elm_content_corrupt_backup), a aplikacja wystartuje od listy bazowej. Postęp ucznia zostaje.",
-              confirmLabel: "Zacznij od nowa"
+              title: "Start without profiles?",
+              message: "The damaged data stays in a safety copy in this browser. The app starts with no profiles.",
+              confirmLabel: "Start again"
             }).then(function (ok) {
               if (!ok) return;
-              LM.store.backupCorrupt(loaded.raw);
-              replaceContent(LM.createDefaultData());
+              LM.store.saveProfiles(state.profiles);
+              fixUi();
+              applyRoute();
+              syncSection();
+              renderAll();
             });
           }
-        }, "Zacznij od listy bazowej")
+        }, "Start without profiles")
       ])
     ]));
   }
@@ -652,8 +612,6 @@ window.LM = window.LM || {};
     saveProgressNow: saveProgressNow,
     saveUI: saveUI,
     setProgress: setProgress,
-    replaceContent: replaceContent,
-    replaceProgress: replaceProgress,
     replaceProfiles: replaceProfiles,
     getActiveProfile: getActiveProfile,
     hasProfiles: hasProfiles,

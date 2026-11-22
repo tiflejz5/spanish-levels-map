@@ -12,9 +12,9 @@
  *   data()                  dane mowienie.json (albo null)
  *   section()               { label } sekcji trenerów z manifestu (albo null)
  *   crumb(label), notFound(msg)
- *   examId                  id egzaminu (historia sesji i widziane karty: LM.profileData, klucz elm_speaking_v1)
+ *   examId                  id egzaminu (historia sesji i widziane karty: LM.profileData, klucz slm.speaking)
  *
- * Wspólne: losowanie kart bez powtórek („Losuj”; widziane karty w elm_speaking_v1.seen, po wyczerpaniu puli nowy cykl),
+ * Wspólne: losowanie kart bez powtórek („Losuj”; widziane karty w slm.speaking.seen, po wyczerpaniu puli nowy cykl),
  * timery (start / pauza, pasek, ogłoszenia 30 s i 10 s dla czytników ekranu), „Egzaminator czyta” (syntezator en-GB, tempo 0,9),
  * nagrywanie z js/recorder.js (do 3 prób, tylko lokalnie), samoocena wg kryteriów (1–5) zapisywana jako historia sesji per profil,
  * tryb „Cały egzamin” (B2 i matura): wszystkie części po kolei z timerami, na końcu odsłuch nagrań i samoocena.
@@ -170,7 +170,7 @@ window.LM = window.LM || {};
       return (i + 1) + ". " + String(base).slice(0, 70);
     }
 
-    // ---------- losowanie bez powtórek (elm_speaking_v1.seen) ----------
+    // ---------- losowanie bez powtórek (slm.speaking.seen) ----------
 
     function seenKey(unit) { return cfg.examId + ":" + unit.key; }
     function seenList(unit) {

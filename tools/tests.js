@@ -756,18 +756,32 @@ legacyTest("pule testów końcowych: losowanie 20 z 30 – proporcje kategorii, 
   });
 });
 
-// ---------- Dane profilu: elm_leveltests_v1 (znaczki poziomów) ----------
+// ---------- Dane profilu: slm.finals (znaczki poziomów) ----------
 global.localStorage = { _d: {}, getItem: function (k) { return Object.prototype.hasOwnProperty.call(this._d, k) ? this._d[k] : null; }, setItem: function (k, v) { this._d[k] = String(v); }, removeItem: function (k) { delete this._d[k]; } };
 require(path.join(__dirname, "..", "js", "utils.js"));
+require(path.join(__dirname, "..", "js", "config.js"));
 let activeProfile = "p1";
 global.LM.app = { getActiveProfile: function () { return activeProfile ? { id: activeProfile } : null; }, reportSaveError: function () { throw new Error("błąd zapisu"); } };
 require(path.join(__dirname, "..", "js", "profile-data.js"));
 const PD = global.LM.profileData;
-function freshPD() { PD.clearAll(); activeProfile = "p1"; }
+// Learning data through the handlers of the storage key registry (LM.storage in js/profile-data.js), keyed by kind
+const LEARN = (function () {
+  const byKind = {};
+  global.LM.storage.REGISTRY.filter(function (e) { return e.scope === "profiles"; }).forEach(function (e) { byKind[e.kind] = e.handler(); });
+  const each = function (fn) { Object.keys(byKind).forEach(function (k) { fn(k, byKind[k]); }); };
+  return {
+    exportData: function () { const o = {}; each(function (k, h) { o[k] = h.exportData(); }); return o; },
+    parseImport: function (raw) { if (raw == null) return null; const o = {}; each(function (k, h) { o[k] = h.parseImport(raw[k]); }); return o; },
+    applyImport: function (parsed, ids) { each(function (k, h) { h.applyImport(parsed ? parsed[k] : null, ids); }); },
+    removeProfile: function (pid) { each(function (k, h) { h.removeProfile(pid); }); },
+    clearAll: function () { each(function (k, h) { h.clearAll(); }); }
+  };
+})();
+function freshPD() { LEARN.clearAll(); activeProfile = "p1"; }
 
-test("elm_leveltests_v1: klucz jest w KEYS obok istniejących, szybki test poziomu ma swój (elm_leveltest_v1)", function () {
-  assert.strictEqual(PD.KEYS.levelTests, "elm_leveltests_v1");
-  assert.strictEqual(PD.KEYS.levelTest, "elm_leveltest_v1");
+test("slm.finals: klucz jest w KEYS obok istniejących, szybki test poziomu ma swój (slm.placement)", function () {
+  assert.strictEqual(PD.KEYS.levelTests, "slm.finals");
+  assert.strictEqual(PD.KEYS.levelTest, "slm.placement");
 });
 test("saveFinalResult: pierwsze zaliczenie, najlepszy wynik wg procentu, znaczek zostaje po porażce", function () {
   freshPD();
@@ -784,7 +798,7 @@ test("saveFinalResult: pierwsze zaliczenie, najlepszy wynik wg procentu, znaczek
   assert.strictEqual(PD.saveFinalResult("Z9", { score: 1, total: 2, passed: true }), null);
   assert.strictEqual(PD.saveFinalResult("A2", { score: 5, total: 0, passed: true }), null);
 });
-test("elm_leveltests_v1: dane osobno dla profilu, bez profilu nic się nie zapisuje", function () {
+test("slm.finals: dane osobno dla profilu, bez profilu nic się nie zapisuje", function () {
   freshPD();
   PD.saveFinalResult("B1", { score: 20, total: 20, passed: true });
   activeProfile = "p2";
@@ -794,42 +808,42 @@ test("elm_leveltests_v1: dane osobno dla profilu, bez profilu nic się nie zapis
   assert.strictEqual(PD.saveFinalResult("B1", { score: 20, total: 20, passed: true }), null);
   assert.strictEqual(PD.finalResult("B1"), null);
 });
-test("elm_leveltests_v1: eksport zawiera klucz, import odtwarza dane, usunięcie profilu i reset je kasują", function () {
+test("slm.finals: eksport zawiera klucz, import odtwarza dane, usunięcie profilu i reset je kasują", function () {
   freshPD();
   PD.saveFinalResult("C1", { score: 18, total: 20, passed: true });
-  const exported = JSON.parse(JSON.stringify(PD.exportData()));
+  const exported = JSON.parse(JSON.stringify(LEARN.exportData()));
   assert.ok(exported.levelTests && exported.levelTests.profiles.p1.levels.C1.passedAt);
-  PD.clearAll();
+  LEARN.clearAll();
   assert.strictEqual(PD.finalResult("C1"), null);
-  assert.strictEqual(global.localStorage.getItem("elm_leveltests_v1"), null);
-  PD.applyImport(PD.parseImport(exported), ["p1"]);
+  assert.strictEqual(global.localStorage.getItem("slm.finals"), null);
+  LEARN.applyImport(LEARN.parseImport(exported), ["p1"]);
   assert.strictEqual(PD.finalResult("C1").best.score, 18);
-  assert.ok(global.localStorage.getItem("elm_leveltests_v1"));
-  PD.removeProfile("p1");
+  assert.ok(global.localStorage.getItem("slm.finals"));
+  LEARN.removeProfile("p1");
   assert.strictEqual(PD.finalResult("C1"), null);
-  assert.strictEqual(JSON.parse(global.localStorage.getItem("elm_leveltests_v1")).profiles.p1, undefined);
+  assert.strictEqual(JSON.parse(global.localStorage.getItem("slm.finals")).profiles.p1, undefined);
 });
-test("import starego pliku bez klucza elm_leveltests_v1: część pomijana, dane tej przeglądarki zostają", function () {
+test("import starego pliku bez klucza slm.finals: część pomijana, dane tej przeglądarki zostają", function () {
   freshPD();
   PD.saveFinalResult("A2", { score: 16, total: 20, passed: true });
-  const old = JSON.parse(JSON.stringify(PD.exportData()));
+  const old = JSON.parse(JSON.stringify(LEARN.exportData()));
   delete old.levelTests; // plik z wersji sprzed paczki v6
-  const parsed = PD.parseImport(old);
+  const parsed = LEARN.parseImport(old);
   assert.strictEqual(parsed.levelTests, null);
   assert.ok(parsed.journal && parsed.exercises);
-  PD.applyImport(parsed, ["p1"]);
+  LEARN.applyImport(parsed, ["p1"]);
   assert.strictEqual(PD.finalResult("A2").passedAt !== null, true);
   // profil, którego nie ma w pliku, jest usuwany także z nowego klucza
-  PD.applyImport(parsed, ["inny"]);
+  LEARN.applyImport(parsed, ["inny"]);
   assert.strictEqual(PD.finalResult("A2"), null);
   // całkiem stary plik bez części „learning”
-  assert.strictEqual(PD.parseImport(undefined), null);
+  assert.strictEqual(LEARN.parseImport(undefined), null);
 });
-test("import: uszkodzony albo zbyt nowy klucz elm_leveltests_v1 → błąd, śmieci w danych odfiltrowane", function () {
+test("import: uszkodzony albo zbyt nowy klucz slm.finals → błąd, śmieci w danych odfiltrowane", function () {
   freshPD();
-  assert.throws(function () { PD.parseImport({ levelTests: { version: 99, profiles: {} } }); }, /Nieobsługiwana wersja/);
-  assert.throws(function () { PD.parseImport({ levelTests: { version: 1 } }); }, /Nieprawidłowy format/);
-  const parsed = PD.parseImport({ levelTests: { version: 1, profiles: { p1: { levels: {
+  assert.throws(function () { LEARN.parseImport({ levelTests: { version: 99, profiles: {} } }); }, /Nieobsługiwana wersja/);
+  assert.throws(function () { LEARN.parseImport({ levelTests: { version: 1 } }); }, /Nieprawidłowy format/);
+  const parsed = LEARN.parseImport({ levelTests: { version: 1, profiles: { p1: { levels: {
     A1: { passedAt: "kiedyś", best: { score: 30, total: 20, date: "2026-01-01" }, last: { score: 15, total: 20, date: "2026-01-02" } }, // zły dzień, zły best
     A2: { passedAt: "2026-02-03", best: { score: 16, total: 20, date: "2026-02-03" } },                                               // brak last
     Z9: { passedAt: "2026-02-03", best: { score: 1, total: 2, date: "2026-02-03" } },                                                 // nieznany poziom
@@ -840,17 +854,17 @@ test("import: uszkodzony albo zbyt nowy klucz elm_leveltests_v1 → błąd, śmi
   assert.deepStrictEqual([lv.A1.passedAt, lv.A1.best.score, lv.A1.last.score], [null, 15, 15]);
   assert.deepStrictEqual([lv.A2.passedAt, lv.A2.last.score], ["2026-02-03", 16]);
 });
-test("elm_leveltests_v1: uszkodzony zapis w localStorage → pusty stan i kopia _corrupt_backup", function () {
+test("slm.finals: uszkodzony zapis w localStorage → pusty stan i kopia _corrupt_backup", function () {
   // Nowa instancja modułu (pamięć podręczna profileData jest wypełniona dopiero przy pierwszym odczycie)
   const file = path.join(__dirname, "..", "js", "profile-data.js");
   const keep = global.LM.profileData;
   delete require.cache[require.resolve(file)];
-  global.localStorage.setItem("elm_leveltests_v1", "{niepoprawny json");
+  global.localStorage.setItem("slm.finals", "{niepoprawny json");
   require(file);
   assert.deepStrictEqual(global.LM.profileData.passedLevels(), {});
-  assert.strictEqual(global.localStorage.getItem("elm_leveltests_v1_corrupt_backup"), "{niepoprawny json");
-  global.localStorage.removeItem("elm_leveltests_v1");
-  global.localStorage.removeItem("elm_leveltests_v1_corrupt_backup");
+  assert.strictEqual(global.localStorage.getItem("slm.finals.corrupt"), "{niepoprawny json");
+  global.localStorage.removeItem("slm.finals");
+  global.localStorage.removeItem("slm.finals.corrupt");
   global.LM.profileData = keep;
 });
 
@@ -1208,31 +1222,6 @@ test("sanitizeState: uszkodzone dane, nieznana wersja, zbyt długie pola, przyci
 });
 
 console.log("\nTalia Certyfikat C1: jednorazowe włączenie (paczka C1 v6, spec 12)");
-test("fiszki-store: istniejący profil dostaje talię certyfikat-c1 raz; wyłączona nie wraca; nowy profil bez włączania", function () {
-  if (!global.addEventListener) global.addEventListener = function () {};
-  const storePath = path.join(__dirname, "..", "js", "cards-store.js");
-  require(storePath);
-  const key = global.LM.cardsStore.keyOf("pc1");
-  const old = FL.sanitizeState({ version: 1, cards: { "kolokacje-001": { state: "review", ease: 2.5, interval: 5, due: 5, reps: 3 } }, settings: { enabledDecks: ["kolokacje"] } });
-  delete old.settings.c1DeckV6;
-  global.localStorage.setItem(key, JSON.stringify(old));
-  let st = global.LM.cardsStore.load("pc1");
-  assert.deepStrictEqual(st.settings.enabledDecks, ["kolokacje", "certyfikat-c1"]);
-  assert.strictEqual(st.settings.c1DeckV6, true);
-  assert.strictEqual(st.cards["kolokacje-001"].reps, 3); // stan nauki bez zmian
-  // użytkownik wyłącza talię i zapisuje; ponowne wczytanie z localStorage jej nie włącza
-  st.settings.enabledDecks.splice(st.settings.enabledDecks.indexOf("certyfikat-c1"), 1);
-  global.LM.cardsStore.save("pc1", true);
-  delete require.cache[require.resolve(storePath)];
-  require(storePath);
-  st = global.LM.cardsStore.load("pc1");
-  assert.deepStrictEqual(st.settings.enabledDecks, ["kolokacje"]);
-  // profil bez zapisu: domyślne talie, bez certyfikat-c1, ale ze znacznikiem
-  const fresh = global.LM.cardsStore.load("pnowy");
-  assert.ok(fresh.settings.enabledDecks.indexOf("certyfikat-c1") === -1);
-  assert.strictEqual(fresh.settings.c1DeckV6, true);
-  global.localStorage.removeItem(key);
-});
 
 console.log("\nSzlak: logika (spec v7 13)");
 {
@@ -1391,14 +1380,14 @@ console.log("\nSzlak: logika (spec v7 13)");
   });
 }
 
-console.log("\nSzlak: magazyn elm.<id>.szlak, eksport, import, reset (spec v7 13)");
+console.log("\nSzlak: magazyn slm.trail.<id>, eksport, import, reset (spec v7 13)");
 {
   require(path.join(__dirname, "..", "js", "trail-store.js"));
   const SS = global.LM.trailStore, SL = global.LM.trailLogic;
-  const key = function (pid) { return "elm." + pid + ".szlak"; };
+  const key = function (pid) { return "slm.trail." + pid; };
   const clean = function () { SS.clearAll(); ["pa", "pb"].forEach(function (p) { global.localStorage.removeItem(key(p)); }); };
 
-  test("trailStore: zapis pod kluczem elm.<id>.szlak z version, quiz zapamiętuje najlepszy wynik, pominięcie nie nadpisuje zdanego quizu", function () {
+  test("trailStore: zapis pod kluczem slm.trail.<id> z version, quiz zapamiętuje najlepszy wynik, pominięcie nie nadpisuje zdanego quizu", function () {
     clean();
     activeProfile = "pa";
     assert.strictEqual(SS.recordQuiz("a1-01", 2).done, false);
@@ -1462,16 +1451,16 @@ console.log("\nSzlak: magazyn elm.<id>.szlak, eksport, import, reset (spec v7 13
     global.localStorage.setItem(key("pb"), "{niepoprawny json");
     activeProfile = "pb";
     assert.deepStrictEqual(SS.data(), SL.emptyState());
-    assert.strictEqual(global.localStorage.getItem(key("pb") + "_corrupt_backup"), "{niepoprawny json");
-    global.localStorage.removeItem(key("pb") + "_corrupt_backup");
+    assert.strictEqual(global.localStorage.getItem(key("pb") + ".corrupt"), "{niepoprawny json");
+    global.localStorage.removeItem(key("pb") + ".corrupt");
     activeProfile = "p1";
     clean();
   });
 }
 
-console.log("\nUlubione zwroty: elm_phrases_v1 (paczka v6, spec 17)");
-test("elm_phrases_v1: klucz w KEYS, gwiazdka przełącza się per profil i zapisuje w localStorage", function () {
-  assert.strictEqual(PD.KEYS.phrases, "elm_phrases_v1");
+console.log("\nUlubione zwroty: slm.phrases (paczka v6, spec 17)");
+test("slm.phrases: klucz w KEYS, gwiazdka przełącza się per profil i zapisuje w localStorage", function () {
+  assert.strictEqual(PD.KEYS.phrases, "slm.phrases");
   freshPD();
   assert.deepStrictEqual(PD.starredPhrases(), []);
   assert.strictEqual(PD.togglePhraseStar("opinia-05"), true);
@@ -1480,41 +1469,41 @@ test("elm_phrases_v1: klucz w KEYS, gwiazdka przełącza się per profil i zapis
   assert.strictEqual(PD.togglePhraseStar("opinia-05"), false);
   assert.deepStrictEqual(PD.starredPhrases(), ["kontrargument-01"]);
   assert.strictEqual(PD.togglePhraseStar("Zły ID!"), false); // niepoprawne id jest odrzucane
-  assert.deepStrictEqual(JSON.parse(global.localStorage.getItem("elm_phrases_v1")).profiles.p1.starred, ["kontrargument-01"]);
+  assert.deepStrictEqual(JSON.parse(global.localStorage.getItem("slm.phrases")).profiles.p1.starred, ["kontrargument-01"]);
   activeProfile = "p2";
   assert.deepStrictEqual(PD.starredPhrases(), []); // inny profil ma własne ulubione
   activeProfile = "p1";
 });
-test("elm_phrases_v1: eksport, import (z filtrowaniem śmieci i duplikatów), usunięcie profilu i reset", function () {
+test("slm.phrases: eksport, import (z filtrowaniem śmieci i duplikatów), usunięcie profilu i reset", function () {
   freshPD();
   PD.togglePhraseStar("opinia-01");
-  const exp = JSON.parse(JSON.stringify(PD.exportData()));
+  const exp = JSON.parse(JSON.stringify(LEARN.exportData()));
   assert.deepStrictEqual(exp.phrases.profiles.p1.starred, ["opinia-01"]);
-  const parsed = PD.parseImport({ phrases: { version: 1, profiles: { p1: { starred: ["a-01", "a-01", "ŹLE", 5, "b-02"] } } } });
+  const parsed = LEARN.parseImport({ phrases: { version: 1, profiles: { p1: { starred: ["a-01", "a-01", "ŹLE", 5, "b-02"] } } } });
   assert.deepStrictEqual(parsed.phrases.profiles.p1.starred, ["a-01", "b-02"]);
-  assert.throws(function () { PD.parseImport({ phrases: { version: 99, profiles: {} } }); }, /Nieobsługiwana wersja/);
-  PD.applyImport(parsed, ["p1"]);
+  assert.throws(function () { LEARN.parseImport({ phrases: { version: 99, profiles: {} } }); }, /Nieobsługiwana wersja/);
+  LEARN.applyImport(parsed, ["p1"]);
   assert.deepStrictEqual(PD.starredPhrases(), ["a-01", "b-02"]);
   // stary plik bez klucza: dane tej przeglądarki zostają
-  const old = JSON.parse(JSON.stringify(PD.exportData()));
+  const old = JSON.parse(JSON.stringify(LEARN.exportData()));
   delete old.phrases;
-  PD.applyImport(PD.parseImport(old), ["p1"]);
+  LEARN.applyImport(LEARN.parseImport(old), ["p1"]);
   assert.deepStrictEqual(PD.starredPhrases(), ["a-01", "b-02"]);
-  PD.applyImport(PD.parseImport(old), ["inny"]);
+  LEARN.applyImport(LEARN.parseImport(old), ["inny"]);
   assert.deepStrictEqual(PD.starredPhrases(), []);
   PD.togglePhraseStar("c-03");
-  PD.clearAll();
+  LEARN.clearAll();
   assert.deepStrictEqual(PD.starredPhrases(), []);
-  assert.strictEqual(global.localStorage.getItem("elm_phrases_v1"), null);
+  assert.strictEqual(global.localStorage.getItem("slm.phrases"), null);
 });
 
-console.log("\nTrener mówienia: seen w elm_speaking_v1 (paczka v6, spec 18)");
-test("elm_speaking_v1: stary zapis bez seen działa, seen jest opcjonalne, tolerancyjne i w eksporcie/imporcie/resecie", function () {
+console.log("\nTrener mówienia: seen w slm.speaking (paczka v6, spec 18)");
+test("slm.speaking: stary zapis bez seen działa, seen jest opcjonalne, tolerancyjne i w eksporcie/imporcie/resecie", function () {
   freshPD();
   // stary zapis (tylko sessions) normalizuje się jak dawniej, bez pola seen
-  const old = PD.parseImport({ speaking: { version: 1, profiles: { p1: { sessions: [{ day: "2026-01-02", exam: "certyfikat-b2", part: 1, scores: { gv: 4 } }] } } } });
+  const old = LEARN.parseImport({ speaking: { version: 1, profiles: { p1: { sessions: [{ day: "2026-01-02", exam: "certyfikat-b2", part: 1, scores: { gv: 4 } }] } } } });
   assert.deepStrictEqual(old.speaking.profiles.p1, { sessions: [{ day: "2026-01-02", exam: "certyfikat-b2", part: 1, scores: { gv: 4 } }] });
-  PD.applyImport(old, ["p1"]);
+  LEARN.applyImport(old, ["p1"]);
   assert.deepStrictEqual(PD.speakingSeen("certyfikat-b2:1"), []);
   assert.strictEqual(PD.markSpeakingSeen("certyfikat-b2:1", "p1-dom"), true);
   assert.strictEqual(PD.markSpeakingSeen("certyfikat-b2:1", "p1-dom"), true); // bez duplikatów
@@ -1523,10 +1512,10 @@ test("elm_speaking_v1: stary zapis bez seen działa, seen jest opcjonalne, toler
   assert.strictEqual(PD.markSpeakingSeen("certyfikat-b2:1", "Zły ID"), false);
   assert.deepStrictEqual(PD.speakingSeen("certyfikat-b2:1"), ["p1-dom", "p1-praca"]);
   assert.strictEqual(PD.speakingSessions("certyfikat-b2").length, 1); // sesje nietknięte
-  const exp = JSON.parse(JSON.stringify(PD.exportData()));
+  const exp = JSON.parse(JSON.stringify(LEARN.exportData()));
   assert.deepStrictEqual(exp.speaking.profiles.p1.seen, { "certyfikat-b2:1": ["p1-dom", "p1-praca"] });
   // import odfiltrowuje śmieci
-  const parsed = PD.parseImport({ speaking: { version: 1, profiles: { p1: { sessions: [], seen: { "a:1": ["x-1", "x-1", "ŹLE", 5], "zły": ["x"], "b:2": "nie lista" } } } } });
+  const parsed = LEARN.parseImport({ speaking: { version: 1, profiles: { p1: { sessions: [], seen: { "a:1": ["x-1", "x-1", "ŹLE", 5], "zły": ["x"], "b:2": "nie lista" } } } } });
   assert.deepStrictEqual(parsed.speaking.profiles.p1.seen, { "a:1": ["x-1"] });
   // sesja trybu „Cały egzamin” zachowuje full
   const full = PD.addSpeakingSession({ exam: "matura-podstawowa", part: 1, scores: { komunikacja: 4 }, full: true });
@@ -1536,8 +1525,8 @@ test("elm_speaking_v1: stary zapis bez seen działa, seen jest opcjonalne, toler
   assert.strictEqual(PD.markSpeakingSeen("certyfikat-b2:1", null), true);
   assert.deepStrictEqual(PD.speakingSeen("certyfikat-b2:1"), []);
   PD.markSpeakingSeen("certyfikat-b2:2", "p2-x");
-  PD.clearAll();
-  assert.strictEqual(global.localStorage.getItem("elm_speaking_v1"), null);
+  LEARN.clearAll();
+  assert.strictEqual(global.localStorage.getItem("slm.speaking"), null);
 });
 
 console.log("\nEgzaminy z tagów karty (paczka v6, spec 15)");
@@ -1739,66 +1728,6 @@ console.log("\nPowtórki v8: migracja Dziennika błędów do kart „Moje błęd
   ];
   const fresh = function () { return FLg.sanitizeState(FLg.emptyState()); };
 
-  test("migracja: wpis bez karty dostaje kartę w talii „Moje błędy” (włączonej), znacznik migratedJournal", function () {
-    const st = fresh();
-    assert.strictEqual(FLg.migrateJournal(st, entries, NOW), 5);
-    assert.strictEqual(st.userCards.length, 5);
-    assert.ok(st.userDecks.some(function (d) { return d.id === "u-moje-bledy" && d.system === "mistakes"; }));
-    assert.ok(st.settings.enabledDecks.indexOf("u-moje-bledy") !== -1);
-    assert.strictEqual(st.settings.migratedJournal, true);
-    assert.strictEqual(st.userCards[0].type, "cloze");
-    assert.strictEqual(st.userCards[2].type, "basic");
-    assert.strictEqual(st.userCards[0].sourceItemId, "journal:err-s0");
-  });
-  test("migracja: etap 0/1/2 → interwał 1/3/7 dni, termin = review.due", function () {
-    const st = fresh();
-    FLg.migrateJournal(st, entries, NOW);
-    [["err-s0", 1, "2026-11-11"], ["err-s1", 3, "2026-11-12"], ["err-s2", 7, "2026-11-17"]].forEach(function (x) {
-      const c = st.cards[FLg.journalCardId({ id: x[0] })];
-      assert.strictEqual(c.state, "review");
-      assert.strictEqual(c.interval, x[1]);
-      assert.strictEqual(c.due, FLg.dayStart(x[2]));
-    });
-  });
-  test("migracja: opanowany → interwał 21 dni, termin nie wcześniej niż jutro (bez zalewu „dziś”)", function () {
-    const st = fresh();
-    FLg.migrateJournal(st, entries, NOW);
-    const c = st.cards[FLg.journalCardId({ id: "err-m" })];
-    assert.strictEqual(c.interval, 21);
-    assert.ok(c.due >= FLg.dayEnd(NOW));
-  });
-  test("migracja: zaległy wpis zostaje zaległy (termin w przeszłości)", function () {
-    const st = fresh();
-    FLg.migrateJournal(st, entries, NOW);
-    const c = st.cards[FLg.journalCardId({ id: "err-late" })];
-    assert.strictEqual(c.due, FLg.dayStart("2026-11-05"));
-    assert.ok(c.due < NOW);
-  });
-  test("migracja: druga migracja nic nie zmienia", function () {
-    const st = fresh();
-    FLg.migrateJournal(st, entries, NOW);
-    const before = JSON.stringify(st);
-    assert.strictEqual(FLg.migrateJournal(st, entries, NOW + 3600000), 0);
-    assert.strictEqual(JSON.stringify(st), before);
-  });
-  test("migracja: wpis z kartą dodaną wcześniej ręcznie (sourceItemId) nie dostaje drugiej", function () {
-    const st = fresh();
-    FLg.ensureMistakesDeck(st);
-    st.userCards.push({ id: "u-stara", deck: "u-moje-bledy", type: "basic", front: "a", back: "b", tags: [], sourceItemId: "journal:err-s0" });
-    assert.strictEqual(FLg.migrateJournal(st, entries, NOW), 4);
-    assert.strictEqual(st.userCards.length, 5);
-  });
-  test("stan po migracji przechodzi sanitizeState bez zmian (eksport → import), z kluczem ex: i exNew", function () {
-    const st = fresh();
-    FLg.migrateJournal(st, entries, NOW);
-    st.cards["ex:a1-czasy-present-simple-1-3"] = FLg.journalCardState({ stage: 1, due: "2026-11-12" }, NOW);
-    st.daily["2026-11-10"] = { new: 1, reviews: 0, again: 0, good: 0, answers: 1, minutes: 0, exNew: 1 };
-    const round = FLg.sanitizeState(JSON.parse(JSON.stringify(st)));
-    assert.deepStrictEqual(round, st);
-    assert.ok(round.cards["ex:a1-czasy-present-simple-1-3"]);
-    assert.strictEqual(round.settings.migratedJournal, true);
-    assert.strictEqual(round.daily["2026-11-10"].exNew, 1);
-  });
   test("sanitizeState: zły klucz ex: jest odrzucany", function () {
     const st = fresh();
     st.cards["ex:../zly"] = FLg.newJournalState(NOW);
@@ -2206,48 +2135,6 @@ require(path.join(__dirname, "..", "js", "mistake-task.js"));
     assert.strictEqual(c.note, "reguła");
   });
 
-  test("naprawa kart (journalCardsV2): stara karta z wpisu odzyskuje podpowiedź, stan powtórek bez zmian, druga naprawa nic nie zmienia", function () {
-    const st = FLg.sanitizeState(FLg.emptyState());
-    const entries = [wf, abcd, tr, bracket, manual];
-    // stare karty: dokładnie to, co robił stary journalCard
-    FLg.ensureMistakesDeck(st);
-    entries.forEach(function (e) {
-      const legacy = FLg.journalCardLegacy(e);
-      st.userCards.push(Object.assign({ id: FLg.journalCardId(e), deck: "u-moje-bledy", createdAt: "2026-11-01T12:00:00.000Z", sourceItemId: FLg.journalSource(e) }, legacy));
-      st.cards[FLg.journalCardId(e)] = FLg.journalCardState(e.review, NOW);
-    });
-    const before = JSON.parse(JSON.stringify(st.cards));
-    assert.ok(!/Słowo bazowe/.test(st.userCards[0].text), "stara karta bez podpowiedzi");
-    assert.strictEqual(FLg.repairJournalCards(st, entries), 3, "przebudowane: słowotwórstwo, wybór A–D, transformacja (nawias i wpis ręczny były kompletne)");
-    assert.ok(/Słowo bazowe: REDUCE/.test(st.userCards[0].text));
-    assert.ok(/A – make, B – take/.test(st.userCards[1].text));
-    assert.ok(/WISH/.test(st.userCards[2].text));
-    assert.ok(/Podpowiedź: ago/.test(st.userCards[4].front));
-    assert.deepStrictEqual(st.cards, before, "stan powtórek (interwał, termin) bez zmian");
-    assert.strictEqual(st.settings.journalCardsV2, true);
-    const snap = JSON.stringify(st);
-    assert.strictEqual(FLg.repairJournalCards(st, entries), 0);
-    assert.strictEqual(JSON.stringify(st), snap, "druga naprawa nic nie zmienia");
-    // eksport → import zachowuje znacznik i karty
-    const round = FLg.sanitizeState(JSON.parse(JSON.stringify(st)));
-    assert.strictEqual(round.settings.journalCardsV2, true);
-    assert.deepStrictEqual(round.userCards.map(function (c) { return c.text || c.front; }), st.userCards.map(function (c) { return c.text || c.front; }));
-  });
-  test("naprawa kart: karta edytowana ręcznie przez użytkownika zostaje nietknięta", function () {
-    const st = FLg.sanitizeState(FLg.emptyState());
-    FLg.ensureMistakesDeck(st);
-    const legacy = FLg.journalCardLegacy(wf);
-    st.userCards.push(Object.assign({ id: FLg.journalCardId(wf), deck: "u-moje-bledy", sourceItemId: FLg.journalSource(wf) }, legacy, { note: "moja notatka" }));
-    assert.strictEqual(FLg.repairJournalCards(st, [wf]), 0);
-    assert.strictEqual(st.userCards[0].note, "moja notatka");
-    assert.ok(!/Słowo bazowe/.test(st.userCards[0].text));
-  });
-  test("nowa migracja i nowy wpis budują karty w nowym formacie", function () {
-    const st = FLg.sanitizeState(FLg.emptyState());
-    FLg.migrateJournal(st, [wf, manual], NOW);
-    assert.ok(/Słowo bazowe: REDUCE/.test(st.userCards[0].text));
-    assert.strictEqual(FLg.repairJournalCards(st, [wf, manual]), 0, "nowe karty nie wymagają naprawy");
-  });
 
   test("mistakeTask.parseRef / viewFor: wpis z ref do zadania → widok zadania, bez ref albo nieznany ref → karta", function () {
     assert.deepStrictEqual(MT.parseRef("ex:a1-czasy-present-simple-1-05"), { kind: "ex", itemId: "a1-czasy-present-simple-1-05" });
@@ -2379,6 +2266,155 @@ console.log("\nFiszki: harmonogram i zapis (poprawka fix/fiszki-harmonogram)");
     assert.strictEqual(q.fresh.length, 5, "tylko nowe: 5 dodatkowych");
     assert.ok(q.fresh.every(function (id) { return !state[id]; }));
     assert.strictEqual(JSON.stringify(state), before, "buildQueue niczego nie zmienia");
+  });
+})();
+
+// ---------- Storage key registry (spec 02 §5): every key under slm., export / import / reset / delete driven by it ----------
+console.log("\nStorage key registry: slm. keys, backup file, reset, profile deletion (spec 02 §5)");
+(function () {
+  const fsR = require("fs");
+  global.addEventListener = global.addEventListener || function () {};
+  global.LM.state = global.LM.state || {};
+  require(path.join(__dirname, "..", "js", "store.js"));
+  require(path.join(__dirname, "..", "js", "cards-store.js"));
+  if (!global.LM.trailStore) require(path.join(__dirname, "..", "js", "trail-store.js"));
+  const ST = global.LM.storage;
+  const app = global.LM.app;
+  app.replaceProfiles = function (data, opts) {
+    global.LM.state.profiles = data;
+    if (!(opts && opts.save === false)) global.LM.store.saveProfiles(data);
+  };
+  const ls = global.localStorage;
+  const keys = function () { return Object.keys(ls._d); };
+  /** Does the registry cover this localStorage key (key, per-profile prefix, or its ".corrupt" copy)? */
+  function covered(k) {
+    const base = k.replace(/\.corrupt$/, "");
+    return ST.REGISTRY.some(function (e) { return e.key === base || (e.prefix && base.indexOf(e.prefix) === 0); });
+  }
+  /** A backup with data for profiles p1 and p2 in every exported entry. */
+  function sampleBackup() {
+    const data = {};
+    ST.REGISTRY.forEach(function (e) {
+      if (e.scope === "app") data[e.id] = { version: 1, activeId: "p1", profiles: [{ id: "p1", name: "Ana", progress: { "a1-verbs-gustar": true } }, { id: "p2", name: "Leo", progress: {} }] };
+      if (e.scope === "profiles") data[e.id] = { version: 1, profiles: { p1: {}, p2: {} } };
+      if (e.id === "cards") data[e.id] = { p1: global.LM.cardsLogic.emptyState(), p2: global.LM.cardsLogic.emptyState() };
+      if (e.id === "trail") data[e.id] = { p1: global.LM.trailLogic.emptyState(), p2: global.LM.trailLogic.emptyState() };
+    });
+    return { app: global.LM.APP.exportName, kind: "backup", version: 1, exportedAt: "2026-11-22T10:00:00.000Z", data: data };
+  }
+  function hasProfile(entryId, exportedPart, pid) {
+    const e = ST.REGISTRY.find(function (x) { return x.id === entryId; });
+    if (e.scope === "app") return exportedPart.profiles.some(function (p) { return p.id === pid; });
+    if (e.scope === "profiles") return Object.prototype.hasOwnProperty.call(exportedPart.profiles, pid);
+    return Object.prototype.hasOwnProperty.call(exportedPart, pid);
+  }
+
+  test("registry: every key is the prefix slm. + id, ids are unique, keys from LM.APP.storagePrefix", function () {
+    assert.strictEqual(global.LM.APP.storagePrefix, "slm.");
+    const ids = ST.REGISTRY.map(function (e) { return e.id; });
+    assert.strictEqual(new Set(ids).size, ids.length);
+    ST.REGISTRY.forEach(function (e) {
+      if (e.scope === "profile") assert.strictEqual(e.prefix, "slm." + e.id + ".");
+      else assert.strictEqual(e.key, "slm." + e.id);
+    });
+    // The keys spec 02 §5 lists, all present
+    ["theme", "sidebar", "profiles", "ui", "celebrated", "journal", "activity", "placement", "finals", "speaking", "phrases", "exercises",
+      "attempts", "autojournal", "prefs", "notes", "exams", "cards", "trail", "search-recent"].forEach(function (id) {
+      assert.ok(ids.indexOf(id) !== -1, "missing registry entry " + id);
+    });
+  });
+
+  test("registry: every exported entry has export, import, reset and (per profile) delete handlers", function () {
+    ST.REGISTRY.forEach(function (e) {
+      if (e.scope === "device") { assert.strictEqual(e.handler, undefined, e.id + ": device keys are not exported"); return; }
+      const h = e.handler();
+      assert.ok(h, e.id + ": no handler");
+      ["exportData", "parseImport", "applyImport", "clearAll"].forEach(function (fn) { assert.strictEqual(typeof h[fn], "function", e.id + "." + fn); });
+      if (e.scope !== "app") assert.strictEqual(typeof h.removeProfile, "function", e.id + ".removeProfile");
+    });
+  });
+
+  test("backup: export → import round trip covers every per-profile entry; the file name and envelope follow spec 02 §5", function () {
+    ST.resetAll();
+    ST.applyBackup(ST.parseBackup(sampleBackup()));
+    const file = ST.exportBackup();
+    assert.deepStrictEqual([file.app, file.kind, file.version], ["spanish-levels-map", "backup", 1]);
+    assert.ok(/^spanish-levels-map-\d{4}-\d{2}-\d{2}\.json$/.test(ST.backupFileName()));
+    ST.REGISTRY.forEach(function (e) {
+      if (e.scope === "device") { assert.ok(!(e.id in file.data), e.id + " must not be exported"); return; }
+      assert.ok(file.data[e.id], "export lacks " + e.id);
+      assert.ok(hasProfile(e.id, file.data[e.id], "p1") && hasProfile(e.id, file.data[e.id], "p2"), e.id + ": both profiles exported");
+    });
+    ST.resetAll();
+    ST.applyBackup(ST.parseBackup(JSON.parse(JSON.stringify(file))));
+    const again = ST.exportBackup();
+    ST.REGISTRY.forEach(function (e) {
+      if (e.scope !== "device") assert.ok(hasProfile(e.id, again.data[e.id], "p1"), e.id + ": restored by import");
+    });
+  });
+
+  test("backup: a file of another app, an old-format file or a newer version is refused with a clear message", function () {
+    const other = sampleBackup(); other.app = "english-levels-map";
+    assert.throws(function () { ST.parseBackup(other); }, /not a Spanish Levels Map backup \(it comes from "english-levels-map"\)/);
+    assert.throws(function () { ST.parseBackup({ app: "spanish-levels-map", kind: "progress", data: {} }); }, /incomplete/);
+    const newer = sampleBackup(); newer.version = 2;
+    assert.throws(function () { ST.parseBackup(newer); }, /newer version/);
+    const noProfiles = sampleBackup(); delete noProfiles.data.profiles;
+    assert.throws(function () { ST.parseBackup(noProfiles); }, /no profile list/);
+    assert.throws(function () { ST.parseBackup("x"); }, /does not contain data/);
+  });
+
+  test("delete profile: removes the profile's data from every per-profile entry, the other profile keeps its data", function () {
+    ST.resetAll();
+    ST.applyBackup(ST.parseBackup(sampleBackup()));
+    ST.deleteProfile("p1");
+    const file = ST.exportBackup();
+    ST.REGISTRY.forEach(function (e) {
+      if (e.scope === "device" || e.scope === "app") return;
+      assert.ok(!hasProfile(e.id, file.data[e.id], "p1"), e.id + ": p1 data left after delete");
+      assert.ok(hasProfile(e.id, file.data[e.id], "p2"), e.id + ": p2 data lost");
+    });
+    assert.strictEqual(ls.getItem("slm.cards.p1"), null);
+    assert.strictEqual(ls.getItem("slm.trail.p1"), null);
+  });
+
+  test("reset: removes every slm. key except the device's theme and sidebar", function () {
+    ST.resetAll();
+    ST.applyBackup(ST.parseBackup(sampleBackup()));
+    ls.setItem("slm.theme", "dark");
+    ls.setItem("slm.sidebar", JSON.stringify({ version: 1, pinned: true }));
+    ls.setItem("slm.ui", JSON.stringify({ levelId: "A1" }));
+    ls.setItem("slm.search-recent", JSON.stringify({ version: 1, items: ["ser"] }));
+    ls.setItem("slm.journal.corrupt", "{broken");
+    assert.ok(keys().length > 10);
+    ST.resetAll();
+    assert.deepStrictEqual(keys().filter(function (k) { return k.indexOf("slm.") === 0; }).sort(), ["slm.sidebar", "slm.theme"]);
+    ls.removeItem("slm.theme"); ls.removeItem("slm.sidebar");
+  });
+
+  test("keys in use: every key written during these tests is under slm. and covered by the registry; no elm_ keys", function () {
+    ST.applyBackup(ST.parseBackup(sampleBackup()));
+    keys().forEach(function (k) {
+      assert.ok(k.indexOf("slm.") === 0, "key outside the prefix: " + k);
+      assert.ok(covered(k), "key not in the registry: " + k);
+    });
+    ST.resetAll();
+  });
+
+  test("keys in code: no hard-coded storage key outside the registry (js/, index.html)", function () {
+    const root = path.join(__dirname, "..");
+    const files = fsR.readdirSync(path.join(root, "js")).filter(function (f) { return /\.js$/.test(f); }).map(function (f) { return path.join("js", f); }).concat(["index.html"]);
+    files.forEach(function (rel) {
+      const src = fsR.readFileSync(path.join(root, rel), "utf8");
+      const old = src.match(/["'`]elm[_.][\w.]*["'`]/g);
+      assert.strictEqual(old, null, rel + ": legacy key " + (old || []).join(", "));
+      (src.match(/["'`]slm\.[\w.-]*["'`]/g) || []).forEach(function (lit) {
+        const k = lit.slice(1, -1);
+        if (rel === path.join("js", "config.js") && k === "slm.") return; // the prefix itself
+        if (rel === path.join("js", "profile-data.js") && k === "slm.") return; // fallback prefix
+        assert.ok(covered(k), rel + ": key literal " + k + " is not a registry key");
+      });
+    });
   });
 })();
 

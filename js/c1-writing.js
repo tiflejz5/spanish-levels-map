@@ -8,7 +8,7 @@
  *   automatyczny zapis szkicu, a po „Skończyłem” checklista egzaminatora.
  *
  * Silnik trenera jest wspólny z innymi egzaminami: js/writing-trainer.js.
- * Ten plik to konfiguracja C1 (zachowanie i dane bez zmian: szkice w elm_c1_v1).
+ * Ten plik to konfiguracja C1 (zachowanie i dane bez zmian: szkice w (C1, etap 1A: tylko pamięć)).
  */
 window.LM = window.LM || {};
 

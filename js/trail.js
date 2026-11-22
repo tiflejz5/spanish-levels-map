@@ -5,7 +5,7 @@
  *   #/szlak              widok szlaku (bieżący przystanek przewinięty do widoku)
  *   #/szlak/<idPrzystanku>   jak wyżej, z otwartym arkuszem przystanku (linki z „Dziś”; adres wraca do #/szlak)
  *
- * Czysta logika: js/trail-logic.js. Stan: js/trail-store.js (elm.<profil>.szlak). Dane: szlak/szlak-dane.js (LM.TRAIL,
+ * Czysta logika: js/trail-logic.js. Stan: js/trail-store.js (slm.trail.<profil>). Dane: szlak/szlak-dane.js (LM.TRAIL,
  * ładowane przy starcie) i szlak/quizy-<poziom>.js (LM.QUIZZES, na żądanie).
  * Dostępność: lista przystanków to <ol> z przyciskami, stan zapisany tekstem („zaliczony”, „bieżący”, „pominięty”).
  */

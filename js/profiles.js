@@ -443,9 +443,7 @@ window.LM = window.LM || {};
     }).then(function (ok) {
       if (ok) {
         list.splice(index, 1);
-        if (LM.profileData) LM.profileData.removeProfile(profileId);
-        if (LM.cardsStore) LM.cardsStore.removeProfile(profileId);
-        if (LM.trailStore) LM.trailStore.removeProfile(profileId);
+        LM.storage.deleteProfile(profileId); // every per-profile key of the registry (js/profile-data.js)
         if (data().activeId === profileId) {
           // Po usunięciu ostatniego profilu: brak aktywnego → ekran powitalny
           data().activeId = list.length ? list[Math.min(index, list.length - 1)].id : null;

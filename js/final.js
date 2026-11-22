@@ -6,7 +6,7 @@
  *
  * Pula 30 zadań poziomu: niezbednik/testy-poziomow/<poziom>.json → <poziom>.js (tools/zbuduj-testy-koncowe.js),
  * ładowana na żądanie. Losowanie 20 zadań z proporcjonalną reprezentacją kategorii i próg w punktach:
- * js/final-logic.js. Wynik i znaczek poziomu: LM.profileData (elm_leveltests_v1).
+ * js/final-logic.js. Wynik i znaczek poziomu: LM.profileData (slm.finals).
  *
  * Tu też: znaczek „poziom zaliczony” (Szlak, panel, nagłówek poziomu), karta „Test końcowy” na stronie poziomu
  * i podpowiedź na stronie „Dziś” (≥ 70% „Umiem” na poziomie).
@@ -169,7 +169,7 @@ window.LM = window.LM || {};
   // ZAKOŃCZENIE I WYNIK
   // =====================================================================
 
-  /** Zapisuje wynik (elm_leveltests_v1) i liczy podział na kategorie. Zwraca run.final. */
+  /** Zapisuje wynik (slm.finals) i liczy podział na kategorie. Zwraca run.final. */
   function finish(level, set, run, s) {
     const percent = set.passPercent || PASS;
     const passed = F().isPassed(s.score, s.total, percent);

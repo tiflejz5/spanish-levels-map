@@ -3,7 +3,7 @@
  *
  * Trzy ustawienia: „auto” (jak w systemie, prefers-color-scheme),
  * „light” i „dark”. Przycisk w prawym górnym rogu przełącza je po kolei.
- * Wybór zapisujemy w localStorage pod kluczem elm_theme_v1 — globalnie dla
+ * Wybór zapisujemy w localStorage pod kluczem slm.theme — globalnie dla
  * urządzenia (nie w profilu i nie w eksporcie danych).
  *
  * Atrybut data-theme na <html> ustawia już mały skrypt w <head>
@@ -15,7 +15,7 @@ window.LM = window.LM || {};
 (function (LM) {
   "use strict";
 
-  const KEY = "elm_theme_v1";
+  const KEY = LM.storage.key("theme"); // device-wide, not exported (registry in js/profile-data.js)
   const ORDER = ["auto", "light", "dark"];
   const NAMES = { auto: "Automatycznie (jak w systemie)", light: "Jasny", dark: "Ciemny" };
   const THEME_COLOR = { light: "#faf6ee", dark: "#0e1526" };

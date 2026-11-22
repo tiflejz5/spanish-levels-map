@@ -16,7 +16,7 @@
  *   cwiczenia/tematy/<id>.js      → LM.EX_SETS[<id>]
  * Pliki generuje: node tools/zbuduj-cwiczenia.js (część npm run build).
  *
- * Wyniki: LM.profileData (klucz elm_exercises_v1, osobno dla profilu).
+ * Wyniki: LM.profileData (klucz slm.exercises, osobno dla profilu).
  * Logika bez DOM (ocena, tasowanie, losowanie mixów): js/exercise-logic.js.
  * Odpowiedzi wpisane przez użytkownika trafiają do strony wyłącznie jako tekst.
  */
@@ -246,7 +246,7 @@ window.LM = window.LM || {};
   /** Tryb w dzienniku podejść: learn / exam (zestaw), mix (mieszany), weak (słabe punkty). */
   function attemptMode() { return run.isWeak ? "weak" : run.isMix ? "mix" : run.mode; }
 
-  /** Każda odpowiedź trafia do dziennika podejść (elm_attempts_v1), także gdy sesja zostanie przerwana. */
+  /** Każda odpowiedź trafia do dziennika podejść (slm.attempts), także gdy sesja zostanie przerwana. */
   function logAttempt(p) {
     pd().addAttempt({
       itemId: p.item.id, setId: p.item.setId || null, topic: p.item.topic, level: p.item.level,
@@ -361,7 +361,7 @@ window.LM = window.LM || {};
     const s = X().sessionScore(run.items);
     run.score = s.score;
     run.total = s.total;
-    if (run.hooks && run.hooks.finish) run.final = run.hooks.finish(run, s); // test końcowy: własny zapis (elm_leveltests_v1)
+    if (run.hooks && run.hooks.finish) run.final = run.hooks.finish(run, s); // test końcowy: własny zapis (slm.finals)
     else if (!run.retry && run.saveId) run.saved = pd().saveSetScore(run.saveId, s.score, s.total);
     run.suggest = umiemSuggestion();
     if (run.isMix) pd().setLastMix(run.items.map(function (p) { return p.item.id; }));
@@ -1576,8 +1576,8 @@ window.LM = window.LM || {};
 
   /**
    * Test końcowy poziomu: sesja w trybie Egzamin pod adresem #/<poziom>/test. cfg: { level, title, items, hooks, back }
-   * hooks: finish(run, { score, total }) → wynik zapisany w elm_leveltests_v1, renderDone(view, run, api),
-   * afterFinish(run). Bez „Powtórz tylko błędne” i bez wyniku zestawu w elm_exercises_v1.
+   * hooks: finish(run, { score, total }) → wynik zapisany w slm.finals, renderDone(view, run, api),
+   * afterFinish(run). Bez „Powtórz tylko błędne” i bez wyniku zestawu w slm.exercises.
    */
   function startFinal(cfg) {
     newRun({ key: "final:" + cfg.level, title: cfg.title, items: cfg.items, mode: "exam", hooks: cfg.hooks, back: cfg.back });

@@ -1,7 +1,7 @@
 /*
  * mistakes.js — zakładka „Moje błędy” (#/powtorki/moje-bledy); sesja powtórek jest wspólna (#/powtorki/sesja, js/cards.js).
  *
- * Dane: LM.profileData (klucz elm_journal_v1, osobno dla każdego profilu).
+ * Dane: LM.profileData (klucz slm.journal, osobno dla każdego profilu).
  * Harmonogram: schedule() z js/cards-schedule.js — każdy wpis ma kartę w talii „Moje błędy” (paczka v8).
  * Treść wpisana przez użytkownika trafia do strony wyłącznie jako tekst.
  */

@@ -178,7 +178,6 @@ window.LM = window.LM || {};
       ]));
       return;
     }
-    LM.reviewQueue.ensureMigrated();
     view.appendChild(header("dzis", "Fiszki z talii, błędy z dziennika i słabe punkty z ćwiczeń w jednej kolejce – najpierw to, co zaległe."));
     view.appendChild(card());
   }

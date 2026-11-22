@@ -4,7 +4,7 @@
  *   LM.examDate.card     jedna karta daty egzaminu (C1 i egzaminy z rejestru)
  *   LM.examCover         okładki: full (strona startowa), compact (podstrony), mini (kafel: główna, Dziś)
  * Czysta logika (myExams, formatDatePl, daysBetween) jest w js/exam-logic.js i ma testy.
- * Data C1 leży w elm_c1_v1 (js/c1-core.js), pozostałych egzaminów w elm_exams_v1 (js/profile-data.js).
+ * Data C1 leży w (C1, etap 1A: tylko pamięć) (js/c1-core.js), pozostałych egzaminów w slm.exams (js/profile-data.js).
  */
 window.LM = window.LM || {};
 

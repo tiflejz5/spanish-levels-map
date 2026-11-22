@@ -1,7 +1,7 @@
 /*
  * stats-page.js — „Statystyki” (#/statystyki, spec 03, sekcja 3).
  *
- * Dane: dziennik podejść (elm_attempts_v1), wyniki zestawów, Dziennik błędów
+ * Dane: dziennik podejść (slm.attempts), wyniki zestawów, Dziennik błędów
  * i dni aktywności — wszystko z LM.profileData; liczenie w js/learning-stats.js.
  *
  * Zasady (DESIGN.md 3.11 i skill dataviz):

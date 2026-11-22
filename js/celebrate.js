@@ -4,11 +4,11 @@
  * Kamienie milowe (id):
  *   first-umiem, total-10/25/50/100      — liczba „Umiem” w sumie
  *   lvl-a1-25 … lvl-c2-100               — postęp poziomu 25/50/75/100% (wszystkie kategorie)
- *   lvl-a1-passed … lvl-c2-passed        — zaliczony test końcowy poziomu (js/final.js, stan z elm_leveltests_v1)
+ *   lvl-a1-passed … lvl-c2-passed        — zaliczony test końcowy poziomu (js/final.js, stan z slm.finals)
  *   streak-3/7/14/30                     — seria dni nauki
  *   first-review                         — pierwsza ukończona sesja powtórek (zdarzenie)
  *   level-test                           — ukończony test poziomu (zdarzenie)
- * Każdy pokazujemy RAZ na profil (elm_celebrated_v1, js/profile-data.js).
+ * Każdy pokazujemy RAZ na profil (slm.celebrated, js/profile-data.js).
  * Przy pierwszym uruchomieniu u profilu z postępem już osiągnięte kamienie
  * zapisujemy bez pokazywania (żeby nie wyskoczyła seria starych gratulacji).
  *

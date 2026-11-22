@@ -1,7 +1,7 @@
 /*
  * trail-logic.js — czysta logika Szlaku (spec v7 13): bez DOM i localStorage (testy: node tools/tests.js).
  *
- *   emptyState(), sanitizeState(raw)     stan profilu elm.<id>.szlak { version, start, stops, reviews }; zły format → wyjątek
+ *   emptyState(), sanitizeState(raw)     stan profilu slm.trail.<id> { version, start, stops, reviews }; zły format → wyjątek
  *   statusOf(stop, state, env)           { status: "done" | "skipped" | "open", via }  (sekcja 3.1)
  *   buildTrail(data, state, env)         cały szlak z kolejnością, statusami, krainami przed startem jako „pominięte”
  *   currentStop(trail)                   pierwszy niezaliczony przystanek od punktu startu albo null

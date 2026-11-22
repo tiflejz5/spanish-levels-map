@@ -8,7 +8,7 @@
  *   - wyszukiwanie po angielsku i po polsku, także bez polskich znaków,
  *   - grupy jako sekcje z kotwicami, spis grup z boku (komputer) albo poziomy pasek chipów (telefon),
  *   - zwrot: EN pogrubione, PL pod spodem, poziom i rejestr jako tekst, rozwijany przykład i uwaga,
- *   - akcje: Kopiuj, „Do Moich słów” (karta basic PL → EN w talii „Moje słowa”), gwiazdka (ulubione per profil, elm_phrases_v1).
+ *   - akcje: Kopiuj, „Do Moich słów” (karta basic PL → EN w talii „Moje słowa”), gwiazdka (ulubione per profil, slm.phrases).
  *
  *   LM.writingPhrases.render(view, route)   LM.writingPhrases.load() → Promise z { groups }
  *   LM.writingPhrases.forTrainer(genre, examId) → [{ group, phrases }] do panelu w trenerze pisania

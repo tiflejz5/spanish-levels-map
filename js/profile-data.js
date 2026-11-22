@@ -2,39 +2,39 @@
  * profile-data.js — dane nauki zapisywane OSOBNO DLA KAŻDEGO PROFILU
  * (tak jak „Umiem”), pod nowymi kluczami localStorage:
  *
- *   elm_journal_v1   { version: 1, profiles: { <idProfilu>: { entries: [wpis…] } } }
- *   elm_activity_v1  { version: 1, profiles: { <idProfilu>: { days: ["RRRR-MM-DD"…], lastPage } } }
- *   elm_leveltest_v1 { version: 1, profiles: { <idProfilu>: { last: wynik | null } } }
- *   elm_celebrated_v1 { version: 1, profiles: { <idProfilu>: { ids: ["first-umiem", …] } } }
+ *   slm.journal   { version: 1, profiles: { <idProfilu>: { entries: [wpis…] } } }
+ *   slm.activity  { version: 1, profiles: { <idProfilu>: { days: ["RRRR-MM-DD"…], lastPage } } }
+ *   slm.placement { version: 1, profiles: { <idProfilu>: { last: wynik | null } } }
+ *   slm.celebrated { version: 1, profiles: { <idProfilu>: { ids: ["first-umiem", …] } } }
  *                    — kamienie milowe już pokazane (każdy tylko raz na profil, js/celebrate.js)
- *   elm_exercises_v1 { version: 1, profiles: { <idProfilu>: { sets: { <idZestawu>: { best, last } }, lastMix: [idZadania…] } } }
+ *   slm.exercises { version: 1, profiles: { <idProfilu>: { sets: { <idZestawu>: { best, last } }, lastMix: [idZadania…] } } }
  *                    — wyniki zestawów ćwiczeń (silnik zadań, js/exercise-engine.js);
  *                      best / last = { score, total, date }; recent — ułamki ostatnich 5 wyników
  *                      (sugestia „Umiem”); lastMix — zadania ostatniej sesji mieszanej;
  *                      dismissed: { <idZestawu>: "RRRR-MM-DD" } — odmowa sugestii „Umiem”
- *   elm_attempts_v1  { version: 1, profiles: { <id>: { items: [podejście…], aggregates: { <idZadania>: { n, ok, topic, type, level } } } } }
+ *   slm.attempts  { version: 1, profiles: { <id>: { items: [podejście…], aggregates: { <idZadania>: { n, ok, topic, type, level } } } } }
  *                    — dziennik podejść: każda odpowiedź w zadaniach (bufor 3000, starsze w agregatach; js/learning-stats.js)
- *   elm_autojournal_v1 { version: 1, profiles: { <id>: { items: { <idZadania>: { entryId, created, wrongCount, lastWrongAt, returned } } } } }
- *                    — wpisy dziennika błędów dodane automatycznie z zadań (format elm_journal_v1 bez zmian;
+ *   slm.autojournal { version: 1, profiles: { <id>: { items: { <idZadania>: { entryId, created, wrongCount, lastWrongAt, returned } } } } }
+ *                    — wpisy dziennika błędów dodane automatycznie z zadań (format slm.journal bez zmian;
  *                      wpis łączy pole ref = "ex:<idZadania>")
- *   elm_learnprefs_v1 { version: 1, profiles: { <id>: { autoJournal: true|false, selectionMenu: true|false, highlightWords: true|false } } } — ustawienia nauki
+ *   slm.prefs { version: 1, profiles: { <id>: { autoJournal: true|false, selectionMenu: true|false, highlightWords: true|false } } } — ustawienia nauki
  *                    (selectionMenu i highlightWords — „Moje słowa”, paczka v6; brak pola w starych danych = domyślna wartość)
- *   elm_notes_v1     { version: 1, profiles: { <id>: { items: { <klucz strony>: { text, updatedAt, title, route } } } } }
+ *   slm.notes     { version: 1, profiles: { <id>: { items: { <klucz strony>: { text, updatedAt, title, route } } } } }
  *                    — własne notatki (zwykły tekst, maks. 10 000 znaków)
- *   elm_exams_v1     { version: 1, profiles: { <id>: { exams: { <idEgzaminu>: { examDate, drafts: { <zadanie>: tekst }, tasks: { <strona>: { <nr>: true } },
+ *   slm.exams     { version: 1, profiles: { <id>: { exams: { <idEgzaminu>: { examDate, drafts: { <zadanie>: tekst }, tasks: { <strona>: { <nr>: true } },
  *                    choices: { <grupa wyboru>: <zadanie> } } } } } }  (choices: wybór jednego z dwóch zadań, matura rozszerzona;
  *                    w starszych danych brak pola → {})
- *                    — egzaminy w nowym module (np. Egzamin ósmoklasisty, js/exam-core.js); Certyfikat C1 ma własny klucz elm_c1_v1
- *   elm_speaking_v1  { version: 1, profiles: { <id>: { sessions: [ { day, exam, part: 1–4, scores: { <kryterium>: 1–5 } } ] } } }
+ *                    — egzaminy w nowym module (np. Egzamin ósmoklasisty, js/exam-core.js); Certyfikat C1 ma własny klucz (C1: dropped in stage 1B)
+ *   slm.speaking  { version: 1, profiles: { <id>: { sessions: [ { day, exam, part: 1–4, scores: { <kryterium>: 1–5 } } ] } } }
  *                    — historia sesji trenera Speaking (samoocena, js/speaking-trainer.js; najnowsze na końcu, maks. 500)
  *                    Opcjonalnie (paczka v6, spec 18): sesja z polem full: true (tryb „Cały egzamin”) oraz w rekordzie profilu
  *                    seen: { "<egzamin>:<część>": [ "<id karty>", … ] } — karty już wylosowane w bieżącym cyklu (losowanie bez powtórek).
  *                    Stary zapis bez tych pól jest poprawny.
- *   elm_leveltests_v1 { version: 1, profiles: { <id>: { levels: { "A1": { passedAt: "RRRR-MM-DD" | null, best: { score, total, date }, last: { score, total, date } } } } } }
+ *   slm.finals { version: 1, profiles: { <id>: { levels: { "A1": { passedAt: "RRRR-MM-DD" | null, best: { score, total, date }, last: { score, total, date } } } } } }
  *                    — testy końcowe poziomów A1–C2 i znaczki „poziom zaliczony” (js/final.js, paczka v6);
  *                      passedAt = dzień pierwszego zaliczenia (znaczek zostaje po późniejszej porażce);
- *                      to NIE jest elm_leveltest_v1 (szybki test poziomu)
- *   elm_phrases_v1   { version: 1, profiles: { <id>: { starred: [ "opinia-05", … ] } } }
+ *                      to NIE jest slm.placement (szybki test poziomu)
+ *   slm.phrases   { version: 1, profiles: { <id>: { starred: [ "opinia-05", … ] } } }
  *                    — ulubione zwroty z banku zwrotów do pisania (js/writing-phrases.js, paczka v6); id zwrotu z dane/pisanie/zwroty.json
  *
  * Wpis dziennika błędów:
@@ -47,6 +47,13 @@
  * LM.learn.streak. Wszystkie dane trafiają do eksportu i są czyszczone
  * przez „Resetuj dane”. Każdy dostęp do localStorage jest w try/catch.
  */
+/*
+ * STORAGE KEY REGISTRY (spec 02 §5) — LM.storage, defined at the end of this file.
+ * Every localStorage key of the app is listed in REGISTRY; export, import, reset and profile deletion
+ * walk the registry, so a new key is covered by adding one entry (tools/tests.js checks this).
+ * Keys are LM.APP.storagePrefix + id ("slm."), which keeps this app apart from the owner's other apps
+ * on the same GitHub Pages origin. Schemas start at version 1; there are no migrations (D3).
+ */
 window.LM = window.LM || {};
 
 (function (LM) {
@@ -54,9 +61,13 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
 
-  const KEYS = { journal: "elm_journal_v1", activity: "elm_activity_v1", levelTest: "elm_leveltest_v1", celebrated: "elm_celebrated_v1", exercises: "elm_exercises_v1",
-    attempts: "elm_attempts_v1", autojournal: "elm_autojournal_v1", prefs: "elm_learnprefs_v1", notes: "elm_notes_v1",
-    exams: "elm_exams_v1", speaking: "elm_speaking_v1", levelTests: "elm_leveltests_v1", phrases: "elm_phrases_v1" };
+  const PREFIX = (LM.APP && LM.APP.storagePrefix) || "slm.";
+  // Per-profile learning data kept by this file: kind → key id (key = PREFIX + id)
+  const KIND_IDS = { journal: "journal", activity: "activity", levelTest: "placement", celebrated: "celebrated", exercises: "exercises",
+    attempts: "attempts", autojournal: "autojournal", prefs: "prefs", notes: "notes",
+    exams: "exams", speaking: "speaking", levelTests: "finals", phrases: "phrases" };
+  const KEYS = {};
+  Object.keys(KIND_IDS).forEach(function (kind) { KEYS[kind] = PREFIX + KIND_IDS[kind]; });
   const VERSION = 1;
 
   const CATEGORIES = ["Use of English", "Reading", "Writing", "Listening", "Speaking", "Gramatyka", "Słownictwo", "Inne"];
@@ -81,7 +92,7 @@ window.LM = window.LM || {};
     let data = null;
     try { data = raw ? normalizeStore(kind, JSON.parse(raw)) : null; } catch (e) {
       // Uszkodzony zapis: odkładamy kopię i zaczynamy od pustego
-      try { window.localStorage.setItem(KEYS[kind] + "_corrupt_backup", raw); } catch (e2) { /* trudno */ }
+      try { window.localStorage.setItem(KEYS[kind] + ".corrupt", raw); } catch (e2) { /* trudno */ }
       data = null;
     }
     memory[kind] = data || { version: VERSION, profiles: {} };
@@ -631,7 +642,7 @@ window.LM = window.LM || {};
     return { passed: !!res.passed, firstPass: firstPass, passedAt: rec.levels[level].passedAt, best: Object.assign({}, rec.levels[level].best), last: clean };
   }
 
-  // ---------- Ulubione zwroty (bank zwrotów do pisania, elm_phrases_v1) ----------
+  // ---------- Ulubione zwroty (bank zwrotów do pisania, slm.phrases) ----------
 
   /** Id ulubionych zwrotów aktywnego profilu (kopia). */
   function starredPhrases() {
@@ -935,78 +946,137 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // PROFILE, EKSPORT, IMPORT, RESET
+  // STORAGE KEY REGISTRY AND BACKUP FILE (spec 02 §5)
   // =====================================================================
+  //   scope "device"   — one key for the device, not exported (reset: true → removed by "Reset data")
+  //   scope "app"      — one key for all profiles (the profile list itself), exported
+  //   scope "profiles" — one key holding { profiles: { <profileId>: record } }, exported
+  //   scope "profile"  — one key per profile (prefix + profileId), exported
+  // Exported entries name a handler with exportData() / parseImport(raw) / applyImport(parsed, profileIds) /
+  // clearAll() and, for per-profile data, removeProfile(pid).
 
-  /** Usuwa dane nauki usuniętego profilu. */
-  function removeProfile(pid) {
-    Object.keys(KEYS).forEach(function (kind) {
-      const store = load(kind);
-      if (store.profiles[pid]) { delete store.profiles[pid]; save(kind); }
-    });
+  const BACKUP_VERSION = 1;
+
+  function kindHandler(kind) {
+    return {
+      exportData: function () { return JSON.parse(JSON.stringify(load(kind))); },
+      parseImport: function (raw) {
+        if (raw === undefined || raw === null) return null;
+        try { return normalizeStore(kind, raw); } catch (e) { throw new Error("Part \"" + KIND_IDS[kind] + "\": " + e.message); }
+      },
+      applyImport: function (parsed, profileIds) {
+        // A part missing from the file keeps this browser's data (pruned to the imported profiles)
+        if (parsed) memory[kind] = parsed; else load(kind);
+        const keep = new Set(profileIds);
+        Object.keys(memory[kind].profiles).forEach(function (pid) { if (!keep.has(pid)) delete memory[kind].profiles[pid]; });
+        save(kind);
+      },
+      clearAll: function () {
+        memory[kind] = { version: VERSION, profiles: {} };
+        try { window.localStorage.removeItem(KEYS[kind]); window.localStorage.removeItem(KEYS[kind] + ".corrupt"); } catch (e) { /* no access */ }
+      },
+      removeProfile: function (pid) {
+        const store = load(kind);
+        if (store.profiles[pid]) { delete store.profiles[pid]; save(kind); }
+      }
+    };
   }
 
-  /** Zostawia dane tylko dla podanych profili (po imporcie). */
-  function prune(profileIds) {
-    const keep = new Set(profileIds);
-    Object.keys(KEYS).forEach(function (kind) {
-      const store = load(kind);
-      let changed = false;
-      Object.keys(store.profiles).forEach(function (pid) {
-        if (!keep.has(pid)) { delete store.profiles[pid]; changed = true; }
-      });
-      if (changed) save(kind);
-    });
+  const REGISTRY = [
+    { id: "theme", scope: "device" },
+    { id: "sidebar", scope: "device" },
+    { id: "ui", scope: "device", reset: true },
+    { id: "search-recent", scope: "device", reset: true },
+    { id: "profiles", scope: "app", handler: function () { return LM.store && LM.store.profilesHandler; } }
+  ].concat(Object.keys(KIND_IDS).map(function (kind) {
+    const h = kindHandler(kind);
+    return { id: KIND_IDS[kind], scope: "profiles", kind: kind, handler: function () { return h; } };
+  })).concat([
+    { id: "cards", scope: "profile", handler: function () { return LM.cardsStore; } },
+    { id: "trail", scope: "profile", handler: function () { return LM.trailStore; } }
+  ]);
+  REGISTRY.forEach(function (e) { if (e.scope === "profile") e.prefix = PREFIX + e.id + "."; else e.key = PREFIX + e.id; });
+
+  function entry(id) {
+    const e = REGISTRY.find(function (x) { return x.id === id; });
+    if (!e) throw new Error("Unknown storage key id: " + id);
+    return e;
+  }
+  /** Key of a single-key entry, e.g. key("theme") → "slm.theme". */
+  function key(id) { return entry(id).key; }
+  /** Key of a per-profile entry, e.g. profileKey("cards", "p_1") → "slm.cards.p_1". */
+  function profileKey(id, pid) { return entry(id).prefix + pid; }
+  /** Profile ids that have a per-profile key of this entry in localStorage (corrupt-data copies excluded). */
+  function storedProfileIds(id) {
+    const prefix = entry(id).prefix, out = [];
+    try {
+      for (let i = 0; i < window.localStorage.length; i++) {
+        const k = window.localStorage.key(i);
+        if (k && k.indexOf(prefix) === 0 && !/\.corrupt$/.test(k)) out.push(k.slice(prefix.length));
+      }
+    } catch (e) { /* no access */ }
+    return out;
+  }
+  function exported() { return REGISTRY.filter(function (e) { return e.scope !== "device"; }); }
+  function handlerOf(e) {
+    const h = e.handler && e.handler();
+    if (!h) throw new Error("No handler for storage entry " + e.id);
+    return h;
   }
 
-  /** Część „learning” pliku eksportu (wszystkie profile). */
-  function exportData() {
+  /** The backup file: { app, kind: "backup", version, exportedAt, data: { <entry id>: … } }. */
+  function exportBackup() {
+    const data = {};
+    exported().forEach(function (e) { data[e.id] = handlerOf(e).exportData(); });
+    return { app: LM.APP.exportName, kind: "backup", version: BACKUP_VERSION, exportedAt: new Date().toISOString(), data: data };
+  }
+
+  /** File name of a backup made today: spanish-levels-map-YYYY-MM-DD.json */
+  function backupFileName() { return LM.APP.exportName + "-" + U.dateStamp() + ".json"; }
+
+  /**
+   * Checks a parsed backup file. Returns { <entry id>: parsed part | null } or throws an Error whose message is shown
+   * to the user. A file of another app is refused (spec 02 §5); a missing part means "no data of that kind".
+   */
+  function parseBackup(obj) {
+    if (!U.isPlainObject(obj)) throw new Error("The file does not contain data of this app.");
+    if (obj.app !== LM.APP.exportName) {
+      throw new Error("This file is not a " + LM.APP.appTitle + " backup" +
+        (typeof obj.app === "string" && obj.app ? " (it comes from \"" + obj.app + "\")" : "") + ", so it cannot be imported here.");
+    }
+    if (obj.kind !== "backup" || !U.isPlainObject(obj.data)) throw new Error("The backup file is incomplete.");
+    if (typeof obj.version !== "number" || obj.version > BACKUP_VERSION) throw new Error("The file comes from a newer version of the app. Update the page and try again.");
     const out = {};
-    Object.keys(KEYS).forEach(function (kind) { out[kind] = JSON.parse(JSON.stringify(load(kind))); });
+    exported().forEach(function (e) { out[e.id] = handlerOf(e).parseImport(obj.data[e.id]); });
+    if (!out.profiles) throw new Error("The backup has no profile list.");
     return out;
   }
 
-  /**
-   * Sprawdza część „learning” z pliku importu. Brak części (stary plik) → null.
-   * Zwraca { journal, activity, levelTest } (każda część może być null) albo rzuca błąd.
-   */
-  function parseImport(raw) {
-    if (raw === undefined || raw === null) return null;
-    if (!U.isPlainObject(raw)) throw new Error("Część „learning” pliku ma nieprawidłowy format.");
-    const out = {};
-    Object.keys(KEYS).forEach(function (kind) {
-      out[kind] = raw[kind] === undefined || raw[kind] === null ? null : normalizeStore(kind, raw[kind]);
-    });
-    return out;
+  /** Replaces everything with a parsed backup. The profile list goes first; data of profiles not in it is dropped. */
+  function applyBackup(parsed) {
+    const ids = parsed.profiles.profiles.map(function (p) { return p.id; });
+    exported().forEach(function (e) { handlerOf(e).applyImport(parsed[e.id], ids); });
   }
 
-  /**
-   * Zapisuje zaimportowane dane. Część obecna w pliku zastępuje dane z tej
-   * przeglądarki; części brak (stary plik) → zostają dane profili o tym samym id.
-   * Na koniec usuwane są dane profili, których już nie ma.
-   */
-  function applyImport(parsed, profileIds) {
-    Object.keys(KEYS).forEach(function (kind) {
-      if (parsed && parsed[kind]) { memory[kind] = parsed[kind]; save(kind); }
-    });
-    prune(profileIds);
-  }
-
-  /** Statystyka do okna potwierdzenia importu. */
-  function summarizeImport(parsed) {
-    if (!parsed || !parsed.journal) return null;
-    let n = 0;
-    Object.keys(parsed.journal.profiles).forEach(function (pid) { n += parsed.journal.profiles[pid].entries.length; });
-    return { journalEntries: n };
-  }
-
-  /** „Resetuj dane”: usuwa wszystkie klucze danych nauki. */
-  function clearAll() {
-    Object.keys(KEYS).forEach(function (kind) {
-      memory[kind] = { version: VERSION, profiles: {} };
-      try { window.localStorage.removeItem(KEYS[kind]); } catch (e) { /* brak dostępu */ }
+  /** "Reset data": every exported entry and the device entries marked reset (theme and sidebar stay). */
+  function resetAll() {
+    exported().forEach(function (e) { handlerOf(e).clearAll(); });
+    REGISTRY.forEach(function (e) {
+      if (e.scope === "device" && e.reset) { try { window.localStorage.removeItem(e.key); } catch (err) { /* no access */ } }
     });
   }
+
+  /** Deleting a profile removes its data from every per-profile entry. */
+  function deleteProfile(pid) {
+    exported().forEach(function (e) { if (e.scope !== "app") handlerOf(e).removeProfile(pid); });
+  }
+
+  LM.storage = {
+    PREFIX: PREFIX, BACKUP_VERSION: BACKUP_VERSION, REGISTRY: REGISTRY,
+    key: key, profileKey: profileKey, storedProfileIds: storedProfileIds,
+    exportBackup: exportBackup, backupFileName: backupFileName, parseBackup: parseBackup, applyBackup: applyBackup,
+    resetAll: resetAll, deleteProfile: deleteProfile
+  };
 
   LM.profileData = {
     KEYS: KEYS,
@@ -1066,14 +1136,7 @@ window.LM = window.LM || {};
     getNote: getNote,
     setNote: setNote,
     removeNote: removeNote,
-    noteList: noteList,
-    removeProfile: removeProfile,
-    prune: prune,
-    exportData: exportData,
-    parseImport: parseImport,
-    applyImport: applyImport,
-    summarizeImport: summarizeImport,
-    clearAll: clearAll
+    noteList: noteList
   };
 
   // Jedna funkcja do zaznaczania dnia nauki, dostępna w całej aplikacji

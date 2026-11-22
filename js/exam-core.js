@@ -15,7 +15,7 @@
  *
  * Dane egzaminu (manifest, strony, trenery) ładujemy dopiero po wejściu do zakładki:
  * niezbednik/<id>-dane.js (tools/zbuduj-egzaminy.js). Dane użytkownika: LM.profileData
- * (elm_exams_v1, per profil): data egzaminu, szkice pisania, odhaczone listy.
+ * (slm.exams, per profil): data egzaminu, szkice pisania, odhaczone listy.
  *
  * Ramki „Na egzaminie …” na stronach tematów: osobna ramka dla każdego egzaminu z powiązaniem,
  * w kolejności z rejestru (C1 rysuje swój moduł — bez zmian).
@@ -235,7 +235,7 @@ window.LM = window.LM || {};
       box.replaceChildren();
       section.exerciseGroups.forEach(function (g) {
         const cards = g.sets.map(function (s) {
-          // Format C1 (cloze, słowotwórstwo): karta z wynikiem z elm_exercises_v1, zestaw w zakładce egzaminu
+          // Format C1 (cloze, słowotwórstwo): karta z wynikiem z slm.exercises, zestaw w zakładce egzaminu
           if (data(e).exercises && data(e).exercises[s.id]) return c1SetCard(e, s, data(e).exercises[s.id]);
           return index.sets[s.id];
         }).filter(Boolean).map(function (meta) {
@@ -270,7 +270,7 @@ window.LM = window.LM || {};
 
   const C1_FORMAT_LABEL = { "multiple-choice-cloze": "wybór słowa w tekście", "word-formation": "słowotwórstwo", "open-cloze": "luki otwarte", "transformation": "transformacje" };
 
-  /** Zestaw w formacie C1 w zakładce egzaminu: komponent C1, wynik w elm_exercises_v1. */
+  /** Zestaw w formacie C1 w zakładce egzaminu: komponent C1, wynik w slm.exercises. */
   function renderC1Set(view, e, id) {
     let found = null;
     sections(e).forEach(function (s) { (s.exerciseGroups || []).forEach(function (g) { g.sets.forEach(function (x) { if (x.id === id) found = { set: x, group: g }; }); }); });

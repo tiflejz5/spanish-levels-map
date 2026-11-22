@@ -1,12 +1,12 @@
 /*
  * cards-store.js — dane fiszek w localStorage (spec 10, sekcja 4).
  *
- *   Klucz per profil: elm.<profileId>.fiszki
+ *   Klucz per profil: slm.cards.<profileId>
  *   { version: 1, cards: { <id>: stan }, userDecks: [...], userCards: [...], settings: {...}, daily: { <dzień>: {...} } }
  *
  * Stan jest zapisywany tylko dla kart, które użytkownik ruszył (reszta = nowe). Zapis po każdej
  * zmianie, w try/catch; przy błędzie (np. brak miejsca) komunikat i praca dalej w pamięci.
- * Uszkodzony zapis jest odkładany jako elm.<id>.fiszki_corrupt_backup i zaczynamy od pustego.
+ * Uszkodzony zapis jest odkładany jako slm.cards.<id>_corrupt_backup i zaczynamy od pustego.
  * Dane trafiają do eksportu (data.fiszki: { <profileId>: stan }), importu i resetu; stary plik
  * eksportu (bez data.fiszki) nie zmienia fiszek. Walidacja: LM.cardsLogic.sanitizeState.
  */
@@ -15,15 +15,12 @@ window.LM = window.LM || {};
 (function (LM) {
   "use strict";
 
-  const PREFIX = "elm.";
-  const SUFFIX = ".fiszki";
-  const C1_DECK = "certyfikat-c1";
   const memory = {}; // { profileId: stan }
   let saveFailed = false;
 
   function L() { return LM.cardsLogic; }
   function app() { return LM.app; }
-  function keyOf(pid) { return PREFIX + pid + SUFFIX; }
+  function keyOf(pid) { return LM.storage.profileKey("cards", pid); } // slm.cards.<profileId> (registry in js/profile-data.js)
   function activeId() { const p = app() && app().getActiveProfile(); return p ? p.id : null; }
 
   function load(pid) {
@@ -34,22 +31,11 @@ window.LM = window.LM || {};
     let data = null;
     if (raw) {
       try { data = L().sanitizeState(JSON.parse(raw)); } catch (e) {
-        try { window.localStorage.setItem(keyOf(pid) + "_corrupt_backup", raw); } catch (e2) { /* trudno */ }
+        try { window.localStorage.setItem(keyOf(pid) + ".corrupt", raw); } catch (e2) { /* trudno */ }
         data = null;
       }
     }
-    // Paczka C1 v6 (spec 12, sekcja 3): talia „Certyfikat C1” włącza się raz w istniejącym profilu. Znacznik c1DeckV6 pamięta,
-    // że profil już ją „dostał”, więc wyłączona przez użytkownika nie wraca. Nowy profil dostaje sam znacznik (bez włączania).
-    const fresh = !data;
     memory[pid] = data || L().emptyState();
-    const set = memory[pid].settings;
-    if (set.c1DeckV6 !== true) {
-      set.c1DeckV6 = true;
-      if (!fresh) {
-        if (set.enabledDecks.indexOf(C1_DECK) === -1) set.enabledDecks.push(C1_DECK);
-        try { window.localStorage.setItem(keyOf(pid), JSON.stringify(memory[pid])); } catch (e3) { /* zapisze się przy następnej zmianie */ }
-      }
-    }
     return memory[pid];
   }
 
@@ -88,13 +74,7 @@ window.LM = window.LM || {};
 
   /** Profile, które mają zapis fiszek (do eksportu, resetu i porządkowania). */
   function storedIds() {
-    const out = [];
-    try {
-      for (let i = 0; i < window.localStorage.length; i++) {
-        const k = window.localStorage.key(i);
-        if (k && k.indexOf(PREFIX) === 0 && k.slice(-SUFFIX.length) === SUFFIX) out.push(k.slice(PREFIX.length, -SUFFIX.length));
-      }
-    } catch (e) { /* brak dostępu */ }
+    const out = LM.storage.storedProfileIds("cards");
     Object.keys(memory).forEach(function (pid) { if (out.indexOf(pid) === -1) out.push(pid); });
     return out;
   }
@@ -134,18 +114,12 @@ window.LM = window.LM || {};
 
   function clearAll() { storedIds().forEach(removeProfile); }
 
-  /** Po imporcie starego pliku (bez części „fiszki”) Dziennik mógł się zmienić: migracja do kart „Moje błędy” ma wrócić (idempotentna). */
-  function clearMigrationFlags() {
-    storedIds().forEach(function (pid) {
-      const d = load(pid);
-      if (d.settings.migratedJournal) { d.settings.migratedJournal = false; save(pid); }
-    });
-  }
 
   // Druga karta przeglądarki zapisała fiszki: przejmujemy nowsze oceny, żeby następny zapis stąd ich nie cofnął
   window.addEventListener("storage", function (e) {
-    if (!e.key || e.key.indexOf(PREFIX) !== 0 || e.key.slice(-SUFFIX.length) !== SUFFIX) return;
-    const pid = e.key.slice(PREFIX.length, -SUFFIX.length);
+    const prefix = LM.storage.profileKey("cards", "");
+    if (!e.key || e.key.indexOf(prefix) !== 0 || /.corrupt$/.test(e.key)) return;
+    const pid = e.key.slice(prefix.length);
     if (memory[pid] && mergeStored(pid) && app() && app().refreshLearning) app().refreshLearning();
   });
 
@@ -153,6 +127,6 @@ window.LM = window.LM || {};
     mergeStored: mergeStored,
     keyOf: keyOf, data: data, load: load, save: save,
     exportData: exportData, parseImport: parseImport, applyImport: applyImport,
-    removeProfile: removeProfile, clearAll: clearAll, clearMigrationFlags: clearMigrationFlags
+    removeProfile: removeProfile, clearAll: clearAll
   };
 })(window.LM);

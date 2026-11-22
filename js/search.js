@@ -11,8 +11,8 @@
  *
  * Indeks: dane/szukaj-indeks.js (tools/zbuduj-szukaj.js) ładowany przy pierwszym otwarciu.
  * Notatki i Dziennik błędów aktywnego profilu dokładamy w przeglądarce (są prywatne).
- * Ostatnie wyszukiwania: elm_search_recent_v1 { version: 1, items: [...] } — na urządzeniu,
- * poza eksportem (jak elm_sidebar_v1), czyszczone przez „Resetuj dane”.
+ * Ostatnie wyszukiwania: slm.search-recent { version: 1, items: [...] } — na urządzeniu,
+ * poza eksportem (jak slm.sidebar), czyszczone przez „Resetuj dane”.
  * Wszystkie teksty trafiają do strony przez textContent (bez innerHTML).
  */
 window.LM = window.LM || {};
@@ -22,7 +22,7 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const RECENT_KEY = "elm_search_recent_v1";
+  function recentKey() { return LM.storage.key("search-recent"); } // device-wide, cleared by reset (registry in js/profile-data.js)
   const GROUPS = ["pages", "exams", "exercises", "lab", "notes", "journal"];
   const GROUP_LABEL = { pages: "Strony", exams: "Egzaminy", exercises: "Ćwiczenia", lab: "Laboratorium czasów", notes: "Moje notatki", journal: "Mój dziennik błędów" };
   const SHORTCUTS = [
@@ -51,7 +51,7 @@ window.LM = window.LM || {};
 
   function recent() {
     try {
-      const raw = JSON.parse(localStorage.getItem(RECENT_KEY) || "null");
+      const raw = JSON.parse(localStorage.getItem(recentKey()) || "null");
       return raw && raw.version === 1 && Array.isArray(raw.items) ? raw.items.filter(function (x) { return typeof x === "string"; }).slice(0, 5) : [];
     } catch (e) { return []; }
   }
@@ -60,10 +60,10 @@ window.LM = window.LM || {};
     q = String(q || "").trim().slice(0, 80);
     if (q.length < 2) return;
     const items = [q].concat(recent().filter(function (x) { return x.toLocaleLowerCase("pl") !== q.toLocaleLowerCase("pl"); })).slice(0, 5);
-    try { localStorage.setItem(RECENT_KEY, JSON.stringify({ version: 1, items: items })); } catch (e) { /* bez dostępu — trudno */ }
+    try { localStorage.setItem(recentKey(), JSON.stringify({ version: 1, items: items })); } catch (e) { /* bez dostępu — trudno */ }
   }
 
-  function clearRecent() { try { localStorage.removeItem(RECENT_KEY); } catch (e) { /* nic */ } }
+  function clearRecent() { try { localStorage.removeItem(recentKey()); } catch (e) { /* nic */ } }
 
   // ---------- Indeks ----------
 

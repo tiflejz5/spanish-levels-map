@@ -595,7 +595,7 @@ window.LM = window.LM || {};
     const s = raw.settings && typeof raw.settings === "object" ? raw.settings : {};
     if (num(s.newPerDay, 0, 999)) out.settings.newPerDay = Math.floor(s.newPerDay);
     if (num(s.reviewsPerDay, 0, 9999)) out.settings.reviewsPerDay = Math.floor(s.reviewsPerDay);
-    ["typeAnswerFirst", "fuzz", "autoAddMistakes", "migratedJournal", "journalCardsV2", "c1DeckV6"].forEach(function (k) { if (typeof s[k] === "boolean") out.settings[k] = s[k]; });
+    ["typeAnswerFirst", "fuzz", "autoAddMistakes"].forEach(function (k) { if (typeof s[k] === "boolean") out.settings[k] = s[k]; });
     ["enabledDecks", "randomDecks"].forEach(function (k) {
       if (Array.isArray(s[k])) out.settings[k] = s[k].filter(function (id) { return typeof id === "string" && (ID.test(id) || /^u-[a-z0-9-]{1,60}$/.test(id)); }).slice(0, 200);
     });
@@ -636,7 +636,6 @@ window.LM = window.LM || {};
   // =====================================================================
 
   const MISTAKES_DECK = "u-moje-bledy";
-  const JOURNAL_STEPS = [1, 3, 7]; // dawne REVIEW_STEPS (js/learning.js): interwały po etapie wpisu
   const MASTERED_INTERVAL = 21;
   const DAY_MS = 86400000;
 
@@ -646,17 +645,6 @@ window.LM = window.LM || {};
   /** Stały id karty wpisu (migracja i nowe wpisy dają to samo, więc druga migracja nic nie dubluje). */
   function journalCardId(e) { return "u-mb-" + String(e.id || "x").toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 50); }
 
-  /** Stara wersja karty z wpisu (do rozpoznania kart niezmienionych przez użytkownika przy naprawie, journalCardsV2). */
-  function journalCardLegacy(e) {
-    const correct = String(e.correct || "").replace(/[{}|]/g, " ").replace(/\s+/g, " ").trim().slice(0, 200);
-    const rule = String(e.rule || "").slice(0, 500);
-    const gapLine = String(e.context || "").split("\n").find(function (l) { return /_{3,}/.test(l); });
-    if (gapLine && correct) {
-      const res = makeCard({ type: "cloze", front: gapLine.replace(/_{3,}/, "{{" + correct + "}}").slice(0, 500), back: rule });
-      if (!res.error) return res.card;
-    }
-    return makeCard({ type: "basic", front: String(e.context || "").slice(0, 500) || "?", back: correct || "—", note: rule }).card;
-  }
 
   function cleanAnswer(s) { return String(s == null ? "" : s).replace(/[{}|]/g, " ").replace(/\s+/g, " ").trim(); }
 
@@ -718,28 +706,6 @@ window.LM = window.LM || {};
     return ["type", "text", "front", "back", "note", "hint"].every(function (k) { return String(a[k] || "") === String(b[k] || ""); });
   }
 
-  /**
-   * Naprawa kart „Moje błędy” zbudowanych starym journalCard (wycinał z kontekstu tylko linię z luką, więc znikała podpowiedź:
-   * słowo bazowe, opcje A–D, słowo kluczowe, forma w nawiasie): karta niezmieniona przez użytkownika jest budowana od nowa
-   * z wpisu dziennika (sourceItemId → wpis). Stan powtórek (cards[id]) zostaje bez zmian. Idempotentna; znacznik
-   * settings.journalCardsV2. Zwraca liczbę przebudowanych kart.
-   */
-  function repairJournalCards(state, entries) {
-    let fixed = 0;
-    (entries || []).forEach(function (e) {
-      if (!e || !e.id) return;
-      const sid = journalSource(e), id = journalCardId(e);
-      const c = state.userCards.find(function (x) { return x.deck === MISTAKES_DECK && (x.id === id || x.sourceItemId === sid); });
-      if (!c) return;
-      const legacy = journalCardLegacy(e), fresh = journalCard(e);
-      if (!sameCardContent(c, legacy) || sameCardContent(c, fresh)) return; // edytowana ręcznie albo już poprawna
-      ["type", "front", "back", "text", "note", "accepted", "hint", "example"].forEach(function (k) { delete c[k]; });
-      Object.keys(fresh).forEach(function (k) { if (k !== "tags" || !c.tags) c[k] = fresh[k]; });
-      fixed++;
-    });
-    state.settings.journalCardsV2 = true;
-    return fixed;
-  }
 
   function reviewState(interval, due, reps) {
     return { state: "review", step: 0, ease: 2.5, interval: interval, pendingInterval: 0, lapses: 0, reps: reps, due: due };
@@ -748,18 +714,6 @@ window.LM = window.LM || {};
   /** Stan nowej karty wpisu: pierwsza powtórka jutro (jak dawny etap 0). */
   function newJournalState(now) { return reviewState(1, dayEnd(now), 0); }
 
-  /**
-   * Stan karty z pola review wpisu { stage, due: "RRRR-MM-DD", mastered }.
-   * Opanowany: interwał 21 dni, termin 21 dni po ostatnim terminie, nie wcześniej niż od jutra (migracja nie zalewa „dziś”).
-   * Pozostałe: interwał JOURNAL_STEPS[stage], termin = review.due (zaległy zostaje zaległy).
-   */
-  function journalCardState(review, now) {
-    const r = review || {};
-    const base = DAY_RE.test(r.due || "") ? dayStart(r.due) : dayEnd(now);
-    if (r.mastered === true) return reviewState(MASTERED_INTERVAL, Math.max(base + MASTERED_INTERVAL * DAY_MS, dayEnd(now)), JOURNAL_STEPS.length);
-    const stage = Math.max(0, Math.min(JOURNAL_STEPS.length - 1, Math.floor(Number(r.stage) || 0)));
-    return reviewState(JOURNAL_STEPS[stage], base, stage);
-  }
 
   function ensureMistakesDeck(state) {
     let d = state.userDecks.find(function (x) { return x.id === MISTAKES_DECK; });
@@ -776,26 +730,6 @@ window.LM = window.LM || {};
     return state.userCards.some(function (c) { return c.id === id || c.sourceItemId === sid; });
   }
 
-  /**
-   * Migracja jednorazowa i idempotentna: wpis bez karty → karta w talii „Moje błędy” ze stanem z review.
-   * Zmienia przekazany stan (sanitized). Zwraca liczbę dodanych kart; znacznik settings.migratedJournal ustawia zawsze.
-   * Pole review we wpisie zostaje (zgodność eksportu).
-   */
-  function migrateJournal(state, entries, now) {
-    let added = 0;
-    (entries || []).forEach(function (e) {
-      if (!e || !e.id || hasJournalCard(state, e)) return;
-      const card = journalCard(e);
-      if (!card) return;
-      ensureMistakesDeck(state);
-      const id = journalCardId(e);
-      state.userCards.push(Object.assign({ id: id, deck: MISTAKES_DECK, createdAt: String(e.createdAt || "") + "T12:00:00.000Z", sourceItemId: journalSource(e) }, card));
-      if (!state.cards[id]) state.cards[id] = journalCardState(e.review, now);
-      added++;
-    });
-    state.settings.migratedJournal = true;
-    return added;
-  }
 
   /**
    * Scalanie stanu z pamięci tej karty przeglądarki z zapisem w localStorage (druga karta mogła zapisać nowsze oceny):
@@ -820,9 +754,9 @@ window.LM = window.LM || {};
   LM.cardsLogic = {
     mergeStates: mergeStates,
     MISTAKES_DECK: MISTAKES_DECK, journalSource: journalSource, journalCardId: journalCardId, journalCard: journalCard,
-    newJournalState: newJournalState, journalCardState: journalCardState, ensureMistakesDeck: ensureMistakesDeck,
-    hasJournalCard: hasJournalCard, migrateJournal: migrateJournal,
-    journalCardLegacy: journalCardLegacy, gapAnswers: gapAnswers, repairJournalCards: repairJournalCards,
+    newJournalState: newJournalState, ensureMistakesDeck: ensureMistakesDeck,
+    hasJournalCard: hasJournalCard,
+    gapAnswers: gapAnswers,
     EXAMS: EXAMS, examsOf: examsOf,
     VERSION: VERSION, MAX_FIELD: MAX_FIELD, MAX_IMPORT: MAX_IMPORT, DAY_HOUR: DAY_HOUR, TYPES: TYPES, DEFAULT_SETTINGS: DEFAULT_SETTINGS,
     normalize: normalize, levenshtein: levenshtein, checkAnswer: checkAnswer,

@@ -12,7 +12,7 @@
  *   szuflada (< 768 px)  — przycisk „Menu” w górnym pasku (js/app.js).
  *
  * Przypięcie zapisujemy globalnie dla urządzenia (nie w profilu ani w eksporcie):
- *   elm_sidebar_v1 = { version: 1, pinned: true|false }
+ *   slm.sidebar = { version: 1, pinned: true|false }
  * Stan odczytuje już skrypt w <head> (index.html), żeby treść nie przeskakiwała.
  */
 window.LM = window.LM || {};
@@ -20,7 +20,7 @@ window.LM = window.LM || {};
 (function (LM) {
   "use strict";
 
-  const KEY = "elm_sidebar_v1";
+  const KEY = LM.storage.key("sidebar"); // device-wide, not exported (registry in js/profile-data.js)
   const OPEN_DELAY = 120;   // ms — nie reagujemy na przypadkowy przelot myszą
   const CLOSE_DELAY = 250;  // ms — chwila na powrót kursora
 

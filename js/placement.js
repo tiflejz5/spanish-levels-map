@@ -16,7 +16,7 @@
  * zapytać). Gdy pula poziomu jest pusta i trzeba wziąć pytanie z sąsiedniego
  * poziomu, poziom docelowy się nie zmienia — inaczej przy małej puli test
  * „odpływałby” na drugi koniec skali. Ostatni wynik zapisujemy w profilu
- * (elm_leveltest_v1). Test NIE zaznacza niczego jako „Umiem”.
+ * (slm.placement). Test NIE zaznacza niczego jako „Umiem”.
  */
 window.LM = window.LM || {};
 

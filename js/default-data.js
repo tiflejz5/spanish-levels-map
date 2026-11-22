@@ -31,7 +31,7 @@ window.LM = window.LM || {};
 
   /** Zwraca NOWĄ, pustą listę profili. */
   LM.createEmptyProfiles = function () {
-    return { version: 2, activeId: null, profiles: [] };
+    return { version: 1, activeId: null, profiles: [] };
   };
 
   /**

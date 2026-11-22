@@ -15,7 +15,7 @@
  *
  * Ten plik: adresy, menu boczne, strony .md, odliczanie do egzaminu,
  * ramki „Na egzaminie C1”, kafelek na stronie głównej, linki [[id]],
- * zapis w localStorage (klucz elm_c1_v1) i wspólny timer.
+ * zapis w localStorage (pamięć karty, etap 1A) i wspólny timer.
  */
 window.LM = window.LM || {};
 
@@ -26,7 +26,6 @@ window.LM = window.LM || {};
   const el = U.el;
 
   const BASE = "#/certyfikat-c1";
-  const STORE_KEY = "elm_c1_v1";
   const HIDDEN_SECTIONS = ["Odpowiedzi", "Przykładowe odpowiedzi"];
 
   function data() { return LM.C1 || null; }
@@ -42,7 +41,7 @@ window.LM = window.LM || {};
   function storeData() {
     if (memory) return memory;
     let saved = null;
-    try { saved = JSON.parse(window.localStorage.getItem(STORE_KEY) || "null"); } catch (e) { saved = null; }
+    // Stage 1A: the C1 tab keeps its data in memory only (it is dropped in stage 1B, spec 06 E8)
     memory = U.isPlainObject(saved) ? saved : {};
     ["best", "drafts", "tasks"].forEach(function (k) { if (!U.isPlainObject(memory[k])) memory[k] = {}; });
     if (typeof memory.examDate !== "string") memory.examDate = "";
@@ -50,7 +49,7 @@ window.LM = window.LM || {};
   }
 
   function saveStore() {
-    try { window.localStorage.setItem(STORE_KEY, JSON.stringify(storeData())); } catch (e) { /* brak zapisu — trudno */ }
+    storeData(); // memory only (stage 1A)
   }
 
   function bestScore(setId) {
