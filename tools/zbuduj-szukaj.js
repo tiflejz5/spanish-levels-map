@@ -1,0 +1,250 @@
+/*
+ * zbuduj-szukaj.js — indeks wyszukiwarki (spec 04, część A.2).
+ *
+ * Grupy i źródła:
+ *   pages      podstrony niezbędnika A1–C2 (niezbednik/index.json + *.md) i podsumowania poziomów
+ *   exams      strony zakładki „Certyfikat C1” (niezbednik/certyfikat-c1/manifest.json + strony/*.md)
+ *              i aktywnych egzaminów z rejestru dane/egzaminy-manifest.json (np. niezbednik/egzamin-osmoklasisty/)
+ *   exercises  zestawy z dane/cwiczenia-tematy.json, mixy z dane/mixes.json, zestawy Use of English C1
+ *   lab        czasy z dane/lab-czasow.json
+ * Notatki i Dziennik błędów są prywatne — dokłada je przeglądarka (js/search.js), nie ten plik.
+ *
+ * Rekord: { id, group, title, headings[], summary, text (bez Markdownu, maks. 4000 znaków),
+ *           level, category, route }
+ * Wyjście: dane/szukaj-indeks.js (ELM.SEARCH_INDEX), ładowany na żądanie przy pierwszym
+ * otwarciu wyszukiwarki. Plik .js zamiast .json, bo fetch() nie działa przy file://.
+ * Gdy indeks przekroczy ~1 MB, tekst jest skracany do nagłówków i pierwszych akapitów.
+ *
+ * Użycie: node tools/zbuduj-szukaj.js   (część npm run build)
+ */
+"use strict";
+
+const fs = require("fs");
+const path = require("path");
+
+const ROOT = path.join(__dirname, "..");
+const N = path.join(ROOT, "niezbednik");
+const TEXT_MAX = 4000;
+const SIZE_LIMIT = 1024 * 1024;
+
+function read(file) { return fs.readFileSync(file, "utf8").replace(/^﻿/, "").replace(/\r\n/g, "\n"); }
+function readJson(file) { return JSON.parse(read(file)); }
+
+/** Frontmatter (klucz: wartość) i treść bez niego. */
+function splitMd(md) {
+  const m = /^---\n([\s\S]*?)\n---\n?/.exec(md);
+  const meta = {};
+  if (m) m[1].split("\n").forEach(function (line) { const k = /^(\w+):\s*(.*)$/.exec(line); if (k) meta[k[1]] = k[2].trim(); });
+  return { meta: meta, body: m ? md.slice(m[0].length) : md };
+}
+
+/** Nagłówki ## i ### (bez #). */
+function headings(body) {
+  return (body.match(/^#{2,3}\s+.+$/gm) || []).map(function (h) { return clean(h.replace(/^#+\s+/, "")); });
+}
+
+/** Tekst bez składni Markdown (linki, [[id]], pogrubienia, tabele, cytaty, listy). */
+function clean(md) {
+  return md
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/!\[[^\]]*\]\([^)]*\)/g, " ")
+    .replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, "$2")
+    .replace(/\[\[([^\]]+)\]\]/g, " ")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/^\s*\|?\s*:?-{2,}.*$/gm, " ")
+    .replace(/\|/g, " ")
+    .replace(/^#{1,6}\s+/gm, "")
+    .replace(/^\s*>\s?/gm, "")
+    .replace(/^\s*[-*+]\s+(\[[ xX]\]\s*)?/gm, "")
+    .replace(/^\s*\d+\.\s+/gm, "")
+    .replace(/[*_`~]+/g, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function clip(text, max) {
+  if (text.length <= max) return text;
+  const cut = text.slice(0, max);
+  return cut.slice(0, cut.lastIndexOf(" ") > max * 0.8 ? cut.lastIndexOf(" ") : max);
+}
+
+const records = [];
+function add(r) {
+  records.push({
+    id: r.id, group: r.group, title: r.title || "", headings: r.headings || [], summary: r.summary || "",
+    text: clip(r.text || "", TEXT_MAX), level: r.level || null, category: r.category || null, route: r.route
+  });
+}
+
+// ---------- Strony niezbędnika ----------
+const index = readJson(path.join(N, "index.json"));
+index.levels.forEach(function (lvl) {
+  lvl.items.forEach(function (item) {
+    const file = path.join(N, item.file);
+    if (!fs.existsSync(file)) return;
+    const md = splitMd(read(file));
+    add({
+      id: "page:" + item.id, group: "pages", title: md.meta.title || item.label, headings: headings(md.body),
+      summary: md.meta.summary || "", text: clean(md.body.replace(/^#\s+.+$/m, "")), level: lvl.level,
+      category: (index.categories || {})[item.category] || item.category, route: "#/" + item.file.replace(/\.md$/, "")
+    });
+  });
+});
+const sumDir = path.join(N, "podsumowania");
+if (fs.existsSync(sumDir)) fs.readdirSync(sumDir).filter(function (f) { return /\.md$/.test(f); }).sort().forEach(function (f) {
+  const lvl = f.replace(/\.md$/, "").toUpperCase();
+  const md = splitMd(read(path.join(sumDir, f)));
+  add({ id: "summary:" + lvl, group: "pages", title: "Podsumowanie poziomu " + lvl, headings: headings(md.body), text: clean(md.body), level: lvl, route: "#/" + lvl.toLowerCase() });
+});
+// Ściągi poziomów („Ściąga A2”)
+const sciDir = path.join(N, "sciagi");
+if (fs.existsSync(sciDir)) fs.readdirSync(sciDir).filter(function (f) { return /^[abc][12].md$/i.test(f); }).sort().forEach(function (f) {
+  const lvl = f.replace(/.md$/i, "").toUpperCase();
+  const md = splitMd(read(path.join(sciDir, f)));
+  add({ id: "sciaga:" + lvl, group: "pages", title: "Ściąga " + lvl, headings: headings(md.body), summary: md.meta.summary || "", text: clean(md.body), level: lvl, category: "Ściąga", route: "#/" + lvl.toLowerCase() + "/sciaga" });
+});
+
+// ---------- Certyfikat C1 ----------
+const C1 = path.join(N, "certyfikat-c1");
+if (fs.existsSync(path.join(C1, "manifest.json"))) {
+  const man = readJson(path.join(C1, "manifest.json"));
+  (man.sections || []).forEach(function (sec) {
+    (sec.pages || []).forEach(function (pg) {
+      const file = path.join(C1, pg.file);
+      if (!fs.existsSync(file)) return;
+      const md = splitMd(read(file));
+      add({
+        id: "c1:" + pg.id, group: "exams", title: md.meta.title || pg.label, headings: headings(md.body), summary: md.meta.summary || "",
+        text: clean(md.body.replace(/^#\s+.+$/m, "")), level: "C1", category: "Certyfikat C1 · " + sec.label,
+        route: pg.id === "przeglad" ? "#/certyfikat-c1" : "#/certyfikat-c1/" + pg.id
+      });
+    });
+  });
+  const exDir = path.join(C1, "cwiczenia");
+  if (fs.existsSync(exDir)) fs.readdirSync(exDir).filter(function (f) { return /\.json$/.test(f); }).sort().forEach(function (f) {
+    const s = readJson(path.join(exDir, f));
+    add({ id: "c1set:" + s.id, group: "exercises", title: "Use of English Part " + s.part + ": " + s.title, summary: s.instructions || "", text: "", level: "C1", category: "Certyfikat C1", route: "#/certyfikat-c1/cwiczenia/" + s.id });
+  });
+}
+
+// ---------- Egzaminy z rejestru (nowy format, np. Egzamin ósmoklasisty) ----------
+const regFile = path.join(ROOT, "dane", "egzaminy-manifest.json");
+if (fs.existsSync(regFile)) readJson(regFile).exams.forEach(function (exam) {
+  const dir = path.join(N, exam.id);
+  if (exam.status !== "active" || exam.existing || !fs.existsSync(path.join(dir, "manifest.json"))) return;
+  const man = readJson(path.join(dir, "manifest.json"));
+  man.sections.forEach(function (sec) {
+    (sec.pages || []).forEach(function (pg) {
+      const file = path.join(dir, pg.file);
+      if (!fs.existsSync(file)) return;
+      const md = splitMd(read(file));
+      add({
+        id: exam.id + ":" + pg.id, group: "exams", title: md.meta.title || pg.label, headings: headings(md.body), summary: md.meta.summary || "",
+        text: clean(md.body.replace(/^#\s+.+$/m, "")), level: null, category: exam.label + " · " + sec.label,
+        route: "#" + exam.route + (pg.id === "przeglad" ? "" : "/" + pg.id)
+      });
+    });
+    (sec.exerciseGroups || []).forEach(function (g) {
+      g.sets.forEach(function (meta) {
+        const file = path.join(dir, meta.file);
+        if (!fs.existsSync(file)) return;
+        const s = readJson(file);
+        const c1format = !Array.isArray(s.items) || ["multiple-choice-cloze", "word-formation", "open-cloze", "transformation"].indexOf(s.type) !== -1;
+        add({ id: "examset:" + meta.id, group: "exercises", title: s.title || meta.label, summary: s.intro || s.instructions || "", text: exam.label + " · " + g.label, level: s.level || null, category: exam.label,
+          route: c1format ? "#" + exam.route + "/cwiczenia/" + meta.id : "#/cwiczenia/zestaw/" + meta.id });
+      });
+    });
+    // Trener pisania („trainer” albo pozycja „trainers” o id trening-pisanie)
+    const writing = Array.isArray(sec.trainers) ? sec.trainers.find(function (t) { return t.id === "trening-pisanie"; }) : sec.trainer;
+    if (writing) add({ id: exam.id + ":trener", group: "exercises", title: exam.label + ": " + writing.label, summary: "Trener pisania z licznikiem wyrazów i samooceną.", text: "", category: exam.label, route: "#" + exam.route + "/trening-pisanie" });
+    const speaking = Array.isArray(sec.trainers) ? sec.trainers.find(function (t) { return t.type === "speaking"; }) : null;
+    if (speaking) add({ id: exam.id + ":mowienie", group: "exercises", title: exam.label + ": " + speaking.label, summary: "Trener Speaking: cztery części, timery, losowane karty i samoocena.", text: "Part 1 Part 2 Part 3 Part 4 speaking mówienie", category: exam.label, route: "#" + exam.route + "/trening-mowienie" });
+  });
+});
+
+// ---------- Fiszki: tylko skróty (karty nie trafiają do indeksu — za duży szum, spec 10, 5.5) ----------
+add({ id: "fiszki", group: "exercises", title: "Fiszki i błędy", summary: "Jedna kolejka powtórek: fiszki z talii, Moje błędy i słabe punkty z ćwiczeń, w rosnących odstępach.", text: "fiszki flashcards powtórki active recall talie dziennik błędów słabe punkty", category: "Fiszki", route: "#/powtorki" });
+add({ id: "fiszki:bledy", group: "exercises", title: "Moje błędy (fiszki)", summary: "Talia fiszek z wpisów Dziennika błędów.", text: "fiszki moje błędy dziennik", category: "Fiszki", route: "#/powtorki/talie/talia/u-moje-bledy" });
+add({ id: "fiszki:slowa", group: "exercises", title: "Moje słowa", summary: "Słowa i wyrażenia zaznaczone w tekstach, ze zdaniem i znaczeniem.", text: "moje słowa słowniczek osobisty zapisane słówka fiszki zaznaczenie", category: "Fiszki", route: "#/powtorki/moje-slowa" });
+// Pisanie: wzorcowe wypracowania z komentarzami (zadania z modelNotes w trening/pisanie.json)
+add({ id: "pisanie", group: "exercises", title: "Wzorcowe wypracowania", summary: "Teksty modelowe z komentarzami na marginesie: realizacja polecenia, łączniki, rejestr, zakres i uwagi.", text: "pisanie wzorce wypracowania komentarze rozprawka essay email list writing model", category: "Pisanie", route: "#/pisanie" });
+(function () {
+  const regFile = path.join(ROOT, "dane", "egzaminy-manifest.json");
+  const exams = fs.existsSync(regFile) ? readJson(regFile).exams : [];
+  const label = {};
+  exams.forEach(function (e) { label[e.id] = e.label; });
+  fs.readdirSync(N).filter(function (d) { return fs.existsSync(path.join(N, d, "trening", "pisanie.json")); }).forEach(function (d) {
+    const j = readJson(path.join(N, d, "trening", "pisanie.json"));
+    (j.tasks || []).forEach(function (t) {
+      if (!t.model || !t.modelNotes) return;
+      add({ id: "wzorzec:" + d + ":" + t.id, group: "exercises", title: "Wzorzec: " + (t.title || t.id), summary: (t.modelNotes.summary || [])[0] || "", text: "wzorcowe wypracowanie komentarze " + (label[d] || d) + " " + t.genre, category: "Pisanie", route: "#/pisanie/wzorce/" + d + "/" + t.id });
+    });
+  });
+})();
+
+// Pisanie: bank zwrotów (dane/pisanie/zwroty.json): strona banku i każda grupa (tekst: zwroty po angielsku i polsku)
+(function () {
+  const file = path.join(ROOT, "dane", "pisanie", "zwroty.json");
+  if (!fs.existsSync(file)) return;
+  const groups = readJson(file).groups || [];
+  add({ id: "zwroty", group: "exercises", title: "Bank zwrotów do pisania", summary: "Zwroty według funkcji z filtrem poziomu, rejestru i gatunku: opinia, kontrargument, prośby, podsumowanie.", text: "zwroty pisanie phrases writing łączniki frazy bank " + groups.map(function (g) { return g.label; }).join(" "), category: "Pisanie", route: "#/pisanie/zwroty" });
+  groups.forEach(function (g) {
+    add({ id: "zwroty:" + g.id, group: "exercises", title: "Zwroty: " + g.label, summary: g.description || "", text: g.phrases.map(function (p) { return p.en + " " + p.pl; }).join(" "), category: "Pisanie", route: "#/pisanie/zwroty/" + g.id });
+  });
+})();
+
+// Skróty do talii wbudowanych po tytule (bez kart): tematyczne A1–B1, egzaminacyjne, czasowniki frazowe itd.
+readJson(path.join(ROOT, "dane", "fiszki", "index.json")).decks.forEach(function (d) {
+  add({ id: "fiszki:talia:" + d.id, group: "exercises", title: d.title + " (fiszki)", summary: d.description, text: "fiszki talia " + d.title + " " + d.level, category: "Fiszki", route: "#/powtorki/talie/talia/" + d.id });
+});
+
+// ---------- Ćwiczenia (zestawy tematów i mixy) ----------
+const topicTitle = {};
+index.levels.forEach(function (lvl) { lvl.items.forEach(function (it) {
+  const file = path.join(N, it.file);
+  topicTitle[it.id] = fs.existsSync(file) ? (splitMd(read(file)).meta.title || it.label) : it.label;
+}); });
+const mapFile = path.join(ROOT, "dane", "cwiczenia-tematy.json");
+if (fs.existsSync(mapFile)) {
+  const map = readJson(mapFile).topics || {};
+  Object.keys(map).forEach(function (t) {
+    map[t].forEach(function (id) {
+      const file = path.join(ROOT, "cwiczenia", "tematy", id + ".json");
+      if (!fs.existsSync(file)) return;
+      const s = readJson(file);
+      add({ id: "set:" + id, group: "exercises", title: s.title, summary: s.intro || "", text: "Temat: " + (topicTitle[t] || t), level: s.level, category: "Zestaw zadań", route: "#/cwiczenia/zestaw/" + id });
+    });
+  });
+}
+const mixFile = path.join(ROOT, "dane", "mixes.json");
+if (fs.existsSync(mixFile)) readJson(mixFile).mixes.forEach(function (m) {
+  add({ id: "mix:" + m.id, group: "exercises", title: m.title, summary: m.description || "", text: "Zestaw mieszany. Tematy: " + m.topics.map(function (t) { return topicTitle[t] || t; }).join(", "), category: "Zestaw mieszany", route: "#/cwiczenia/mix/" + m.id });
+});
+
+// ---------- Laboratorium czasów ----------
+const labFile = path.join(ROOT, "dane", "lab-czasow.json");
+if (fs.existsSync(labFile)) readJson(labFile).tenses.forEach(function (t) {
+  add({
+    id: "lab:" + t.id, group: "lab", title: t.name, headings: [t.namePl], summary: t.summary,
+    text: [].concat(
+      (t.uses || []).map(function (u) { return u.label + ": " + u.en + " " + u.pl; }),
+      ["Sygnały: " + (t.signals || []).join(", ")],
+      t.traps || [],
+      (t.contrasts || []).map(function (c) { return c.rule + " " + (c.examples || []).join(" "); })
+    ).join(" "),
+    level: t.level, category: "Laboratorium czasów", route: "#/laboratorium-czasow/" + t.id
+  });
+});
+
+// ---------- Zapis (z kontrolą rozmiaru) ----------
+let json = JSON.stringify({ version: 1, records: records });
+if (json.length > SIZE_LIMIT) {
+  records.forEach(function (r) { r.text = clip(r.text, 900); });
+  json = JSON.stringify({ version: 1, records: records });
+}
+fs.writeFileSync(path.join(ROOT, "dane", "szukaj-indeks.js"),
+  "/* Indeks wyszukiwarki — GENEROWANY przez tools/zbuduj-szukaj.js, nie edytuj ręcznie. */\nwindow.ELM = window.ELM || {};\nELM.SEARCH_INDEX = " + json + ";\n", "utf8");
+const groups = {};
+records.forEach(function (r) { groups[r.group] = (groups[r.group] || 0) + 1; });
+console.log("Wyszukiwarka: rekordy " + records.length + " (" + Object.keys(groups).map(function (g) { return g + " " + groups[g]; }).join(", ") + "), rozmiar " + Math.round(json.length / 1024) + " KB");
