@@ -355,7 +355,7 @@ window.LM = window.LM || {};
     run.total = s.total;
     if (run.hooks && run.hooks.finish) run.final = run.hooks.finish(run, s); // test końcowy: własny zapis (slm.finals)
     else if (!run.retry && run.saveId) run.saved = pd().saveSetScore(run.saveId, s.score, s.total);
-    run.suggest = umiemSuggestion();
+    run.suggest = knownSuggestion();
     if (run.isMix) pd().setLastMix(run.items.map(function (p) { return p.item.id; }));
     LM.markActivity(); // ukończona sesja = dzień nauki
     if (LM.app.refreshLearning) LM.app.refreshLearning();
@@ -1303,7 +1303,7 @@ window.LM = window.LM || {};
       saved ? el("p", { class: "tool-note", text: saved.improved ? "Nowy najlepszy wynik!" : "Najlepszy wynik: " + scoreText(saved.best) + "." }) : null,
       run.retry ? el("p", { class: "tool-note", text: "Poprawka błędów nie zmienia zapisanego wyniku zestawu." }) : null,
       run.isMix ? topicBreakdown() : null,
-      umiemBanner(),
+      knownBanner(),
       journalSummary(),
       el("div", { class: "tool-actions" }, actions)
     ]));
@@ -1332,15 +1332,15 @@ window.LM = window.LM || {};
   function plural(n, one, few, many) { return LM.pluralPl(n, one, few, many); }
 
   /** Sugestia „Umiem” (spec 03, pkt 4): dwa ostatnie podejścia do zestawu ≥ 80%; nigdy nie zaznaczamy sami. */
-  function umiemSuggestion() {
+  function knownSuggestion() {
     if (run.retry || run.isMix || !run.topic || !run.saved || !LM.handbook) return null;
     const es = LM.handbook.essentialForTopic(run.topic);
     if (!es) return null;
-    const ok = LM.stats.suggestUmiem(run.saved.recent, { isUmiem: es.done, dismissedDay: pd().umiemDismissed(run.saveId), today: LM.learn.today() });
+    const ok = LM.stats.suggestKnown(run.saved.recent, { isKnown: es.done, dismissedDay: pd().knownDismissed(run.saveId), today: LM.learn.today() });
     return ok ? { essential: es, state: "ask" } : null;
   }
 
-  function umiemBanner() {
+  function knownBanner() {
     const s = run.suggest;
     if (!s) return null;
     if (s.state === "done") return el("div", { class: "ex-umiem is-done", role: "status" }, [LM.icon("check", { size: 18 }), el("p", { text: "Zaznaczono „Umiem”. Brawo!" })]);
@@ -1357,7 +1357,7 @@ window.LM = window.LM || {};
             repaint(null);
           } }, LM.ui.withIcon("check", "Zaznacz „Umiem”")),
           el("button", { type: "button", class: "btn btn-link btn-small", onclick: function () {
-            pd().dismissUmiem(run.saveId);
+            pd().dismissKnown(run.saveId);
             s.state = "later";
             repaint(null);
           } }, "Nie teraz")

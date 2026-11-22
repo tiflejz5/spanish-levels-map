@@ -1,13 +1,13 @@
 /*
- * learning-stats.js — czysta logika dziennika podejść, statystyk i automatycznych
- * powtórek (bez DOM i bez localStorage; testy w tools/tests.js).
- * Specyfikacja: docs/rozbudowa-v2/spec/03-powtorki-i-statystyki.md.
+ * learning-stats.js — pure logic of the attempts log, stats and automatic
+ * reviews (no DOM and no localStorage; tests in tools/tests.js).
+ * Specification of the reference app: docs/rozbudowa-v2/spec/03-powtorki-i-statystyki.md.
  *
- * Rekord podejść profilu: { items: [podejście…], aggregates: { <itemId>: { n, ok, topic, type, level } } }
- * Podejście: { t, day, itemId, setId, topic, level, type, tags, correct, mode, answer }
+ * Attempts record of a profile: { items: [attempt…], aggregates: { <itemId>: { n, ok, topic, type, level } } }
+ * Attempt: { t, day, itemId, setId, topic, level, type, tags, correct, mode, answer }
  *
- * Dzień „dziś” i bieżący czas przekazujemy jako argumenty (łatwe testy):
- * LM.learn.today() wywołuje tylko kod widoku.
+ * "Today" and the current time are passed as arguments (easy tests):
+ * only view code calls LM.learn.today().
  */
 window.LM = window.LM || {};
 
@@ -15,18 +15,18 @@ window.LM = window.LM || {};
   "use strict";
 
   const MAX_ATTEMPTS = 3000;
-  const MIN_SAMPLE = 5;          // poniżej: „za mało danych”, bez procentu jako oceny
-  const DAILY_AUTO_LIMIT = 30;   // automatyczne wpisy dziennika na dzień
-  const UMIEM_THRESHOLD = 0.8;   // dwa ostatnie podejścia do zestawu ≥ 80%
-  const UMIEM_SNOOZE_DAYS = 14;  // po „Nie teraz” nie pytamy przez 14 dni
+  const MIN_SAMPLE = 5;          // below: "not enough data", no percentage as a judgement
+  const DAILY_AUTO_LIMIT = 30;   // automatic mistake log entries per day
+  const KNOWN_THRESHOLD = 0.8;   // the last two attempts at a set ≥ 80%
+  const KNOWN_SNOOZE_DAYS = 14;  // after "Not now", do not ask for 14 days
 
   function learn() { return LM.learn; }
 
   // =====================================================================
-  // BUFOR KOŁOWY I KOMPAKTOWANIE
+  // RING BUFFER AND COMPACTING
   // =====================================================================
 
-  /** Dopisuje podejście; po przekroczeniu limitu najstarsze trafiają do agregatów (statystyki długoterminowe zostają). */
+  /** Adds an attempt; past the limit the oldest go into the aggregates (long-term stats stay). */
   function pushAttempt(rec, attempt, max) {
     rec.items.push(attempt);
     const over = rec.items.length - (max || MAX_ATTEMPTS);
@@ -40,7 +40,7 @@ window.LM = window.LM || {};
     if (a.correct) g.ok++;
   }
 
-  /** Wszystkie dane jako wiersze { itemId, topic, type, level, n, ok } (podejścia + agregaty). */
+  /** All data as rows { itemId, topic, type, level, n, ok } (attempts + aggregates). */
   function rows(rec) {
     const out = [];
     Object.keys(rec.aggregates || {}).forEach(function (id) {
@@ -57,7 +57,7 @@ window.LM = window.LM || {};
   // AGREGACJA
   // =====================================================================
 
-  /** { klucz: { n, ok } } według pola (topic | type | level | itemId). */
+  /** { key: { n, ok } } by field (topic | type | level | itemId). */
   function aggregate(rec, field) {
     const out = {};
     rows(rec).forEach(function (r) {
@@ -70,13 +70,13 @@ window.LM = window.LM || {};
     return out;
   }
 
-  /** Trafność 0–1 albo null przy małej próbce (< min). */
+  /** Accuracy 0–1, or null for a small sample (< min). */
   function accuracy(g, min) {
     if (!g || g.n < (min === undefined ? MIN_SAMPLE : min)) return null;
     return g.ok / g.n;
   }
 
-  /** Lista posortowana od najsłabszych: [{ key, n, ok, acc }] tylko z próbką ≥ min. */
+  /** List sorted from the weakest: [{ key, n, ok, acc }], only with a sample ≥ min. */
   function ranked(rec, field, min) {
     const agg = aggregate(rec, field);
     return Object.keys(agg).map(function (k) { return { key: k, n: agg[k].n, ok: agg[k].ok, acc: accuracy(agg[k], min) }; })
@@ -84,14 +84,14 @@ window.LM = window.LM || {};
       .sort(function (a, b) { return a.acc - b.acc || b.n - a.n || (a.key < b.key ? -1 : 1); });
   }
 
-  /** Tematy do treningu słabych punktów: ≥ 5 prób, trafność < 70%, do 3 najsłabszych. */
+  /** Topics for weak-spot practice: ≥ 5 attempts, accuracy < 70%, up to the 3 weakest. */
   function weakTopics(rec, opts) {
     opts = opts || {};
     const maxAcc = opts.maxAcc === undefined ? 0.7 : opts.maxAcc;
     return ranked(rec, "topic", opts.minN || MIN_SAMPLE).filter(function (x) { return x.acc < maxAcc; }).slice(0, opts.limit || 3);
   }
 
-  /** Podsumowanie: odpowiedzi 7 / 30 dni / łącznie, trafność ogółem i z 7 dni. */
+  /** Summary: answers in 7 / 30 days / in total, overall accuracy and for 7 days. */
   function summary(rec, today) {
     const d7 = learn().addDays(today, -6), d30 = learn().addDays(today, -29);
     let n7 = 0, ok7 = 0, n30 = 0, n = 0, ok = 0;
@@ -103,14 +103,14 @@ window.LM = window.LM || {};
     return { n7: n7, n30: n30, n: n, acc: accuracy({ n: n, ok: ok }), acc7: accuracy({ n: n7, ok: ok7 }) };
   }
 
-  /** Poniedziałek tygodnia zawierającego dzień. */
+  /** Monday of the week that contains the day. */
   function weekStart(day) {
     const d = new Date(day + "T12:00:00");
-    const dow = (d.getDay() + 6) % 7; // 0 = poniedziałek
+    const dow = (d.getDay() + 6) % 7; // 0 = Monday
     return learn().addDays(day, -dow);
   }
 
-  /** Trafność tygodniowa z ostatnich `weeks` tygodni (od najstarszego): [{ start, n, ok, acc }]. */
+  /** Weekly accuracy of the last "weeks" weeks (oldest first): [{ start, n, ok, acc }]. */
   function weekly(rec, today, weeks) {
     weeks = weeks || 12;
     const first = learn().addDays(weekStart(today), -7 * (weeks - 1));
@@ -125,7 +125,7 @@ window.LM = window.LM || {};
     return out;
   }
 
-  /** Mapa aktywności: `weeks` kolumn × 7 dni (pon–niedz), od najstarszej. */
+  /** Activity map: "weeks" columns × 7 days (Mon–Sun), oldest first. */
   function activityGrid(days, today, weeks) {
     weeks = weeks || 12;
     const set = new Set(days || []);
@@ -146,7 +146,7 @@ window.LM = window.LM || {};
   // WAGI LOSOWANIA
   // =====================================================================
 
-  /** Generator mieszany (spec 02, B.3 pkt 5): trafność < 60% → 2, nigdy niewidziane → 1,5, pozostałe → 1. */
+  /** Mixed generator (spec 02, B.3 point 5): accuracy < 60% → 2, never seen → 1.5, others → 1. */
   function mixWeight(rec) {
     const agg = aggregate(rec, "itemId");
     return function (item) {
@@ -156,7 +156,7 @@ window.LM = window.LM || {};
     };
   }
 
-  /** Trening słabych punktów (spec 03, pkt 5): bez poprawnej odpowiedzi w ostatnich 14 dniach → 2, pozostałe → 1. */
+  /** Weak-spot practice (spec 03, point 5): no right answer in the last 14 days → 2, others → 1. */
   function weakWeight(rec, today, days) {
     const since = learn().addDays(today, -((days || 14) - 1));
     const solved = new Set();
@@ -165,32 +165,32 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // SUGESTIA „UMIEM”
+  // "I KNOW THIS" SUGGESTION
   // =====================================================================
 
   /**
-   * recent: wyniki zestawu od najstarszego [ułamek 0–1]; opts: { isUmiem, dismissedDay, today }.
-   * Dwa ostatnie ≥ 80%, punkt nie jest „Umiem”, brak odmowy w ostatnich 14 dniach.
+   * recent: results of a set, oldest first [fraction 0–1]; opts: { isKnown, dismissedDay, today }.
+   * The last two ≥ 80%, the topic is not marked "I know this", no refusal in the last 14 days.
    */
-  function suggestUmiem(recent, opts) {
-    if (!recent || recent.length < 2 || opts.isUmiem) return false;
+  function suggestKnown(recent, opts) {
+    if (!recent || recent.length < 2 || opts.isKnown) return false;
     const last = recent.slice(-2);
-    if (!last.every(function (r) { return r >= UMIEM_THRESHOLD; })) return false;
-    if (opts.dismissedDay && learn().diffDays(opts.dismissedDay, opts.today) < UMIEM_SNOOZE_DAYS) return false;
+    if (!last.every(function (r) { return r >= KNOWN_THRESHOLD; })) return false;
+    if (opts.dismissedDay && learn().diffDays(opts.dismissedDay, opts.today) < KNOWN_SNOOZE_DAYS) return false;
     return true;
   }
 
   // =====================================================================
-  // AUTOMATYCZNY DZIENNIK BŁĘDÓW
+  // AUTOMATIC MISTAKE LOG
   // =====================================================================
 
   /**
-   * Co zrobić po BŁĘDNEJ odpowiedzi. entry — istniejący wpis z tego zadania albo null.
-   * ctx: { today, autoToday (liczba automatycznych wpisów dziś), limit }.
-   *   create  — nowy wpis,
-   *   update  — wpis aktywny: bez duplikatu; etap > 0 → cofnięcie do etapu 1 (powtórka jutro),
-   *   reopen  — wpis opanowany: wznowienie od etapu 1, oznaczenie „wrócił”,
-   *   limit   — dziennik pełny na dziś (błąd zostaje tylko w podejściach).
+   * What to do after a WRONG answer. entry — the existing entry for this item, or null.
+   * ctx: { today, autoToday (number of automatic entries today), limit }.
+   *   create  — new entry,
+   *   update  — active entry: no duplicate; stage > 0 → back to stage 1 (review tomorrow),
+   *   reopen  — mastered entry: restarts at stage 1, marked "came back",
+   *   limit   — the log is full for today (the mistake stays only in the attempts).
    */
   function planWrong(entry, ctx) {
     if (entry) {
@@ -201,7 +201,7 @@ window.LM = window.LM || {};
     return { action: "create" };
   }
 
-  /** Po POPRAWNEJ odpowiedzi: aktywny wpis z powtórką na dziś lub zaległą → zaliczenie jak „Wiedziałem(am)”. */
+  /** After a RIGHT answer: an active entry due today or overdue → passed as "I knew it". */
   function planCorrect(entry, today) {
     if (!entry || entry.review.mastered || !learn().isDue(entry.review, today)) return null;
     return { action: "review", review: learn().reviewKnown(entry.review, today) };
@@ -223,7 +223,7 @@ window.LM = window.LM || {};
     activityGrid: activityGrid,
     mixWeight: mixWeight,
     weakWeight: weakWeight,
-    suggestUmiem: suggestUmiem,
+    suggestKnown: suggestKnown,
     planWrong: planWrong,
     planCorrect: planCorrect
   };

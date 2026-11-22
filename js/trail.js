@@ -44,7 +44,7 @@ window.LM = window.LM || {};
 
   function env() {
     return {
-      isUmiem: function (id) { return LM.state.progress[id] === true; },
+      isKnown: function (id) { return LM.state.progress[id] === true; },
       setPercent: function (setId) { const r = pd() ? pd().setScore(setId) : null; return r && r.best.total ? Math.round(100 * r.best.score / r.best.total) : null; }
     };
   }
@@ -92,7 +92,7 @@ window.LM = window.LM || {};
     if (!loaded() || !LM.syl.topic(topicId) || !LM.syl.isAvailable(LM.syl.topic(topicId).level)) return null;
     const found = topicId;
     const guest = !hasProfile();
-    const tr = guest ? SL().buildTrail(LM.TRAIL, SL().emptyState(), { isUmiem: function () { return false; }, setPercent: function () { return null; } }, "A1") : trail();
+    const tr = guest ? SL().buildTrail(LM.TRAIL, SL().emptyState(), { isKnown: function () { return false; }, setPercent: function () { return null; } }, "A1") : trail();
     const n = nodeById(tr, found);
     if (!n) return null;
     const lessons = tr.nodes.filter(function (x) { return x.type === "lesson"; });
@@ -201,7 +201,7 @@ window.LM = window.LM || {};
     const needed = SL().PASS_QUIZ;
     const wrong = run.items.filter(api.isWrong);
     const missing = isQuiz ? (n.stop.items || []).filter(function (id) { return LM.state.progress[id] !== true; }) : [];
-    const umiemBox = isQuiz && fin.passed && missing.length ? el("div", { class: "ex-umiem", role: "status" }, [
+    const knownBox = isQuiz && fin.passed && missing.length ? el("div", { class: "ex-umiem", role: "status" }, [
       el("span", { class: "ex-umiem-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
       el("div", { class: "ex-umiem-body" }, [
         el("p", null, [el("strong", { text: "Zaznaczyć „Umiem”? " }), "Quiz zaliczony, ale „Umiem” zaznaczysz tylko Ty. Zaznaczyć dla: " + node.stop.title + "?"]),
@@ -220,7 +220,7 @@ window.LM = window.LM || {};
           el("span", { class: "lf-need", text: " – próg " + needed + " z " + run.total + " dobrych odpowiedzi" })
         ])
         : el("p", { class: "tool-note", text: "Powtórka zapisana. Wynik nie blokuje dalszej drogi, błędne odpowiedzi trafiły do dziennika." }),
-      umiemBox,
+      knownBox,
       wrong.length ? el("div", { class: "sz-wrong" }, [
         el("h2", { class: "lf-h", text: "Do powtórzenia (" + wrong.length + ")" }),
         el("ul", { class: "lf-topic-list" }, wrong.map(function (p) { return el("li", null, [api.itemSummary(p.item), el("span", { class: "tool-note", text: " → " + api.modelAnswer(p.item) })]); }))

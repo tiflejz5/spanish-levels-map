@@ -14,7 +14,7 @@
  *   effectiveStart(state, testLevel)     punkt startu: ręczny > test poziomu > domyślny A1 (3.2)
  *   quizAverage(state)                   średni wynik quizów w % (Statystyki)
  *
- *   env = { isUmiem(itemId) → bool, setPercent(setId) → liczba 0–100 albo null }
+ *   env = { isKnown(itemId) → bool, setPercent(setId) → liczba 0–100 albo null }
  *   src = { quizItems(stopId) → [zadanie], setItems(setId) → [zadanie], finalItems(level) → [zadanie], stops: {id: przystanek} }
  */
 window.LM = window.LM || {};
@@ -72,7 +72,7 @@ window.LM = window.LM || {};
     if (stop.type === "review") return state.reviews[stop.id] ? { status: "done", via: "review" } : { status: "open", via: null };
     const rec = state.stops[stop.id];
     if (rec && rec.via === "quiz" && typeof rec.best === "number" && rec.best >= PASS_QUIZ) return { status: "done", via: "quiz" };
-    if (stop.items && stop.items.length && stop.items.every(function (id) { return env.isUmiem(id); })) return { status: "done", via: "umiem" };
+    if (stop.items && stop.items.length && stop.items.every(function (id) { return env.isKnown(id); })) return { status: "done", via: "umiem" };
     if (!stop.quiz && stop.set) {
       const p = env.setPercent(stop.set);
       if (typeof p === "number" && p >= PASS_SET_PERCENT) return { status: "done", via: "set" };

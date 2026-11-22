@@ -673,13 +673,13 @@ window.LM = window.LM || {};
   }
 
   /** Dzień odmowy sugestii „Umiem” dla zestawu (albo null) i zapis odmowy. */
-  function umiemDismissed(setId) {
+  function knownDismissed(setId) {
     const pid = activeId();
     const rec = pid ? load("exercises").profiles[pid] : null;
     return rec && rec.dismissed ? rec.dismissed[setId] || null : null;
   }
 
-  function dismissUmiem(setId) {
+  function dismissKnown(setId) {
     const pid = activeId();
     if (!pid || !EX_ID.test(setId)) return;
     const rec = record("exercises", pid);
@@ -1118,9 +1118,9 @@ window.LM = window.LM || {};
     saveSetScore: saveSetScore,
     lastMix: lastMix,
     setLastMix: setLastMix,
-    umiemDismissed: umiemDismissed,
+    knownDismissed: knownDismissed,
     solvedSetCount: solvedSetCount,
-    dismissUmiem: dismissUmiem,
+    dismissKnown: dismissKnown,
     attempts: attempts,
     addAttempt: addAttempt,
     prefs: prefs,

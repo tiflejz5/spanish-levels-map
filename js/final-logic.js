@@ -1,13 +1,13 @@
 /*
- * final-logic.js — czysta logika testów końcowych poziomów (bez DOM, testy w tools/tests.js).
- * Specyfikacja: docs/rozbudowa-v6/spec/13-test-poziomu-i-testy-koncowe.md, sekcja 2.
+ * final-logic.js — pure logic of the level final tests (no DOM, tests in tools/tests.js).
+ * Specification of the reference app: docs/rozbudowa-v6/spec/13-test-poziomu-i-testy-koncowe.md, section 2.
  *
- *   drawItems(pool, draw, categoryOf, rng)   losowanie `draw` zadań z puli; każda kategoria reprezentowana
- *                                            proporcjonalnie do jej udziału w puli (najmniej 1), zadania
- *                                            jednej kategorii z możliwie różnych podstron; zadanie
- *                                            wielopunktowe liczy się jako jedno
- *   isPassed(score, total, percent)          próg liczony w punktach (score / total ≥ percent %)
- *   breakdown(results, categoryOf)           podział wyniku na kategorie i tematy z błędami
+ *   drawItems(pool, draw, categoryOf, rng)   draws "draw" items from the pool; every category is represented
+ *                                            in proportion to its share of the pool (at least 1), items
+ *                                            of one category from different topics where possible; an item
+ *                                            worth several points counts as one
+ *   isPassed(score, total, percent)          threshold counted in points (score / total ≥ percent %)
+ *   breakdown(results, categoryOf)           the result split into categories and topics with mistakes
  */
 window.LM = window.LM || {};
 
@@ -16,12 +16,12 @@ window.LM = window.LM || {};
 
   function X() { return LM.exLogic; }
 
-  /** Czy wynik w punktach daje próg zaliczenia (np. 16 z 20 przy 80%). */
+  /** Whether a score in points reaches the pass mark (e.g. 16 of 20 at 80%). */
   function isPassed(score, total, percent) {
     return total > 0 && score * 100 >= percent * total;
   }
 
-  /** Wybiera k zadań, preferując różne tematy (kolejne wybrane zadanie z jeszcze nieużytego tematu, gdy jest). */
+  /** Picks k items, preferring different topics (the next item from a topic not used yet, when there is one). */
   function pickSpread(items, k, rng) {
     const left = X().shuffle(items, rng);
     const out = [];
@@ -36,7 +36,7 @@ window.LM = window.LM || {};
     return out;
   }
 
-  /** Ile zadań z każdej kategorii: proporcjonalnie (metoda największych reszt), najmniej 1, najwyżej tyle, ile jest w puli. */
+  /** How many items of each category: in proportion (largest remainder method), at least 1, at most as many as the pool has. */
   function allocate(counts, draw) {
     const cats = Object.keys(counts);
     const total = cats.reduce(function (s, c) { return s + counts[c]; }, 0);
@@ -60,9 +60,9 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Losowanie testu: `draw` zadań z puli (zadanie wielopunktowe to nadal jedno zadanie). Kategoria zadania
-   * z categoryOf(item). Zwraca tablicę w losowej kolejności, w której ten sam typ zadania nie powtarza się
-   * więcej niż dwa razy pod rząd. Pula nie większa niż `draw` → wszystkie zadania.
+   * Drawing a test: "draw" items from the pool (an item worth several points is still one item). The category of an item
+   * comes from categoryOf(item). Returns an array in random order, in which the same item type does not repeat
+   * more than twice in a row. A pool no bigger than "draw" → all items.
    */
   function drawItems(pool, draw, categoryOf, rng) {
     const byCat = {};
@@ -75,8 +75,8 @@ window.LM = window.LM || {};
     const alloc = pool.length <= draw ? counts : allocate(counts, draw);
     let picked = [];
     Object.keys(byCat).sort().forEach(function (c) { picked = picked.concat(pickSpread(byCat[c], alloc[c], rng)); });
-    // Kolejność: ten sam typ najwyżej dwa razy pod rząd (limitRuns jest jednoprzebiegowe, więc przy pechowym
-    // tasowaniu próbujemy ponownie; po 40 próbach zostaje ostatnie)
+    // Order: the same type at most twice in a row (limitRuns is single-pass, so with unlucky
+    // shuffling we try again; after 40 tries the last one stays)
     let order;
     for (let tries = 0; tries < 40; tries++) {
       order = X().limitRuns(X().shuffle(picked, rng), 2);
@@ -86,10 +86,10 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Podział wyniku. results = [{ item, res }] (res z LM.exLogic.evaluate; null → brak odpowiedzi).
-   * Zwraca { categories: [{ key, score, total }] (w kolejności pierwszego wystąpienia),
-   * topics: [{ topic, lost, wrong }] — tematy z utraconymi punktami, od najwięcej straconych }.
-   * Zadania pominięte (max = 0) nie liczą się.
+   * Result split. results = [{ item, res }] (res from LM.exLogic.evaluate; null → no answer).
+   * Returns { categories: [{ key, score, total }] (in order of first appearance),
+   * topics: [{ topic, lost, wrong }] — topics with lost points, most lost first }.
+   * Skipped items (max = 0) do not count.
    */
   function breakdown(results, categoryOf) {
     const cats = [];

@@ -1,15 +1,15 @@
 /*
- * final.js — testy końcowe poziomów A1–C2 (paczka v6, spec 13 sekcja 2).
+ * final.js — level final tests A1–C2 (pack v6, spec 13 section 2).
  *
- *   #/a1/test … #/c2/test   ekran startowy → sesja w trybie Egzamin w silniku zadań
- *                           (js/exercise-engine.js, LM.exercises.startFinal) → wynik
+ *   #/a1/test … #/c2/test   start screen → a session in Exam mode in the exercise engine
+ *                           (js/exercise-engine.js, LM.exercises.startFinal) → result
  *
- * Pula 30 zadań poziomu: niezbednik/testy-poziomow/<poziom>.json → <poziom>.js (tools/zbuduj-testy-koncowe.js),
- * ładowana na żądanie. Losowanie 20 zadań z proporcjonalną reprezentacją kategorii i próg w punktach:
- * js/final-logic.js. Wynik i znaczek poziomu: LM.profileData (slm.finals).
+ * Pool of 30 items per level: content/tests/final-<level>.json → data/final-<level>.js (tools/build/tests.js),
+ * loaded on demand. Drawing 20 items with every category represented in proportion, and the pass mark in points:
+ * js/final-logic.js. Result and level stamp: LM.profileData (slm.finals).
  *
- * Tu też: znaczek „poziom zaliczony” (Szlak, panel, nagłówek poziomu), karta „Test końcowy” na stronie poziomu
- * i podpowiedź na stronie „Dziś” (≥ 70% „Umiem” na poziomie).
+ * Also here: the "level passed" stamp (trail, panel, level header), the "Final test" card on the level page
+ * and the hint on "Today" (≥ 70% of the level's topics marked "I know this").
  */
 window.LM = window.LM || {};
 
@@ -22,47 +22,42 @@ window.LM = window.LM || {};
   const DRAW = 20;
   const PASS = 80;
   const MINUTES = 15;
-  const READY_PERCENT = 70; // od tylu % „Umiem” na poziomie podpowiadamy test końcowy
+  const READY_PERCENT = 70; // from this % of topics known on a level, suggest the final test
 
   function pd() { return LM.profileData; }
   function F() { return LM.finalLogic; }
   function levelHash(level) { return LM.app.levelHash(level); }
   function testHash(level) { return "#/" + String(level).toLowerCase() + "/test"; }
 
-  /** „2026-11-12” → „12.11.2026”. */
+  /** "2026-11-12" → "Nov 12, 2026". */
   function fmtDate(day) {
-    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(day || "");
-    return m ? m[3] + "." + m[2] + "." + m[1] : String(day || "");
+    return LM.fmt.date(day) || String(day || "");
   }
 
-  function plural(n, one, few, many) {
-    if (n === 1) return one;
-    const d = n % 10, t = n % 100;
-    return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
-  }
+  function plural(n, one, other) { return LM.plural(n, one, other); }
 
   function categoryLabel(key) { return LM.syl.categoryName(key); }
   function categoryOf(item) { return item.category || "grammar"; }
 
   // =====================================================================
-  // ZNACZEK POZIOMU (Szlak, panel, nagłówek poziomu)
+  // LEVEL STAMP (trail, panel, level header)
   // =====================================================================
 
-  /** Dzień zaliczenia poziomu aktywnego profilu („RRRR-MM-DD”) albo null. */
+  /** Day the active profile passed the level ("YYYY-MM-DD"), or null. */
   function passedAt(level) {
     const r = LM.app.getActiveProfile() ? pd().finalResult(level) : null;
     return r && r.passedAt ? r.passedAt : null;
   }
 
-  /** Tekst dla czytników ekranu i etykiet: „A1 zaliczony 12.11.2026” albo null. */
+  /** Text for screen readers and labels: "A1 passed Nov 12, 2026", or null. */
   function passedText(level) {
     const d = passedAt(level);
-    return d ? level + " zaliczony " + fmtDate(d) : null;
+    return d ? level + " passed " + fmtDate(d) : null;
   }
 
   /**
-   * Znaczek-pieczątka: ikona nagrody w kółku (kształt, nie sam kolor) + ukryty tekst „A1 zaliczony 12.11.2026”
-   * (opts.hideText — gdy etykietę podaje nadrzędny link).
+   * Stamp: an award icon in a circle (a shape, not colour alone) + hidden text "A1 passed Nov 12, 2026"
+   * (opts.hideText — when the parent link gives the label).
    */
   function stamp(level, opts) {
     const text = passedText(level);
@@ -74,14 +69,14 @@ window.LM = window.LM || {};
     ]);
   }
 
-  /** Etykieta „Zaliczony · 12.11.2026” w nagłówku strony poziomu (widoczny tekst) albo null. */
+  /** The "Passed · Nov 12, 2026" label in the level page header (visible text), or null. */
   function headerLabel(level) {
     const d = passedAt(level);
     if (!d) return null;
     return el("p", { class: "lvl-passed-label lvl-" + level }, [
       el("span", { class: "lvl-stamp-icon", "aria-hidden": "true" }, LM.icon("award", { size: 16 })),
-      el("span", { text: "Zaliczony · " + fmtDate(d) }),
-      el("span", { class: "visually-hidden", text: " (test końcowy " + level + ")" })
+      el("span", { text: "Passed · " + fmtDate(d) }),
+      el("span", { class: "visually-hidden", text: " (" + level + " final test)" })
     ]);
   }
 
@@ -89,7 +84,7 @@ window.LM = window.LM || {};
   // DANE
   // =====================================================================
 
-  /** Pula poziomu (Promise → zestaw albo null, gdy pliku nie ma). */
+  /** Pool of the level (Promise → set, or null when there is no file). */
   function load(level) {
     if (LM.FINALS && LM.FINALS[level]) return Promise.resolve(LM.FINALS[level]);
     return LM.loadModule("data/final-" + level.toLowerCase() + ".js").then(function () {
@@ -97,7 +92,7 @@ window.LM = window.LM || {};
     }, function () { return null; });
   }
 
-  /** Punkty potrzebne do zaliczenia przy danej sumie punktów testu (próg w punktach). */
+  /** Points needed to pass for a given total of points (the pass mark in points). */
   function pointsNeeded(total, percent) { return Math.ceil(total * percent / 100); }
 
   function percentOf(r) { return r.total ? Math.round(r.score / r.total * 100) : 0; }
@@ -106,14 +101,14 @@ window.LM = window.LM || {};
   // EKRAN STARTOWY
   // =====================================================================
 
-  function backTo(level) { return { href: levelHash(level), label: "Wróć do poziomu " + level }; }
+  function backTo(level) { return { href: levelHash(level), label: "Back to " + level }; }
 
   function renderStart(view, level) {
-    document.title = "Test końcowy " + level + " · " + LM.APP.appTitle;
+    document.title = level + " final test · " + LM.APP.appTitle;
     if (!LM.syl.isAvailable(level)) {
       view.className = "view tool-view ex-view lf-view lvl-" + level;
       view.appendChild(el("section", { class: "card lf-card", "aria-labelledby": "lf-soon-title" }, [
-        el("h1", { class: "tool-title", id: "lf-soon-title", text: "Final test " + level }),
+        el("h1", { class: "tool-title", id: "lf-soon-title", text: level + " final test" }),
         el("p", { text: level + " is on its way. Its final test comes with it." }),
         el("p", null, el("a", { class: "btn btn-secondary", href: levelHash(level) }, "See the planned topics of " + level))
       ]));
@@ -123,36 +118,36 @@ window.LM = window.LM || {};
     const info = pd().finalResult(level);
     const msg = el("p", { class: "tool-note lf-msg", role: "status", "aria-live": "polite" });
     const startBtn = el("button", { type: "button", class: "btn btn-primary", "data-fk": "start", onclick: function () { begin(level, startBtn, msg); } },
-      LM.ui.withIcon("play", info ? "Zrób test ponownie" : "Rozpocznij test"));
+      LM.ui.withIcon("play", info ? "Take the test again" : "Start the test"));
     const when = passedText(level);
     view.appendChild(el("header", { class: "tool-head" }, [
-      el("p", { class: "tool-eyebrow" }, el("a", { href: levelHash(level) }, "Poziom " + level)),
-      el("h1", { class: "tool-title", text: "Test końcowy " + level }),
-      el("p", { class: "tool-lead", text: DRAW + " pytań z całego poziomu " + level + ", ok. " + MINUTES + " minut. Zaliczenie od " + PASS + "% punktów (" + pointsNeeded(DRAW, PASS) + " z " + DRAW + ")." })
+      el("p", { class: "tool-eyebrow" }, el("a", { href: levelHash(level) }, "Level " + level)),
+      el("h1", { class: "tool-title", text: level + " final test" }),
+      el("p", { class: "tool-lead", text: DRAW + " questions from the whole of " + level + ", about " + MINUTES + " minutes. You pass with " + PASS + "% of the points (" + pointsNeeded(DRAW, PASS) + " of " + DRAW + ")." })
     ]));
     view.appendChild(el("section", { class: "card lf-card" }, [
       when ? el("p", { class: "lf-passed" }, [stamp(level, { hideText: true }), el("strong", { text: when })]) : null,
-      info ? el("p", { class: "tool-note", text: "Najlepszy wynik: " + info.best.score + "/" + info.best.total + " pkt (" + percentOf(info.best) + "%) · ostatni: " +
-        info.last.score + "/" + info.last.total + " pkt (" + fmtDate(info.last.date) + ")" }) : el("p", { class: "tool-note", text: "Jeszcze nie rozwiązywany." }),
+      info ? el("p", { class: "tool-note", text: "Best result: " + info.best.score + "/" + info.best.total + " points (" + percentOf(info.best) + "%) · last: " +
+        info.last.score + "/" + info.last.total + " points (" + fmtDate(info.last.date) + ")" }) : el("p", { class: "tool-note", text: "Not taken yet." }),
       el("ul", { class: "lf-rules" }, [
-        el("li", { text: "Pytania z różnych podstron poziomu, losowane przy każdym podejściu." }),
-        el("li", { text: "Tryb Egzamin: wyjaśnienia dopiero po ostatnim pytaniu. Błędy trafią do Dziennika błędów." }),
-        el("li", { text: "Test jest zawsze dostępny. Niczego nie zaznacza jako „Umiem” – to nadal robisz Ty." })
+        el("li", { text: "Questions from different topics of the level, drawn again on every attempt." }),
+        el("li", { text: "Exam mode: explanations only after the last question. Mistakes go to the mistake log." }),
+        el("li", { text: "The test is always open. It never marks anything as “I know this” – you still do that yourself." })
       ]),
       msg,
-      el("div", { class: "tool-actions" }, [startBtn, el("a", { class: "btn btn-link", href: levelHash(level) }, "Wróć do poziomu " + level)])
+      el("div", { class: "tool-actions" }, [startBtn, el("a", { class: "btn btn-link", href: levelHash(level) }, "Back to " + level)])
     ]));
     setTimeout(function () { startBtn.focus({ preventScroll: true }); }, 0);
   }
 
-  /** Losuje zadania z puli i uruchamia sesję w silniku. */
+  /** Draws the items from the pool and starts a session in the engine. */
   function begin(level, btn, msg) {
     btn.disabled = true;
-    msg.textContent = "Losuję pytania…";
+    msg.textContent = "Drawing the questions…";
     load(level).then(function (set) {
       btn.disabled = false;
       if (!set || !Array.isArray(set.items) || !set.items.length) {
-        msg.textContent = "Pula pytań tego poziomu nie jest jeszcze dostępna. Uruchom: npm run build";
+        msg.textContent = "The question pool of this level is not available yet. Run: npm run build";
         return;
       }
       msg.textContent = "";
@@ -160,11 +155,11 @@ window.LM = window.LM || {};
     });
   }
 
-  /** Nowe podejście: losowanie + sesja Egzamin pod #/<poziom>/test. */
+  /** A new attempt: draw + Exam session at #/<level>/test. */
   function start(level, set) {
     const items = F().drawItems(set.items, set.draw || DRAW, categoryOf);
     LM.exercises.startFinal({
-      level: level, title: set.title || "Test końcowy " + level, items: items, back: backTo(level),
+      level: level, title: set.title || level + " final test", items: items, back: backTo(level),
       hooks: {
         finish: function (run, s) { return finish(level, set, run, s); },
         afterFinish: function (run) { afterFinish(level, run); },
@@ -174,10 +169,10 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // ZAKOŃCZENIE I WYNIK
+  // END AND RESULT
   // =====================================================================
 
-  /** Zapisuje wynik (slm.finals) i liczy podział na kategorie. Zwraca run.final. */
+  /** Saves the result (slm.finals) and computes the split by category. Returns run.final. */
   function finish(level, set, run, s) {
     const percent = set.passPercent || PASS;
     const passed = F().isPassed(s.score, s.total, percent);
@@ -188,7 +183,7 @@ window.LM = window.LM || {};
     };
   }
 
-  /** Po zaliczeniu: odświeżenie panelu (znaczek) i gratulacje (kamień milowy lvl-<poziom>-passed). */
+  /** After passing: refresh the panel (stamp) and congratulate (milestone lvl-<level>-passed). */
   function afterFinish(level, run) {
     if (!run.final || !run.final.passed) return;
     if (LM.render && LM.render.renderSidebar) LM.render.renderSidebar();
@@ -202,16 +197,16 @@ window.LM = window.LM || {};
     const total = run.total;
     const pct = total ? Math.round(run.score / total * 100) : 0;
     const passed = fin && fin.passed;
-    document.title = "Wynik testu końcowego " + level + " · " + LM.APP.appTitle;
+    document.title = level + " final test result · " + LM.APP.appTitle;
     view.className = "view tool-view ex-view lf-view lvl-" + level;
     view.appendChild(el("header", { class: "tool-head" }, [
-      el("p", { class: "tool-eyebrow" }, el("a", { href: levelHash(level) }, "Poziom " + level)),
-      el("h1", { class: "tool-title", text: "Test końcowy " + level })
+      el("p", { class: "tool-eyebrow" }, el("a", { href: levelHash(level) }, "Level " + level)),
+      el("h1", { class: "tool-title", text: level + " final test" })
     ]));
 
     const wrong = run.items.filter(api.isWrong);
     const catRows = fin.breakdown.categories.map(function (c) {
-      const showPct = c.total >= 3; // jak w teście poziomu: bez procentów przy próbie < 3
+      const showPct = c.total >= 3; // as in the placement test: no percentages with fewer than 3
       return el("li", { class: c.score === c.total ? "is-full" : "" }, [
         el("span", { class: "lf-cat-name", text: categoryLabel(c.key) }),
         el("strong", { class: "num", text: c.score + "/" + c.total }),
@@ -223,9 +218,9 @@ window.LM = window.LM || {};
     const names = weak.slice(0, 3).map(function (t) { const i = topicInfo(t.topic); return i ? i.title : t.topic; });
     const sets = el("p", { class: "tool-note lf-sets", hidden: true });
     const actions = el("div", { class: "tool-actions" }, [
-      el("button", { type: "button", class: "btn " + (passed ? "btn-secondary" : "btn-primary"), "data-fk": "again", onclick: function () { start(level, set); } }, LM.ui.withIcon("rotate-ccw", "Zrób test jeszcze raz")),
-      el("a", { class: "btn btn-secondary", href: levelHash(level) }, "Wróć do poziomu " + level),
-      passed ? el("a", { class: "btn btn-link", href: "#/today" }, LM.ui.withIcon("arrow-right", "Zobacz Szlak")) : null
+      el("button", { type: "button", class: "btn " + (passed ? "btn-secondary" : "btn-primary"), "data-fk": "again", onclick: function () { start(level, set); } }, LM.ui.withIcon("rotate-ccw", "Take the test again")),
+      el("a", { class: "btn btn-secondary", href: levelHash(level) }, "Back to " + level),
+      passed ? el("a", { class: "btn btn-link", href: "#/trail" }, LM.ui.withIcon("arrow-right", "See the trail")) : null
     ]);
 
     view.appendChild(el("section", { class: "card ex-result lf-result " + (passed ? "is-passed" : "is-failed"), "aria-live": "polite" }, [
@@ -235,86 +230,86 @@ window.LM = window.LM || {};
       ]),
       el("p", { class: "lf-verdict" }, [
         el("span", { class: "c1-mark " + (passed ? "is-ok" : "is-bad"), "aria-hidden": "true" }, LM.icon(passed ? "check" : "x", { size: 16 })),
-        el("strong", { text: passed ? "Zaliczony" : "Jeszcze nie" }),
-        el("span", { class: "lf-need", text: " – próg " + fin.percent + "% (" + fin.needed + " z " + total + " pkt)" })
+        el("strong", { text: passed ? "Passed" : "Not yet" }),
+        el("span", { class: "lf-need", text: " – pass mark " + fin.percent + "% (" + fin.needed + " of " + total + " points)" })
       ]),
       passed && fin.saved && fin.saved.firstPass
-        ? el("p", { class: "lf-passed" }, [stamp(level, { hideText: true }), el("strong", { text: level + " zaliczony " + fmtDate(fin.saved.passedAt) + ". Znaczek jest już na Szlaku, w panelu i na stronie poziomu." })])
-        : passed ? el("p", { class: "tool-note", text: "Poziom " + level + " masz zaliczony od " + fmtDate(fin.saved.passedAt) + "." })
-          : el("p", { class: "ex-result-comment", text: passedAt(level) ? "Znaczek " + level + " zostaje – to był wynik poniżej progu. Przejrzyj błędy i spróbuj jeszcze raz." : "Do progu brakuje " + Math.max(0, fin.needed - run.score) + " pkt. Przejrzyj błędy, powtórz tematy i spróbuj jeszcze raz." }),
-      fin.saved ? el("p", { class: "tool-note", text: "Najlepszy wynik: " + fin.saved.best.score + "/" + fin.saved.best.total + " pkt (" + percentOf(fin.saved.best) + "%)." }) : null,
-      el("h2", { class: "lf-h", text: "Wynik według kategorii" }),
+        ? el("p", { class: "lf-passed" }, [stamp(level, { hideText: true }), el("strong", { text: level + " passed " + fmtDate(fin.saved.passedAt) + ". Your stamp is now on the trail, in the panel and on the level page." })])
+        : passed ? el("p", { class: "tool-note", text: "You passed " + level + " on " + fmtDate(fin.saved.passedAt) + "." })
+          : el("p", { class: "ex-result-comment", text: passedAt(level) ? "Your " + level + " stamp stays – this result was below the pass mark. Look at the mistakes and try again." : "You need " + plural(Math.max(0, fin.needed - run.score), "more point") + " to pass. Look at the mistakes, review the topics and try again." }),
+      fin.saved ? el("p", { class: "tool-note", text: "Best result: " + fin.saved.best.score + "/" + fin.saved.best.total + " points (" + percentOf(fin.saved.best) + "%)." }) : null,
+      el("h2", { class: "lf-h", text: "Result by category" }),
       el("ul", { class: "lf-cats" }, catRows),
-      !passed && names.length ? el("p", { class: "lf-weak" }, [el("span", { class: "review-label", text: "Najwięcej błędów w: " }), names.join(", ") + "."]) : null,
+      !passed && names.length ? el("p", { class: "lf-weak" }, [el("span", { class: "review-label", text: "Most mistakes in: " }), names.join(", ") + "."]) : null,
       weak.length ? el("div", { class: "lf-topics" }, [
-        el("h2", { class: "lf-h", text: "Podstrony do powtórki" }),
+        el("h2", { class: "lf-h", text: "Topics to review" }),
         el("ul", { class: "lf-topic-list" }, weak.map(function (t) {
           const i = topicInfo(t.topic);
           return el("li", null, [
             i ? el("a", { href: i.href, text: i.title }) : el("span", { text: t.topic }),
-            el("span", { class: "tool-note", text: " – " + t.wrong + " " + plural(t.wrong, "zadanie", "zadania", "zadań") + " z błędem" })
+            el("span", { class: "tool-note", text: " – " + plural(t.wrong, "item") + " with a mistake" })
           ]);
         }))
-      ]) : el("p", { class: "tool-note", text: "Bez błędów – brawo!" }),
+      ]) : el("p", { class: "tool-note", text: "No mistakes – well done!" }),
       sets,
       api.journalSummary(),
       actions
     ]));
-    // „Zestawy do tych tematów” (tylko gdy te tematy mają zestawy ćwiczeń)
+    // "Sets for these topics" (only when these topics have exercise sets)
     if (!passed && weak.length) LM.exercises.loadIndex().then(function (index) {
       const found = [];
       weak.forEach(function (t) { (index.topics[t.topic] || []).forEach(function (id) { if (index.sets[id] && found.indexOf(id) === -1) found.push(id); }); });
       if (!found.length || !sets.isConnected) return;
       sets.hidden = false;
-      sets.replaceChildren(el("span", { class: "review-label", text: "Zestawy do tych tematów: " }));
+      sets.replaceChildren(el("span", { class: "review-label", text: "Sets for these topics: " }));
       found.slice(0, 4).forEach(function (id, k) {
         if (k) sets.appendChild(document.createTextNode(", "));
         sets.appendChild(el("a", { href: "#/practice/set/" + id, text: index.sets[id].title }));
       });
-      actions.insertBefore(el("a", { class: "btn btn-secondary", href: "#/practice/set/" + found[0] }, "Zestawy do tych tematów"), actions.children[1]);
+      actions.insertBefore(el("a", { class: "btn btn-secondary", href: "#/practice/set/" + found[0] }, "Sets for these topics"), actions.children[1]);
     });
 
     view.appendChild(el("section", { class: "card ex-review" }, [
-      el("h2", { class: "section-title", text: wrong.length ? "Do poprawki (" + wrong.length + ")" : "Bez błędów – brawo!" }),
+      el("h2", { class: "section-title", text: wrong.length ? "To fix (" + wrong.length + ")" : "No mistakes – well done!" }),
       wrong.length ? el("ol", { class: "ex-wrong" }, wrong.map(function (p) {
         const mine = api.userAnswer(p);
         return el("li", null, [
           el("p", { class: "ex-wrong-q" }, [el("span", { class: "chip", text: api.typeShort[p.item.type] }), p.res && p.res.max > 1 ? el("span", { class: "chip", text: p.res.points + "/" + p.res.max + " pkt" }) : null, " ", api.itemSummary(p.item)]),
-          el("p", { class: "journal-row is-wrong" }, [el("span", { class: "review-label", text: "Twoja odpowiedź: " }), el("span", { text: mine || "(brak)" })]),
-          el("p", { class: "journal-row is-right" }, [el("span", { class: "review-label", text: "Poprawnie: " }), el("strong", { text: api.modelAnswer(p.item) })]),
+          el("p", { class: "journal-row is-wrong" }, [el("span", { class: "review-label", text: "Your answer: " }), el("span", { text: mine || "(none)" })]),
+          el("p", { class: "journal-row is-right" }, [el("span", { class: "review-label", text: "Right answer: " }), el("strong", { text: api.modelAnswer(p.item) })]),
           p.item.explanation ? el("p", { class: "ex-wrong-expl", text: p.item.explanation }) : null,
-          p.item.trap ? el("p", { class: "ex-wrong-trap" }, [el("strong", { text: "Pułapka: " }), p.item.trap]) : null
+          p.item.trap ? el("p", { class: "ex-wrong-trap" }, [el("strong", { text: "Trap: " }), p.item.trap]) : null
         ]);
-      })) : el("p", { class: "tool-note", text: "Wszystkie odpowiedzi były poprawne." })
+      })) : el("p", { class: "tool-note", text: "All your answers were right." })
     ]));
     setTimeout(function () { const b = view.querySelector("[data-fk='again']"); if (b) b.focus({ preventScroll: true }); }, 0);
   }
 
   // =====================================================================
-  // KARTA NA STRONIE POZIOMU I PODPOWIEDŹ NA „DZIŚ”
+  // CARD ON THE LEVEL PAGE AND HINT ON "TODAY"
   // =====================================================================
 
-  /** Karta „Test końcowy A1” pod podsumowaniem poziomu. */
+  /** The "A1 final test" card below the level summary. */
   function card(level) {
     const info = LM.app.getActiveProfile() ? pd().finalResult(level) : null;
     const when = passedText(level);
     return el("section", { class: "card lf-level-card lvl-" + level, "aria-labelledby": "lf-card-title" }, [
       el("div", { class: "lf-level-card-body" }, [
-        el("h2", { class: "section-title", id: "lf-card-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon("award", { size: 20 })), "Test końcowy " + level]),
-        el("p", { text: DRAW + " pytań z całego poziomu, ok. " + MINUTES + " minut. Zaliczenie od " + PASS + "% (" + pointsNeeded(DRAW, PASS) + " z " + DRAW + ") daje znaczek poziomu na Szlaku." }),
+        el("h2", { class: "section-title", id: "lf-card-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon("award", { size: 20 })), level + " final test"]),
+        el("p", { text: DRAW + " questions from the whole level, about " + MINUTES + " minutes. " + PASS + "% (" + pointsNeeded(DRAW, PASS) + " of " + DRAW + ") gives you the level stamp on the trail." }),
         when ? el("p", { class: "lf-passed" }, [stamp(level, { hideText: true }), el("strong", { text: when })]) : null,
-        info ? el("p", { class: "tool-note", text: "Najlepszy wynik: " + info.best.score + "/" + info.best.total + " pkt (" + percentOf(info.best) + "%), ostatni: " + info.last.score + "/" + info.last.total + " (" + fmtDate(info.last.date) + ")." })
-          : el("p", { class: "tool-note", text: "Test jest zawsze dostępny – możesz go zrobić bez zaznaczania „Umiem”." })
+        info ? el("p", { class: "tool-note", text: "Best result: " + info.best.score + "/" + info.best.total + " points (" + percentOf(info.best) + "%), last: " + info.last.score + "/" + info.last.total + " (" + fmtDate(info.last.date) + ")." })
+          : el("p", { class: "tool-note", text: "The test is always open – you can take it without marking anything as “I know this”." })
       ]),
-      el("a", { class: "btn btn-primary", href: testHash(level), "aria-label": (info ? "Zrób test końcowy ponownie: " : "Zacznij test końcowy: ") + level }, LM.ui.withIcon("play", info ? "Zrób ponownie" : "Zacznij test"))
+      el("a", { class: "btn btn-primary", href: testHash(level), "aria-label": (info ? "Take the final test again: " : "Start the final test: ") + level }, LM.ui.withIcon("play", info ? "Take it again" : "Start the test"))
     ]);
   }
 
   /**
-   * Podpowiedź na „Dziś”: najniższy poziom z ≥ 70% „Umiem” bez zaliczonego testu końcowego.
-   * stats = [{ id, percent, … }] jak w LM.today. Zwraca kafelek albo null.
+   * Hint on "Today": the lowest level with ≥ 70% of topics known and no passed final test.
+   * stats = [{ id, percent, … }] as in LM.today. Returns a tile or null.
    */
-  /** Poziom gotowy na test końcowy (≥ 70% „Umiem”, jeszcze niezaliczony) z listy statystyk poziomów albo null (karta mapy na Dziś). */
+  /** Level ready for the final test (≥ 70% known, not passed yet) from the list of level stats, or null (map card on Today). */
   function readyLevel(stats) {
     if (!LM.app.getActiveProfile()) return null;
     stats = stats.filter(function (x) { return LM.syl.isAvailable(x.id); });
@@ -329,12 +324,12 @@ window.LM = window.LM || {};
     const passed = pd().passedLevels();
     const s = stats.find(function (x) { return x.total !== 0 && x.percent >= READY_PERCENT && !passed[x.id]; });
     if (!s) return null;
-    return el("section", { class: "card bento-tile bento-tip lf-tip", "aria-label": "Test końcowy " + s.id }, [
+    return el("section", { class: "card bento-tile bento-tip lf-tip", "aria-label": s.id + " final test" }, [
       el("div", { class: "today-tip-body" }, [
-        el("h2", { class: "tile-title", text: "Gotowy na test końcowy " + s.id + "?" }),
-        el("p", { class: "tool-note", text: "Masz już " + s.percent + "% punktów „Umiem” na poziomie " + s.id + ". " + DRAW + " pytań, ok. " + MINUTES + " minut, zaliczenie od " + PASS + "%." })
+        el("h2", { class: "tile-title", text: "Ready for the " + s.id + " final test?" }),
+        el("p", { class: "tool-note", text: "You already know " + s.percent + "% of the topics of " + s.id + ". " + DRAW + " questions, about " + MINUTES + " minutes, pass mark " + PASS + "%." })
       ]),
-      el("a", { class: "btn btn-primary", href: testHash(s.id) }, LM.ui.withIcon("award", "Zrób test końcowy " + s.id))
+      el("a", { class: "btn btn-primary", href: testHash(s.id) }, LM.ui.withIcon("award", "Take the " + s.id + " final test"))
     ]);
   }
 

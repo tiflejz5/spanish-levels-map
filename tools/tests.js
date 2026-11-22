@@ -957,14 +957,14 @@ test("poprawna odpowiedź zalicza powtórkę tylko, gdy przypada (dziś lub zale
 });
 
 test("sugestia „Umiem”: dwa ostatnie ≥ 80%, nie gdy już Umiem, przerwa 14 dni po odmowie", function () {
-  const o = { isUmiem: false, dismissedDay: null, today: "2026-10-20" };
-  assert.strictEqual(T.suggestUmiem([0.9], o), false);
-  assert.strictEqual(T.suggestUmiem([0.8, 0.9], o), true);
-  assert.strictEqual(T.suggestUmiem([1, 0.7, 0.9], o), false);
-  assert.strictEqual(T.suggestUmiem([0.5, 0.8, 1], o), true);
-  assert.strictEqual(T.suggestUmiem([0.9, 0.9], Object.assign({}, o, { isUmiem: true })), false);
-  assert.strictEqual(T.suggestUmiem([0.9, 0.9], Object.assign({}, o, { dismissedDay: "2026-10-10" })), false);
-  assert.strictEqual(T.suggestUmiem([0.9, 0.9], Object.assign({}, o, { dismissedDay: "2026-10-06" })), true);
+  const o = { isKnown: false, dismissedDay: null, today: "2026-10-20" };
+  assert.strictEqual(T.suggestKnown([0.9], o), false);
+  assert.strictEqual(T.suggestKnown([0.8, 0.9], o), true);
+  assert.strictEqual(T.suggestKnown([1, 0.7, 0.9], o), false);
+  assert.strictEqual(T.suggestKnown([0.5, 0.8, 1], o), true);
+  assert.strictEqual(T.suggestKnown([0.9, 0.9], Object.assign({}, o, { isKnown: true })), false);
+  assert.strictEqual(T.suggestKnown([0.9, 0.9], Object.assign({}, o, { dismissedDay: "2026-10-10" })), false);
+  assert.strictEqual(T.suggestKnown([0.9, 0.9], Object.assign({}, o, { dismissedDay: "2026-10-06" })), true);
 });
 
 test("wagi: generator (trafność < 60% × 2, nowe × 1,5) i trening (bez poprawnej w 14 dniach × 2)", function () {
@@ -1250,7 +1250,7 @@ console.log("\nSzlak: logika (spec v7 13)");
     ] }
   ] };
   const umiem = {}, setPct = {};
-  const env = { isUmiem: function (id) { return umiem[id] === true; }, setPercent: function (id) { return id in setPct ? setPct[id] : null; } };
+  const env = { isKnown: function (id) { return umiem[id] === true; }, setPercent: function (id) { return id in setPct ? setPct[id] : null; } };
   const reset = function () { Object.keys(umiem).forEach(function (k) { delete umiem[k]; }); Object.keys(setPct).forEach(function (k) { delete setPct[k]; }); };
   const stopOf = function (id) { let f = null; data.levels.forEach(function (l) { l.units.forEach(function (u) { u.stops.forEach(function (s) { if (s.id === id) f = s; }); }); }); return f; };
 
@@ -2499,25 +2499,25 @@ console.log("\nTrail generated from the syllabus (spec 06 E9)");
     assert.strictEqual(cp.title, "Check");
   });
   test("passing rules: quiz ≥ 3 of 4, or I know this, or best set ≥ 80% without a quiz, or skip; a quiz never ticks I know this", function () {
-    const env = { isUmiem: function () { return false; }, setPercent: function () { return null; } };
+    const env = { isKnown: function () { return false; }, setPercent: function () { return null; } };
     const lesson = tr.levels[0].units[0].stops[0];
     const st = SL.emptyState();
     st.stops[lesson.id] = { done: true, via: "quiz", best: 3, at: "" };
     assert.strictEqual(SL.statusOf(lesson, st, env).status, "done");
-    assert.strictEqual(env.isUmiem(lesson.id), false, "the quiz result does not tick the topic");
+    assert.strictEqual(env.isKnown(lesson.id), false, "the quiz result does not tick the topic");
     const other = tr.levels[0].units[0].stops[1];
-    assert.strictEqual(SL.statusOf(other, SL.emptyState(), { isUmiem: function (id) { return id === other.id; }, setPercent: env.setPercent }).status, "done");
+    assert.strictEqual(SL.statusOf(other, SL.emptyState(), { isKnown: function (id) { return id === other.id; }, setPercent: env.setPercent }).status, "done");
     const withSet = Object.assign({}, other, { set: "s1" });
-    assert.strictEqual(SL.statusOf(withSet, SL.emptyState(), { isUmiem: env.isUmiem, setPercent: function () { return 80; } }).status, "done");
-    assert.strictEqual(SL.statusOf(Object.assign({}, withSet, { quiz: other.id }), SL.emptyState(), { isUmiem: env.isUmiem, setPercent: function () { return 100; } }).status, "open", "a set does not pass a stop that has a quiz");
+    assert.strictEqual(SL.statusOf(withSet, SL.emptyState(), { isKnown: env.isKnown, setPercent: function () { return 80; } }).status, "done");
+    assert.strictEqual(SL.statusOf(Object.assign({}, withSet, { quiz: other.id }), SL.emptyState(), { isKnown: env.isKnown, setPercent: function () { return 100; } }).status, "open", "a set does not pass a stop that has a quiz");
   });
   test("soon levels: status soon, never current; a start in a soon land moves back to the last available land", function () {
-    const env = { isUmiem: function () { return false; }, setPercent: function () { return null; } };
+    const env = { isKnown: function () { return false; }, setPercent: function () { return null; } };
     const b = SL.buildTrail(tr, SL.emptyState(), env, "B1");
     assert.strictEqual(b.startIndex, 0, "start moved back to A1");
     assert.strictEqual(b.current.level, "A1");
     assert.ok(b.nodes.filter(function (n) { return n.level !== "A1"; }).every(function (n) { return n.status === "soon" && n.soon && !n.current; }));
-    const allDone = { isUmiem: function (id) { return /^a1-/.test(id); }, setPercent: function () { return null; } };
+    const allDone = { isKnown: function (id) { return /^a1-/.test(id); }, setPercent: function () { return null; } };
     const st = SL.emptyState();
     tr.levels[0].units.forEach(function (u) { st.reviews[u.id + "-checkpoint"] = { best: 1, of: 1, at: "" }; });
     assert.strictEqual(SL.buildTrail(tr, st, allDone, "A1").current, null, "A1 done: no current stop in a soon land");
