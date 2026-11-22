@@ -28,7 +28,6 @@ window.LM = window.LM || {};
     listScroll: 0 // pozycja przewinięcia listy, przywracana po powrocie z podstrony
   };
 
-  let saveTimer = null;
 
   // =====================================================================
   // START
@@ -75,7 +74,6 @@ window.LM = window.LM || {};
   function bindStaticEvents() {
     LM.profiles.bindEvents();
     // Zapisz zaległe zmiany przy zamykaniu / chowaniu karty
-    window.addEventListener("beforeunload", flushSave);
     // Podstrony niezbędnika: adresy #/a1/… (zmiana adresu = zmiana widoku)
     window.addEventListener("hashchange", onRoute);
     // Menu boczne jako szuflada na telefonie
@@ -86,9 +84,6 @@ window.LM = window.LM || {};
         setNavOpen(false);
         document.getElementById("menu-btn").focus();
       }
-    });
-    document.addEventListener("visibilitychange", function () {
-      if (document.visibilityState === "hidden") flushSave();
     });
   }
 
@@ -121,7 +116,6 @@ window.LM = window.LM || {};
 
   /** Przejście do listy poziomu (sidebar). Zmienia adres na #/a1 itd. */
   function selectLevel(levelId) {
-    flushSave();
     state.ui.levelId = levelId;
     saveUI();
     state.listScroll = 0;
@@ -194,7 +188,6 @@ window.LM = window.LM || {};
   /** Reakcja na zmianę adresu (linki, „Wróć”, logo, przycisk Wstecz). */
   function onRoute() {
     if (!state.profiles) return;
-    flushSave();
     const previous = state.view;
     const previousHash = state.lastHash;
     if (previous === "level") state.listScroll = U.getScroll();
@@ -275,17 +268,6 @@ window.LM = window.LM || {};
   // =====================================================================
   // ZAPIS
   // =====================================================================
-
-  /** Content is never stored (it comes from code and data/); kept so pending-save hooks stay harmless. */
-  function saveContentNow() {
-    clearTimeout(saveTimer);
-    saveTimer = null;
-  }
-
-  /** Zapisuje zaległe zmiany, jeśli czekają w kolejce. */
-  function flushSave() {
-    if (saveTimer) saveContentNow();
-  }
 
   /** Zapisuje profile (razem z postępem każdego z nich). */
   function saveProgressNow() {
@@ -495,7 +477,6 @@ window.LM = window.LM || {};
     refreshProgress: refreshProgress,
     refreshLearning: refreshLearning,
     reportSaveError: reportSaveError,
-    saveContentNow: saveContentNow,
     saveProgressNow: saveProgressNow,
     saveUI: saveUI,
     setProgress: setProgress,

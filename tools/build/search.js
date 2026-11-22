@@ -4,8 +4,7 @@
  *
  * Indexed: topic pages, summaries and cheat sheets of AVAILABLE levels only (spec 06 E1), exercise sets, mixes,
  * shortcuts to the review views and built-in decks, lab cards, phrase-bank groups, exam pages and sets.
- * Notes and the mistake log are added in the browser. Routes are the English ones of spec 02 §6 (the router
- * handles them from stage 1B; until then only topic-page routes open).
+ * Notes and the mistake log are added in the browser. Routes are the English ones of spec 02 §6.
  */
 "use strict";
 

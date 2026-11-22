@@ -16,7 +16,6 @@ window.LM = window.LM || {};
   // Kolejność ma znaczenie: pierwsza pasująca reguła wygrywa.
   const CALLOUT_RULES = [
     { match: /^(najczęstsza pułapka|typowe błędy|pułapka)/i, type: "trap", icon: "triangle-alert", label: "Uwaga" },
-    { match: /^na egzaminie c1/i, type: "exam", icon: "award", label: "Egzamin C1" },
     { match: /^życie i egzamin/i, type: "real-exam", icon: "arrow-left-right", label: "Życie i egzamin" },
     { match: /^(kluczowe myśli|co umiesz)/i, type: "key", icon: "sparkles", label: "Najważniejsze" },
     { match: /^(jesteś gotow|co dalej)/i, type: "next", icon: "map-pin", label: "Dalej" },

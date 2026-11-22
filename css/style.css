@@ -228,335 +228,7 @@
   --scrollbar-hover: rgba(234, 240, 250, 0.36);
 }
 
-/* ===================== TOKENY: SEKCJA „CERTYFIKAT C1” (html[data-section="certyfikat"], js/app.js) =====================
-   Własny klimat zakładki C1: w jasnym motywie ciepła kość słoniowa, granatowy tekst i złote akcenty;
-   w ciemnym północny granat ze złotem. Nadpisuje tylko powierzchnie, tekst, linie i akcent. */
-:root:not([data-theme="dark"])[data-section="certyfikat"] {
-  --bg: #f9f4e8;
-  --surface: #fffaf0;
-  --surface-2: #efe5cd;
-  --surface-3: #e5d6b4;
-  --surface-raised: #fffcf5;
-  --empty-bg: #f8f1e2;
-  --row-hover: #fbf4e6;
-  --hover: rgba(23, 32, 61, 0.05);
-  --topbar-bg: rgba(249, 244, 232, 0.88);
-  --sticky-bg: rgba(249, 244, 232, 0.94);
-  --ink: #17203d;
-  --ink-muted: #4c5470;
-  --ink-faint: #5f6680;
-  --line: #e2d4b2;
-  --line-strong: #cdb98a;
-  --line-control: #8a7a52;
-  --accent: #6b4d00;
-  --accent-soft: rgba(201, 150, 30, 0.14);
-  --accent-bg: #1b2647;
-  --accent-hover: #26335c;
-  --on-accent: #fdf7e8;
-  --info-bg: #f5ead0;
-  --info-border: #dfca94;
-  --focus-color: #8a6400;
-  --focus-ring: 0 0 0 3px rgba(201, 150, 30, 0.45);
-  --topo-color: #17203d;
-}
-:root[data-theme="dark"][data-section="certyfikat"] {
-  --bg: #090f21;
-  --surface: #101935;
-  --surface-2: #162048;
-  --surface-3: #1f2a56;
-  --surface-raised: #131d3d;
-  --empty-bg: #0d152d;
-  --row-hover: rgba(233, 194, 92, 0.04);
-  --hover: rgba(243, 236, 218, 0.06);
-  --topbar-bg: rgba(9, 15, 33, 0.86);
-  --sticky-bg: rgba(9, 15, 33, 0.94);
-  --ink: #f3ecda;
-  --ink-muted: #bcb4a0;
-  --ink-faint: #a19a87;
-  --line: #252f58;
-  --line-strong: #36427a;
-  --line-control: #8a8ba3;
-  --accent: #e9c25c;
-  --accent-soft: rgba(233, 194, 92, 0.14);
-  --accent-bg: #e9c25c;
-  --accent-hover: #f2d27e;
-  --on-accent: #090f21;
-  --info-bg: rgba(233, 194, 92, 0.07);
-  --info-border: rgba(233, 194, 92, 0.3);
-  --focus-color: #e9c25c;
-  --focus-ring: 0 0 0 3px rgba(233, 194, 92, 0.45);
-  --topo-color: #f3ecda;
-}
-
-/* ===================== TOKENY: EGZAMIN ÓSMOKLASISTY (html[data-section="egzamin-osmoklasisty"], js/exam-core.js) =====================
-   Przyjazny, szkolny i energiczny (bez dziecinności): głęboki turkus + słoneczny żółty akcent, ciepłe tło.
-   Żółty zawsze z ciemnym tekstem. Nadpisuje tylko powierzchnie, tekst, linie i akcent. */
-:root:not([data-theme="dark"])[data-section="egzamin-osmoklasisty"] {
-  --bg: #f8f5ec;
-  --surface: #fffefa;
-  --surface-2: #eaf3f0;
-  --surface-3: #d9eae5;
-  --surface-raised: #ffffff;
-  --empty-bg: #f3f1e7;
-  --row-hover: #f1f7f4;
-  --hover: rgba(11, 92, 100, 0.06);
-  --topbar-bg: rgba(248, 245, 236, 0.88);
-  --sticky-bg: rgba(248, 245, 236, 0.94);
-  --ink: #17282b;
-  --ink-muted: #48595b;
-  --ink-faint: #5a6b6d;
-  --line: #d7e3df;
-  --line-strong: #b7cdc7;
-  --line-control: #6c8784;
-  --accent: #0a6770;
-  --accent-soft: rgba(14, 124, 134, 0.12);
-  --accent-bg: #0a5c64;
-  --accent-hover: #0d6d76;
-  --on-accent: #ffffff;
-  --info-bg: #fff4cc;
-  --info-border: #e9c450;
-  --focus-color: #0a6770;
-  --focus-ring: 0 0 0 3px rgba(14, 124, 134, 0.35);
-  --topo-color: #0a5c64;
-  --e8-yellow: #f5b800;
-  --e8-on-yellow: #1d2426;
-}
-:root[data-theme="dark"][data-section="egzamin-osmoklasisty"] {
-  --bg: #0a181b;
-  --surface: #0d2024;
-  --surface-2: #142d32;
-  --surface-3: #1c3a40;
-  --surface-raised: #12292e;
-  --empty-bg: #0c1d20;
-  --row-hover: rgba(95, 208, 216, 0.05);
-  --hover: rgba(236, 244, 242, 0.06);
-  --topbar-bg: rgba(10, 24, 27, 0.86);
-  --sticky-bg: rgba(10, 24, 27, 0.94);
-  --ink: #ecf4f2;
-  --ink-muted: #a9bebb;
-  --ink-faint: #8fa7a4;
-  --line: #1f383d;
-  --line-strong: #2d4d53;
-  --line-control: #6f9095;
-  --accent: #66d3da;
-  --accent-soft: rgba(102, 211, 218, 0.14);
-  --accent-bg: #f5c84a;
-  --accent-hover: #f8d670;
-  --on-accent: #10201f;
-  --info-bg: rgba(245, 200, 74, 0.08);
-  --info-border: rgba(245, 200, 74, 0.35);
-  --focus-color: #66d3da;
-  --focus-ring: 0 0 0 3px rgba(102, 211, 218, 0.4);
-  --topo-color: #66d3da;
-  --e8-yellow: #f5c84a;
-  --e8-on-yellow: #10201f;
-}
-
-/* ===================== TOKENY: MATURA PODSTAWOWA (html[data-section="matura-podstawowa"], js/exam-core.js) =====================
-   Spokojny, skupiony, szkolny: głęboka zieleń (forest) na ciepłym papierowym beżu, akcent miedziany (spec 06, sekcja 5).
-   W ciemnym motywie jasna miedź z ciemnym tekstem. Nadpisuje tylko powierzchnie, tekst, linie i akcent. */
-:root:not([data-theme="dark"])[data-section="matura-podstawowa"] {
-  --bg: #f8f5ed;
-  --surface: #fffdf7;
-  --surface-2: #ece6d6;
-  --surface-3: #ddd5c0;
-  --surface-raised: #ffffff;
-  --empty-bg: #f1ece0;
-  --row-hover: #f4efe3;
-  --hover: rgba(31, 72, 52, 0.06);
-  --topbar-bg: rgba(248, 245, 237, 0.88);
-  --sticky-bg: rgba(248, 245, 237, 0.94);
-  --ink: #1b2a22;
-  --ink-muted: #4a584f;
-  --ink-faint: #5b6960;
-  --line: #ddd5c1;
-  --line-strong: #c4b9a0;
-  --line-control: #77735f;
-  --accent: #28603f;
-  --accent-soft: rgba(47, 107, 79, 0.12);
-  --accent-bg: #245a41;
-  --accent-hover: #2f6b4f;
-  --on-accent: #ffffff;
-  --info-bg: #f7e9db;
-  --info-border: #dcb08a;
-  --focus-color: #28603f;
-  --focus-ring: 0 0 0 3px rgba(47, 107, 79, 0.35);
-  --topo-color: #245a41;
-  --exam-mark: #b4672f;
-  --exam-mark-ink: #874819;
-  --exam-mark-bg: #874819;
-  --exam-on-mark: #ffffff;
-}
-:root[data-theme="dark"][data-section="matura-podstawowa"] {
-  --bg: #0d1612;
-  --surface: #101c16;
-  --surface-2: #16261e;
-  --surface-3: #1e3127;
-  --surface-raised: #13211a;
-  --empty-bg: #0f1914;
-  --row-hover: rgba(143, 208, 173, 0.05);
-  --hover: rgba(236, 242, 236, 0.06);
-  --topbar-bg: rgba(13, 22, 18, 0.86);
-  --sticky-bg: rgba(13, 22, 18, 0.94);
-  --ink: #edf2ec;
-  --ink-muted: #aab9ad;
-  --ink-faint: #8fa293;
-  --line: #1f3328;
-  --line-strong: #2d4638;
-  --line-control: #6f8c7a;
-  --accent: #8fd0ad;
-  --accent-soft: rgba(143, 208, 173, 0.14);
-  --accent-bg: #e3a06a;
-  --accent-hover: #eab384;
-  --on-accent: #1b120b;
-  --info-bg: rgba(227, 160, 106, 0.08);
-  --info-border: rgba(227, 160, 106, 0.35);
-  --focus-color: #8fd0ad;
-  --focus-ring: 0 0 0 3px rgba(143, 208, 173, 0.4);
-  --topo-color: #8fd0ad;
-  --exam-mark: #e3a06a;
-  --exam-mark-ink: #e9b182;
-  --exam-mark-bg: #e3a06a;
-  --exam-on-mark: #1b120b;
-}
-
-/* ===================== TOKENY: MATURA ROZSZERZONA (html[data-section="matura-rozszerzona"], js/exam-core.js) =====================
-   Ambitny, redakcyjny: chłodne indygo na chłodnej, jasnoszarej kartce, akcent miedziany (spec 06, sekcja 5).
-   Celowo inaczej niż C1 (granat + złoto na kości słoniowej): chłodniejsze tło, indygo zamiast granatu, miedź zamiast złota.
-   W ciemnym motywie jasne indygo (barwinek) na przyciskach, miedź jako znak egzaminu. */
-:root:not([data-theme="dark"])[data-section="matura-rozszerzona"] {
-  --bg: #f4f5f9;
-  --surface: #ffffff;
-  --surface-2: #e8eaf2;
-  --surface-3: #d9dceb;
-  --surface-raised: #ffffff;
-  --empty-bg: #eef0f6;
-  --row-hover: #eff1f7;
-  --hover: rgba(47, 63, 143, 0.06);
-  --topbar-bg: rgba(244, 245, 249, 0.88);
-  --sticky-bg: rgba(244, 245, 249, 0.94);
-  --ink: #161a2e;
-  --ink-muted: #474d66;
-  --ink-faint: #575d77;
-  --line: #d9dce8;
-  --line-strong: #b9bed3;
-  --line-control: #6c7290;
-  --accent: #2f3f8f;
-  --accent-soft: rgba(47, 63, 143, 0.1);
-  --accent-bg: #2f3f8f;
-  --accent-hover: #3a4ba3;
-  --on-accent: #ffffff;
-  --info-bg: #f8ebe1;
-  --info-border: #e0b494;
-  --focus-color: #2f3f8f;
-  --focus-ring: 0 0 0 3px rgba(47, 63, 143, 0.35);
-  --topo-color: #2f3f8f;
-  --exam-mark: #c26a2e;
-  --exam-mark-ink: #9a4c17;
-  --exam-mark-bg: #9a4c17;
-  --exam-on-mark: #ffffff;
-}
-:root[data-theme="dark"][data-section="matura-rozszerzona"] {
-  --bg: #0c0e1a;
-  --surface: #12152a;
-  --surface-2: #191d36;
-  --surface-3: #222744;
-  --surface-raised: #151933;
-  --empty-bg: #10132a;
-  --row-hover: rgba(170, 180, 240, 0.05);
-  --hover: rgba(236, 238, 248, 0.06);
-  --topbar-bg: rgba(12, 14, 26, 0.86);
-  --sticky-bg: rgba(12, 14, 26, 0.94);
-  --ink: #eceef8;
-  --ink-muted: #aeb3cc;
-  --ink-faint: #9197b4;
-  --line: #232842;
-  --line-strong: #333a5c;
-  --line-control: #737ba0;
-  --accent: #aab4f0;
-  --accent-soft: rgba(170, 180, 240, 0.14);
-  --accent-bg: #aab4f0;
-  --accent-hover: #c0c8f6;
-  --on-accent: #12152a;
-  --info-bg: rgba(227, 154, 104, 0.08);
-  --info-border: rgba(227, 154, 104, 0.35);
-  --focus-color: #aab4f0;
-  --focus-ring: 0 0 0 3px rgba(170, 180, 240, 0.4);
-  --topo-color: #aab4f0;
-  --exam-mark: #e39a68;
-  --exam-mark-ink: #eaae86;
-  --exam-mark-bg: #e39a68;
-  --exam-on-mark: #1b120b;
-}
-
-/* ===================== TOKENY: CERTYFIKAT B2 (html[data-section="certyfikat-b2"], js/exam-core.js) =====================
-   Chłodny turkus/morski na jasnej, lekko morskiej kartce, ciepły bursztynowy akcent (spec 09, sekcja 6).
-   Inaczej niż C1 (granat + złoto na kości słoniowej) i MR (indygo + miedź): przyciski zawsze turkusowe,
-   bursztyn tylko jako znak egzaminu (podkreślenie tytułu, plakietki wyników). */
-:root:not([data-theme="dark"])[data-section="certyfikat-b2"] {
-  --bg: #f3f7f8;
-  --surface: #ffffff;
-  --surface-2: #e5eef1;
-  --surface-3: #d4e3e8;
-  --surface-raised: #ffffff;
-  --empty-bg: #ecf3f5;
-  --row-hover: #edf4f6;
-  --hover: rgba(31, 111, 139, 0.06);
-  --topbar-bg: rgba(243, 247, 248, 0.88);
-  --sticky-bg: rgba(243, 247, 248, 0.94);
-  --ink: #12252c;
-  --ink-muted: #435a62;
-  --ink-faint: #526a72;
-  --line: #d3e1e6;
-  --line-strong: #b1c7cf;
-  --line-control: #66808a;
-  --accent: #1a6380;
-  --accent-soft: rgba(31, 111, 139, 0.1);
-  --accent-bg: #1f6f8b;
-  --accent-hover: #1a6380;
-  --on-accent: #ffffff;
-  --info-bg: #fbf1d8;
-  --info-border: #e6c56c;
-  --focus-color: #1a6380;
-  --focus-ring: 0 0 0 3px rgba(31, 111, 139, 0.35);
-  --topo-color: #1f6f8b;
-  --exam-mark: #d9a21b;
-  --exam-mark-ink: #7f5a00;
-  --exam-mark-bg: #d9a21b;
-  --exam-on-mark: #1d1405;
-}
-:root[data-theme="dark"][data-section="certyfikat-b2"] {
-  --bg: #0a1518;
-  --surface: #0f1e22;
-  --surface-2: #15282d;
-  --surface-3: #1d3339;
-  --surface-raised: #122428;
-  --empty-bg: #0d1a1e;
-  --row-hover: rgba(127, 208, 230, 0.05);
-  --hover: rgba(232, 243, 246, 0.06);
-  --topbar-bg: rgba(10, 21, 24, 0.86);
-  --sticky-bg: rgba(10, 21, 24, 0.94);
-  --ink: #e8f2f4;
-  --ink-muted: #a7bcc2;
-  --ink-faint: #8ca3aa;
-  --line: #1f343a;
-  --line-strong: #2e4a51;
-  --line-control: #6d8f98;
-  --accent: #7fd0e6;
-  --accent-soft: rgba(127, 208, 230, 0.14);
-  --accent-bg: #7fd0e6;
-  --accent-hover: #9adcee;
-  --on-accent: #06222b;
-  --info-bg: rgba(227, 178, 60, 0.08);
-  --info-border: rgba(227, 178, 60, 0.35);
-  --focus-color: #7fd0e6;
-  --focus-ring: 0 0 0 3px rgba(127, 208, 230, 0.4);
-  --topo-color: #7fd0e6;
-  --exam-mark: #e3b23c;
-  --exam-mark-ink: #ecc566;
-  --exam-mark-bg: #e3b23c;
-  --exam-on-mark: #1d1405;
-}
+/* Exam sections: html[data-section="<exam id>"] gets its accent from the registry (--exam-accent), no per-exam token blocks (spec 03, spec 06 E8). */
 
 /* ===================== TOKENY WSPÓLNE: typografia, odstępy, promienie, ruch ===================== */
 :root {
@@ -853,15 +525,18 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 /* Karta w kontekście poziomu: ramka z domieszką koloru krainy */
 .view[class*="lvl-"] .card { border-color: color-mix(in srgb, var(--lvl) 22%, var(--line)); }
 /* Karty klikalne: lekkie uniesienie (transform), bez przesunięcia układu */
-.card.is-interactive, .c1-set-card, .c1-home-tile {
+.card.is-interactive,
+.c1-set-card {
   transition: transform var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
 }
-.card.is-interactive:hover, .c1-set-card:hover, .c1-home-tile:hover {
+.card.is-interactive:hover,
+.c1-set-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-hover);
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
 }
-.card.is-interactive:active, .c1-set-card:active, .c1-home-tile:active { transform: translateY(0); }
+.card.is-interactive:active,
+.c1-set-card:active { transform: translateY(0); }
 .section-head {
   display: flex;
   align-items: baseline;
@@ -1121,13 +796,16 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
   gap: 14px;
   margin-bottom: 24px;
 }
-.back-btn { margin-left: -12px; }
-.crumb, .c1-back a, .c1-crumb a {
+
+.crumb,
+.c1-back a {
   display: inline-flex; align-items: center; gap: 4px; min-height: 44px; font-size: var(--fs-sm); font-weight: 500;
   color: var(--accent); background: transparent; border: 0; padding: 0; text-decoration: none; cursor: pointer; font-family: inherit;
 }
-.crumb:hover, .crumb:focus-visible, .c1-back a:hover, .c1-crumb a:hover { text-decoration: underline; text-underline-offset: 3px; }
-.c1-crumb { font-size: var(--fs-sm); }
+.crumb:hover,
+.crumb:focus-visible,
+.c1-back a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
 .page-crumb {
   display: inline-flex;
   align-items: center;
@@ -1263,19 +941,6 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .profile-slot { margin-left: auto; }
 .nav-overlay { position: fixed; inset: 0; z-index: 55; background: var(--backdrop); }
 
-.c1-badge {
-  display: inline-grid;
-  place-content: center;
-  min-width: 30px; height: 22px;
-  padding: 0 6px;
-  border-radius: var(--radius-xs);
-  background: var(--accent-bg);
-  color: var(--on-accent);
-  font-size: var(--fs-xs);
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-.c1-badge-lg { min-width: 44px; height: 44px; border-radius: var(--radius-sm); font-size: var(--fs-md); }
 .c1-sec-toggle {
   display: flex;
   align-items: center;
@@ -1296,7 +961,7 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .c1-sec-caret { display: inline-block; width: 10px; color: var(--ink-muted); transition: transform var(--transition); }
 .c1-sec-toggle[aria-expanded="true"] .c1-sec-caret { transform: rotate(90deg); }
 .c1-sec-list { list-style: none; margin: 0 0 6px; padding: 0 0 0 18px; }
-.c1-group-label { margin: 8px 0 2px 10px; font-size: var(--fs-2xs); font-weight: 600; color: var(--ink-muted); }
+
 .c1-nav-link {
   display: flex;
   align-items: center;
@@ -1315,7 +980,7 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .c1-nav-badge { flex-shrink: 0; padding: 1px 7px; border-radius: var(--radius-pill); background: var(--success-soft); color: var(--success); font-size: var(--fs-2xs); font-weight: 600; }
 
 /* ===================== STRONY ZAKŁADKI C1 ===================== */
-.c1-crumb { margin-bottom: 14px; font-size: var(--fs-xs-plus); color: var(--ink-muted); }
+
 .c1-title { font-size: var(--fs-2xl); font-weight: 640; line-height: var(--lh-tight); margin-bottom: 10px; }
 .c1-lead { color: var(--ink-muted); margin-bottom: 20px; }
 .c1-back { margin: 0 0 10px; }
@@ -1334,12 +999,6 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .c1-tasks-reset { margin-top: 18px; }
 
 /* Odliczanie do egzaminu */
-.c1-countdown { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin: 4px 0 28px; }
-.c1-countdown-main { display: flex; align-items: baseline; gap: 10px; }
-.c1-countdown-number { font-family: var(--font-display); font-size: var(--fs-3xl); font-weight: 640; letter-spacing: -0.03em; color: var(--accent); line-height: 1; font-variant-numeric: tabular-nums; }
-.c1-countdown-text { font-size: var(--fs-md-plus); font-weight: 500; }
-.c1-countdown-date { display: flex; flex-direction: column; gap: 4px; }
-.c1-date { width: auto; }
 
 /* Karty zestawów / zadań */
 .c1-set-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 8px; }
@@ -1363,34 +1022,14 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .c1-exam-box-best { font-size: var(--fs-xs-plus); color: var(--ink-muted); }
 
 /* Kafelek na stronie głównej */
-.c1-home-tile { display: flex; align-items: center; gap: 18px; margin: 8px 0 32px; padding: 20px 24px; color: var(--ink); text-decoration: none; border-color: var(--info-border); background: var(--info-bg); }
-.c1-home-tile-body { display: flex; flex-direction: column; gap: 4px; flex: 1; }
-.c1-home-tile-title { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 620; letter-spacing: var(--tracking-display); }
-.c1-home-tile-text { color: var(--ink-muted); font-size: var(--fs-sm-plus); }
-.c1-home-tile-count { color: var(--accent); font-weight: 600; font-size: var(--fs-sm); }
-.c1-home-tile-arrow { display: inline-flex; color: var(--accent); }
 
 /* ===================== ĆWICZENIA USE OF ENGLISH ===================== */
-.c1-ex-head { margin-bottom: 18px; }
-.c1-ex-focus { color: var(--ink-muted); margin-bottom: 6px; }
-.c1-ex-best { font-size: var(--fs-sm); font-weight: 600; color: var(--success); }
-.c1-ex-instr { margin-bottom: 22px; padding: 12px 16px; border-radius: var(--radius); background: var(--surface-2); font-size: var(--fs-sm-plus); }
-.c1-ex .field.is-ok, .c1-ex .c1-select.is-ok { border-color: var(--success); background: var(--success-soft); }
-.c1-ex .field.is-bad, .c1-ex .c1-select.is-bad { border-color: var(--danger-border); background: var(--danger-soft); }
 
-.c1-tr-list { margin: 0; padding-left: 26px; display: flex; flex-direction: column; gap: 22px; }
-.c1-tr-item { padding-left: 4px; }
-.c1-tr-first { margin-bottom: 8px; }
-.c1-tr-key { margin-bottom: 8px; }
+.c1-ex .field.is-ok { border-color: var(--success); background: var(--success-soft); }
+.c1-ex .field.is-bad { border-color: var(--danger-border); background: var(--danger-soft); }
+
 .c1-keyword { display: inline-block; padding: 2px 12px; border-radius: var(--radius-xs); background: var(--inverse-bg); color: var(--inverse-text); font-weight: 600; letter-spacing: 0.06em; font-size: var(--fs-sm); }
-.c1-tr-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; line-height: 2; }
-.c1-tr-input { width: min(320px, 100%); display: inline-block; text-transform: uppercase; }
 
-.c1-feedback { margin-top: 10px; padding: 10px 14px; border-radius: var(--radius); background: var(--surface-2); font-size: var(--fs-sm); }
-.c1-feedback p { margin: 0 0 4px; }
-.c1-feedback p:last-child { margin-bottom: 0; }
-.c1-feedback-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.c1-feedback-msg { color: var(--danger); font-weight: 500; }
 .c1-mark { display: inline-grid; place-content: center; width: 20px; height: 20px; border-radius: 50%; font-size: var(--fs-xs); font-weight: 600; color: var(--on-accent); flex-shrink: 0; }
 .c1-mark.is-ok { background: var(--success-fill); }
 .c1-mark.is-bad { background: var(--danger-bg); }
@@ -1398,22 +1037,8 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .c1-part { padding: 1px 9px; border-radius: var(--radius-pill); font-size: var(--fs-xs); font-weight: 600; }
 .c1-part.is-ok { background: var(--success-soft); color: var(--success); }
 .c1-part.is-bad { background: var(--danger-soft); color: var(--danger); }
-.c1-answer strong { letter-spacing: 0.02em; }
-.c1-explanation { color: var(--ink-muted); }
 
-.c1-cloze-text { font-size: var(--fs-md-plus); line-height: 2.5; margin-bottom: 18px; }
 .c1-gap { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
-.c1-gap-num { display: inline-grid; place-content: center; min-width: 20px; height: 20px; border-radius: 50%; background: var(--surface-3); font-size: var(--fs-2xs); font-weight: 600; color: var(--ink-muted); }
-.c1-gap-input { display: inline-block; width: 9.5em; padding: 4px 8px; font-size: var(--fs-sm-plus); text-transform: uppercase; }
-.c1-stem { font-size: var(--fs-xs); font-weight: 600; letter-spacing: 0.05em; color: var(--ink-muted); }
-.c1-select { max-width: 11em; padding: 4px 6px; border: 1px solid var(--line-control); border-radius: var(--radius-xs); background: var(--surface); font-size: var(--fs-sm-plus); }
-.c1-gap-mark:empty { display: none; }
-.c1-gap-feedback { margin: 0 0 6px; padding-left: 24px; display: flex; flex-direction: column; gap: 8px; font-size: var(--fs-sm); }
-.c1-gap-feedback li > * { margin-right: 6px; vertical-align: middle; }
-
-.c1-ex-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
-.c1-ex-result { margin: 0 0 0 6px; font-size: var(--fs-md); }
-.c1-record { color: var(--success); font-weight: 600; }
 
 /* ===================== TIMER ===================== */
 .c1-timer { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
@@ -1440,36 +1065,15 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .c1-check-title { font-size: var(--fs-xs-plus); font-weight: 600; color: var(--ink-muted); margin-bottom: 8px; }
 
 /* ===================== TRENER SPEAKING ===================== */
-.c1-speak-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
-.c1-speak-nav { display: flex; align-items: center; gap: 10px; }
-.c1-speak-count { font-weight: 600; font-size: var(--fs-sm-plus); }
+
 .c1-speak { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
 .c1-speak > .card { width: 100%; margin: 0; }
-.c1-sp-label { font-size: var(--fs-xs); font-weight: 600; color: var(--ink-muted); margin-bottom: 8px; }
-.c1-sp-questions { border-color: var(--info-border); background: var(--info-bg); }
-.c1-sp-questions ul { margin: 0; padding-left: 20px; font-size: var(--fs-lg); font-weight: 600; }
-.c1-sp-questions li { margin-bottom: 6px; }
-.c1-sp-question { font-size: var(--fs-md-plus); font-weight: 600; margin-bottom: 12px; }
-.c1-sp-tip { color: var(--ink-muted); font-size: var(--fs-sm); }
-.c1-pictures { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; width: 100%; }
-.c1-picture { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 16px; min-height: 130px; border: 1px dashed var(--line-strong); border-radius: var(--radius); background: var(--surface-2); }
-.c1-picture-label { font-size: var(--fs-xs); font-weight: 600; color: var(--ink-muted); }
-.c1-picture figcaption { font-size: var(--fs-sm-plus); }
-.c1-mindmap { display: grid; grid-template-columns: 1fr 1.3fr 1fr; grid-template-areas: ". p1 ." "p2 c p3" "p4 . p5"; gap: 14px; width: 100%; align-items: center; }
-.c1-mindmap-center { grid-area: c; padding: 22px 18px; border-radius: var(--radius-lg); background: var(--inverse-bg); color: var(--inverse-text); font-weight: 600; font-size: var(--fs-md-plus); text-align: center; }
-.c1-mindmap-prompt { padding: 12px 14px; border: 1px solid var(--line-strong); border-radius: var(--radius); background: var(--surface); text-align: center; font-weight: 500; }
-.c1-mm-1 { grid-area: p1; }
-.c1-mm-2 { grid-area: p2; }
-.c1-mm-3 { grid-area: p3; }
-.c1-mm-4 { grid-area: p4; }
-.c1-mm-5 { grid-area: p5; }
-.c1-sp-list { padding-left: 22px; margin: 0 0 14px; }
-.c1-sp-list li { margin-bottom: 6px; }
+
 .c1-rec-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .c1-rec-hint { font-size: var(--fs-xs-plus); color: var(--ink-muted); flex: 1; min-width: 200px; }
 .c1-rec-status { margin-top: 10px; font-size: var(--fs-sm); }
 .c1-rec-status:empty { display: none; }
-.c1-rec-player audio { width: 100%; margin-top: 8px; }
+
 .btn.is-recording { border-color: var(--danger); color: var(--danger); }
 
 /* ===================== C1 NA TELEFONIE ===================== */
@@ -1477,10 +1081,9 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
   .c1-writing-bar { top: var(--topbar-h-compact); }
 }
 @media (max-width: 760px) {
-  .c1-pictures { grid-template-columns: 1fr; }
-  .c1-mindmap { grid-template-columns: 1fr; grid-template-areas: "c" "p1" "p2" "p3" "p4" "p5"; }
+
   .c1-writing-area { min-height: 320px; }
-  .c1-home-tile { padding: 16px; gap: 12px; }
+
 }
 
 /* ===================== EKRAN POWITALNY (brak profili) ===================== */
@@ -1591,8 +1194,6 @@ html.theme-anim *::after {
   from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: none; }
 }
-.c1-home-tile:hover .c1-home-tile-arrow { transform: translateX(3px); }
-.c1-home-tile-arrow { transition: transform var(--transition); }
 
 /* ===================== EKRANY DOTYKOWE: cele min. 44 × 44 px ===================== */
 @media (pointer: coarse) {
@@ -1602,7 +1203,7 @@ html.theme-anim *::after {
   .task-item label { min-height: 44px; align-items: center; }
   .task-item input { margin-top: 0; }
   /* Pola w lukach ćwiczeń (Part 1–3): także 44 px na ekranach dotykowych */
-  .c1-select, .c1-gap-input, .c1-journal-btn { min-height: 44px; }
+
 }
 
 /* ===================== OGRANICZENIE RUCHU ===================== */
@@ -1658,8 +1259,6 @@ textarea.field { overflow: auto; }
 .journal-row.is-wrong dd, .journal-row.is-wrong > span:last-child { color: var(--danger); text-decoration: line-through; text-decoration-color: var(--strike); }
 .journal-row.is-right dd, .journal-row.is-right strong { color: var(--success); font-weight: 600; }
 .journal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-.c1-journal { display: block; margin-top: 8px; }
-@media (pointer: fine) { .c1-journal-btn { min-height: 36px; } }
 
 /* Sesja powtórek */
 .review-progress { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
@@ -1732,21 +1331,10 @@ textarea.field { overflow: auto; }
 /* Powtórki: stan zero z kompasem */
 .tile-empty { display: flex; align-items: center; gap: 14px; margin-top: auto; }
 .tile-empty-title { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 620; margin: 0 0 2px; }
-.compass-art { flex-shrink: 0; }
-.compass-ring { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 2; }
-.compass-inner { fill: none; stroke: var(--line); stroke-width: 1; stroke-dasharray: 2 3; }
-.compass-tick { stroke: var(--ink-muted); stroke-width: 2; stroke-linecap: round; }
-.compass-n { fill: var(--accent); }
-.compass-s { fill: var(--line-control); }
-.compass-pin { fill: var(--surface); stroke: var(--ink); stroke-width: 1; }
 
 /* Seria: płomień i tydzień */
 .streak-row { display: flex; align-items: center; gap: 12px; }
-.flame-art { flex-shrink: 0; }
-.flame-outer { fill: var(--surface-3); }
-.flame-inner { fill: var(--line-strong); }
-.flame-art.is-lit .flame-outer { fill: var(--lvl-c1); }
-.flame-art.is-lit .flame-inner { fill: var(--warning-soft); }
+
 .week-dots { list-style: none; margin: auto 0 0; padding: 0; display: flex; gap: 8px; flex-wrap: wrap; }
 .week-day { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 30px; }
 .week-dot { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line-control); color: var(--on-accent); transition: transform var(--transition); }
@@ -1765,10 +1353,7 @@ textarea.field { overflow: auto; }
   transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
 }
 .today-continue:hover { border-color: var(--line-control); background: var(--surface-raised); }
-.continue-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: var(--radius-sm); background: var(--accent-soft); color: var(--accent); flex-shrink: 0; }
-.continue-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.today-continue:hover .c1-home-tile-arrow { transform: translateX(3px); }
-.today-continue .c1-home-tile-arrow { transition: transform var(--transition); }
+
 .today-tip-body { display: flex; flex-direction: column; gap: 4px; }
 
 /* Szlak A1 → C2: SVG + stacje (linki) nad nim */
@@ -2115,20 +1700,7 @@ textarea.field { overflow: auto; }
 .sb-bar { margin-top: 2px; height: 4px; }
 
 /* Chip „Certyfikat C1”: granat i złoto (etap 4 dopracuje szczegóły) */
-.c1-chip-badge {
-  display: grid;
-  place-items: center;
-  width: 40px; height: 40px;
-  border: 1.5px solid var(--c1-gold);
-  border-radius: var(--radius-sm);
-  background: var(--c1-navy);
-  color: var(--c1-gold);
-  font-family: var(--font-display);
-  font-size: var(--fs-sm-plus);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  box-shadow: 0 0 0 1px var(--c1-edge), var(--shadow-sm);
-}
+
 .sb-item.c1-chip.is-active { background: var(--c1-soft); }
 .sb-item.c1-chip.is-active::before { background: var(--c1-gold); }
 .sb-item.c1-chip.is-active .sb-label-title { color: var(--c1-ink); }
@@ -2393,7 +1965,7 @@ textarea.field { overflow: auto; }
 .callout-exam .callout-icon { background: var(--c1-navy); color: var(--c1-gold); }
 .callout-exam a { color: var(--c1-ink); font-weight: 600; }
 .c1-exam-box.callout-exam .c1-chip { background: var(--surface); border: 1px solid color-mix(in srgb, var(--c1-gold) 55%, transparent); color: var(--c1-ink); }
-.c1-exam-box-head .c1-chip-badge { width: 32px; height: 32px; font-size: var(--fs-xs); }
+
 .c1-exam-box-title { font-family: var(--font-display); }
 
 /* Kluczowe myśli / Co umiesz: informacja w kolorze poziomu */
@@ -2442,7 +2014,6 @@ textarea.field { overflow: auto; }
 .wiki-chip .icon { width: 14px; height: 14px; }
 .wiki-chip-level { font-family: var(--font-display); font-weight: 600; }
 .wiki-chip-text { overflow: hidden; text-overflow: ellipsis; }
-.wiki-chip.is-c1 { background: var(--c1-navy); color: var(--c1-gold); box-shadow: inset 0 0 0 1px var(--c1-gold); }
 
 /* ---------- „Umiem” na podstronie: przyklejony pasek na wąskich ekranach ---------- */
 @media (max-width: 760px) {
@@ -2456,7 +2027,7 @@ textarea.field { overflow: auto; }
   }
   /* Jedna linia: „Wróć do listy A2” + „Umiem” (poziom podaje już przycisk powrotu) */
   .page-view .page-head .page-crumb { display: none; }
-  .page-view .page-head .back-btn { margin-left: -8px; padding-left: 8px; padding-right: 8px; }
+
   .callout { padding: 16px 16px 4px; }
   .callout-examples { padding-left: 18px; }
 }
@@ -2466,20 +2037,6 @@ textarea.field { overflow: auto; }
 
 /* ===================== CERTYFIKAT C1 — własny klimat (etap 4, DESIGN.md sekcja 3.8) ===================== */
 /* Nagłówek sekcji: znak napisowy (bez logo Cambridge) i duża liczba dni do egzaminu */
-.c1-masthead {
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px;
-  margin: 0 0 22px; padding: 14px 0 16px;
-  border-bottom: 1px solid var(--line);
-  box-shadow: 0 1px 0 0 color-mix(in srgb, var(--c1-gold) 55%, transparent);
-}
-.c1-wordmark { display: inline-flex; align-items: baseline; gap: 10px; color: var(--ink); text-decoration: none; border-radius: var(--radius-xs); }
-.c1-wordmark-main { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 600; letter-spacing: -0.01em; }
-.c1-wordmark-sub { font-size: var(--fs-xs); font-weight: 600; color: var(--accent); }
-.c1-wordmark-sub::before { content: "·"; margin-right: 10px; color: var(--ink-muted); }
-.c1-masthead-count { display: inline-flex; align-items: baseline; gap: 8px; color: var(--ink); text-decoration: none; }
-.c1-masthead-days { font-family: var(--font-display); font-size: var(--fs-3xl); font-weight: 600; line-height: 1; letter-spacing: -0.03em; color: var(--accent); }
-.c1-masthead-unit { font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); }
-.c1-masthead-note { margin: 0; font-size: var(--fs-sm); font-weight: 600; color: var(--accent); }
 
 /* Ćwiczenia: wygląd arkusza egzaminacyjnego */
 .c1-ex.card {
@@ -2491,24 +2048,13 @@ textarea.field { overflow: auto; }
     var(--surface);
   background-position: 0 6px;
 }
-.c1-ex-instr { background: var(--surface-2); border-left: 3px solid var(--c1-gold); }
-.c1-tr-list { gap: 0; padding-left: 34px; }
-.c1-tr-item { padding: 16px 0 18px 6px; border-bottom: 1px dashed var(--line-strong); }
-.c1-tr-item:last-child { border-bottom: 0; }
-.c1-tr-list > li::marker { font-family: var(--font-display); font-weight: 600; color: var(--accent); }
-.c1-tr-first { font-size: var(--fs-md-plus); }
+
 /* Pola luk jak linie do wpisywania */
-.c1-ex .c1-tr-input, .c1-ex .c1-gap-input, .c1-ex .c1-select {
-  border: 0; border-bottom: 2px solid var(--line-control); border-radius: 0;
-  background: transparent; padding: 4px 4px 3px;
-  font-weight: 600; letter-spacing: 0.02em;
-}
-.c1-ex .c1-tr-input:focus, .c1-ex .c1-gap-input:focus, .c1-ex .c1-select:focus { border-bottom-color: var(--accent); }
-.c1-ex .field.is-ok, .c1-ex .c1-select.is-ok { border-bottom-color: var(--success); background: var(--success-soft); }
-.c1-ex .field.is-bad, .c1-ex .c1-select.is-bad { border-bottom-color: var(--danger); background: var(--danger-soft); }
-.c1-gap-num { background: var(--accent-bg); color: var(--on-accent); }
+
+.c1-ex .field.is-ok { border-bottom-color: var(--success); background: var(--success-soft); }
+.c1-ex .field.is-bad { border-bottom-color: var(--danger); background: var(--danger-soft); }
+
 .c1-keyword { background: var(--accent-bg); color: var(--on-accent); }
-.c1-ex-actions { border-top-style: dashed; }
 
 /* Trenery: duży timer, licznik słów; tryb skupienia, gdy timer działa */
 .c1-view .c1-timer { padding: 10px 14px; border-color: var(--line-strong); }
@@ -2524,9 +2070,9 @@ html.focus-mode :is(.sb-panel, .topbar, .c1-masthead, .exam-cover.is-compact, .c
 html.focus-mode .c1-writing-area { box-shadow: 0 0 0 4px var(--accent-soft); }
 
 @media (max-width: 760px) {
-  .c1-masthead-days { font-size: var(--fs-2xl); }
+
   .c1-ex.card { padding: 22px 16px 20px; }
-  .c1-tr-list { padding-left: 26px; }
+
 }
 
 /* ===================== ĆWICZENIA — silnik zadań (rozbudowa v2, DESIGN.md sekcja 3.9) ===================== */
@@ -3155,7 +2701,7 @@ a.st-bar-label:hover { text-decoration-color: currentColor; }
 .page-head .notes-btn { margin-left: auto; }
 .page-head .notes-btn + .umiem { margin-left: 8px; }
 .c1-page-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 14px; }
-.c1-page-tools .c1-crumb { margin: 0; }
+
 .lab-card-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
 .lab-card-top .lab-card-eyebrow { margin: 0; }
 
@@ -3213,14 +2759,9 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .exam-sections { margin-top: 6px; }
 
 /* Nagłówek zakładki egzaminu */
-.exam-wordmark { align-items: center; }
-.exam-wordmark-badge {
-  display: inline-grid; place-content: center; min-width: 40px; height: 40px; padding: 0 6px; border-radius: 12px;
-  background: var(--accent-bg); color: var(--on-accent); font: 600 var(--fs-sm) var(--font);
-  box-shadow: inset 0 -4px 0 var(--e8-yellow, var(--accent));
-}
+
 .exam-overview-top { display: grid; gap: 12px; margin: 0 0 24px; }
-.exam-overview-top .c1-countdown { margin: 0; }
+
 .exam-facts-note { margin: 0; }
 .exam-facts-note .callout-title { margin: 0 0 6px; font-weight: 600; }
 .exam-facts-note p:last-child { margin: 0; }
@@ -3228,12 +2769,6 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .exam-tts-note { display: inline-flex; align-items: center; gap: 6px; margin: 0; font-size: var(--fs-xs-plus); color: var(--ink-muted); }
 
 /* Klimat E8: żółty akcent (zawsze z ciemnym tekstem) w znakach i paskach */
-[data-section="egzamin-osmoklasisty"] .exam-view .c1-title::after,
-[data-section="egzamin-osmoklasisty"] .exam-page h1::after {
-  content: ""; display: block; width: 64px; height: 6px; margin-top: 10px; border-radius: var(--radius-pill); background: var(--e8-yellow);
-}
-[data-section="egzamin-osmoklasisty"] .ex-set-card { border-top-color: var(--accent); }
-[data-section="egzamin-osmoklasisty"] .c1-nav-badge { background: var(--e8-yellow); color: var(--e8-on-yellow); }
 
 /* Ramki „Na egzaminie …” (kolor egzaminu z rejestru); kilka ramek jedna pod drugą */
 .exam-boxes { display: flex; flex-direction: column; gap: 12px; margin: 0 0 18px; }
@@ -3408,38 +2943,12 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .ex-options.is-letters .lt-tag { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 /* Klimat matury podstawowej: miedziany akcent (pasek pod tytułem, dolna krawędź znaku MP, plakietki wyników) */
-[data-section="matura-podstawowa"] .exam-view .c1-title::after,
-[data-section="matura-podstawowa"] .exam-page h1::after {
-  content: ""; display: block; width: 64px; height: 6px; margin-top: 10px; border-radius: var(--radius-pill); background: var(--exam-mark);
-}
-[data-section="matura-podstawowa"] .exam-wordmark-badge { box-shadow: inset 0 -4px 0 var(--exam-mark); }
-[data-section="matura-podstawowa"] .ex-set-card { border-top-color: var(--accent); }
-[data-section="matura-podstawowa"] .c1-nav-badge { background: var(--exam-mark-bg); color: var(--exam-on-mark); }
-[data-section="matura-podstawowa"] .c1-ex.card { border-top-color: var(--accent-bg); }
-[data-section="matura-podstawowa"] .c1-ex-instr { border-left-color: var(--exam-mark); }
 
 /* Klimat matury rozszerzonej: redakcyjny — tytuł z miedzianą kreską po lewej (jak wyróżniony lead),
    cienka miedziana linia pod znakiem MR, karty z indygo u góry */
-[data-section="matura-rozszerzona"] .exam-view .c1-title,
-[data-section="matura-rozszerzona"] .exam-page h1 { padding-left: 16px; border-left: 4px solid var(--exam-mark); }
-[data-section="matura-rozszerzona"] .exam-wordmark-badge { box-shadow: inset 0 -3px 0 var(--exam-mark); }
-[data-section="matura-rozszerzona"] .ex-set-card { border-top-color: var(--accent); }
-[data-section="matura-rozszerzona"] .c1-nav-badge { background: var(--exam-mark-bg); color: var(--exam-on-mark); }
-[data-section="matura-rozszerzona"] .c1-ex.card { border-top-color: var(--accent-bg); }
-[data-section="matura-rozszerzona"] .c1-ex-instr { border-left-color: var(--exam-mark); }
-[data-section="matura-rozszerzona"] .wt-choice { border-top: 3px solid var(--accent-bg); }
 
 /* Klimat Certyfikatu B2: bursztynowe podkreślenie tytułu (jak zakreślacz), bursztynowa krawędź znaku B2,
    karty z turkusem u góry */
-[data-section="certyfikat-b2"] .exam-view .c1-title,
-[data-section="certyfikat-b2"] .exam-page h1 {
-  text-decoration: underline; text-decoration-color: var(--exam-mark); text-decoration-thickness: 4px; text-underline-offset: 10px; text-decoration-skip-ink: none;
-}
-[data-section="certyfikat-b2"] .exam-wordmark-badge { box-shadow: inset 0 -4px 0 var(--exam-mark); }
-[data-section="certyfikat-b2"] .ex-set-card { border-top-color: var(--accent); }
-[data-section="certyfikat-b2"] .c1-nav-badge { background: var(--exam-mark-bg); color: var(--exam-on-mark); }
-[data-section="certyfikat-b2"] .c1-ex.card { border-top-color: var(--accent-bg); }
-[data-section="certyfikat-b2"] .c1-ex-instr { border-left-color: var(--exam-mark); }
 
 /* ===================== FISZKI (js/cards.js, spec 10) ===================== */
 /* Elementy ukrywane atrybutem hidden (przycisk przy zaznaczeniu, pola formularza) nie mogą wracać przez display */
@@ -3996,7 +3505,7 @@ a.chip-btn { text-decoration: none; }
 .exam-chip-badge.is-tile { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; width: 44px; height: 44px; min-width: 44px; padding: 0; border-radius: 12px; }
 .exam-tile-code { font-size: var(--fs-sm); font-weight: 600; line-height: 1; letter-spacing: 0.02em; }
 .exam-tile-days { font-size: 0.6875rem; font-weight: 600; line-height: 1; white-space: nowrap; }
-.exam-chip.is-c1 .exam-tile-code { color: var(--c1-gold); font-family: var(--font-display); font-size: var(--fs-sm-plus); }
+
 .exam-chip.is-soon .exam-chip-badge.is-tile { box-shadow: inset 0 0 0 1px var(--line-strong); }
 .sb-item.exam-chip { min-height: 44px; padding-block: 0; }
 
@@ -4225,7 +3734,6 @@ a.pw-row-label:hover { text-decoration: underline; }
 /* ===================== Błędy z dziennika w sesji: przód karty z pełnym kontekstem, oryginalne zadanie ===================== */
 .fc-text { white-space: pre-line; }
 .mt-task { margin-top: 12px; }
-.mt-task .c1-cloze-text { margin-top: 0; }
 
 /* Fiszki: komunikat po ocenie („Następna powtórka: za 8 dni”) i legenda talii */
 .fc-last-note { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; font-size: var(--fs-sm); font-weight: 600; color: var(--success); }
@@ -4331,7 +3839,6 @@ a.pw-row-label:hover { text-decoration: underline; }
   .sz-circle { transition: none; }
   .sz-btn:hover .sz-circle { transform: none; }
 }
-
 
 /* Arkusz przystanku: na telefonie dolny arkusz, na komputerze panel z prawej */
 .dialog.sz-sheet { position: fixed; inset: auto 0 0 0; margin: 0; width: 100%; max-width: none; max-height: 86vh; overflow: auto; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }

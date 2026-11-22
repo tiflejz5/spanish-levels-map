@@ -24,7 +24,7 @@
  *   slm.exams     { version: 1, profiles: { <id>: { exams: { <idEgzaminu>: { examDate, drafts: { <zadanie>: tekst }, tasks: { <strona>: { <nr>: true } },
  *                    choices: { <grupa wyboru>: <zadanie> } } } } } }  (choices: wybór jednego z dwóch zadań, matura rozszerzona;
  *                    w starszych danych brak pola → {})
- *                    — egzaminy w nowym module (np. Egzamin ósmoklasisty, js/exam-core.js); Certyfikat C1 ma własny klucz (C1: dropped in stage 1B)
+ *                    — exams of the registry (js/exam-core.js), one shape for all exams
  *   slm.speaking  { version: 1, profiles: { <id>: { sessions: [ { day, exam, part: 1–4, scores: { <kryterium>: 1–5 } } ] } } }
  *                    — historia sesji trenera Speaking (samoocena, js/speaking-trainer.js; najnowsze na końcu, maks. 500)
  *                    Opcjonalnie (paczka v6, spec 18): sesja z polem full: true (tryb „Cały egzamin”) oraz w rekordzie profilu

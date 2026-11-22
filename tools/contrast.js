@@ -23,19 +23,7 @@ function block(selectorStart) {
 }
 const light = block(":root,\n:root[data-theme=\"light\"]");
 const dark = Object.assign({}, light, block(":root[data-theme=\"dark\"]"));
-// Sekcja „Certyfikat C1” nadpisuje część tokenów (osobno w jasnym i ciemnym motywie)
-const c1Light = Object.assign({}, light, block(":root:not([data-theme=\"dark\"])[data-section=\"certyfikat\"]"));
-const c1Dark = Object.assign({}, dark, block(":root[data-theme=\"dark\"][data-section=\"certyfikat\"]"));
-// Sekcja „Egzamin ósmoklasisty” (turkus + żółty)
-const e8Light = Object.assign({}, light, block(":root:not([data-theme=\"dark\"])[data-section=\"egzamin-osmoklasisty\"]"));
-const e8Dark = Object.assign({}, dark, block(":root[data-theme=\"dark\"][data-section=\"egzamin-osmoklasisty\"]"));
-// Sekcja „Matura podstawowa” (zieleń + miedź)
-const mpLight = Object.assign({}, light, block(":root:not([data-theme=\"dark\"])[data-section=\"matura-podstawowa\"]"));
-const mpDark = Object.assign({}, dark, block(":root[data-theme=\"dark\"][data-section=\"matura-podstawowa\"]"));
-const mrLight = Object.assign({}, light, block(":root:not([data-theme=\"dark\"])[data-section=\"matura-rozszerzona\"]"));
-const mrDark = Object.assign({}, dark, block(":root[data-theme=\"dark\"][data-section=\"matura-rozszerzona\"]"));
-const b2Light = Object.assign({}, light, block(":root:not([data-theme=\"dark\"])[data-section=\"certyfikat-b2\"]"));
-const b2Dark = Object.assign({}, dark, block(":root[data-theme=\"dark\"][data-section=\"certyfikat-b2\"]"));
+// No per-exam token blocks any more: exam colours come from the registry (spec 06 E8).
 
 function parse(c) {
   c = c.trim();
@@ -162,7 +150,7 @@ pairs.push(
 
 let fails = 0;
 let checked = 0;
-[["JASNY", light], ["CIEMNY", dark], ["C1 JASNY", c1Light], ["C1 CIEMNY", c1Dark], ["E8 JASNY", e8Light], ["E8 CIEMNY", e8Dark], ["MP JASNY", mpLight], ["MP CIEMNY", mpDark], ["MR JASNY", mrLight], ["MR CIEMNY", mrDark], ["B2 JASNY", b2Light], ["B2 CIEMNY", b2Dark]].forEach(function (theme) {
+[["JASNY", light], ["CIEMNY", dark]].forEach(function (theme) {
   const t = theme[1];
   const bad = [];
   pairs.concat(t["exam-mark-bg"] ? [["exam-on-mark", "exam-mark-bg", null, 4.5, "plakietka wyniku egzaminu / tło"], ["exam-mark-ink", "bg", null, 4.5, "tekst w kolorze akcentu egzaminu / tło"]] : []).forEach(function (p) {
@@ -185,12 +173,6 @@ const manifest = fs.existsSync(registryFile) ? JSON.parse(fs.readFileSync(regist
   const bad = [];
   manifest.exams.forEach(function (e) {
     const bg = parse(theme[1].surface);
-    if (e.existing) { // C1 bierze granat (jasny) i złoto (ciemny) z tokenów
-      const rc = ratio(parse(theme[1][theme[0] === "CIEMNY" ? "c1-gold" : "c1-navy"]), bg);
-      checked++;
-      if (rc < 3) { fails++; bad.push("  ZA MAŁO " + rc.toFixed(2) + " (min 3)  pasek okładki mini C1 / karta"); }
-      return;
-    }
     if (!e.accent) return;
     const r = ratio(parse(theme[0] === "CIEMNY" ? (e.accent2 || e.accent) : e.accent), bg); // jasny: pasek w accent, ciemny: w accent2
     checked++;
@@ -198,10 +180,9 @@ const manifest = fs.existsSync(registryFile) ? JSON.parse(fs.readFileSync(regist
   });
   // Kafelek egzaminu w pasku (kod i odliczanie, 44×44): biały tekst na kolorze egzaminu, C1: złoto i biel na granacie (4.5:1)
   manifest.exams.forEach(function (e) {
-    const fg = e.existing ? theme[1]["c1-gold"] : "#ffffff";
-    const bgc = e.existing ? theme[1]["c1-navy"] : e.accent;
+    const bgc = e.accent;
     if (!bgc) return;
-    const pairsT = e.existing ? [[theme[1]["c1-gold"], "kod C1"], ["#ffffff", "odliczanie C1"]] : [[fg, "kod i odliczanie " + e.code]];
+    const pairsT = [["#ffffff", "kod i odliczanie " + e.code]];
     pairsT.forEach(function (pt) {
       const rt = ratio(parse(pt[0]), parse(bgc));
       checked++;
