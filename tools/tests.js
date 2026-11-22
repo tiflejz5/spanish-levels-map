@@ -2621,5 +2621,38 @@ console.log("\nExams: generic module with the fixture exam tools/fixtures/exam-d
   global.LM.EXAM_REGISTRY = saved;
 })();
 
+console.log("\nEnglish helpers: LM.plural and LM.fmt (spec 04 §1)");
+(function () {
+  require(path.join(__dirname, "..", "js", "utils.js"));
+  const LMg = global.LM;
+  test("plural: count + singular or plural noun, default plural adds s, numbers with separators", function () {
+    assert.strictEqual(LMg.plural(1, "day", "days"), "1 day");
+    assert.strictEqual(LMg.plural(0, "day", "days"), "0 days");
+    assert.strictEqual(LMg.plural(3, "day", "days"), "3 days");
+    assert.strictEqual(LMg.plural(2, "set"), "2 sets");
+    assert.strictEqual(LMg.plural(1, "entry", "entries"), "1 entry");
+    assert.strictEqual(LMg.plural(21, "card"), "21 cards", "no Polish 2–4 rule");
+    assert.strictEqual(LMg.plural(1200, "card"), "1,200 cards");
+  });
+  test("fmt.date / dayMonth / weekday / dateLong: en-US, a YYYY-MM-DD day is never shifted by the time zone", function () {
+    assert.strictEqual(LMg.fmt.date("2026-11-12"), "Nov 12, 2026");
+    assert.strictEqual(LMg.fmt.dateLong("2026-11-12"), "November 12, 2026");
+    assert.strictEqual(LMg.fmt.dayMonth("2026-01-05"), "Jan 5");
+    assert.strictEqual(LMg.fmt.weekday("2026-11-12"), "Thursday");
+    assert.strictEqual(LMg.fmt.weekdayShort("2026-11-12"), "Thu");
+    assert.strictEqual(LMg.fmt.date("not a date"), "");
+    assert.strictEqual(LMg.fmt.date(""), "");
+    assert.strictEqual(LMg.fmt.date(new Date(2027, 4, 6)), "May 6, 2027");
+    assert.match(LMg.fmt.time(new Date(2026, 10, 12, 14, 5)), /^2:05\s?PM$/);
+  });
+  test("fmt.number / percent", function () {
+    assert.strictEqual(LMg.fmt.number(1234567), "1,234,567");
+    assert.strictEqual(LMg.fmt.number(7), "7");
+    assert.strictEqual(LMg.fmt.percent(0.426), "43%");
+    assert.strictEqual(LMg.fmt.percent(1), "100%");
+    assert.strictEqual(LMg.fmt.percent(0), "0%");
+  });
+})();
+
 console.log("\nWynik: " + passed + " ok, " + failures.length + " błędów" + (skipped ? ", pominięte (bez treści referencyjnej): " + skipped : ""));
 if (failures.length) process.exit(1);

@@ -30,7 +30,7 @@ window.LM = window.LM || {};
   function exams() { return reg().exams; }
   function byId(id) { return exams().find(function (e) { return e.id === id; }) || null; }
   function pd() { return LM.profileData; }
-  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
+  function plural(n, one, few, many) { return LM.pluralPl(n, one, few, many); }
   const ROOT = "#/exams/";
   const OVERVIEW = "overview";
   function base(e) { return ROOT + e.id; }

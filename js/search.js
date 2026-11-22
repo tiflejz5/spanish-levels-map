@@ -268,7 +268,7 @@ window.LM = window.LM || {};
     status.textContent = "Wpisz hasło – polskie znaki są opcjonalne.";
   }
 
-  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
+  function plural(n, one, few, many) { return LM.pluralPl(n, one, few, many); }
 
   function move(i) {
     if (!options.length) return;

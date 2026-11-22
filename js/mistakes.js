@@ -209,7 +209,7 @@ window.LM = window.LM || {};
   // LISTA
   // =====================================================================
 
-  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
+  function plural(n, one, few, many) { return LM.pluralPl(n, one, few, many); }
 
   /** Stan karty wpisu (talia „Moje błędy”, harmonogram fiszek) zamiast etapu 1/3/7. */
   function reviewLabel(e) {

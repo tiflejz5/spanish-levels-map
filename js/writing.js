@@ -34,7 +34,7 @@ window.LM = window.LM || {};
   const TYPE_ORDER = ["punkty", "lacznik", "rejestr", "struktura", "zakres", "uwaga"];
 
   function reg() { return LM.EXAM_REGISTRY || { exams: [] }; }
-  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
+  function plural(n, one, few, many) { return LM.pluralPl(n, one, few, many); }
   function genreLabel(g) { return GENRES[g] || g; }
   function hrefModel(examId, taskId) { return HASH + "/models/" + examId + "/" + taskId; }
 

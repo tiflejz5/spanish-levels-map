@@ -32,7 +32,7 @@ window.LM = window.LM || {};
   ];
 
   function hasProfile() { return !!(LM.app && LM.app.getActiveProfile()); }
-  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
+  function plural(n, one, few, many) { return LM.pluralPl(n, one, few, many); }
 
   function parseRoute(hash) {
     return /^#\/review\/?$/.test(hash || "") ? { kind: "today" } : null;

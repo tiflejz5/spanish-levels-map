@@ -32,7 +32,7 @@ window.LM = window.LM || {};
 
   function parseRoute(hash) { return /^#\/stats\/?$/.test(hash || "") ? { kind: "stats" } : null; }
 
-  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
+  function plural(n, one, few, many) { return LM.pluralPl(n, one, few, many); }
   function tries(n) { return n + " " + plural(n, "próba", "próby", "prób"); }
   function pct(x) { return Math.round(x * 100) + "%"; }
   function topic(id) { return (LM.exercises && LM.exercises.topicInfo(id)) || null; }
