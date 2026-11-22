@@ -1,6 +1,6 @@
 /*
  * writing-model.js — widok wzorca z komentarzami (paczka v6, spec 17, sekcja 1.3):
- * #/pisanie/wzorce/<egzamin>/<id zadania>.
+ * #/writing/models/<egzamin>/<id zadania>.
  *
  *   - komputer (≥ 1024 px): tekst w kolumnie ~65 znaków, komentarze w prawym marginesie na wysokości kotwic
  *     (przy kolizji przesuwają się w dół, cienka linia łączy je z kotwicą),
@@ -39,7 +39,7 @@ window.LM = window.LM || {};
   function typeOf(a) { return P().TYPES[a.type] || P().TYPES.uwaga; }
 
   function render(view, route) {
-    document.title = "Pisanie · English Levels Map";
+    document.title = "Pisanie · " + LM.APP.appTitle;
     const back = LM.ui.breadcrumbs([{ label: "Pisanie", href: P().HASH }, { label: "Wzorzec" }]);
     view.appendChild(back);
     const status = el("p", { class: "tool-note", role: "status", text: "Wczytuję wzorzec…" });
@@ -63,7 +63,7 @@ window.LM = window.LM || {};
     const anns = placeAnnotations(model, notes.annotations);
     const words = P().wordCount(row.exam.id, task);
     const T = row.T;
-    document.title = (task.title || task.id) + " · Pisanie · English Levels Map";
+    document.title = (task.title || task.id) + " · Pisanie · " + LM.APP.appTitle;
     if (LM.profileData && LM.profileData.setLastPage) LM.profileData.setLastPage(location.hash, "Wzorzec: " + (task.title || task.id));
 
     // ----- nagłówek

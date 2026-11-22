@@ -18,7 +18,7 @@ const SKIPPED = [
   "deck rules (reference waliduj-fiszki.js: English theme and exam decks of spec v6 15): replaced by the spec 07 §7 rules in stage 4",
   "phrase bank (reference waliduj-zwroty.js): no content/writing/phrases.json yet (stage X of B1)",
   "speaking trainers and model essays (waliduj-mowienie.js, waliduj-wzorce.js): exams, stage E",
-  "trail (waliduj-szlak.js): the trail is generated from the syllabus in stage 1B (E9)",
+  "trail (waliduj-szlak.js): replaced; the trail is generated from the syllabus by tools/build/trail.js (E9), which checks content/trail-overrides.json",
   "\"real life and exam\" sections (waliduj-zycie.js) and C1 Use of English (waliduj-c1-uoe.js): dropped (D12, D13)"
 ];
 

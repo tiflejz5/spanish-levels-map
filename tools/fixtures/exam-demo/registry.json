@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "exams": [
+    {
+      "id": "exam-demo",
+      "code": "DEMO",
+      "label": "Demo exam",
+      "subtitle": "Fixture for the generic exam module",
+      "status": "active",
+      "accent": "#2c55c4",
+      "accent2": "#0e7682",
+      "order": 1,
+      "decks": []
+    },
+    {
+      "id": "exam-later",
+      "code": "LATER",
+      "label": "Later exam",
+      "status": "soon",
+      "soonDescription": "A second fixture exam that is still being written.",
+      "order": 2
+    }
+  ]
+}

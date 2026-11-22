@@ -24,7 +24,7 @@
  *   slm.exams     { version: 1, profiles: { <id>: { exams: { <idEgzaminu>: { examDate, drafts: { <zadanie>: tekst }, tasks: { <strona>: { <nr>: true } },
  *                    choices: { <grupa wyboru>: <zadanie> } } } } } }  (choices: wybór jednego z dwóch zadań, matura rozszerzona;
  *                    w starszych danych brak pola → {})
- *                    — egzaminy w nowym module (np. Egzamin ósmoklasisty, js/exam-core.js); Certyfikat C1 ma własny klucz (C1: dropped in stage 1B)
+ *                    — exams of the registry (js/exam-core.js), one shape for all exams
  *   slm.speaking  { version: 1, profiles: { <id>: { sessions: [ { day, exam, part: 1–4, scores: { <kryterium>: 1–5 } } ] } } }
  *                    — historia sesji trenera Speaking (samoocena, js/speaking-trainer.js; najnowsze na końcu, maks. 500)
  *                    Opcjonalnie (paczka v6, spec 18): sesja z polem full: true (tryb „Cały egzamin”) oraz w rekordzie profilu
@@ -71,6 +71,14 @@ window.LM = window.LM || {};
   const VERSION = 1;
 
   const CATEGORIES = ["Use of English", "Reading", "Writing", "Listening", "Speaking", "Gramatyka", "Słownictwo", "Inne"];
+  const CAT_GRAMMAR = CATEGORIES[5], CAT_VOCABULARY = CATEGORIES[6], CAT_OTHER = CATEGORIES[7];
+
+  /** Mistake-log category of a syllabus topic: vocabulary → vocabulary, verbs and grammar → grammar, else other. */
+  function journalCategoryOf(topicId) {
+    const t = topicId && LM.syl ? LM.syl.topic(topicId) : null;
+    if (!t) return CAT_OTHER;
+    return t.category === "vocabulary" ? CAT_VOCABULARY : t.category === "verbs" || t.category === "grammar" ? CAT_GRAMMAR : CAT_OTHER;
+  }
 
   // Limity długości (także przy imporcie)
   const LIMITS = {
@@ -1081,6 +1089,7 @@ window.LM = window.LM || {};
   LM.profileData = {
     KEYS: KEYS,
     CATEGORIES: CATEGORIES,
+    journalCategoryOf: journalCategoryOf,
     LIMITS: LIMITS,
     normalizeEntry: normalizeEntry,
     entries: entries,

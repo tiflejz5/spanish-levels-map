@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "sections": [
+    {
+      "id": "about",
+      "label": "About the exam",
+      "pages": [
+        { "id": "overview", "label": "Overview", "file": "pages/overview.md" },
+        { "id": "format", "label": "Format", "file": "pages/format.md" }
+      ]
+    },
+    {
+      "id": "practice",
+      "label": "Practice",
+      "exerciseGroups": [
+        { "label": "Grammar in context", "sets": [{ "id": "exam-demo-set-1", "label": "Set 1", "file": "exercises/set-1.json" }] }
+      ],
+      "trainers": [
+        { "id": "writing", "type": "writing", "label": "Writing trainer", "file": "trainers/writing.json" }
+      ]
+    }
+  ],
+  "links": []
+}

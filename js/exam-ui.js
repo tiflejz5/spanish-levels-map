@@ -4,7 +4,7 @@
  *   LM.examDate.card     jedna karta daty egzaminu (C1 i egzaminy z rejestru)
  *   LM.examCover         okładki: full (strona startowa), compact (podstrony), mini (kafel: główna, Dziś)
  * Czysta logika (myExams, formatDatePl, daysBetween) jest w js/exam-logic.js i ma testy.
- * Data C1 leży w (C1, etap 1A: tylko pamięć) (js/c1-core.js), pozostałych egzaminów w slm.exams (js/profile-data.js).
+ * Exam dates live in slm.exams (js/profile-data.js), per profile.
  */
 window.LM = window.LM || {};
 
@@ -23,30 +23,24 @@ window.LM = window.LM || {};
     const d = n % 10, t = n % 100;
     return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
   }
-  function c1store() { return LM.c1 ? LM.c1.store.data() : { examDate: "", best: {} }; }
 
   // =====================================================================
   // DATA I STAN EGZAMINU
   // =====================================================================
 
   function getDate(e) {
-    if (e.existing) return c1store().examDate || "";
     return pd() ? pd().examData(e.id).examDate : "";
   }
 
   function setDate(e, value) {
-    if (e.existing) {
-      c1store().examDate = value || "";
-      LM.c1.store.save();
-    } else if (pd()) {
-      pd().examData(e.id).examDate = value || "";
-      pd().saveExams();
-    }
+    if (!pd()) return;
+    pd().examData(e.id).examDate = value || "";
+    pd().saveExams();
   }
 
   function examsRecord() {
     const rec = { exams: {}, my: pd() ? pd().examMy() : {} };
-    registry().exams.forEach(function (e) { if (!e.existing && pd()) rec.exams[e.id] = { examDate: pd().examData(e.id).examDate }; });
+    registry().exams.forEach(function (e) { if (pd()) rec.exams[e.id] = { examDate: pd().examData(e.id).examDate }; });
     return rec;
   }
 
@@ -54,7 +48,6 @@ window.LM = window.LM || {};
     return L().examMyState({
       registry: registry(),
       examsRecord: examsRecord(),
-      c1: c1store(),
       isSetDone: function (id) { return !!(pd() && pd().setScore(id)); }
     });
   }
@@ -105,7 +98,6 @@ window.LM = window.LM || {};
       if (e) node.replaceWith(pinButton(e));
     });
     if (LM.exams) LM.exams.renderNav();
-    if (LM.c1) LM.c1.renderNav();
   }
 
   // =====================================================================
@@ -179,14 +171,12 @@ window.LM = window.LM || {};
   // OKŁADKI (B3)
   // =====================================================================
 
-  /** Kolory egzaminu jako zmienne CSS; C1 nie ma kolorów w rejestrze, więc bierze granat i złoto z tokenów. */
+  /** Exam colours as CSS variables (from the registry; the app accent when an exam has none). */
   function colorStyle(e) {
-    return e.existing
-      ? "--exam-accent:var(--c1-navy);--exam-accent-2:var(--c1-gold)"
-      : "--exam-accent:" + (e.accent || "var(--accent)") + ";--exam-accent-2:" + (e.accent2 || e.accent || "var(--accent)");
+    return "--exam-accent:" + (e.accent || "var(--accent)") + ";--exam-accent-2:" + (e.accent2 || e.accent || "var(--accent)");
   }
 
-  function href(e) { return "#" + e.route; }
+  function href(e) { return "#/exams/" + e.id; }
 
   /** Pełna szerokość: kod, nazwa, poziom i instytucja; po prawej data albo „Ustaw datę”. */
   function coverFull(e) {

@@ -10,7 +10,6 @@
  *     interleave(items)        przeplatanie
  *     weakTasks(rec, today)    kandydaci ze słabych punktów z dziennika podejść
  *     estimateMinutes(b)       karta 0,3 · błąd 0,5 · zadanie 0,7 min
- *     redirectFor(hash)        stare adresy → #/powtorki/…
  *   ctx = { state: stan fiszek, decks: [{ id, count }] (kolejność talii), cardsOf(deckId), deckOf(idStanu),
  *           weak: [{ id, topic }] (kandydaci), topicOfEx?(id), extraNew?: dodatkowe nowe karty ponad limit }
  *   Dane żywe: LM.reviewQueue.queue(now) / count() / breakdown() (poniżej, z LM.cards i LM.profileData).
@@ -197,21 +196,6 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // STARE ADRESY → #/powtorki/… (location.replace w js/app.js)
-  // =====================================================================
-
-  function redirectFor(hash) {
-    const h = String(hash || "");
-    if (/^#\/bledy\/powtorki\/?$/.test(h)) return "#/powtorki/sesja?tylko=bledy";
-    if (/^#\/bledy\/?$/.test(h)) return "#/powtorki/moje-bledy";
-    if (/^#\/fiszki\/moje-slowa\/?$/.test(h)) return "#/powtorki/moje-slowa";
-    if (/^#\/fiszki\/sesja\/?$/.test(h)) return "#/powtorki/sesja?tylko=talie";
-    let m = /^#\/fiszki(?:\/(.*))?$/.exec(h);
-    if (m) return "#/powtorki/talie" + (m[1] ? "/" + m[1] : "");
-    return null;
-  }
-
-  // =====================================================================
   // DANE ŻYWE (profil aktywny)
   // =====================================================================
 
@@ -292,7 +276,7 @@ window.LM = window.LM || {};
   LM.reviewQueue = {
     EX_NEW_PER_DAY: EX_NEW_PER_DAY, MINUTES: MINUTES, exKey: exKey, isEx: isEx, kindOf: kindOf,
     weakTasks: weakTasks, interleave: interleave, queueFrom: queueFrom, summaryFrom: summaryFrom, upcomingFrom: upcomingFrom, upcoming: upcoming,
-    estimateMinutes: estimateMinutes, redirectFor: redirectFor, dueCount: dueCount, freshCount: freshCount,
+    estimateMinutes: estimateMinutes, dueCount: dueCount, freshCount: freshCount,
     queue: queue, count: count, breakdown: breakdown, nextDue: nextDue,
     ctx: ctxNow
   };

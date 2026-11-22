@@ -3,7 +3,7 @@
  *
  *   content/quizzes/<level>/<topic id>.json → data/quizzes-<level>.js   LM.QUIZZES[<topic id>] = quiz   (lazy)
  *
- * The trail itself (data/trail.js) is generated from the syllabus in stage 1B (spec 06 E9).
+ * The trail itself (data/trail.js) is generated from the syllabus by tools/build/trail.js (spec 06 E9).
  */
 "use strict";
 

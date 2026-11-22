@@ -26,12 +26,12 @@ window.LM = window.LM || {};
   const GROUPS = ["pages", "exams", "exercises", "lab", "notes", "journal"];
   const GROUP_LABEL = { pages: "Strony", exams: "Egzaminy", exercises: "Ćwiczenia", lab: "Laboratorium czasów", notes: "Moje notatki", journal: "Mój dziennik błędów" };
   const SHORTCUTS = [
-    { title: "Szlak", route: "#/szlak", icon: "route" },
-    { title: "Dziś", route: "#/dzis", icon: "sunrise" },
-    { title: "Lab czasów", route: "#/laboratorium-czasow", icon: "flask-conical" },
-    { title: "Ćwiczenia", route: "#/cwiczenia", icon: "dumbbell" },
-    { title: "Fiszki i błędy", route: "#/powtorki", icon: "layers" },
-    { title: "Moje błędy", route: "#/powtorki/moje-bledy", icon: "notebook-pen" }
+    { title: "Szlak", route: "#/trail", icon: "route" },
+    { title: "Dziś", route: "#/today", icon: "sunrise" },
+    { title: "Lab czasów", route: "#/lab", icon: "flask-conical" },
+    { title: "Ćwiczenia", route: "#/practice", icon: "dumbbell" },
+    { title: "Fiszki i błędy", route: "#/review", icon: "layers" },
+    { title: "Moje błędy", route: "#/review/mistakes", icon: "notebook-pen" }
   ];
   const HOVER_DELAY = 400;
 
@@ -81,10 +81,10 @@ window.LM = window.LM || {};
     if (!pd || !LM.app.getActiveProfile()) return [];
     const out = [];
     pd.noteList().forEach(function (n) {
-      out.push({ id: "note:" + n.key, group: "notes", title: n.title || "Notatka", headings: [], summary: "", text: n.text, route: n.route || "#/notatki" });
+      out.push({ id: "note:" + n.key, group: "notes", title: n.title || "Notatka", headings: [], summary: "", text: n.text, route: n.route || "#/notes" });
     });
     pd.entries().forEach(function (e) {
-      out.push({ id: "err:" + e.id, group: "journal", title: e.context.split("\n")[0].slice(0, 90), headings: [], summary: e.correct, text: [e.context, e.correct, e.rule].join(" "), category: e.category, route: "#/powtorki/moje-bledy" });
+      out.push({ id: "err:" + e.id, group: "journal", title: e.context.split("\n")[0].slice(0, 90), headings: [], summary: e.correct, text: [e.context, e.correct, e.rule].join(" "), category: e.category, route: "#/review/mistakes" });
     });
     return out;
   }
@@ -230,7 +230,7 @@ window.LM = window.LM || {};
         LM.ui.emptyState({ art: "brak-wynikow", title: "Brak wyników", class: "es-inline" }),
         el("p", { class: "search-empty-title", text: "Nic nie znalazłem dla „" + q + "”." }),
         el("p", { class: "tool-note", text: "Spróbuj krótszego hasła albo bez polskich znaków. Ćwiczenia do wszystkich tematów są w Centrum ćwiczeń." }),
-        el("p", null, el("a", { class: "btn btn-secondary btn-small", href: "#/cwiczenia", onclick: function () { close(false); } }, LM.ui.withIcon("dumbbell", "Centrum ćwiczeń")))
+        el("p", null, el("a", { class: "btn btn-secondary btn-small", href: "#/practice", onclick: function () { close(false); } }, LM.ui.withIcon("dumbbell", "Centrum ćwiczeń")))
       ]));
       status.textContent = "Brak wyników.";
       return;
@@ -268,7 +268,7 @@ window.LM = window.LM || {};
     status.textContent = "Wpisz hasło – polskie znaki są opcjonalne.";
   }
 
-  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
+  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
 
   function move(i) {
     if (!options.length) return;

@@ -92,13 +92,13 @@ window.LM = window.LM || {};
     const hasProfile = app().hasProfiles();
     const reviews = hasProfile && LM.reviewQueue ? LM.reviewQueue.dueCount() : 0; // jedna liczba: DO POWTÓRKI (fiszki + Moje błędy + słabe punkty); nowe karty osobno (spec v7 14, P3)
     const items = [
-      { href: "#/szlak", label: "Szlak", icon: "route", active: st.view === "szlak" },
-      { href: "#/dzis", label: "Dziś", icon: "sunrise", active: st.view === "today" },
-      { href: "#/powtorki", label: "Fiszki i błędy", icon: "layers", active: st.view === "powtorki" || st.view === "fiszki" || st.view === "journal",
+      { href: "#/trail", label: "Szlak", icon: "route", active: st.view === "trail" },
+      { href: "#/today", label: "Dziś", icon: "sunrise", active: st.view === "today" },
+      { href: "#/review", label: "Fiszki i błędy", icon: "layers", active: st.view === "review" || st.view === "cards" || st.view === "mistakes",
         badge: reviews ? String(reviews) : null, badgeLabel: reviews ? reviews + " do powtórki" : null },
-      { href: "#/cwiczenia", label: "Ćwiczenia", icon: "dumbbell", active: st.view === "exercises" && !finalTestLevel() },
-      { href: "#/laboratorium-czasow", label: "Lab czasów", icon: "flask-conical", active: st.view === "lab" },
-      { href: "#/pisanie", label: "Pisanie", icon: "pencil", active: st.view === "pisanie" }
+      { href: "#/practice", label: "Ćwiczenia", icon: "dumbbell", active: st.view === "exercises" && !finalTestLevel() },
+      { href: "#/lab", label: "Lab czasów", icon: "flask-conical", active: st.view === "lab" },
+      { href: "#/writing", label: "Pisanie", icon: "pencil", active: st.view === "writing" }
     ];
     box.replaceChildren(el("ul", { class: "sb-list" }, items.map(function (it) {
       return el("li", null, sbItem({
@@ -113,10 +113,9 @@ window.LM = window.LM || {};
     })));
   }
 
-  /** Nazwa poziomu z pierwszej linii opisu („**Początkujący**” → „Początkujący”). */
-  function levelName(level) {
-    const m = /^\*\*(.+?)\*\*\s*$/.exec(String(level.description || "").split("\n")[0]);
-    return m ? m[1] : "";
+  /** Level name shown next to the code: the land of the level ("Meadow"). */
+  function levelName(levelId) {
+    return LM.syl.landName(levelId);
   }
 
   // Elementy poziomów budujemy raz i potem tylko aktualizujemy (pierścienie
@@ -130,19 +129,19 @@ window.LM = window.LM || {};
     const currentId = LM.today && LM.today.currentLevelId ? LM.today.currentLevelId() : null;
 
     // Napis pod logo (stały; postęp w panelu dotyczy całych poziomów)
-    document.getElementById("sidebar-category-name").textContent = "Mapa angielskiego A1–C2";
+    document.getElementById("sidebar-category-name").textContent = LM.APP.tagline;
 
     let ul = list.querySelector(":scope > ul.sb-list");
     if (!ul) { ul = el("ul", { class: "sb-list" }); list.replaceChildren(ul); }
 
-    st.content.levels.forEach(function (level) {
+    LM.syl.levels().forEach(function (level) {
       const s = app().getLevelStats(level.id);
       // Poziom jest wyróżniony na jego liście i jego podstronach
       const active = ((st.view === "level" || st.view === "page") && level.id === st.ui.levelId) || finalTestLevel() === level.id;
-      const name = levelName(level);
+      const name = levelName(level.id);
       let n = levelNodes[level.id];
       if (!n || !ul.contains(n.a)) {
-        const ring = LM.ui.progressRing(s.percent, { size: 36, stroke: 4, node: LM.ui.landIcon(level.id, { size: 20 }), label: "Postęp poziomu " + level.id });
+        const ring = LM.ui.progressRing(s.percent, { size: 36, stroke: 4, node: LM.ui.landIcon(level.id, { size: 20 }), label: "Progress in " + level.id });
         const fill = el("div", { class: "progress-fill", style: "transform:scaleX(" + s.percent / 100 + ")" });
         const count = el("span", { class: "sb-label-sub num" });
         const title = el("span", { class: "sb-label-title" });
@@ -161,8 +160,10 @@ window.LM = window.LM || {};
         n = levelNodes[level.id] = { a: a, ring: ring, ringWrap: ringWrap, fill: fill, count: count, title: title };
         ul.appendChild(el("li", null, a));
       }
+      const soon = !LM.syl.isAvailable(level.id);
       n.title.textContent = level.id + (name ? " · " + name : "");
-      n.count.textContent = s.done + " / " + s.total + " umiem";
+      n.count.textContent = soon ? "soon" : s.done + " / " + s.total + " known";
+      n.a.classList.toggle("is-soon", soon);
       n.fill.style.transform = "scaleX(" + s.percent / 100 + ")";
       LM.ui.setRing(n.ring, s.percent);
       n.ring.removeAttribute("role"); // nazwę i wartość ogłasza link (aria-label), pierścień jest ozdobą
@@ -176,13 +177,12 @@ window.LM = window.LM || {};
       if (passedText) n.ringWrap.appendChild(LM.ui.stamp(level.id, { size: 16 })); // pieczątka ✓ w rogu kółka
       n.a.classList.toggle("is-passed", !!passedText);
       n.a.classList.toggle("is-current", level.id === currentId);
-      n.a.setAttribute("aria-label", "Poziom " + level.id + (name ? ", " + name : "") + ": umiem " + s.done + " z " + s.total +
-        " we wszystkich kategoriach (" + s.percent + "%)" + (passedText ? ". " + passedText : "") + (level.id === currentId ? ". Bieżąca kraina" : ""));
+      n.a.setAttribute("aria-label", "Level " + level.id + (name ? ", " + name : "") + (soon ? ": coming soon" : ": " + s.done + " of " + s.total +
+        " topics known (" + s.percent + "%)") + (passedText ? ". " + passedText : "") + (level.id === currentId ? ". Current land" : ""));
     });
 
     // Pod poziomami: grupa „Egzaminy” z rejestru (E8, matury, B2…), na końcu Certyfikat C1 (własny moduł)
     if (LM.exams) LM.exams.renderNav();
-    if (LM.c1) LM.c1.renderNav();
   }
 
   // =====================================================================
@@ -190,7 +190,7 @@ window.LM = window.LM || {};
   // =====================================================================
 
   /** Widoki, które pokazują dane profilu: bez profilu mają kartę powitalną zamiast treści. */
-  const PERSONAL_VIEWS = ["today", "powtorki", "journal", "fiszki", "stats", "notes", "leveltest", "szlak"];
+  const PERSONAL_VIEWS = ["today", "review", "mistakes", "cards", "stats", "notes", "placement", "trail"];
 
   function renderMain(opts) {
     opts = opts || {};
@@ -199,62 +199,85 @@ window.LM = window.LM || {};
     if (!app().hasProfiles() && PERSONAL_VIEWS.indexOf(LM.state.view) !== -1) return LM.profiles.renderWelcome({ personal: true });
     // Strona główna, zakładka „Certyfikat C1” albo podstrona zamiast listy
     if (LM.state.view === "home") return LM.handbook.renderHome();
-    if (LM.state.view === "c1") return LM.c1.render(LM.state.c1Route);
+    if (LM.state.view === "notfound") return renderNotFound();
     if (LM.state.view === "exam") return LM.exams.render(LM.state.toolRoute);
-    if (LM.state.view === "powtorki") return LM.review.render();
-    if (LM.state.view === "journal") return LM.mistakes.render(LM.state.toolRoute);
+    if (LM.state.view === "review") return LM.review.render();
+    if (LM.state.view === "mistakes") return LM.mistakes.render(LM.state.toolRoute);
     if (LM.state.view === "today") return LM.today.render();
-    if (LM.state.view === "leveltest") return LM.placement.render();
+    if (LM.state.view === "placement") return LM.placement.render();
     if (LM.state.view === "exercises") return LM.exercises.render(LM.state.toolRoute);
     if (LM.state.view === "lab") return LM.lab.render(LM.state.toolRoute);
     if (LM.state.view === "stats") return LM.statsPage.render();
     if (LM.state.view === "notes") return LM.notes.render();
-    if (LM.state.view === "fiszki") return LM.cards.render();
-    if (LM.state.view === "pisanie") return LM.writing.render();
-    if (LM.state.view === "szlak") return LM.trail.render(LM.state.toolRoute);
+    if (LM.state.view === "cards") return LM.cards.render();
+    if (LM.state.view === "writing") return LM.writing.render();
+    if (LM.state.view === "trail") return LM.trail.render(LM.state.toolRoute);
     if (LM.state.route) return LM.handbook.renderPage(LM.state.route);
-    LM.handbook.computeLinks();
     const view = document.getElementById("view");
     const scroll = opts.resetScroll ? 0 : U.getScroll();
     const level = app().getActiveLevel();
-    const cat = app().getActiveCategory();
 
     view.className = "view lvl-" + level.id;
     delete view.dataset.file;
     view.replaceChildren();
+    document.title = level.id + " · " + LM.APP.appTitle;
 
-    view.appendChild(renderLevelHeader(level));
-    view.appendChild(renderCategoryBar(cat));
-
-    const all = LM.state.ui.categoryId === app().ALL_CATEGORIES;
-    if (!cat && !all) {
-      view.appendChild(emptyState("Brak kategorii na tym poziomie."));
-    } else {
-      view.appendChild(renderEssentials(level, cat, cat ? app().getBucket(level.id, cat.id) : null));
-      // Pod listą: podsumowanie poziomu (niezbednik/podsumowania/<poziom>.md)
-      const summary = LM.handbook.renderSummary(level.id);
-      if (summary) view.appendChild(summary);
+    if (!LM.syl.isAvailable(level.id)) {
+      view.appendChild(renderLevelHeader(level));
+      view.appendChild(renderPlannedTopics(level));
+      U.setScroll(typeof opts.scrollTop === "number" ? opts.scrollTop : scroll);
+      return;
     }
-    // Pod podsumowaniem: karta „Test końcowy A1” (paczka v6, spec 13 sekcja 2)
+    view.appendChild(renderLevelHeader(level));
+    view.appendChild(renderTopics(level));
+    // Below the list: level summary (content/summaries/<level>.md)
+    const summary = LM.handbook.renderSummary(level.id);
+    if (summary) view.appendChild(summary);
+    // Final test card, and the cheat-sheet card before it
     if (LM.final) view.appendChild(LM.final.card(level.id));
-    // Obok podsumowania: karta „Ściąga A2 – jedna strona do druku” (spec v6 16, sekcja 1.2)
-    const sciaga = LM.handbook.sciagaCard(level.id);
-    if (sciaga) view.insertBefore(sciaga, view.querySelector(".lf-level-card"));
+    const sheet = LM.handbook.cheatsheetCard(level.id);
+    if (sheet) view.insertBefore(sheet, view.querySelector(".lf-level-card"));
 
     U.setScroll(typeof opts.scrollTop === "number" ? opts.scrollTop : scroll);
   }
 
-  // ---------- Nagłówek poziomu ----------
+  /** "Page not found": any hash no route claims (spec 02 §6). */
+  function renderNotFound() {
+    const view = document.getElementById("view");
+    view.className = "view tool-view notfound-view";
+    view.dataset.file = "#notfound";
+    view.replaceChildren(el("section", { class: "card notfound", "aria-labelledby": "notfound-title" }, [
+      el("h1", { class: "notfound-title", id: "notfound-title", text: "Page not found" }),
+      el("p", { text: "There is no page at this address. It may have moved, or the link has a typo." }),
+      el("p", null, el("a", { class: "btn btn-primary", href: "#/" }, LM.ui.withIcon("arrow-left", "Go to the home page")))
+    ]));
+    document.title = "Page not found · " + LM.APP.appTitle;
+    U.setScroll(0);
+  }
+
+  // ---------- Level header ----------
 
   /**
    * Nagłówek poziomu: duży znak poziomu w kolorze krainy, nazwa i cel (z opisu),
    * pierścień postępu całego poziomu (wszystkie kategorie).
    */
   function renderLevelHeader(level) {
-    const name = levelName(level);
-    const rest = String(level.description || "").split("\n").slice(name ? 1 : 0).join("\n").trim();
+    const name = levelName(level.id);
+    if (!LM.syl.isAvailable(level.id)) {
+      return el("header", { class: "card level-hero is-soon" }, [
+        el("div", { class: "level-hero-text" }, [
+          el("p", { class: "level-kicker" }, [LM.ui.landIcon(level.id, { size: 16 }), LM.ui.landLabel(level.id)]),
+          el("h1", { class: "level-title" }, [
+            el("span", { class: "level-code-big", text: level.id }),
+            name ? el("span", { class: "level-name", text: name }) : null
+          ]),
+          level.goal ? el("p", { class: "level-desc", text: level.goal }) : null,
+          el("p", { class: "level-soon-badge" }, [LM.icon("clock", { size: 16 }), "Coming soon"])
+        ])
+      ]);
+    }
     const s = app().getLevelStats(level.id);
-    const ring = LM.ui.progressRing(s.percent, { size: 104, stroke: 8, label: "Postęp poziomu " + level.id + " we wszystkich kategoriach", text: s.percent + "%" });
+    const ring = LM.ui.progressRing(s.percent, { size: 104, stroke: 8, label: "Progress in " + level.id, text: s.percent + "%" });
     ring.id = "level-ring";
     return el("header", { class: "card level-hero" }, [
       el("div", { class: "level-hero-text" }, [
@@ -263,50 +286,24 @@ window.LM = window.LM || {};
           el("span", { class: "level-code-big", text: level.id }),
           name ? el("span", { class: "level-name", text: name }) : null
         ]),
-        rest ? el("p", { class: "level-desc" }, U.formatText(rest)) : null,
-        LM.trail ? LM.trail.levelLink(level.id) : null // „Zobacz Polanę na szlaku”
+        level.goal ? el("p", { class: "level-desc", text: level.goal }) : null,
+        LM.trail ? LM.trail.levelLink(level.id) : null
       ]),
       el("div", { class: "level-hero-ring" }, [
         ring,
-        el("p", { class: "level-ring-label num", id: "level-ring-label", text: s.done + " z " + s.total + " umiem" }),
-        el("p", { class: "level-ring-scope", text: "wszystkie kategorie" }),
-        LM.final ? LM.final.headerLabel(level.id) : null // „Zaliczony · 12.11.2026” (test końcowy)
+        el("p", { class: "level-ring-label num", id: "level-ring-label", text: s.done + " of " + s.total + " known" }),
+        el("p", { class: "level-ring-scope", text: "all topics" }),
+        LM.final ? LM.final.headerLabel(level.id) : null
       ])
     ]);
   }
 
-  // ---------- Kategorie ----------
+  // ---------- Topics (the checklist: one row per syllabus topic, spec 06 E2) ----------
 
-  function renderCategoryBar(activeCat) {
-    const cats = LM.state.content.categories;
-    const bar = el("div", { class: "category-bar" });
-    if (cats.length) {
-      // Filtr kategorii jako chipy (jeden wybrany naraz, aria-pressed)
-      const allId = app().ALL_CATEGORIES;
-      const options = [{ id: allId, name: "Wszystkie" }].concat(cats);
-      bar.appendChild(el("div", { class: "chip-filter", role: "group", "aria-label": "Kategoria" },
-        options.map(function (c) {
-          const active = c.id === allId ? LM.state.ui.categoryId === allId : !!(activeCat && c.id === activeCat.id);
-          return el("button", {
-            type: "button",
-            class: "chip-btn" + (active ? " is-active" : ""),
-            "aria-pressed": active ? "true" : "false",
-            onclick: function () { app().selectCategory(c.id); }
-          }, [active ? LM.icon("check", { size: 16 }) : null, c.name || "Bez nazwy"]);
-        })
-      ));
-    }
-    return bar;
-  }
-
-  // ---------- Essentials ----------
-
-  /** Wiersz punktu poziomu: „Umiem” po lewej, tekst (link do podstrony) z chevronem po prawej. */
-  function essRow(item) {
-    const progress = LM.state.progress;
-    const done = progress[item.id] === true;
-    const textId = "ess-text-" + item.id;
-    const pageLink = LM.handbook.linkForEssential(item.id);
+  /** Topic row: "I know this" on the left, the title (link to the topic page) with a chevron on the right. */
+  function topicRow(topic) {
+    const done = LM.state.progress[topic.id] === true;
+    const textId = "ess-text-" + topic.id;
     let li = null;
     const checkbox = el("label", { class: "umiem" }, [
       el("input", {
@@ -314,120 +311,118 @@ window.LM = window.LM || {};
         checked: done,
         "aria-describedby": textId,
         onchange: function (e) {
-          if (!app().hasProfiles()) { // tryb gościa: najpierw profil, potem zaznaczenie (lista przerysuje się sama)
+          if (!app().hasProfiles()) { // guest mode: create a profile first, then tick (the list redraws itself)
             const input = e.target, on = input.checked;
             input.checked = !on;
-            app().withProfile("Zaznaczenia „Umiem” zapisują się w profilu.", function () { app().setProgress(item.id, on); app().renderAll(); });
+            app().withProfile("“I know this” ticks are saved in your profile.", function () { app().setProgress(topic.id, on); app().renderAll(); });
             return;
           }
-          app().setProgress(item.id, e.target.checked);
+          app().setProgress(topic.id, e.target.checked);
           li.classList.toggle("is-done", e.target.checked);
-          checkbox.classList.toggle("is-fresh", e.target.checked); // pieczątka „odbija się” tylko przy zaznaczeniu
+          checkbox.classList.toggle("is-fresh", e.target.checked);
         }
       }),
-      el("span", { class: "visually-hidden", text: "Umiem" })
+      el("span", { class: "visually-hidden", text: "I know this" })
     ]);
-    li = el("li", { class: "ess-item" + (done ? " is-done" : "") + (pageLink ? " has-page" : ""), "data-topic": pageLink ? pageLink.item.id : null }, [
+    li = el("li", { class: "ess-item has-page" + (done ? " is-done" : ""), "data-topic": topic.id }, [
       checkbox,
-      el("div", { class: "ess-text", id: textId }, pageLink
-        // Punkt z podstroną: tekst jest linkiem
-        ? el("a", { class: "ess-link", href: LM.handbook.routeOf(pageLink.item), onclick: rememberScroll }, [
-            el("span", null, U.formatText(item.text)),
-            el("span", { class: "ess-link-arrow", "aria-hidden": "true" }, LM.icon("chevron-right", { size: 18 }))
-          ])
-        : U.formatText(item.text))
+      el("div", { class: "ess-text", id: textId },
+        el("a", { class: "ess-link", href: LM.syl.routeOf(topic.id), onclick: rememberScroll }, [
+          el("span", { class: "ess-title", text: topic.title }),
+          LM.syl.hasPage(topic.id) ? null : el("span", { class: "ess-soon", text: "being written" }),
+          el("span", { class: "ess-link-arrow", "aria-hidden": "true" }, LM.icon("chevron-right", { size: 18 }))
+        ]))
     ]);
     return li;
   }
 
-  /** Puste punkty (bez tekstu) nie są pokazywane. */
-  function visibleEssentials(bucket) {
-    return bucket.essentials.filter(function (e) { return !U.isBlank(e.text); });
-  }
-
-  /** Lista punktów; cat = null oznacza filtr „Wszystkie” (grupy z podtytułami kategorii). */
-  function renderEssentials(level, cat, bucket) {
-    const stats = cat ? app().getStats(level.id, cat.id) : app().getLevelStats(level.id);
-
-    const section = el("section", { class: "essentials", "aria-labelledby": "ess-title" }, [
+  /**
+   * A "soon" level (spec 06 E1): the planned topics from the syllabus, titles and examples only (no links, no checkboxes),
+   * grouped by category like an available level.
+   */
+  function renderPlannedTopics(level) {
+    const section = el("section", { class: "essentials is-planned", "aria-labelledby": "ess-title" }, [
       el("div", { class: "section-head" }, [
-        el("h2", { class: "section-title", id: "ess-title", text: "Essentials" }),
-        el("span", { class: "section-sub", text: "Co warto umieć na poziomie " + level.id })
-      ]),
-      el("div", { class: "essentials-progress", id: "ess-progress" }, [
-        progressBar(stats.percent, false, cat ? "Postęp w tej kategorii" : "Postęp na tym poziomie"),
-        el("span", { class: "progress-text", text: progressLabel(stats, !cat) })
+        el("h2", { class: "section-title", id: "ess-title", text: "Planned topics" }),
+        el("span", { class: "section-sub", text: level.id + " is on its way. The topics below are what it will cover." })
       ])
     ]);
-
-    const groups = cat
-      ? [{ cat: cat, items: visibleEssentials(bucket) }]
-      : LM.state.content.categories.map(function (c) { return { cat: c, items: visibleEssentials(app().getBucket(level.id, c.id)) }; });
-    let any = false;
-    groups.forEach(function (g) {
-      if (!g.items.length) return;
-      any = true;
-      if (!cat) section.appendChild(el("h3", { class: "ess-group-title", text: g.cat.name || "Bez nazwy" }));
-      const ul = el("ul", { class: "ess-list" });
-      g.items.forEach(function (item) { ul.appendChild(essRow(item)); });
-      section.appendChild(ul);
+    LM.syl.groups(level.id).forEach(function (g) {
+      section.appendChild(el("h3", { class: "ess-group-title", text: g.name }));
+      section.appendChild(el("ul", { class: "ess-list is-planned" }, g.topics.map(function (t) {
+        return el("li", { class: "ess-item is-planned", "data-topic": t.id }, el("div", { class: "ess-text" }, [
+          el("span", { class: "ess-title", text: t.title }),
+          t.example ? el("span", { class: "ess-example", lang: LM.APP.targetLang, text: t.example }) : null
+        ]));
+      })));
     });
-    if (!any) {
-      section.appendChild(emptyState("Brak punktów w tej kategorii."));
+    return section;
+  }
+
+  /** The level's topics grouped by syllabus category (order of first appearance on the level). */
+  function renderTopics(level) {
+    const stats = app().getLevelStats(level.id);
+    const section = el("section", { class: "essentials", "aria-labelledby": "ess-title" }, [
+      el("div", { class: "section-head" }, [
+        el("h2", { class: "section-title", id: "ess-title", text: "Topics" }),
+        el("span", { class: "section-sub", text: "What to know at " + level.id })
+      ]),
+      el("div", { class: "essentials-progress", id: "ess-progress" }, [
+        progressBar(stats.percent, false, "Progress in " + level.id),
+        el("span", { class: "progress-text", text: progressLabel(stats) })
+      ])
+    ]);
+    const groups = LM.syl.groups(level.id);
+    groups.forEach(function (g) {
+      section.appendChild(el("h3", { class: "ess-group-title", text: g.name }));
+      section.appendChild(el("ul", { class: "ess-list" }, g.topics.map(topicRow)));
+    });
+    if (!groups.length) {
+      section.appendChild(emptyState("This level has no topics."));
       return section;
     }
-    // Etykiety „zestaw 8/10” przed strzałką (najlepszy wynik zestawu tematu), dopisywane po wczytaniu indeksu ćwiczeń (S4)
+    // Best set score ("set 8/10") before the arrow, added once the exercise index has loaded
     if (LM.exercises && LM.exercises.setLabels) {
       const rows = section.querySelectorAll("li[data-topic]");
-      const topics = Array.prototype.map.call(rows, function (r) { return r.getAttribute("data-topic"); });
-      LM.exercises.setLabels(topics).then(function (labels) {
+      const ids = Array.prototype.map.call(rows, function (r) { return r.getAttribute("data-topic"); });
+      LM.exercises.setLabels(ids).then(function (labels) {
         Array.prototype.forEach.call(rows, function (row) {
           const lab = labels[row.getAttribute("data-topic")];
           const arrow = row.querySelector(".ess-link-arrow");
           if (!lab || !arrow || row.querySelector(".ess-set")) return;
-          arrow.parentNode.insertBefore(el("span", { class: "ess-set" + (lab.high ? " is-high" : ""), title: "Najlepszy wynik zestawu zadań z tego tematu" }, [
+          arrow.parentNode.insertBefore(el("span", { class: "ess-set" + (lab.high ? " is-high" : ""), title: "Best score in the exercise set of this topic" }, [
             lab.high ? el("span", { class: "ess-set-dot", "aria-hidden": "true" }) : null, lab.text
           ]), arrow);
         });
       });
     }
-    // Pod słownictwem A1–B1: link do talii tematycznych fiszek (lista przefiltrowana po poziomie)
-    if ((!cat || cat.id === "cat_vocabulary") && /^(A1|A2|B1)$/.test(level.id) && LM.cards) {
-      section.appendChild(el("p", { class: "fc-themes-link" }, el("a", { class: "btn btn-secondary", href: "#/powtorki/talie/tematy/" + level.id.toLowerCase() },
-        LM.ui.withIcon("layers", "Fiszki tematyczne: Dom, Jedzenie, Praca, Podróże, Zdrowie, Emocje, Technologia"))));
-    }
     return section;
   }
 
-  /** Zapamiętuje przewinięcie listy przed przejściem na podstronę. */
+  /** Remembers the list scroll position before opening a topic page. */
   function rememberScroll() {
     LM.state.listScroll = U.getScroll();
   }
 
-  function progressLabel(stats, wholeLevel) {
-    // „w tej kategorii”: lewy panel i strona „Dziś” liczą cały poziom (wszystkie kategorie)
-    return stats.done + " z " + stats.total + (wholeLevel ? " umiem na tym poziomie · " : " umiem w tej kategorii · ") + stats.percent + "%";
+  function progressLabel(stats) {
+    return stats.done + " of " + stats.total + " known at this level · " + stats.percent + "%";
   }
 
-  /** Aktualizuje pasek postępu essentials bez przerysowania całej strony. */
+  /** Updates the level progress bar and ring without redrawing the page (focus stays). */
   function updateEssentialsProgress() {
     const box = document.getElementById("ess-progress");
-    const cat = app().getActiveCategory();
-    const all = LM.state.ui.categoryId === app().ALL_CATEGORIES;
-    if (!box || (!cat && !all)) return;
-    const stats = cat ? app().getStats(LM.state.ui.levelId, cat.id) : app().getLevelStats(LM.state.ui.levelId);
+    if (!box) return;
+    const stats = app().getLevelStats(LM.state.ui.levelId);
     const bar = box.querySelector(".progress");
     bar.setAttribute("aria-valuenow", String(stats.percent));
     bar.querySelector(".progress-fill").style.transform = fillStyle(stats.percent).slice("transform:".length);
-    // Pierścień w nagłówku: cały poziom (wszystkie kategorie)
     const ring = document.getElementById("level-ring");
     if (ring) {
-      const ls = app().getLevelStats(LM.state.ui.levelId);
-      LM.ui.setRing(ring, ls.percent, ls.percent + "%");
+      LM.ui.setRing(ring, stats.percent, stats.percent + "%");
       const lbl = document.getElementById("level-ring-label");
-      if (lbl) lbl.textContent = ls.done + " z " + ls.total + " umiem";
+      if (lbl) lbl.textContent = stats.done + " of " + stats.total + " known";
     }
-    box.querySelector(".progress-text").textContent = progressLabel(stats, !cat);
+    box.querySelector(".progress-text").textContent = progressLabel(stats);
   }
 
   LM.render = {

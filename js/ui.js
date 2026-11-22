@@ -52,10 +52,10 @@ window.LM = window.LM || {};
     return svg;
   }
 
-  /** Krainy poziomów (paczka v7, C1): nazwa i klucz symbolu w assets/lands.js. */
+  /** Land symbol key per level in assets/lands.js. Land NAMES come from the syllabus (LM.syl.landName). */
   const LANDS = {
-    A1: { name: "Polana", key: "kraina-a1" }, A2: { name: "Las", key: "kraina-a2" }, B1: { name: "Wzgórza", key: "kraina-b1" },
-    B2: { name: "Jezioro", key: "kraina-b2" }, C1: { name: "Góry", key: "kraina-c1" }, C2: { name: "Szczyt", key: "kraina-c2" }
+    A1: { key: "kraina-a1" }, A2: { key: "kraina-a2" }, B1: { key: "kraina-b1" },
+    B2: { key: "kraina-b2" }, C1: { key: "kraina-c1" }, C2: { key: "kraina-c2" }
   };
 
   /** Symbol krainy dla poziomu ("A1"…"C2"), kreska currentColor — kolor ustawia rodzic (np. --lvl). */
@@ -64,9 +64,10 @@ window.LM = window.LM || {};
     return icon(land ? land.key : "", Object.assign({ set: "land", size: 22 }, opts || {}));
   }
 
-  /** "A1 · Polana" (sam kod, gdy poziom nie ma krainy). */
+  /** "A1 · Meadow" (the code alone when the level has no land name). */
   function landLabel(levelId) {
-    return LANDS[levelId] ? levelId + " · " + LANDS[levelId].name : levelId;
+    const name = LM.syl ? LM.syl.landName(levelId) : "";
+    return name ? levelId + " · " + name : levelId;
   }
 
   /**
@@ -228,7 +229,7 @@ window.LM = window.LM || {};
     wrap.appendChild(logoMark(opts.size));
     const word = document.createElement("span");
     word.className = "logo-word";
-    word.textContent = "English Levels Map";
+    word.textContent = LM.APP.appTitle;
     wrap.appendChild(word);
     return wrap;
   }

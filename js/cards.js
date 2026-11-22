@@ -2,12 +2,12 @@
  * cards.js — zakładka Fiszki (spec 10, sekcja 5): active recall z powtórkami w rosnących odstępach.
  *
  * Trasy:
- *   #/powtorki/talie                 zakładka „Talie”: lista talii, ustawienia (wcześniej #/fiszki)
- *   #/powtorki/sesja[?tylko=…]       sesja: fiszki, „Moje błędy” i zadania ze słabych punktów w jednej kolejce
- *   #/powtorki/talie/talia/<id>      przeglądanie talii (lista kart, filtry, zawieszanie)
- *   #/powtorki/talie/talia/<id>/nowa nowa karta (własne talie)
- *   #/powtorki/talie/talia/<id>/karta/<id>  edycja własnej karty
- *   #/powtorki/talie/import          import TSV/CSV z podglądem
+ *   #/review/decks                 zakładka „Talie”: lista talii, ustawienia (wcześniej #/fiszki)
+ *   #/review/session[?tylko=…]       sesja: fiszki, „Moje błędy” i zadania ze słabych punktów w jednej kolejce
+ *   #/review/decks/talia/<id>      przeglądanie talii (lista kart, filtry, zawieszanie)
+ *   #/review/decks/talia/<id>/nowa nowa karta (własne talie)
+ *   #/review/decks/talia/<id>/karta/<id>  edycja własnej karty
+ *   #/review/decks/import          import TSV/CSV z podglądem
  *
  * Dane: talie wbudowane (dane/fiszki/talie/<id>.js, ładowane na żądanie; indeks
  * LM.DECKS_INDEX), stan i własne karty w LM.cardsStore (slm.cards.<profileId>).
@@ -21,9 +21,9 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const HASH = "#/powtorki/talie";      // zakładka „Talie” i jej podstrony
-  const SESSION = "#/powtorki/sesja";   // sesja zunifikowana
-  const HOME = "#/powtorki";            // „Na dziś”
+  const HASH = "#/review/decks";      // zakładka „Talie” i jej podstrony
+  const SESSION = "#/review/session";   // sesja zunifikowana
+  const HOME = "#/review";            // „Na dziś”
   const MISTAKES_ID = "u-moje-bledy";
   const WORDS_ID = "u-moje-slowa"; // talia systemowa „Moje słowa” (system: "words", paczka v6 spec 14)
   const GRADE_INFO = [
@@ -262,7 +262,7 @@ window.LM = window.LM || {};
     const levels = ["", "A1", "A2", "B1"];
     view.appendChild(el("div", { class: "chip-filter", role: "group", "aria-label": "Poziom" }, levels.map(function (l) {
       const active = l === level;
-      return el("a", { class: "chip-btn" + (active ? " is-active" : ""), href: HASH + "/tematy" + (l ? "/" + l.toLowerCase() : ""), "aria-current": active ? "true" : null }, [active ? LM.icon("check", { size: 16 }) : null, l || "Wszystkie"]);
+      return el("a", { class: "chip-btn" + (active ? " is-active" : ""), href: HASH + "/topics" + (l ? "/" + l.toLowerCase() : ""), "aria-current": active ? "true" : null }, [active ? LM.icon("check", { size: 16 }) : null, l || "Wszystkie"]);
     })));
     const themes = allDecks().filter(function (d) { return /^temat-/.test(d.id); }).filter(function (d) {
       return !level || cardsOf(d.id).some(function (c) { return c.level === level; });
@@ -295,8 +295,8 @@ window.LM = window.LM || {};
       "aria-label": "Włączona w nauce: " + d.title,
       onclick: function () { toggleDeck(d.id, !on); render(); const again = document.querySelector('.fc-switch[aria-label="Włączona w nauce: ' + d.title.replace(/"/g, '\\"') + '"]'); if (again) again.focus(); }
     }, [el("span", { class: "fc-switch-track", "aria-hidden": "true" }, el("span", { class: "fc-switch-thumb" })), el("span", { class: "fc-switch-text", text: on ? "Włączona" : "Wyłączona" })]);
-    const actions = [el("a", { class: "btn btn-secondary btn-small", href: d.system === "words" ? "#/powtorki/moje-slowa" : HASH + "/talia/" + d.id }, "Przeglądaj")];
-    if (!d.builtIn) actions.push(el("a", { class: "btn btn-secondary btn-small", href: HASH + "/talia/" + d.id + "/nowa" }, LM.ui.withIcon("plus", "Dodaj kartę")));
+    const actions = [el("a", { class: "btn btn-secondary btn-small", href: d.system === "words" ? "#/review/words" : HASH + "/deck/" + d.id }, "Przeglądaj")];
+    if (!d.builtIn) actions.push(el("a", { class: "btn btn-secondary btn-small", href: HASH + "/deck/" + d.id + "/new" }, LM.ui.withIcon("plus", "Dodaj kartę")));
     actions.push(el("button", { type: "button", class: "btn btn-secondary btn-small", onclick: function () { exportDeck(d); } }, LM.ui.withIcon("download", "Eksportuj")));
     return el("li", { class: "card fc-deck" + (on ? " is-on" : "") }, [
       el("div", { class: "fc-deck-head" }, [
@@ -326,7 +326,7 @@ window.LM = window.LM || {};
       st().userDecks.push(d);
       st().settings.enabledDecks.push(d.id);
       saveState();
-      location.hash = HASH + "/talia/" + d.id;
+      location.hash = HASH + "/deck/" + d.id;
     });
   }
 
@@ -373,17 +373,17 @@ window.LM = window.LM || {};
     return out;
   }
 
-  /** Filtr z adresu: #/powtorki/sesja?tylko=bledy | slabe | talie | talia:<id>. */
+  /** Filtr z adresu: #/review/session?only=mistakes | slabe | talie | talia:<id>. */
   function sessionFilter() {
-    const m = /[?&]tylko=([^&]+)/.exec(location.hash || "");
+    const m = /[?&]only=([^&]+)/.exec(location.hash || "");
     const v = m ? decodeURIComponent(m[1]) : "";
     const mx = /[?&]max=(\d{1,3})/.exec(location.hash || "");
     const max = mx ? Number(mx[1]) : 0; // „Krótka sesja (10)”
-    const offPlan = /[?&]poza=1(&|$)/.test(location.hash || ""); // „Nauka teraz”: talia poza planem dnia
-    if (v === "bledy") return { kind: "mistake", label: "Moje błędy", max: max };
-    if (v === "slabe") return { kind: "exercise", label: "Słabe punkty", max: max };
-    if (v === "talie") return { kind: "card", label: "Fiszki z talii", max: max };
-    const d = /^talia:([a-z0-9-]+)$/.exec(v);
+    const offPlan = /[?&]extra=1(&|$)/.test(location.hash || ""); // „Nauka teraz”: talia poza planem dnia
+    if (v === "mistakes") return { kind: "mistake", label: "Moje błędy", max: max };
+    if (v === "weak") return { kind: "exercise", label: "Słabe punkty", max: max };
+    if (v === "decks") return { kind: "card", label: "Fiszki z talii", max: max };
+    const d = /^deck:([a-z0-9-]+)$/.exec(v);
     if (d) { const deck = deckById(d[1]); return { kind: "all", deck: d[1], label: deck ? deck.title : "Talia", max: max, offPlan: offPlan }; }
     return { kind: "all", label: max ? "Krótka sesja" : "", max: max };
   }
@@ -605,15 +605,7 @@ window.LM = window.LM || {};
       if (!session || session.current !== id) return;
       if (!desc) { session.taskFallback[id] = true; paintSession(); return; } // zadania nie ma (usunięty zestaw): karta z pełnym kontekstem
       const done = function (res) { finishExercise(id, res); };
-      if (desc.kind === "engine") {
-        LM.exercises.startSingle({ item: desc.item, back: { href: HOME, label: "Fiszki i błędy" }, progress: progressBlock, noJournal: true, onDone: done });
-      } else {
-        root.replaceChildren(el("div", { class: "fc-session-top" }, [
-          el("a", { class: "c1-back fc-back", href: HOME }, LM.ui.withIcon("chevron-left", "Fiszki i błędy")),
-          progressBlock()
-        ]));
-        LM.mistakeTask.mount(root, desc, entry, done);
-      }
+      LM.exercises.startSingle({ item: desc.item, back: { href: HOME, label: "Fiszki i błędy" }, progress: progressBlock, noJournal: true, onDone: done });
     }, function () { session.taskFallback[id] = true; paintSession(); });
   }
 
@@ -697,7 +689,7 @@ window.LM = window.LM || {};
     const own = /^u-/.test(card.id);
     root.appendChild(el("div", { class: "fc-tools" }, [
       el("button", { type: "button", class: "btn btn-link btn-small", disabled: !session.undo.length, onclick: undoLast }, LM.ui.withIcon("undo-2", "Cofnij (Z)")),
-      own ? el("a", { class: "btn btn-link btn-small", href: HASH + "/talia/" + card.deck + "/karta/" + card.id }, LM.ui.withIcon("pencil", "Edytuj (E)")) : null,
+      own ? el("a", { class: "btn btn-link btn-small", href: HASH + "/deck/" + card.deck + "/card/" + card.id }, LM.ui.withIcon("pencil", "Edytuj (E)")) : null,
       el("button", { type: "button", class: "btn btn-link btn-small", onclick: function () { setAside("suspend"); } }, LM.ui.withIcon("pause", "Zawieś (W)")),
       el("button", { type: "button", class: "btn btn-link btn-small", onclick: function () { setAside("bury"); } }, LM.ui.withIcon("clock", "Odłóż do jutra (B)"))
     ]));
@@ -827,7 +819,7 @@ window.LM = window.LM || {};
     else if (k === "e" && /^u-/.test(session.current)) {
       e.preventDefault();
       const c = cardById(session.current);
-      location.hash = HASH + "/talia/" + c.deck + "/karta/" + c.id;
+      location.hash = HASH + "/deck/" + c.deck + "/card/" + c.id;
     }
   }
   document.addEventListener("keydown", onKey);
@@ -837,18 +829,18 @@ window.LM = window.LM || {};
   // =====================================================================
 
   function parseRoute(hash) {
-    const m = /^#\/powtorki\/(talie|sesja|moje-slowa)(?:\/([^?]*))?(?:\?.*)?$/.exec(hash || "");
+    const m = /^#\/review\/(decks|session|words)(?:\/([^?]*))?(?:\?.*)?$/.exec(hash || "");
     if (!m) return null;
-    if (m[1] === "sesja") return { kind: "session" };
-    if (m[1] === "moje-slowa") return { kind: "words" };
+    if (m[1] === "session") return { kind: "session" };
+    if (m[1] === "words") return { kind: "words" };
     const p = (m[2] || "").replace(/\/+$/, "").split("/").filter(Boolean).map(decodeURIComponent);
     if (!p.length) return { kind: "home" };
     if (p[0] === "import") return { kind: "import" };
-    if (p[0] === "tematy") return { kind: "themes", level: /^(a1|a2|b1)$/.test(p[1] || "") ? p[1].toUpperCase() : "" };
-    if (p[0] === "talia" && p[1] === WORDS_ID && !p[2]) return { kind: "words" };
-    if (p[0] === "talia" && p[1]) {
-      if (p[2] === "nowa") return { kind: "edit", deck: p[1], card: null };
-      if (p[2] === "karta" && p[3]) return { kind: "edit", deck: p[1], card: p[3] };
+    if (p[0] === "topics") return { kind: "themes", level: /^(a1|a2|b1)$/.test(p[1] || "") ? p[1].toUpperCase() : "" };
+    if (p[0] === "deck" && p[1] === WORDS_ID && !p[2]) return { kind: "words" };
+    if (p[0] === "deck" && p[1]) {
+      if (p[2] === "new") return { kind: "edit", deck: p[1], card: null };
+      if (p[2] === "card" && p[3]) return { kind: "edit", deck: p[1], card: p[3] };
       return { kind: "deck", deck: p[1] };
     }
     return { kind: "home" };
@@ -862,7 +854,7 @@ window.LM = window.LM || {};
     view.className = "view tool-view fiszki-view";
     view.dataset.file = route.kind === "session" ? SESSION : HASH;
     view.replaceChildren();
-    document.title = "Fiszki i błędy · English Levels Map";
+    document.title = "Fiszki i błędy · " + LM.APP.appTitle;
     if (!hasProfile()) { session = null; noProfile(view); return; }
     // Nowa sesja przy każdym wejściu z innej strony; przerysowanie tej samej sesji zostawia stan
     if (route.kind === "session" && lastRoute !== location.hash && session) session.stale = true;
@@ -876,7 +868,7 @@ window.LM = window.LM || {};
     }
     if (route.kind === "session") renderSession(view);
     else if (route.kind === "themes") renderThemes(view, route.level);
-    else if (route.kind === "words" && LM.words) { document.title = "Moje słowa · English Levels Map"; LM.words.renderView(view); }
+    else if (route.kind === "words" && LM.words) { document.title = "Moje słowa · " + LM.APP.appTitle; LM.words.renderView(view); }
     else if (LM.cardsBrowse && route.kind !== "home") LM.cardsBrowse.render(view, route);
     else renderHome(view);
   }
@@ -988,22 +980,20 @@ window.LM = window.LM || {};
     LM.cardsBrowse.prefill({ type: "basic", front: text });
     const own = st().userDecks.filter(function (d) { return !d.system; });
     if (LM.words) LM.words.hideMenu();
-    location.hash = HASH + "/talia/" + (own.length ? own[0].id : "nowa") + "/nowa";
+    location.hash = HASH + "/deck/" + (own.length ? own[0].id : "new") + "/new";
   }
 
   // ---------- Kafelek „Fiszki do egzaminu” na stronach egzaminów (paczka v6, spec 15, sekcja 4) ----------
 
-  const EXAM_DECKS = {
-    "egzamin-osmoklasisty": ["egz-e8"],
-    "matura-podstawowa": ["egz-matura"],
-    "matura-rozszerzona": ["egz-matura"],
-    "certyfikat-b2": ["egz-b2-first"],
-    "certyfikat-c1": ["czasowniki-frazowe", "kolokacje"]
-  };
+  /** Decks of an exam: the "decks" list of its registry entry (spec 06 E8: no exam is hard-coded). */
+  function examDecks(examId) {
+    const e = LM.exams ? LM.exams.byId(examId) : null;
+    return e && Array.isArray(e.decks) ? e.decks : [];
+  }
 
   /** Kafelek talii pod dany egzamin (id z rejestru egzaminów): nazwa, liczba kart, stan i „Włącz i ucz się” / „Ucz się”. */
   function examTile(examId) {
-    const ids = (EXAM_DECKS[examId] || []).filter(function (id) { return index().some(function (d) { return d.id === id; }); });
+    const ids = examDecks(examId).filter(function (id) { return index().some(function (d) { return d.id === id; }); });
     if (!ids.length) return null;
     const decks = ids.map(function (id) { return index().find(function (d) { return d.id === id; }); });
     const box = el("section", { class: "card fc-exam-tile", "aria-labelledby": "fc-exam-title-" + examId });
@@ -1026,10 +1016,10 @@ window.LM = window.LM || {};
       if (!profile) parts.push(el("p", { class: "tool-note", text: "Dodaj profil, żeby uczyć się z fiszek." }));
       parts.push(el("div", { class: "fc-actions" }, [
         profile
-          ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { ids.forEach(function (id) { if (enabled().indexOf(id) === -1) toggleDeck(id, true); }); location.hash = HASH + "/sesja"; } },
+          ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { ids.forEach(function (id) { if (enabled().indexOf(id) === -1) toggleDeck(id, true); }); location.hash = SESSION; } },
             LM.ui.withIcon("play", allOn ? "Ucz się" : "Włącz i ucz się"))
           : null,
-        el("a", { class: "btn btn-secondary", href: HASH + "/talia/" + ids[0] }, LM.ui.withIcon("layers", "Przeglądaj karty"))
+        el("a", { class: "btn btn-secondary", href: HASH + "/deck/" + ids[0] }, LM.ui.withIcon("layers", "Przeglądaj karty"))
       ]));
       box.replaceChildren.apply(box, parts.filter(Boolean));
     }
@@ -1088,7 +1078,7 @@ window.LM = window.LM || {};
       el("p", { class: "review-label", text: "Powtórki dziennie – ostatnie 30 dni" }),
       bars,
       LM.words && LM.words.counts().total
-        ? el("p", { class: "tool-note fc-st-words" }, ["Moje słowa: ", el("strong", { class: "num", text: String(LM.words.counts().total) }), " (opanowane: " + LM.words.counts().mastered + ") · ", el("a", { href: "#/powtorki/moje-slowa", text: "Otwórz" })])
+        ? el("p", { class: "tool-note fc-st-words" }, ["Moje słowa: ", el("strong", { class: "num", text: String(LM.words.counts().total) }), " (opanowane: " + LM.words.counts().mastered + ") · ", el("a", { href: "#/review/words", text: "Otwórz" })])
         : null,
       el("p", { class: "review-label", text: "Prognoza powtórek na 7 dni" }),
       el("ol", { class: "fc-st-forecast" }, forecast.map(function (n, i) {

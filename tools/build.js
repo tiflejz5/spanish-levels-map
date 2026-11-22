@@ -60,7 +60,7 @@ function bump() {
   console.log("Version stamp: " + next + " (package.json lmVersion, index.html ?v=, LM.VERSION)");
 }
 
-const MODULES = ["syllabus", "pages", "tests", "quizzes", "lab", "exercises", "decks", "writing", "exams", "search"];
+const MODULES = ["syllabus", "pages", "tests", "quizzes", "trail", "lab", "exams", "exercises", "decks", "writing", "search"];
 
 // 1. Validate (structural checks run inside the modules; content validators are separate files)
 if (!CHECK) runValidators();
@@ -73,6 +73,7 @@ C.fs.rmSync(OUT, { recursive: true, force: true });
 C.fs.mkdirSync(OUT, { recursive: true });
 C.OUT = OUT;
 MODULES.forEach(function (m) { require("./build/" + m).build(ctx); });
+require("./build/syllabus").checkAvailable(ctx);
 if (!CHECK && !ctx.errors.length) {
   C.fs.rmSync(C.DATA, { recursive: true, force: true });
   C.fs.renameSync(OUT, C.DATA);

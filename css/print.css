@@ -20,8 +20,8 @@
 
   /* Interfejs, którego nie drukujemy */
   .sidebar, .topbar, .banners, .nav-overlay, .toast-region, dialog, .fc-sel-menu, .fw-tip,
-  .page-head, .page-foot, .back-btn, .c1-page-tools, .umiem, .notes-btn, .notes-panel,
-  .ex-topic, .page-nav, .c1-pagenav, .exam-pagenav, .level-final-card,
+  .page-head, .page-foot, .c1-page-tools, .umiem, .notes-btn, .notes-panel,
+  .ex-topic, .page-nav, .level-final-card,
   .btn, button, .md-answers-toggle, .no-print, .sciaga-tools, #menu-btn {
     display: none !important;
   }

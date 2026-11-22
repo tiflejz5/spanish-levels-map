@@ -1,5 +1,5 @@
 /*
- * today.js — strona „Dziś” (#/dzis) jako kokpit (układ bento, DESIGN.md sekcja 3.2):
+ * today.js — strona „Dziś” (#/today) jako kokpit (układ bento, DESIGN.md sekcja 3.2):
  *   hero (powitanie, pierścień „Twoja mapa”, jedna propozycja), powtórki,
  *   seria (płomień + ostatnie 7 dni), egzamin C1 (gdy data jest ustawiona),
  *   szlak A1→C2 (SVG ze stacjami-linkami i znacznikiem „Tu jesteś”),
@@ -21,7 +21,7 @@ window.LM = window.LM || {};
   const el = U.el;
   const SVG_NS = "http://www.w3.org/2000/svg";
 
-  const HASH = "#/dzis";
+  const HASH = "#/today";
   const DAY_NAMES = ["niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"];
   const DAY_SHORT = ["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "So"];
   const MONTHS = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"];
@@ -31,10 +31,10 @@ window.LM = window.LM || {};
 
   function pd() { return LM.profileData; }
   function learn() { return LM.learn; }
-  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
+  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
 
   function parseRoute(hash) {
-    return /^#\/dzis\/?$/.test(hash || "") ? { kind: "today" } : null;
+    return /^#\/today\/?$/.test(hash || "") ? { kind: "today" } : null;
   }
 
   function svgEl(tag, attrs) {
@@ -66,7 +66,7 @@ window.LM = window.LM || {};
    */
   function levelStats() {
     return LM.LEVEL_IDS.map(function (id) {
-      const s = Object.assign({ id: id }, LM.app.getLevelStats(id));
+      const s = Object.assign({ id: id, soon: !LM.syl.isAvailable(id) }, LM.app.getLevelStats(id));
       const li = LM.trail && LM.trail.ready() ? LM.trail.levelInfo(id) : null;
       return li ? Object.assign(s, { done: li.done, total: li.total, percent: li.percent, skipped: li.skipped, szlak: true }) : s;
     });
@@ -75,32 +75,23 @@ window.LM = window.LM || {};
   /** Pierwsza stacja z postępem poniżej 100% (gdy wszystko zrobione — ostatnia). */
   function currentIndex(stats) {
     const sz = LM.trail && LM.trail.ready() ? LM.trail.current() : null; // Szlak: kraina bieżącego przystanku (po teście C1 = C1)
-    if (sz) { const k = stats.findIndex(function (s) { return s.id === sz.level; }); if (k !== -1) return k; }
-    const i = stats.findIndex(function (s) { return s.total && s.percent < 100; });
-    return i === -1 ? stats.length - 1 : i;
+    if (sz) { const k = stats.findIndex(function (s) { return s.id === sz.level && !s.soon; }); if (k !== -1) return k; }
+    // "soon" levels never become the current land (spec 06 E1)
+    const i = stats.findIndex(function (s) { return !s.soon && s.total && s.percent < 100; });
+    if (i !== -1) return i;
+    let last = 0;
+    stats.forEach(function (s, k) { if (!s.soon) last = k; });
+    return last;
   }
 
   function levelName(id) {
-    const level = LM.state.content.levels.find(function (l) { return l.id === id; });
-    const m = level && /^\*\*(.+?)\*\*\s*$/.exec(String(level.description || "").split("\n")[0]);
-    return m ? m[1] : "";
+    return LM.syl.landName(id);
   }
 
-  /** Następny nieodhaczony punkt na poziomie (z podstroną, jeśli istnieje). */
+  /** Next unticked topic of a level (its page when it exists). */
   function nextItem(levelId) {
-    const level = LM.state.content.levels.find(function (l) { return l.id === levelId; });
-    if (!level) return null;
-    LM.handbook.computeLinks();
-    for (const cat of LM.state.content.categories) {
-      const bucket = level.content[cat.id];
-      if (!bucket) continue;
-      for (const e of bucket.essentials) {
-        if (U.isBlank(e.text) || LM.state.progress[e.id] === true) continue;
-        const info = LM.handbook.linkForEssential(e.id);
-        return { text: e.text.replace(/\s*\(.*\)\s*$/, ""), href: info ? LM.handbook.routeOf(info.item) : LM.app.levelHash(levelId) };
-      }
-    }
-    return null;
+    const t = LM.syl.topics(levelId).find(function (x) { return LM.state.progress[x.id] !== true; });
+    return t ? { text: LM.handbook.titleOf(t), href: LM.handbook.routeOf(t) } : null;
   }
 
   function greetingWord() {
@@ -165,7 +156,7 @@ window.LM = window.LM || {};
     const p = LM.app.getActiveProfile();
     const d = dateOf(learn().today());
     const cur = stats[currentIndex(stats)];
-    const mp = learn().mapProgress(stats);
+    const mp = learn().mapProgress(stats.filter(function (s) { return !s.soon; })); // available levels only (spec 06 E1)
     const stage = el("div", { class: "trail-stage" });
     const card = el("section", { class: "card bento-tile map-card", "aria-labelledby": "today-title" }, [
       el("div", { class: "map-top" }, [
@@ -235,7 +226,7 @@ window.LM = window.LM || {};
   function shortcutsTile() {
     const rows = [];
     if (LM.placement) rows.push(shortcutRow("a", { href: LM.placement.HASH }, "target", "Test poziomu", "12 pytań, ok. 6 minut – sprawdź, od czego zacząć."));
-    rows.push(shortcutRow("a", { href: "#/statystyki" }, "chart-column", "Statystyki", "Trafność, najsłabsze tematy i aktywność."));
+    rows.push(shortcutRow("a", { href: "#/stats" }, "chart-column", "Statystyki", "Trafność, najsłabsze tematy i aktywność."));
     return tile("bento-shortcuts", "Na skróty", [
       el("h2", { class: "tile-title" }, ["Na skróty"]),
       el("ul", { class: "row-list" }, rows)
@@ -398,12 +389,12 @@ window.LM = window.LM || {};
       const here = i === cur;
       const passed = LM.final ? LM.final.passedText(s.id) : null; // „A1 zaliczony 12.11.2026” (test końcowy)
       list.appendChild(el("li", {
-        class: "trail-station lvl-" + s.id + (here ? " is-current" : "") + (s.percent >= 100 ? " is-done" : "") + (s.skipped ? " is-skipped" : ""),
+        class: "trail-station lvl-" + s.id + (here ? " is-current" : "") + (s.percent >= 100 ? " is-done" : "") + (s.skipped ? " is-skipped" : "") + (s.soon ? " is-soon" : ""),
         style: vertical ? "left:" + pt[0] + "px;top:" + pt[1] + "px" : "left:" + (pt[0] / g.w * 100) + "%;top:" + (pt[1] / g.h * 100) + "%"
       }, el("a", {
         class: "trail-link",
         href: LM.app.levelHash(s.id),
-        "aria-label": "Poziom " + s.id + (name ? ", " + name : "") + ": " + (s.skipped ? "pominięte testem poziomu" : s.percent + (s.szlak ? "% przystanków szlaku" : "% punktów „Umiem”")) + (here ? " – tu jesteś" : "") + (passed ? ". " + passed : "")
+        "aria-label": s.soon ? "Level " + s.id + (name ? ", " + name : "") + ": coming soon" : "Poziom " + s.id + (name ? ", " + name : "") + ": " + (s.skipped ? "pominięte testem poziomu" : s.percent + (s.szlak ? "% przystanków szlaku" : "% punktów „Umiem”")) + (here ? " – tu jesteś" : "") + (passed ? ". " + passed : "")
       }, [
         el("span", { class: "trail-ring" }, [
           LM.ui.progressRing(s.skipped ? 100 : s.percent, { size: 56, stroke: 5, node: LM.ui.landIcon(s.id, { size: 26 }) }),
@@ -412,7 +403,7 @@ window.LM = window.LM || {};
         ]),
         el("span", { class: "trail-label", "aria-hidden": "true" }, [
           el("span", { class: "trail-name", text: LM.ui.landLabel(s.id) }),
-          el("span", { class: "trail-pct num", text: s.skipped ? "pominięte" : s.percent + "%" }),
+          el("span", { class: "trail-pct num", text: s.soon ? "soon" : s.skipped ? "pominięte" : s.percent + "%" }),
           passed ? el("span", { class: "trail-passed", text: "Zaliczony " + LM.final.fmtDate(LM.final.passedAt(s.id)) }) : null,
           here ? el("span", { class: "trail-here", text: "Tu jesteś" }) : null
         ])
@@ -449,7 +440,7 @@ window.LM = window.LM || {};
       LM.review ? LM.review.todayCard() : null, // „Fiszki i błędy”: stan z liczbą albo niska karta zerowa
       el("div", { class: "today-row" }, [streakTile(), exam || shortcutsTile()])
     ]));
-    document.title = "Dziś · English Levels Map";
+    document.title = "Dziś · " + LM.APP.appTitle;
     U.setScroll(keepScroll);
 
     const stage = map._stage;

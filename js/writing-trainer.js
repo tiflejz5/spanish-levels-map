@@ -17,7 +17,7 @@
  *   listTitle, listLead(T)  nagłówek i wstęp listy zadań
  *   chips(task, T)          etykiety zadania (Part, gatunek, zakres słów)
  *   genrePage(task)         { href, label } strony o gatunku albo null
- *   timerKey(task)          klucz timera (LM.c1.timer — wspólny dla trenerów)
+ *   timerKey(task)          klucz timera (timer() below, shared by all trainers)
  *   timerNote               opcjonalna wskazówka przy timerze
  *   examExtras              true → egzaminy z rejestru: podany początek, podpunkty do odhaczenia,
  *                           samoocena wg kryteriów (rubric), wzorcowa odpowiedź obok tekstu
@@ -25,7 +25,7 @@
  *   lowScope                co się ocenia poniżej warnBelow (mianownik), np. „treść”, „realizacja zadania”
  *   lowNote(n, T)           opcjonalnie: własna uwaga w samoocenie poniżej warnBelow (zamiast lowScope)
  *   partGroups(T)           opcjonalnie: [{ label, tasks }] — lista zadań w grupach (B2: Part 1 / Part 2)
- *   modelHref(task)         opcjonalnie: adres wzorca z komentarzami (#/pisanie/wzorce/…) — link w zadaniu z modelNotes
+ *   modelHref(task)         opcjonalnie: adres wzorca z komentarzami (#/writing/models/…) — link w zadaniu z modelNotes
  *   examId                  id egzaminu z rejestru (albo "certyfikat-c1") — poziom zwrotów w panelu „Zwroty” (spec 17, 2.4)
  *   choices()               opcjonalnie: obiekt { grupa: idZadania } — wybór jednego z dwóch zadań
  *                           (zadania z choiceGroup, opis grupy w T.choiceGroups; spec 06, 4.1)
@@ -243,7 +243,7 @@ window.LM = window.LM || {};
       const phrasesBtn = task.genre ? el("button", { type: "button", class: "btn btn-secondary btn-small zw-open", "aria-expanded": "false", "aria-controls": "zw-panel",
         onclick: function () { togglePhrases(); } }, LM.ui.withIcon("notebook-text", "Zwroty")) : null;
       view.appendChild(el("div", { class: "c1-writing-bar" }, [
-        LM.c1.timer({ key: cfg.timerKey(task), seconds: T.timeMinutes * 60, label: "Czas", exam: true }),
+        timer({ key: cfg.timerKey(task), seconds: T.timeMinutes * 60, label: "Czas", exam: true }),
         counter,
         phrasesBtn
       ]));
@@ -303,7 +303,7 @@ window.LM = window.LM || {};
               el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": "Zamknij panel zwrotów", onclick: closePhrases }, LM.ui.withIcon("x", "Zamknij"))
             ]),
             body,
-            el("p", { class: "tool-note zw-panel-foot" }, el("a", { href: LM.writing.HASH + "/zwroty", text: "Cały bank zwrotów" }))
+            el("p", { class: "tool-note zw-panel-foot" }, el("a", { href: LM.writing.HASH + "/phrases", text: "Cały bank zwrotów" }))
           ]);
           view.appendChild(panel);
           LM.loadModule("js/writing-phrases.js").then(function () { return LM.writingPhrases.load(); }).then(function () { fillPhrases(body); }, function () {
@@ -431,6 +431,100 @@ window.LM = window.LM || {};
     }
 
     return { render: render };
+  }
+
+  // =====================================================================
+  // EXAM TIMER (moved from the dropped js/c1-core.js; html.focus-mode while it runs)
+  // =====================================================================
+
+  const timers = {};
+  let ticker = null;
+
+  function timerState(key, seconds) {
+    if (!timers[key] || timers[key].total !== seconds) {
+      timers[key] = { total: seconds, remaining: seconds, running: false, endAt: 0, view: null };
+    }
+    return timers[key];
+  }
+
+  function formatTime(t, exam) {
+    const r = Math.max(0, t.remaining);
+    const mmss = Math.floor(r / 60) + ":" + String(r % 60).padStart(2, "0");
+    if (exam && r > 300) return Math.ceil(r / 60) + " min";
+    return mmss;
+  }
+
+  function paint(t) {
+    const v = t.view;
+    if (!v) return; // (rysujemy też zanim element trafi na stronę)
+    v.display.textContent = t.remaining <= 0 ? "Czas minął" : formatTime(t, v.exam);
+    const dangerFrom = v.exam ? 60 : 10;
+    v.root.classList.toggle("is-danger", t.remaining > 0 && t.remaining <= dangerFrom);
+    v.root.classList.toggle("is-over", t.remaining <= 0);
+    v.root.classList.toggle("is-running", t.running);
+    v.toggle.textContent = t.running ? "Pauza" : (t.remaining < t.total && t.remaining > 0 ? "Wznów" : "Start");
+    v.toggle.disabled = t.remaining <= 0;
+    updateFocus();
+  }
+
+  /** Tryb skupienia (html.focus-mode): reszta interfejsu przygasa, gdy działa timer na ekranie. */
+  function updateFocus() {
+    const any = Object.keys(timers).some(function (k) {
+      const t = timers[k];
+      return t.running && t.view && document.contains(t.view.root);
+    });
+    document.documentElement.classList.toggle("focus-mode", any);
+  }
+
+  function tick() {
+    let any = false;
+    Object.keys(timers).forEach(function (key) {
+      const t = timers[key];
+      if (!t.running) return;
+      t.remaining = Math.max(0, Math.round((t.endAt - Date.now()) / 1000));
+      if (t.remaining <= 0) {
+        t.running = false;
+        // Timer odliczył do końca (trener Writing / Speaking) = ukończona sesja
+        if (LM.markActivity) LM.markActivity();
+      } else any = true;
+      paint(t);
+    });
+    if (!any && ticker) { clearInterval(ticker); ticker = null; }
+  }
+
+  /** Element timera. opts: key, seconds, label, exam. */
+  function timer(opts) {
+    const t = timerState(opts.key, opts.seconds);
+    const display = el("span", { class: "c1-timer-display", role: "timer", "aria-label": opts.label });
+    const toggle = el("button", {
+      type: "button",
+      class: "btn btn-primary btn-small",
+      onclick: function () {
+        if (t.running) {
+          t.remaining = Math.max(0, Math.round((t.endAt - Date.now()) / 1000));
+          t.running = false;
+        } else if (t.remaining > 0) {
+          t.endAt = Date.now() + t.remaining * 1000;
+          t.running = true;
+          if (!ticker) ticker = setInterval(tick, 250);
+        }
+        paint(t);
+      }
+    }, "Start");
+    const reset = el("button", {
+      type: "button",
+      class: "btn btn-secondary btn-small",
+      onclick: function () { t.running = false; t.remaining = t.total; paint(t); }
+    }, "Reset");
+    const root = el("div", { class: "c1-timer" + (opts.exam ? " is-exam" : "") }, [
+      opts.label ? el("span", { class: "c1-timer-label", text: opts.label }) : null,
+      display,
+      el("span", { class: "c1-timer-buttons" }, [toggle, reset])
+    ]);
+    t.view = { root: root, display: display, toggle: toggle, exam: !!opts.exam };
+    if (t.running && !ticker) ticker = setInterval(tick, 250);
+    paint(t);
+    return root;
   }
 
   LM.writingTrainer = { create: create, copyText: copyText };

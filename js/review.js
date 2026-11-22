@@ -1,11 +1,11 @@
 /*
- * review.js — widok „Fiszki i błędy” (#/powtorki, paczka v8, spec 20 R3).
+ * review.js — widok „Fiszki i błędy” (#/review, paczka v8, spec 20 R3).
  *
- *   #/powtorki[/na-dzis]        zakładka „Na dziś”: karta z liczbą, rozbiciem i „Powtarzaj teraz” (ten plik)
- *   #/powtorki/talie[/…]        zakładka „Talie” (js/cards.js, js/cards-browse.js)
- *   #/powtorki/moje-bledy       zakładka „Moje błędy” (js/mistakes.js)
- *   #/powtorki/moje-slowa       zakładka „Moje słowa” (js/words.js)
- *   #/powtorki/sesja[?tylko=…]  sesja zunifikowana (js/cards.js)
+ *   #/review                      zakładka „Na dziś”: karta z liczbą, rozbiciem i „Powtarzaj teraz” (ten plik)
+ *   #/review/decks[/…]        zakładka „Talie” (js/cards.js, js/cards-browse.js)
+ *   #/review/mistakes       zakładka „Moje błędy” (js/mistakes.js)
+ *   #/review/words       zakładka „Moje słowa” (js/words.js)
+ *   #/review/session[?tylko=…]  sesja zunifikowana (js/cards.js)
  *
  * Liczby i kolejka: js/review-queue.js. Tu: wspólny nagłówek z zakładkami (role="tablist"), karta „Na dziś”
  * (ta sama na stronie Dziś) i widok pierwszej zakładki.
@@ -18,24 +18,24 @@ window.LM = window.LM || {};
   const U = LM.utils;
   const el = U.el;
 
-  const HOME = "#/powtorki";
+  const HOME = "#/review";
   const TABS = [
     { id: "dzis", label: "Na dziś", href: HOME },
-    { id: "talie", label: "Talie", href: "#/powtorki/talie" },
-    { id: "bledy", label: "Moje błędy", href: "#/powtorki/moje-bledy" },
-    { id: "slowa", label: "Moje słowa", href: "#/powtorki/moje-slowa" }
+    { id: "talie", label: "Talie", href: "#/review/decks" },
+    { id: "bledy", label: "Moje błędy", href: "#/review/mistakes" },
+    { id: "slowa", label: "Moje słowa", href: "#/review/words" }
   ];
   const ROWS = [
-    { kind: "card", label: "Fiszki z talii", only: "talie" },
-    { kind: "mistake", label: "Błędy z dziennika", only: "bledy" },
-    { kind: "exercise", label: "Słabe punkty z ćwiczeń", only: "slabe" }
+    { kind: "card", label: "Fiszki z talii", only: "decks" },
+    { kind: "mistake", label: "Błędy z dziennika", only: "mistakes" },
+    { kind: "exercise", label: "Słabe punkty z ćwiczeń", only: "weak" }
   ];
 
   function hasProfile() { return !!(LM.app && LM.app.getActiveProfile()); }
-  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
+  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
 
   function parseRoute(hash) {
-    return /^#\/powtorki(?:\/na-dzis)?\/?$/.test(hash || "") ? { kind: "today" } : null;
+    return /^#\/review\/?$/.test(hash || "") ? { kind: "today" } : null;
   }
 
   // ---------- nagłówek i zakładki ----------
@@ -122,13 +122,13 @@ window.LM = window.LM || {};
       return el("li", { class: "pw-row is-" + r.kind }, [
         el("span", { class: "pw-dot", "aria-hidden": "true" }),
         b[r.kind]
-          ? el("a", { class: "pw-row-label", href: "#/powtorki/sesja?tylko=" + r.only, "aria-label": r.label + ": " + b[r.kind] + ". Powtarzaj tylko to." }, r.label)
+          ? el("a", { class: "pw-row-label", href: "#/review/session?only=" + r.only, "aria-label": r.label + ": " + b[r.kind] + ". Powtarzaj tylko to." }, r.label)
           : el("span", { class: "pw-row-label", text: r.label }),
         el("span", { class: "pw-row-n num", text: String(b[r.kind]) })
       ]);
     })));
-    const actions = [el("a", { class: "btn btn-primary pw-start", href: "#/powtorki/sesja" }, due.total ? "Powtarzaj teraz" : "Ucz się nowych")];
-    if (b.total > 10 && !opts.today) actions.push(el("a", { class: "btn btn-secondary", href: "#/powtorki/sesja?max=10" }, "Krótka sesja (10)"));
+    const actions = [el("a", { class: "btn btn-primary pw-start", href: "#/review/session" }, due.total ? "Powtarzaj teraz" : "Ucz się nowych")];
+    if (b.total > 10 && !opts.today) actions.push(el("a", { class: "btn btn-secondary", href: "#/review/session?max=10" }, "Krótka sesja (10)"));
     section.appendChild(el("div", { class: "pw-card-actions" }, [el("div", { class: "pw-card-buttons" }, actions), links()]));
     return section;
   }
@@ -142,14 +142,14 @@ window.LM = window.LM || {};
     else text += " Włącz talię albo zapisz błąd – wrócą tu w rosnących odstępach.";
     return el("section", { class: "card pw-card is-today is-zero", "aria-label": "Fiszki i błędy" }, [
       el("p", { class: "pw-zero-text" }, [el("strong", { text: "Fiszki i błędy" }), " · ", text]),
-      el("a", { class: "btn-link pw-zero-link", href: "#/powtorki/talie" }, "Talie")
+      el("a", { class: "btn-link pw-zero-link", href: "#/review/decks" }, "Talie")
     ]);
   }
 
   function links() {
     return el("p", { class: "pw-links" }, [
-      el("a", { href: "#/powtorki/talie", text: "Talie" }),
-      el("a", { href: "#/powtorki/moje-bledy", text: "Moje błędy" }),
+      el("a", { href: "#/review/decks", text: "Talie" }),
+      el("a", { href: "#/review/mistakes", text: "Moje błędy" }),
       el("button", { type: "button", class: "btn btn-link", onclick: function () { openAddMistake(function () { if (LM.app.refreshLearning) LM.app.refreshLearning(); render(); }); } }, "+ Dodaj błąd")
     ]);
   }
@@ -169,7 +169,7 @@ window.LM = window.LM || {};
     view.className = "view tool-view powtorki-view";
     view.dataset.file = HOME;
     view.replaceChildren();
-    document.title = "Fiszki i błędy · English Levels Map";
+    document.title = "Fiszki i błędy · " + LM.APP.appTitle;
     if (!hasProfile()) {
       view.appendChild(header("dzis", "Fiszki, własne błędy i słabe punkty z ćwiczeń w jednej kolejce."));
       view.appendChild(el("div", { class: "empty-state" }, [

@@ -2,11 +2,12 @@
  * trail.js — widok Szlaku (spec v7 13, sekcja 4): ścieżka nauki A1 → C2 z krainami, odcinkami, przystankami, powtórkami
  * i odnogami egzaminów; arkusz przystanku (Przeczytaj → Sprawdź się → Zaliczone / Pomiń); quizy i powtórki w silniku zadań.
  *
- *   #/szlak              widok szlaku (bieżący przystanek przewinięty do widoku)
- *   #/szlak/<idPrzystanku>   jak wyżej, z otwartym arkuszem przystanku (linki z „Dziś”; adres wraca do #/szlak)
+ *   #/trail              widok szlaku (bieżący przystanek przewinięty do widoku)
+ *   #/trail/<idPrzystanku>   jak wyżej, z otwartym arkuszem przystanku (linki z „Dziś”; adres wraca do #/trail)
  *
- * Czysta logika: js/trail-logic.js. Stan: js/trail-store.js (slm.trail.<profil>). Dane: szlak/szlak-dane.js (LM.TRAIL,
- * ładowane przy starcie) i szlak/quizy-<poziom>.js (LM.QUIZZES, na żądanie).
+ * Pure logic: js/trail-logic.js. State: js/trail-store.js (slm.trail.<profile>). Data: data/trail.js (LM.TRAIL, generated
+ * from the syllabus by tools/build/trail.js, spec 06 E9; one stop per topic, a checkpoint per unit) and
+ * data/quizzes-<level>.js (LM.QUIZZES, on demand). A "soon" level is drawn dimmed with "Coming soon" (spec 06 E1).
  * Dostępność: lista przystanków to <ol> z przyciskami, stan zapisany tekstem („zaliczony”, „bieżący”, „pominięty”).
  */
 window.LM = window.LM || {};
@@ -16,12 +17,10 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const HASH = "#/szlak";
+  const HASH = "#/trail";
   const ROW = 108;                 // wysokość wiersza przystanku (px)
-  const ACC = { A1: "Polanę", A2: "Las", B1: "Wzgórza", B2: "Jezioro", C1: "Góry", C2: "Szczyt" }; // „Zalecamy najpierw skończyć …”
-  const LOC = { A1: "na Polanie", A2: "w Lesie", B1: "na Wzgórzach", B2: "nad Jeziorem", C1: "w Górach", C2: "na Szczycie" };
-  const CAT_ICON = { g: "notebook-text", f: "arrow-left-right", v: "layers", mix: "sparkles" };
-  const CAT_NAME = { g: "gramatyka", f: "funkcje", v: "słownictwo", mix: "mieszany" };
+  // Stop icon per syllabus category
+  const CAT_ICON = { verbs: "notebook-text", grammar: "notebook-text", functions: "arrow-left-right", vocabulary: "layers" };
   const STATUS_TEXT = { done: "zaliczony", current: "bieżący", open: "otwarty", skipped: "pominięty" };
 
   function SL() { return LM.trailLogic; }
@@ -41,7 +40,7 @@ window.LM = window.LM || {};
   /** Dane szlaku są wczytane (skrypt startowy), a logika i magazyn gotowe. */
   function loaded() { return !!(LM.TRAIL && LM.trailLogic && LM.trailStore); }
   /** Szlak da się policzyć dla aktywnego profilu. */
-  function ready() { return loaded() && hasProfile() && !!(LM.state && LM.state.content); }
+  function ready() { return loaded() && hasProfile() && !!(LM.state && LM.state.profiles); }
 
   function env() {
     return {
@@ -60,19 +59,11 @@ window.LM = window.LM || {};
 
   function nodeById(tr, id) { return tr.nodes.find(function (n) { return n.id === id; }) || null; }
 
-  function itemCat(id) { const m = /^e_[a-c]\d_([gfv])\d+$/.exec(id); return m ? m[1] : null; }
-  function stopCat(stop) {
-    const cats = {};
-    (stop.items || []).forEach(function (i) { const c = itemCat(i); if (c) cats[c] = true; });
-    const keys = Object.keys(cats);
-    return keys.length === 1 ? keys[0] : "mix";
-  }
-
   function pageHref(stop) { return "#/" + stop.page; }
-  function setHref(stop) { return "#/cwiczenia/zestaw/" + stop.set; }
+  function setHref(stop) { return "#/practice/set/" + stop.set; }
 
-  /** Tekst do etykiet: „Przystanek 7 z 22 na Polanie”. */
-  function positionText(n) { return "Przystanek " + n.number + " z " + n.levelTotal + " " + LOC[n.level]; }
+  /** Label text: "Stop 7 of 26 · A1 · Meadow". */
+  function positionText(n) { return "Stop " + n.number + " of " + n.levelTotal + " · " + LM.ui.landLabel(n.level); }
 
   // =====================================================================
   // API DLA INNYCH WIDOKÓW (Dziś, strona tematu, strona poziomu, statystyki)
@@ -96,12 +87,10 @@ window.LM = window.LM || {};
 
   function startLevelId() { return ready() ? startInfo().level : null; }
 
-  /** Pasek „Przystanek N z M” na dole strony tematu (page: „a1/czasy-present-simple”) albo null. */
-  function barFor(page) {
-    if (!loaded()) return null;
-    let found = null;
-    LM.TRAIL.levels.forEach(function (lv) { lv.units.forEach(function (u) { u.stops.forEach(function (s) { if (s.type === "lesson" && s.page === page && !found) found = s.id; }); }); });
-    if (!found) return null;
+  /** "Stop N of M" bar at the end of a topic page (stop id = topic id), or null (no stop, or a "soon" level). */
+  function barFor(topicId) {
+    if (!loaded() || !LM.syl.topic(topicId) || !LM.syl.isAvailable(LM.syl.topic(topicId).level)) return null;
+    const found = topicId;
     const guest = !hasProfile();
     const tr = guest ? SL().buildTrail(LM.TRAIL, SL().emptyState(), { isUmiem: function () { return false; }, setPercent: function () { return null; } }, "A1") : trail();
     const n = nodeById(tr, found);
@@ -127,7 +116,7 @@ window.LM = window.LM || {};
 
   function loadQuizzes(level) {
     const lvl = String(level).toLowerCase();
-    if (LM.QUIZZES && Object.keys(LM.QUIZZES).some(function (k) { return k.indexOf("szlak-" + lvl + "-") === 0; })) return Promise.resolve();
+    if (LM.QUIZZES && Object.keys(LM.QUIZZES).some(function (k) { return k.indexOf(lvl + "-") === 0; })) return Promise.resolve();
     return LM.loadModule("data/quizzes-" + lvl + ".js").catch(function () { /* poziom bez quizów */ });
   }
 
@@ -179,7 +168,7 @@ window.LM = window.LM || {};
   function runSession(cfg) {
     const n = cfg.node;
     LM.exercises.startCustom({
-      title: cfg.title, intro: cfg.intro, items: cfg.items, mode: "learn", autostart: true, // klucz „custom:” — sesja pod #/cwiczenia/sesja
+      title: cfg.title, intro: cfg.intro, items: cfg.items, mode: "learn", autostart: true, // klucz „custom:” — sesja pod #/practice/session
       back: { href: HASH, label: "Wróć na szlak" },
       hooks: {
         finish: function (run, s) {
@@ -204,7 +193,7 @@ window.LM = window.LM || {};
     const next = nextLesson(tr, node);
     const isQuiz = cfg.kind === "quiz";
     view.className = "view tool-view ex-view sz-result-view lvl-" + n.level;
-    document.title = (isQuiz ? "Wynik quizu" : "Wynik powtórki") + " · Szlak · English Levels Map";
+    document.title = (isQuiz ? "Wynik quizu" : "Wynik powtórki") + " · Szlak · " + LM.APP.appTitle;
     view.appendChild(el("header", { class: "tool-head" }, [
       LM.ui.breadcrumbs([{ label: "Szlak", href: HASH }, { label: cfg.title }]),
       el("h1", { class: "tool-title", text: isQuiz ? "Wynik: " + n.stop.title : cfg.title })
@@ -302,7 +291,7 @@ window.LM = window.LM || {};
     const rec = opts.force ? null : recommendFirst(tr, n);
     if (rec) {
       parts.push(el("div", { class: "sz-recommend", role: "note" }, [
-        el("p", { text: "Zalecamy najpierw skończyć " + ACC[rec] + ". Dalsze krainy są otwarte, ale szlak podpowiada kolejność." }),
+        el("p", { text: "We suggest finishing " + LM.ui.landLabel(rec) + " first. Later lands are open, but the trail suggests an order." }),
         el("button", { type: "button", class: "btn btn-secondary btn-small", onclick: function () { paintSheet(body, id, { force: true }); } }, "Mimo to otwórz")
       ]));
       body.replaceChildren.apply(body, parts);
@@ -310,7 +299,7 @@ window.LM = window.LM || {};
     }
 
     if (n.type === "review") {
-      parts.push(el("p", { text: "Sześć pytań z przystanków tego odcinka. Wynik nie blokuje dalszej drogi, błędne odpowiedzi trafiają do dziennika błędów." }));
+      parts.push(el("p", { text: (n.stop.size || 6) + " questions from the stops of this unit. The score never blocks the way on; wrong answers go to your mistake log." }));
       const r = ST().data().reviews[n.id];
       if (r) parts.push(el("p", { class: "tool-note", text: "Najlepszy wynik: " + r.best + "/" + r.of + "." }));
       parts.push(el("div", { class: "sz-sheet-actions" }, [
@@ -320,10 +309,8 @@ window.LM = window.LM || {};
       return;
     }
 
-    // punkty checklisty z „Umiem”
-    const content = LM.state.content;
-    const textOf = {};
-    content.levels.forEach(function (lv) { Object.keys(lv.content).forEach(function (cat) { lv.content[cat].essentials.forEach(function (e) { textOf[e.id] = e.text; }); }); });
+    // checklist items of the stop (topics, spec 06 E2)
+    const textOf = function (id) { const t = LM.syl.topic(id); return t ? LM.handbook.titleOf(t) : id; };
     parts.push(el("h3", { class: "sz-sheet-h", text: "Czego się tu uczysz" }));
     parts.push(el("ul", { class: "sz-items" }, (n.stop.items || []).map(function (itemId) {
       const done = LM.state.progress[itemId] === true;
@@ -334,7 +321,7 @@ window.LM = window.LM || {};
           paintSheet(body, id, Object.assign({}, opts, { force: true }));
           refreshView();
         } }),
-        el("span", { text: String(textOf[itemId] || itemId).replace(/\s*\(.*\)\s*$/, "") })
+        el("span", { text: textOf(itemId) })
       ]));
     })));
 
@@ -417,18 +404,18 @@ window.LM = window.LM || {};
   // =====================================================================
 
   function parseRoute(hash) {
-    const m = /^#\/szlak(?:\/([a-z0-9-]+))?\/?$/.exec(String(hash || ""));
+    const m = /^#\/trail(?:\/([a-z0-9-]+))?\/?$/.exec(String(hash || ""));
     return m ? { kind: "trail", open: m[1] || null } : null;
   }
 
-  function refreshView() { if (LM.state.view === "szlak") render({ kind: "trail", open: null }, { keepScroll: true }); }
+  function refreshView() { if (LM.state.view === "trail") render({ kind: "trail", open: null }, { keepScroll: true }); }
 
   function nodeButton(n, geo) {
     const st = n.current ? "current" : n.status;
     const isReview = n.type === "review";
-    const cat = isReview ? null : stopCat(n.stop);
+    const cat = isReview ? null : n.stop.category;
     const label = (isReview ? "Powtórka: " : "") + n.stop.title + ". " + (isReview ? "" : positionText(n) + ". ") + STATUS_TEXT[st] + (n.via === "start" ? " testem poziomu" : "") + ".";
-    const icon = st === "done" ? "check" : isReview ? "rotate-ccw" : (st === "skipped" ? "arrow-right" : CAT_ICON[cat]);
+    const icon = st === "done" ? "check" : isReview ? "rotate-ccw" : (st === "skipped" ? "arrow-right" : CAT_ICON[cat] || "sparkles");
     return el("li", { class: "sz-node is-" + st + (isReview ? " is-review" : ""), style: "left:" + geo.x.toFixed(1) + "%;top:" + geo.y + "px", "data-stop": n.id }, [
       el("button", { type: "button", class: "sz-btn", "aria-label": label, "aria-haspopup": "dialog", onclick: function () { openSheet(n.id); } }, [
         el("span", { class: "sz-circle", "aria-hidden": "true" }, LM.icon(icon, { size: st === "done" ? 24 : 22 })),
@@ -466,27 +453,28 @@ window.LM = window.LM || {};
     ]);
   }
 
-  function branchList(level, lv) {
-    if (!lv.branches || !lv.branches.length) return null;
-    const mine = LM.examMy ? LM.examMy.isMine : function () { return false; };
-    return el("section", { class: "sz-branches", "aria-label": "Odnogi egzaminacyjne po " + level }, [
-      el("h3", { class: "sz-unit-title", text: "Odnogi egzaminacyjne" }),
-      el("ul", { class: "sz-branch-list" }, lv.branches.map(function (b) {
-        const pinned = mine(b.exam);
-        return el("li", null, el("a", { class: "sz-branch" + (pinned ? " is-pinned" : ""), href: b.route }, [
-          el("span", { class: "sz-branch-icon", "aria-hidden": "true" }, LM.icon("graduation-cap", { size: 22 })),
-          el("span", { class: "sz-branch-body" }, [
-            el("strong", { text: b.label }),
-            pinned ? el("span", { class: "chip", text: "Przypięty do Dziś" }) : null,
-            el("span", { class: "tool-note", text: b.note })
-          ]),
-          el("span", { "aria-hidden": "true" }, LM.icon("chevron-right", { size: 20 }))
-        ]));
-      }))
+  /** A "soon" land (spec 06 E1): dimmed, "Coming soon", its units by title, no stops to open yet. */
+  function soonSection(tr, lv) {
+    const level = lv.level;
+    const p = SL().levelProgress(tr, level);
+    return el("section", { class: "sz-level is-soon lvl-" + level, "aria-labelledby": "sz-l-" + level }, [
+      el("header", { class: "sz-level-head" }, [
+        el("span", { class: "sz-level-icon", "aria-hidden": "true" }, LM.ui.landIcon(level, { size: 30 })),
+        el("div", { class: "sz-level-text" }, [
+          el("h2", { class: "sz-level-title", id: "sz-l-" + level, text: LM.ui.landLabel(level) }),
+          el("p", { class: "sz-level-sub num" }, [
+            el("span", { class: "chip is-soon", text: "Coming soon" }),
+            " " + p.total + " stops in " + lv.units.length + " units"
+          ])
+        ]),
+        el("div", { class: "sz-level-links" }, el("a", { class: "btn btn-link btn-small", href: LM.app.levelHash(level) }, "Planned topics"))
+      ]),
+      el("ol", { class: "sz-soon-units" }, lv.units.map(function (u) { return el("li", { text: u.title }); }))
     ]);
   }
 
   function levelSection(tr, lv, curLevel) {
+    if (lv.status === "soon") return soonSection(tr, lv);
     const level = lv.level;
     const p = SL().levelProgress(tr, level);
     const skipped = SL().LEVELS.indexOf(level) < tr.startIndex && p.percent < 100;
@@ -511,8 +499,6 @@ window.LM = window.LM || {};
       ])
     ]);
     const inner = [head].concat(units);
-    const br = branchList(level, lv);
-    if (br) inner.push(br);
     const cls = "sz-level lvl-" + level + (skipped ? " is-skipped" : "") + (isCur ? " is-current" : "");
     if (skipped) {
       return el("details", { class: cls, "aria-labelledby": "sz-l-" + level }, [
@@ -526,9 +512,9 @@ window.LM = window.LM || {};
   function firstRun() {
     return el("section", { class: "card sz-first", "aria-labelledby": "sz-first-title" }, [
       el("h2", { class: "sz-first-title", id: "sz-first-title", text: "Od czego zaczynamy?" }),
-      el("p", { text: "Szlak to jedna droga przez sześć krain, od Polany po Szczyt. Możesz zacząć od początku albo zrobić krótki test poziomu, a szlak ustawi się tam, gdzie warto zacząć." }),
+      el("p", { text: "Szlak to jedna droga przez sześć krain. Możesz zacząć od początku albo zrobić krótki test poziomu, a szlak ustawi się tam, gdzie warto zacząć." }),
       el("div", { class: "tool-actions" }, [
-        el("a", { class: "btn btn-primary", href: LM.placement ? LM.placement.HASH : "#/test-poziomu" }, LM.ui.withIcon("target", "Zrób test poziomu (6 min)")),
+        el("a", { class: "btn btn-primary", href: LM.placement ? LM.placement.HASH : "#/placement" }, LM.ui.withIcon("target", "Zrób test poziomu (6 min)")),
         el("button", { type: "button", class: "btn btn-secondary", onclick: function () { ST().setStart("A1", "default"); refreshView(); } }, "Zacznij od A1")
       ])
     ]);
@@ -547,7 +533,7 @@ window.LM = window.LM || {};
     view.className = "view tool-view sz-view";
     view.dataset.file = HASH;
     view.replaceChildren();
-    document.title = "Szlak · English Levels Map";
+    document.title = "Szlak · " + LM.APP.appTitle;
     if (!ready()) {
       view.appendChild(el("p", { class: "tool-note", role: "status", text: "Wczytuję Szlak…" }));
       return;
@@ -587,7 +573,7 @@ window.LM = window.LM || {};
       } else U.setScroll(0);
     }
     if (route.open) {
-      history.replaceState(null, "", HASH); // adres wraca do #/szlak, odświeżenie nie otwiera arkusza ponownie
+      history.replaceState(null, "", HASH); // adres wraca do #/trail, odświeżenie nie otwiera arkusza ponownie
       openSheet(route.open);
     }
   }
@@ -595,7 +581,7 @@ window.LM = window.LM || {};
   /** Link „Zobacz Polanę na szlaku” na stronie poziomu. */
   function levelLink(level) {
     if (!loaded()) return null;
-    return el("a", { class: "btn btn-link btn-small sz-level-link", href: HASH }, LM.ui.withIcon("route", "Zobacz " + ACC[level] + " na szlaku"));
+    return el("a", { class: "btn btn-link btn-small sz-level-link", href: HASH }, LM.ui.withIcon("route", "See " + LM.ui.landLabel(level) + " on the trail"));
   }
 
   /** Kafel „Szlak” w Statystykach: zaliczone przystanki na poziom i średni wynik quizów. */
@@ -604,7 +590,7 @@ window.LM = window.LM || {};
     const tr = trail();
     const st = ST().data();
     const avg = SL().quizAverage(st);
-    const rows = SL().LEVELS.map(function (lvl) {
+    const rows = SL().LEVELS.filter(function (lvl) { return LM.syl.isAvailable(lvl); }).map(function (lvl) {
       const p = SL().levelProgress(tr, lvl);
       return el("li", { class: "sz-st-row lvl-" + lvl }, [
         el("span", { class: "sz-st-name", text: LM.ui.landLabel(lvl) }),
@@ -622,7 +608,7 @@ window.LM = window.LM || {};
   }
 
   LM.trail = {
-    levelLink: levelLink, statsTile: statsTile, LOC: LOC, ACC: ACC,
+    levelLink: levelLink, statsTile: statsTile,
     HASH: HASH, parseRoute: parseRoute, render: render, loaded: loaded, ready: ready,
     current: current, levelInfo: levelInfo, startLevel: startLevelId, barFor: barFor, openSheet: openSheet, startQuiz: startQuiz, positionText: positionText
   };

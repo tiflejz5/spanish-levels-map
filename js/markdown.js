@@ -212,10 +212,10 @@ window.LM = window.LM || {};
       if (!m) { if (part) appendLinks(parent, part); return; }
       const target = resolver(m[1]);
       if (target) {
-        // Link [[id]] jako mały chip w kolorze poziomu strony docelowej (zestaw C1: granat i złoto)
-        const cls = "wiki-link wiki-chip" + (target.kind === "c1" ? " is-c1" : target.level ? " lvl-" + target.level : "");
+        // [[id]] link as a small chip in the level colour of the target page
+        const cls = "wiki-link wiki-chip" + (target.level ? " lvl-" + target.level : "");
         parent.appendChild(el("a", { href: target.href, class: cls }, [
-          LM.icon ? LM.icon(target.kind === "c1" ? "award" : "notebook-text", { size: 14 }) : null,
+          LM.icon ? LM.icon("notebook-text", { size: 14 }) : null,
           target.level ? el("span", { class: "wiki-chip-level", text: target.level }) : null,
           el("span", { class: "wiki-chip-text", text: target.text })
         ]));

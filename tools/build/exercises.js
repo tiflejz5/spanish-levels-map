@@ -8,7 +8,8 @@
  * Output (sets are loaded on demand with a plain <script>, which also works on file://):
  *   data/sets/<set id>.js   LM.EX_SETS[<id>] = full set
  *   data/sets-index.js      LM.SETS_INDEX = { version, topics, sets (cards without items), mixes, tenseByTopic }
- * Exam sets come with the exams module (stage E); the C1 Use of English format is dropped (spec 03).
+ * Exam sets come from tools/build/exams.js (ctx.examSets, so that module runs first) and are listed in the same index
+ * with an "exam" field; the C1 Use of English format is dropped (spec 03).
  */
 "use strict";
 
@@ -20,13 +21,27 @@ function typeCounts(items) {
   return out;
 }
 
-function build(ctx) {
-  const dir = C.path.join(C.CONTENT, "exercises");
-  const map = C.readJsonIf(C.path.join(dir, "topics.json"), { topics: {} });
+function pointsOf(items) {
   global.window = global.window || global;
   require(C.path.join(C.ROOT, "js", "exercise-logic.js"));
   const maxPoints = global.window.LM.exLogic.maxPoints;
-  const pointsOf = function (items) { return items.reduce(function (s, it) { return s + maxPoints(it); }, 0); };
+  return items.reduce(function (s, it) { return s + maxPoints(it); }, 0);
+}
+
+/** Index card of an exam set (no items): what the practice list and the engine need. */
+function examSetMeta(x) {
+  const set = x.set;
+  return {
+    id: x.meta.id, topic: null, level: set.level || null, title: set.title || x.meta.label, intro: set.intro || "",
+    count: set.items.length, points: pointsOf(set.items), types: typeCounts(set.items),
+    defaultMode: set.defaultMode === "learn" ? "learn" : "exam", file: "data/sets/" + x.meta.id + ".js",
+    exam: x.exam.id, hasPassage: !!set.passage
+  };
+}
+
+function build(ctx) {
+  const dir = C.path.join(C.CONTENT, "exercises");
+  const map = C.readJsonIf(C.path.join(dir, "topics.json"), { topics: {} });
 
   const topics = {};
   const sets = {};
@@ -54,6 +69,11 @@ function build(ctx) {
     if (id !== "topics" && id !== "mixes" && !sets[id]) ctx.warn("exercises/" + f + " is not listed in exercises/topics.json");
   });
 
+  (ctx.examSets || []).forEach(function (x) {
+    if (sets[x.meta.id]) ctx.error("exam set id " + x.meta.id + " is also a topic set id");
+    sets[x.meta.id] = examSetMeta(x);
+  });
+
   const mixes = C.readJsonIf(C.path.join(dir, "mixes.json"), { mixes: [] }).mixes || [];
   ctx.tenseByTopic = ctx.tenseByTopic || {};
   C.writeData("sets-index.js", "content/exercises/topics.json, mixes.json, <set>.json",
@@ -64,4 +84,4 @@ function build(ctx) {
   ctx.log("Exercises: " + Object.keys(sets).length + " sets, " + n + " items, " + mixes.length + " mixes");
 }
 
-module.exports = { build: build };
+module.exports = { build: build, examSetMeta: examSetMeta };

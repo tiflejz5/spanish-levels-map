@@ -18,8 +18,8 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const HASH = "#/powtorki/talie";
-  const WORDS_HASH = "#/powtorki/moje-slowa";
+  const HASH = "#/review/decks";
+  const WORDS_HASH = "#/review/words";
   const WORDS_ID = "u-moje-slowa";
   const WORDS_TITLE = "Moje słowa";
 
@@ -115,7 +115,7 @@ window.LM = window.LM || {};
   // DODAWANIE
   // =====================================================================
 
-  function refreshOpenView() { if (LM.state && LM.state.view === "fiszki" && LM.cards.render) LM.cards.render(); }
+  function refreshOpenView() { if (LM.state && LM.state.view === "cards" && LM.cards.render) LM.cards.render(); }
 
   /** „Dodaj znaczenie”: małe okno z jednym polem, Enter zapisuje (wypełnia hint karty). */
   function addMeaning(id, word) {
@@ -269,7 +269,7 @@ window.LM = window.LM || {};
   });
 
   // =====================================================================
-  // WIDOK #/powtorki/moje-slowa (spec 14, sekcja 5)
+  // WIDOK #/review/words (spec 14, sekcja 5)
   // =====================================================================
 
   const view = { query: "", sort: "newest", noMeaning: false };
@@ -331,7 +331,7 @@ window.LM = window.LM || {};
     root.appendChild(F().bar(L().deckStats(all, st().cards, Date.now())));
 
     const actions = [
-      el("a", { class: "btn btn-primary", href: "#/powtorki/sesja?tylko=talia:" + WORDS_ID }, LM.ui.withIcon("play", "Ucz się teraz")),
+      el("a", { class: "btn btn-primary", href: "#/review/session?only=deck:" + WORDS_ID }, LM.ui.withIcon("play", "Ucz się teraz")),
       el("button", { type: "button", class: "btn btn-secondary", onclick: function () {
         F().downloadText("moje-slowa.csv", "﻿" + L().exportWordsCsv(cards()), "text/csv;charset=utf-8");
       } }, LM.ui.withIcon("download", "Eksportuj CSV"))
