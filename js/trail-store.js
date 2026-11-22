@@ -31,7 +31,7 @@ window.LM = window.LM || {};
     let data = null;
     if (raw) {
       try { data = L().sanitizeState(JSON.parse(raw)); } catch (e) {
-        try { window.localStorage.setItem(keyOf(pid) + ".corrupt", raw); } catch (e2) { /* trudno */ }
+        try { window.localStorage.setItem(keyOf(pid) + ".corrupt", raw); } catch (e2) { /* nothing to do */ }
         data = null;
       }
     }

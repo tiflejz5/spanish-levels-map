@@ -1,15 +1,15 @@
 /*
- * words.js — „Moje słowa” (paczka v6, spec 14): słowo albo wyrażenie zaznaczone w tekście aplikacji
- * trafia jednym kliknięciem do talii fiszek „Moje słowa” razem ze zdaniem, z którego pochodzi.
+ * words.js — "My words" (pack v6, spec 14): a word or phrase selected in a text of the app
+ * goes with one click into the "My words" flashcard deck, together with the sentence it comes from.
  *
- *   Menu przy zaznaczeniu   „Do Moich słów” (skrót M) i „Utwórz fiszkę…” (skrót Ctrl/Cmd+Shift+F)
- *   Zasięg zaznaczania      podstrony i podsumowania poziomów, strony egzaminów i Certyfikatu C1 (.md),
- *                           karty Laboratorium czasów, teksty i transkrypty zadań PO sprawdzeniu odpowiedzi,
- *                           elementy z atrybutem data-fc-selectable (wzorce wypracowań, bank zwrotów, ściągi)
- *   Karta                   cloze ze zdaniem kontekstu (LM.cardsLogic.makeWordCard), talia u-moje-slowa
+ *   Selection menu          "Add to My words" (shortcut M) and "Make a flashcard…" (shortcut Ctrl/Cmd+Shift+F)
+ *   Where you can select    topic pages and level summaries, exam pages (.md),
+ *                           lab cards, item texts and transcripts AFTER checking the answer,
+ *                           elements with the data-fc-selectable attribute (model answers, phrase bank, cheat sheets)
+ *   Card                    cloze with the context sentence (LM.cardsLogic.makeWordCard), deck u-moje-slowa
  *
- * Logika bez DOM (zdanie, luka, polskie znaki, deduplikacja, normalizacja pól): js/cards-logic.js.
- * Dodanie słowa NIE jest aktywnością dnia (za łatwo nabić serię). Treści użytkownika tylko jako tekst.
+ * Logic without DOM (sentence, gap, language check, deduplication, field cleaning): js/cards-logic.js.
+ * Adding a word is NOT a study-day activity (too easy to pad the streak). User content only as text.
  */
 window.LM = window.LM || {};
 
@@ -21,7 +21,7 @@ window.LM = window.LM || {};
   const HASH = "#/review/decks";
   const WORDS_HASH = "#/review/words";
   const WORDS_ID = "u-moje-slowa";
-  const WORDS_TITLE = "Moje słowa";
+  const WORDS_TITLE = "My words";
 
   function L() { return LM.cardsLogic; }
   function F() { return LM.cards.internal; }
@@ -30,7 +30,7 @@ window.LM = window.LM || {};
   function prefs() { return hasProfile() && LM.profileData ? LM.profileData.prefs() : { selectionMenu: true, highlightWords: false }; }
 
   // =====================================================================
-  // ZASIĘG ZAZNACZANIA
+  // WHERE SELECTION WORKS
   // =====================================================================
 
   const AREAS = "article.md, .md, .lab-view, [data-fc-selectable]";
@@ -39,26 +39,26 @@ window.LM = window.LM || {};
 
   function elementOf(node) { return node && (node.nodeType === 1 ? node : node.parentElement); }
 
-  /** Komórka tabeli z kolumny „Polski” / „Po polsku” / „Znaczenie” — tam tekst jest po polsku (spec 14, 3.4). */
-  function inPolishColumn(cell) {
+  /** A table cell in the "English" / "Meaning" column — the text there is not in the target language (spec 14, 3.4). Stage 3 switches to lang attributes. */
+  function inNativeColumn(cell) {
     const table = cell.closest && cell.closest("table");
     if (!table || !/^(TD|TH)$/.test(cell.tagName)) return false;
     const idx = Array.prototype.indexOf.call(cell.parentElement.children, cell);
     const head = table.querySelector("thead tr") || table.rows[0];
     const h = head && head.cells[idx];
-    return !!h && h !== cell && /^\s*(polski|po polsku|znaczenie)\b/i.test(h.textContent);
+    return !!h && h !== cell && /^\s*(english|meaning)\b/i.test(h.textContent);
   }
 
   function pageTitle() {
-    const t = document.title.replace(/\s*[·|–-]\s*English Levels Map.*$/i, "").trim();
-    if (t && !/^English Levels Map/i.test(t)) return t.slice(0, 120);
+    const t = document.title.split(" · " + LM.APP.appTitle)[0].trim();
+    if (t && t.indexOf(LM.APP.appTitle) !== 0) return t.slice(0, 120);
     const h = document.querySelector("#view h1");
     return h ? h.textContent.trim().slice(0, 120) : "";
   }
 
   /**
-   * Aktualne zaznaczenie w dozwolonym miejscu: { text, word, block, blockText, canWord, source } albo null.
-   * word — oczyszczone słowo (1–6 słów, ≤ 60 znaków) albo ""; canWord — „Do Moich słów” dostępne.
+   * The current selection in an allowed place: { text, word, block, blockText, canWord, source } or null.
+   * word — the cleaned word (1–6 words, ≤ 60 characters) or ""; canWord — "Add to My words" is available.
    */
   function info() {
     if (!hasProfile() || !prefs().selectionMenu) return null;
@@ -69,7 +69,7 @@ window.LM = window.LM || {};
     if (!anchor || !focus || anchor.closest(NEVER) || focus.closest(NEVER)) return null;
     const area = anchor.closest(AREAS);
     if (!area || !area.contains(focus)) return null;
-    // Teksty i transkrypty w zadaniach — dopiero po sprawdzeniu odpowiedzi (nie rozpraszamy)
+    // Texts and transcripts in exercises — only after checking the answer (no distraction)
     if (anchor.closest(".ex-passage-text, .ex-transcript, .ex-set-transcript") && !(LM.exercises && LM.exercises.textSelectable && LM.exercises.textSelectable())) return null;
     const text = s.toString().replace(/\s+/g, " ").trim().slice(0, 300);
     if (!text) return null;
@@ -77,7 +77,7 @@ window.LM = window.LM || {};
     const word = L().wordFromSelection(text);
     return {
       text: text, word: word, block: block, blockText: block.textContent || "",
-      canWord: !!word && !L().isPolish(text) && !inPolishColumn(block),
+      canWord: !!word && !L().isPolish(text) && !inNativeColumn(block),
       source: { route: /^#\/[^\s<>"]*$/.test(location.hash || "") ? location.hash.slice(0, 200) : "", title: pageTitle() }
     };
   }
@@ -86,17 +86,17 @@ window.LM = window.LM || {};
   // TALIA I DUPLIKATY
   // =====================================================================
 
-  /** Karty talii „Moje słowa”. */
+  /** Cards of the "My words" deck. */
   function cards() { return st().userCards.filter(function (c) { return c.deck === WORDS_ID; }); }
 
-  /** Zapisane słowo karty (pole word, a w starszych kartach — odpowiedź z luki albo przód). */
+  /** The card's saved word (the word field, and in older cards — the gap answer or the front). */
   function wordOf(c) {
     if (c.word) return c.word;
     if (c.type === "cloze") { const p = L().parseCloze(c.text); return p.ok ? p.answers[0] : ""; }
     return c.front || "";
   }
 
-  /** Zdanie karty (cloze z wypełnioną luką albo tył zwykłej karty). */
+  /** The card's sentence (cloze with the gap filled, or the back of a plain card). */
   function sentenceOf(c) {
     if (c.type === "cloze") { const p = L().parseCloze(c.text); return p.ok ? p.before + p.answers[0] + p.after : String(c.text || ""); }
     return String(c.back || "");
@@ -117,34 +117,34 @@ window.LM = window.LM || {};
 
   function refreshOpenView() { if (LM.state && LM.state.view === "cards" && LM.cards.render) LM.cards.render(); }
 
-  /** „Dodaj znaczenie”: małe okno z jednym polem, Enter zapisuje (wypełnia hint karty). */
+  /** "Add a meaning": a small dialog with one field, Enter saves (fills the card's hint). */
   function addMeaning(id, word) {
-    LM.dialogs.prompt({ title: "Znaczenie słowa „" + word + "”", label: "Znaczenie po polsku", confirmLabel: "Zapisz" }).then(function (value) {
+    LM.dialogs.prompt({ title: "Meaning of “" + word + "”", label: "Meaning in English", confirmLabel: "Save" }).then(function (value) {
       if (!value) return;
       const c = st().userCards.find(function (x) { return x.id === id; });
       if (!c) return;
       c.hint = value.trim().slice(0, L().MAX_FIELD);
       F().saveState();
-      say("Zapisano znaczenie: „" + word + "” – " + c.hint);
+      say("Meaning saved: “" + word + "” – " + c.hint);
       refreshOpenView();
     });
   }
 
-  /** Drugi (trzeci) przykład istniejącej karty: dopisuje zdanie do examples (maks. 3). */
+  /** A second (third) example of an existing card: adds the sentence to examples (at most 3). */
   function addExample(c, sentence) {
     const word = wordOf(c);
     if (!sentence || sameSentence(sentence, sentenceOf(c)) || (c.examples || []).some(function (e) { return sameSentence(e, sentence); })) {
-      say("Ten przykład „" + word + "” już jest w Moich słowach.");
+      say("This example of “" + word + "” is already in My words.");
       return;
     }
     if ((c.examples || []).length >= L().EXAMPLES_MAX) {
-      say("„" + word + "” ma już " + L().EXAMPLES_MAX + " dodatkowe przykłady (maksimum).");
+      say("“" + word + "” already has " + L().EXAMPLES_MAX + " extra examples (the maximum).");
       return;
     }
     const clean = L().sanitizeWordFields({ examples: (c.examples || []).concat(sentence) }).examples;
     c.examples = clean;
     F().saveState();
-    say("Dodano kolejny przykład do „" + word + "”.", { actions: [{ label: "Cofnij", onClick: function () {
+    say("Another example added to “" + word + "”.", { actions: [{ label: "Undo", onClick: function () {
       c.examples = (c.examples || []).slice(0, -1);
       if (!c.examples.length) delete c.examples;
       F().saveState();
@@ -158,41 +158,41 @@ window.LM = window.LM || {};
     location.hash = WORDS_HASH;
   }
 
-  /** „Do Moich słów”: karta z luką jednym kliknięciem; duplikat (to samo słowo) → „Pokaż” / „Dodaj drugi przykład”. */
+  /** "Add to My words": a card with a gap in one click; a duplicate (the same word) → "Show" / "Add a second example". */
   function addWord(i) {
-    if (!hasProfile()) { LM.app.withProfile("Słowa zapisują się w profilu.", function () { addWord(i); }); return null; }
+    if (!hasProfile()) { LM.app.withProfile("Words are saved in your profile.", function () { addWord(i); }); return null; }
     if (!i || !i.canWord) return null;
     const sentence = L().extractSentence(i.blockText, i.word);
     const dup = findByWord(i.word);
     if (dup) {
-      const actions = [{ label: "Pokaż", onClick: function () { showWord(wordOf(dup)); } }];
+      const actions = [{ label: "Show", onClick: function () { showWord(wordOf(dup)); } }];
       if (sentence && !sameSentence(sentence, sentenceOf(dup)) && (dup.examples || []).length < L().EXAMPLES_MAX) {
-        actions.push({ label: "Dodaj drugi przykład", onClick: function () { addExample(dup, sentence); } });
+        actions.push({ label: "Add a second example", onClick: function () { addExample(dup, sentence); } });
       }
-      say("Masz już „" + wordOf(dup) + "” w Moich słowach.", { actions: actions });
+      say("“" + wordOf(dup) + "” is already in My words.", { actions: actions });
       return dup;
     }
     const res = L().makeWordCard({ selection: i.word, sentence: sentence, source: i.source, day: LM.learn.today() });
     if (res.error) { say(res.error); return null; }
     LM.cardsBrowse.ensureDeck(WORDS_ID, WORDS_TITLE, "words");
     const added = LM.cardsBrowse.addCard(WORDS_ID, res.card);
-    say("Dodano „" + i.word + "” do Moich słów", { actions: [
-      { label: "Dodaj znaczenie", onClick: function () { addMeaning(added.id, i.word); } },
-      { label: "Cofnij", onClick: function () { LM.cardsBrowse.removeCard(added.id); refreshOpenView(); } }
+    say("“" + i.word + "” added to My words", { actions: [
+      { label: "Add a meaning", onClick: function () { addMeaning(added.id, i.word); } },
+      { label: "Undo", onClick: function () { LM.cardsBrowse.removeCard(added.id); refreshOpenView(); } }
     ] });
     refreshOpenView();
     refreshHighlights();
     return added;
   }
 
-  /** „Do Moich słów” z banku zwrotów: zwykła karta PL → EN ({ en, pl, example?, route, title }); duplikat (ta sama fraza) → „Pokaż”. */
+  /** "Add to My words" from the phrase bank: a plain card meaning → phrase ({ en, pl, example?, route, title }); a duplicate (the same phrase) → "Show". */
   function addPhrase(p) {
-    if (!hasProfile()) { LM.app.withProfile("Słowa zapisują się w profilu.", function () { addPhrase(p); }); return null; }
+    if (!hasProfile()) { LM.app.withProfile("Words are saved in your profile.", function () { addPhrase(p); }); return null; }
     const phrase = String(p.en || "").replace(/\s*…\s*$/, "").replace(/\s+/g, " ").trim();
     if (!phrase || !p.pl) return null;
     const dup = findByWord(phrase);
     if (dup) {
-      say("Masz już „" + phrase + "” w Moich słowach.", { actions: [{ label: "Pokaż", onClick: function () { showWord(wordOf(dup)); } }] });
+      say("“" + phrase + "” is already in My words.", { actions: [{ label: "Show", onClick: function () { showWord(wordOf(dup)); } }] });
       return dup;
     }
     const res = L().makeCard({ type: "basic", front: p.pl, back: phrase, hint: "", example: p.example || "" });
@@ -200,8 +200,8 @@ window.LM = window.LM || {};
     Object.assign(res.card, L().sanitizeWordFields({ word: phrase, source: { route: p.route, title: p.title }, addedAt: LM.learn.today() }));
     LM.cardsBrowse.ensureDeck(WORDS_ID, WORDS_TITLE, "words");
     const added = LM.cardsBrowse.addCard(WORDS_ID, res.card);
-    say("Dodano „" + phrase + "” do Moich słów", { actions: [
-      { label: "Cofnij", onClick: function () { LM.cardsBrowse.removeCard(added.id); refreshOpenView(); } }
+    say("“" + phrase + "” added to My words", { actions: [
+      { label: "Undo", onClick: function () { LM.cardsBrowse.removeCard(added.id); refreshOpenView(); } }
     ] });
     refreshOpenView();
     refreshHighlights();
@@ -209,7 +209,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // MENU PRZY ZAZNACZENIU
+  // SELECTION MENU
   // =====================================================================
 
   let menu = null, timer = null;
@@ -218,8 +218,8 @@ window.LM = window.LM || {};
 
   function ensureMenu() {
     if (menu) return menu;
-    menu = el("div", { class: "fc-sel-menu", role: "toolbar", "aria-label": "Zaznaczony tekst", hidden: true,
-      onmousedown: function (e) { e.preventDefault(); } }); // nie gubi zaznaczenia
+    menu = el("div", { class: "fc-sel-menu", role: "toolbar", "aria-label": "Selected text", hidden: true,
+      onmousedown: function (e) { e.preventDefault(); } }); // keeps the selection
     document.body.appendChild(menu);
     return menu;
   }
@@ -234,12 +234,12 @@ window.LM = window.LM || {};
     if (!i) { hideMenu(); return; }
     ensureMenu();
     menu.replaceChildren.apply(menu, [
-      i.canWord ? el("button", { type: "button", class: "btn btn-primary btn-small", title: "Skrót: M",
-        onclick: function () { const cur = info(); if (cur) addWord(cur); } }, LM.ui.withIcon("layers", "Do Moich słów")) : null,
-      el("button", { type: "button", class: "btn btn-secondary btn-small", title: "Skrót: Ctrl+Shift+F", onclick: openForm }, "Utwórz fiszkę…")
+      i.canWord ? el("button", { type: "button", class: "btn btn-primary btn-small", title: "Shortcut: M",
+        onclick: function () { const cur = info(); if (cur) addWord(cur); } }, LM.ui.withIcon("layers", "Add to My words")) : null,
+      el("button", { type: "button", class: "btn btn-secondary btn-small", title: "Shortcut: Ctrl+Shift+F", onclick: openForm }, "Make a flashcard…")
     ].filter(Boolean));
     menu.hidden = false;
-    // Nad zaznaczeniem, a na telefonie (systemowe menu stoi nad zaznaczeniem) i przy braku miejsca — pod nim
+    // Above the selection; on a phone (the system menu sits above the selection) and when there is no room — below it
     const r = window.getSelection().getRangeAt(0).getBoundingClientRect();
     const coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
     const below = coarse || r.top <= 60;
@@ -255,13 +255,13 @@ window.LM = window.LM || {};
   function typing(t) { return t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)); }
 
   document.addEventListener("keydown", function (e) {
-    // Ctrl/Cmd+Shift+F: dotychczasowy formularz fiszki z zaznaczenia (bez zmian)
+    // Ctrl/Cmd+Shift+F: the flashcard form from the selection (unchanged)
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "F" || e.key === "f")) {
       const i = info();
       if (i) { e.preventDefault(); LM.cards.openFromSelection(i.text); }
       return;
     }
-    // M (bez modyfikatorów): „Do Moich słów”, tylko przy zaznaczeniu i poza polem tekstowym
+    // M (no modifiers): "Add to My words", only with a selection and outside text fields
     if ((e.key === "m" || e.key === "M") && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey && !typing(e.target)) {
       const i = info();
       if (i && i.canWord) { e.preventDefault(); addWord(i); }
@@ -269,18 +269,18 @@ window.LM = window.LM || {};
   });
 
   // =====================================================================
-  // WIDOK #/review/words (spec 14, sekcja 5)
+  // VIEW #/review/words (spec 14, section 5)
   // =====================================================================
 
   const view = { query: "", sort: "newest", noMeaning: false };
   let focusedWord = null;
 
-  /** Status jako tekst (nie sam kolor): Nowa / W nauce / Opanowana / Zawieszona. */
+  /** Status as text (not colour alone): New / Learning / Mastered / Suspended. */
   function statusOf(x) {
-    if (x && x.suspended) return { id: "suspended", label: "Zawieszone", icon: "pause" };
-    if (!x || x.state === "new") return { id: "new", label: "Nowe", icon: "sparkles" };
-    if (x.state === "review" && x.interval >= 21) return { id: "mastered", label: "Opanowane", icon: "check" };
-    return { id: "learning", label: "W nauce", icon: "rotate-ccw" };
+    if (x && x.suspended) return { id: "suspended", label: "Suspended", icon: "pause" };
+    if (!x || x.state === "new") return { id: "new", label: "New", icon: "sparkles" };
+    if (x.state === "review" && x.interval >= 21) return { id: "mastered", label: "Mastered", icon: "check" };
+    return { id: "learning", label: "Learning", icon: "rotate-ccw" };
   }
 
   function focusWord(word) { focusedWord = word; view.query = word || ""; }
@@ -290,7 +290,7 @@ window.LM = window.LM || {};
     return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s.slice(8, 10) + "." + s.slice(5, 7) + "." + s.slice(0, 4) : "";
   }
 
-  /** Zdanie ze słowem wyróżnionym znacznikiem <mark> (węzły tekstowe, bez innerHTML). */
+  /** The sentence with the word marked by <mark> (text nodes, no innerHTML). */
   function sentenceNode(c) {
     const s = sentenceOf(c), w = wordOf(c), i = w ? s.toLowerCase().indexOf(w.toLowerCase()) : -1;
     if (i === -1) return el("span", { text: s });
@@ -309,7 +309,7 @@ window.LM = window.LM || {};
   }
 
   function removeWord(c, after) {
-    LM.dialogs.confirm({ title: "Usunąć słowo?", message: "„" + wordOf(c) + "” zostanie usunięte z Moich słów razem z historią powtórek.", confirmLabel: "Usuń słowo" }).then(function (ok) {
+    LM.dialogs.confirm({ title: "Delete this word?", message: "“" + wordOf(c) + "” will be deleted from My words together with its review history.", confirmLabel: "Delete word" }).then(function (ok) {
       if (!ok) return;
       LM.cardsBrowse.removeCard(c.id);
       refreshHighlights();
@@ -321,32 +321,32 @@ window.LM = window.LM || {};
 
   function renderView(root) {
     const all = cards();
-    root.appendChild(LM.review.header("slowa", "Słowa i wyrażenia zaznaczone w tekstach – każde ze zdaniem, z którego pochodzi."));
+    root.appendChild(LM.review.header("words", "Words and phrases you selected in texts – each with the sentence it comes from."));
     if (!all.length) {
       root.appendChild(LM.ui.emptyState({
-        class: "fw-empty", art: "empty-notes", title: "Nie zapisałeś jeszcze żadnego słowa.", hint: "Zaznacz słowo albo wyrażenie w dowolnym tekście (strona niezbędnika, podsumowanie, egzamin, Laboratorium), a potem wybierz „Do Moich słów” albo naciśnij klawisz M. Karta z luką trafi tutaj i do codziennych powtórek."
+        class: "fw-empty", art: "empty-notes", title: "You have not saved any words yet.", hint: "Select a word or phrase in any text (a topic page, a summary, an exam page, the lab), then choose “Add to My words” or press M. A card with a gap lands here and in your daily reviews."
       }));
       return;
     }
     root.appendChild(F().bar(L().deckStats(all, st().cards, Date.now())));
 
     const actions = [
-      el("a", { class: "btn btn-primary", href: "#/review/session?only=deck:" + WORDS_ID }, LM.ui.withIcon("play", "Ucz się teraz")),
+      el("a", { class: "btn btn-primary", href: "#/review/session?only=deck:" + WORDS_ID }, LM.ui.withIcon("play", "Study now")),
       el("button", { type: "button", class: "btn btn-secondary", onclick: function () {
-        F().downloadText("moje-slowa.csv", "﻿" + L().exportWordsCsv(cards()), "text/csv;charset=utf-8");
-      } }, LM.ui.withIcon("download", "Eksportuj CSV"))
+        F().downloadText(LM.APP.exportName + "-my-words.csv", "﻿" + L().exportWordsCsv(cards()), "text/csv;charset=utf-8");
+      } }, LM.ui.withIcon("download", "Export CSV"))
     ];
     root.appendChild(el("div", { class: "fc-actions" }, actions));
 
-    const search = el("input", { id: "fw-search", class: "field", type: "search", value: view.query, placeholder: "Szukaj słowa, znaczenia lub zdania…", autocomplete: "off", oninput: function () { view.query = search.value; paint(); } });
+    const search = el("input", { id: "fw-search", class: "field", type: "search", value: view.query, placeholder: "Search a word, meaning or sentence…", autocomplete: "off", oninput: function () { view.query = search.value; paint(); } });
     const sort = el("select", { id: "fw-sort", class: "field", onchange: function () { view.sort = sort.value; paint(); } },
-      [["newest", "Od najnowszych"], ["az", "A–Z"], ["weakest", "Najsłabiej znane"]].map(function (x) { return el("option", { value: x[0], selected: view.sort === x[0], text: x[1] }); }));
+      [["newest", "Newest first"], ["az", "A–Z"], ["weakest", "Least known"]].map(function (x) { return el("option", { value: x[0], selected: view.sort === x[0], text: x[1] }); }));
     const nm = el("input", { type: "checkbox", id: "fw-nomeaning", checked: view.noMeaning, onchange: function () { view.noMeaning = nm.checked; paint(); } });
     root.appendChild(el("div", { class: "journal-filters fc-filters", role: "search" }, [
-      el("div", { class: "form-field is-grow" }, [el("label", { class: "field-label", for: "fw-search", text: "Szukaj" }), search]),
-      el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fw-sort", text: "Kolejność" }), sort])
+      el("div", { class: "form-field is-grow" }, [el("label", { class: "field-label", for: "fw-search", text: "Search" }), search]),
+      el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fw-sort", text: "Order" }), sort])
     ]));
-    root.appendChild(el("div", { class: "fc-check" }, [nm, el("label", { for: "fw-nomeaning", text: "Pokaż tylko słowa bez znaczenia" })]));
+    root.appendChild(el("div", { class: "fc-check" }, [nm, el("label", { for: "fw-nomeaning", text: "Show only words without a meaning" })]));
     const count = el("p", { class: "journal-count", "aria-live": "polite" });
     const list = el("ul", { class: "fc-card-list fw-list" });
     root.appendChild(count);
@@ -361,13 +361,13 @@ window.LM = window.LM || {};
       });
       const day = function (c) { return String(c.addedAt || c.createdAt || ""); };
       shown.sort(function (a, b) {
-        if (view.sort === "az") return wordOf(a).localeCompare(wordOf(b), "en", { sensitivity: "base" });
+        if (view.sort === "az") return wordOf(a).localeCompare(wordOf(b), LM.APP.targetLang, { sensitivity: "base" });
         if (view.sort === "weakest") return weakness(b) - weakness(a) || day(b).localeCompare(day(a));
         return day(b).localeCompare(day(a));
       });
-      count.textContent = "Słowa: " + shown.length + " z " + all.length;
+      count.textContent = "Words: " + shown.length + " of " + all.length;
       list.replaceChildren();
-      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "no-results", title: "Brak słów pasujących do filtrów." })); return; }
+      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "no-results", title: "No words match the filters." })); return; }
       shown.forEach(function (c) { list.appendChild(row(c)); });
       if (focusedWord) {
         const first = list.querySelector(".fw-row"); focusedWord = null;
@@ -377,7 +377,7 @@ window.LM = window.LM || {};
 
     function row(c) {
       const x = st().cards[c.id], sts = statusOf(x), w = wordOf(c);
-      const meaning = el("input", { class: "field fw-meaning", type: "text", maxlength: "120", value: c.hint || "", placeholder: "Dodaj znaczenie po polsku", "aria-label": "Znaczenie słowa " + w, autocomplete: "off",
+      const meaning = el("input", { class: "field fw-meaning", type: "text", maxlength: "120", value: c.hint || "", placeholder: "Add a meaning in English", "aria-label": "Meaning of " + w, autocomplete: "off",
         onchange: function () {
           const card = st().userCards.find(function (k) { return k.id === c.id; });
           if (!card) return;
@@ -385,7 +385,7 @@ window.LM = window.LM || {};
           if (v) card.hint = v; else delete card.hint;
           F().saveState();
         } });
-      const src = c.source && c.source.route ? el("a", { class: "fw-source", href: c.source.route }, LM.ui.withIcon("external-link", c.source.title || "Źródło")) : null;
+      const src = c.source && c.source.route ? el("a", { class: "fw-source", href: c.source.route }, LM.ui.withIcon("external-link", c.source.title || "Source")) : null;
       return el("li", { class: "card fc-row fw-row" }, [
         el("div", { class: "fc-row-main" }, [
           el("p", { class: "fc-row-front fw-word", text: w }),
@@ -396,19 +396,19 @@ window.LM = window.LM || {};
         ]),
         el("div", { class: "fc-row-meta" }, [
           el("span", { class: "fc-status is-" + sts.id }, [LM.icon(sts.icon, { size: 14 }), " " + sts.label]),
-          el("span", { class: "tool-note", text: x && x.state !== "new" ? "Termin: " + F().fmtWhen(Math.max(x.due, x.buriedUntil || 0)) : "Termin: —" })
+          el("span", { class: "tool-note", text: x && x.state !== "new" ? "Due: " + F().fmtWhen(Math.max(x.due, x.buriedUntil || 0)) : "Due: —" })
         ]),
         el("div", { class: "fc-row-actions" }, [
-          el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": (x && x.suspended ? "Przywróć słowo: " : "Zawieś słowo: ") + w,
-            onclick: function () { toggleSuspend(c.id); paint(); } }, x && x.suspended ? "Przywróć" : "Zawieś"),
-          el("button", { type: "button", class: "btn btn-danger btn-small", "aria-label": "Usuń słowo: " + w, onclick: function () { removeWord(c, function () { LM.cards.render(); }); } }, "Usuń")
+          el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": (x && x.suspended ? "Restore word: " : "Suspend word: ") + w,
+            onclick: function () { toggleSuspend(c.id); paint(); } }, x && x.suspended ? "Restore" : "Suspend"),
+          el("button", { type: "button", class: "btn btn-danger btn-small", "aria-label": "Delete word: " + w, onclick: function () { removeWord(c, function () { LM.cards.render(); }); } }, "Delete")
         ])
       ]);
     }
     paint();
   }
 
-  /** Liczby do kafelka na stronie Fiszki i do Statystyk. */
+  /** Numbers for the tile on the Flashcards page and for Stats. */
   function counts() {
     const all = cards();
     let mastered = 0;
@@ -417,7 +417,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // PODKREŚLANIE ZAPISANYCH SŁÓW (krok 7) — odświeżane po dodaniu słowa i zmianie ustawienia
+  // UNDERLINING SAVED WORDS (step 7) — refreshed after adding a word and when the setting changes
   // =====================================================================
 
   const HL_MAX = 300;
@@ -445,7 +445,7 @@ window.LM = window.LM || {};
 
   function showTip(target) {
     const t = tip();
-    t.textContent = target.dataset.meaning ? target.dataset.meaning : "Zapisane w Moich słowach (bez znaczenia)";
+    t.textContent = target.dataset.meaning ? target.dataset.meaning : "Saved in My words (no meaning yet)";
     t.hidden = false;
     const r = target.getBoundingClientRect(), tr = t.getBoundingClientRect();
     const left = Math.max(8, Math.min(window.innerWidth - tr.width - 8, r.left + r.width / 2 - tr.width / 2));
@@ -463,7 +463,7 @@ window.LM = window.LM || {};
     if (e.type === "mouseover" || e.type === "focusin") showTip(s); else hideTip(s);
   }
 
-  /** Podkreśla zapisane słowa w tekstach (bez nagłówków, linków, kodu i tekstów zadań); ≤ 300 słów. */
+  /** Underlines saved words in texts (not headings, links, code or item texts); ≤ 300 words. */
   function applyHighlights() {
     if (hlObserver) hlObserver.disconnect();
     clearHighlights();
@@ -472,7 +472,7 @@ window.LM = window.LM || {};
       const all = cards().slice().sort(function (a, b) { return String(b.addedAt || b.createdAt || "").localeCompare(String(a.addedAt || a.createdAt || "")); });
       if (!all.length) return;
       const used = all.slice(0, HL_MAX);
-      if (all.length > HL_MAX && !hlNoted) { hlNoted = true; say("Podkreślam " + HL_MAX + " najnowszych słów z " + all.length + "."); }
+      if (all.length > HL_MAX && !hlNoted) { hlNoted = true; say("Underlining the " + HL_MAX + " newest of " + all.length + " words."); }
       const byKey = new Map();
       used.forEach(function (c) { const w = wordOf(c); if (w) byKey.set(L().wordKey(w), c); });
       const words = used.map(wordOf).filter(Boolean).sort(function (a, b) { return b.length - a.length; });
@@ -518,7 +518,7 @@ window.LM = window.LM || {};
 
   (function initHighlights() {
     hlObserver = new MutationObserver(function (list) {
-      // własne zmiany (span.fw-saved) są odpinane przez disconnect; reagujemy na nową treść widoku
+      // our own changes (span.fw-saved) are detached by disconnect; we react to new view content
       if (list.some(function (m) { return m.addedNodes.length; })) refreshHighlights();
     });
     document.addEventListener("mouseover", onTipEvent);

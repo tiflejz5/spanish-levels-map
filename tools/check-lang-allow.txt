@@ -3,3 +3,7 @@
 js/search-logic.js const FOLD = \{
 # Sentence normalization strips „ and other quote marks from answers; stage 3 moves normalizeSentence into LM.lang.
 js/exercise-logic.js \.replace\(/\[,\.!\?;:
+# isPolish() still detects Polish letters to hide "Add to My words"; stage 3 replaces it with LM.lang.isTarget.
+js/cards-logic.js function isPolish\(text\)
+# Trimming punctuation of answers and selections includes „; stage 3 moves this into LM.lang.
+js/cards-logic.js replace\(/\^\[\\s\.,;:

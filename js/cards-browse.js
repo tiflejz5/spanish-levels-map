@@ -1,13 +1,13 @@
 /*
- * cards-browse.js — przeglądanie i edycja fiszek (spec 10, sekcja 5.3), część zakładki js/cards.js.
+ * cards-browse.js — browsing and editing flashcards (spec 10, section 5.3), part of the js/cards.js tab.
  *
  *   LM.cardsBrowse.render(view, route)   route: { kind: "deck"|"edit"|"import", deck, card }
- *   LM.cardsBrowse.prefill(fields)       wypełnienie formularza nowej karty (np. z zaznaczenia tekstu)
- *   LM.cardsBrowse.addCard(deckId, card) dodanie karty z innego miejsca aplikacji → zapisana karta
+ *   LM.cardsBrowse.prefill(fields)       fills the new card form (e.g. from a text selection)
+ *   LM.cardsBrowse.addCard(deckId, card) adds a card from another part of the app → the saved card
  *
- * Lista kart talii z wyszukiwaniem i filtrami statusu, zawieszanie (także kart wbudowanych),
- * formularz własnej karty z podglądem na żywo i walidacją (cloze: jedna luka, 500 znaków na pole),
- * import TSV/CSV z podglądem (poprawne / odrzucone z powodem) i eksport talii do TSV (Anki).
+ * The deck's card list with search and status filters, suspending (also built-in cards),
+ * your own card form with a live preview and validation (cloze: one gap, 500 characters per field),
+ * TSV/CSV import with a preview (valid / refused with a reason) and deck export to TSV (Anki).
  */
 window.LM = window.LM || {};
 
@@ -24,22 +24,22 @@ window.LM = window.LM || {};
   function now() { return Date.now(); }
 
   const filter = { deck: null, query: "", status: "all", exam: "all" };
-  let pending = null;       // wypełnienie formularza (prefill)
-  let importTarget = null;  // talia wybrana przed wejściem w import
+  let pending = null;       // form prefill
+  let importTarget = null;  // deck chosen before entering the import
 
-  /** Okruszki: „Fiszki i błędy › Talie › <talia>” (bez etykiety: kończy się na „Talie”). */
+  /** Breadcrumbs: "Flashcards and mistakes › Decks › <deck>" (without a label: ends at "Decks"). */
   function crumb(label) {
-    const items = [{ label: "Fiszki i błędy", href: "#/review" }];
-    items.push(label ? { label: "Talie", href: HASH } : { label: "Talie" });
+    const items = [{ label: "Flashcards and mistakes", href: "#/review" }];
+    items.push(label ? { label: "Decks", href: HASH } : { label: "Decks" });
     if (label) items.push({ label: label });
     return LM.ui.breadcrumbs(items);
   }
 
   function statusOf(x) {
-    if (x && x.suspended) return { id: "suspended", label: "Zawieszona", icon: "pause" };
-    if (!x || x.state === "new") return { id: "new", label: "Nowa", icon: "sparkles" };
-    if (x.state === "review" && x.interval >= 21) return { id: "mastered", label: "Opanowana", icon: "check" };
-    return { id: "learning", label: "W nauce", icon: "rotate-ccw" };
+    if (x && x.suspended) return { id: "suspended", label: "Suspended", icon: "pause" };
+    if (!x || x.state === "new") return { id: "new", label: "New", icon: "sparkles" };
+    if (x.state === "review" && x.interval >= 21) return { id: "mastered", label: "Mastered", icon: "check" };
+    return { id: "learning", label: "Learning", icon: "rotate-ccw" };
   }
 
   function backText(c) {
@@ -56,12 +56,12 @@ window.LM = window.LM || {};
 
   function renderDeck(view, deckId) {
     const d = F().deckById(deckId);
-    if (!d) { view.appendChild(crumb()); view.appendChild(el("p", { class: "empty-state-text", text: "Nie ma takiej talii." })); return; }
+    if (!d) { view.appendChild(crumb()); view.appendChild(el("p", { class: "empty-state-text", text: "There is no such deck." })); return; }
     if (filter.deck !== deckId) { filter.deck = deckId; filter.query = ""; filter.status = "all"; filter.exam = "all"; }
     const cards = F().cardsOf(deckId);
     view.appendChild(crumb(d.title));
     view.appendChild(F().head(d.title, d.description));
-    view.appendChild(el("p", { class: "tool-note", text: d.builtIn ? "Talia wbudowana (tylko do odczytu, karty można zawiesić)." : "Twoja talia." }));
+    view.appendChild(el("p", { class: "tool-note", text: d.builtIn ? "Built-in deck (read-only; you can suspend cards)." : "Your deck." }));
     view.appendChild(F().bar(L().deckStats(cards, st().cards, now())));
 
     const s = st().settings;
@@ -73,46 +73,46 @@ window.LM = window.LM || {};
         if (e.target.checked && i === -1) list.push(deckId); else if (!e.target.checked && i !== -1) list.splice(i, 1);
         F().saveState();
       } }),
-      el("label", { for: "fc-random", text: "Nowe karty w losowej kolejności (domyślnie jak w talii)" })
+      el("label", { for: "fc-random", text: "New cards in random order (by default in deck order)" })
     ]);
     const actions = [
       el("button", { type: "button", class: "btn btn-secondary", "aria-pressed": on ? "true" : "false", onclick: function () { F().toggleDeck(deckId, !on); LM.cards.render(); } },
-        on ? "Wyłącz z nauki" : "Włącz do nauki"),
-      el("button", { type: "button", class: "btn btn-secondary", onclick: function () { F().exportDeck(d); } }, LM.ui.withIcon("download", "Eksportuj TSV"))
+        on ? "Turn off for study" : "Turn on for study"),
+      el("button", { type: "button", class: "btn btn-secondary", onclick: function () { F().exportDeck(d); } }, LM.ui.withIcon("download", "Export TSV"))
     ];
     if (!d.builtIn) {
-      actions.unshift(el("a", { class: "btn btn-primary", href: HASH + "/deck/" + deckId + "/new" }, LM.ui.withIcon("plus", "Dodaj kartę")));
-      actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { importTarget = deckId; location.hash = HASH + "/import"; } }, LM.ui.withIcon("upload", "Importuj")));
-      actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { renameDeck(d); } }, LM.ui.withIcon("pencil", "Zmień nazwę")));
-      actions.push(el("button", { type: "button", class: "btn btn-danger", onclick: function () { deleteDeck(d); } }, LM.ui.withIcon("trash", "Usuń talię")));
+      actions.unshift(el("a", { class: "btn btn-primary", href: HASH + "/deck/" + deckId + "/new" }, LM.ui.withIcon("plus", "Add card")));
+      actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { importTarget = deckId; location.hash = HASH + "/import"; } }, LM.ui.withIcon("upload", "Import")));
+      actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { renameDeck(d); } }, LM.ui.withIcon("pencil", "Rename")));
+      actions.push(el("button", { type: "button", class: "btn btn-danger", onclick: function () { deleteDeck(d); } }, LM.ui.withIcon("trash", "Delete deck")));
     }
-    // „Nauka teraz”: sesja z tej talii poza planem dnia (bez limitów; nowe, w nauce i zaległe karty)
+    // "Study now": a session from this deck outside the day's plan (no limits; new, learning and overdue cards)
     const stats = L().deckStats(cards, st().cards, now());
     const studyNow = stats.new + stats.learning + stats.due;
     const study = studyNow
-      ? el("a", { class: "btn btn-primary", href: "#/review/session?only=deck:" + deckId + "&extra=1" }, LM.ui.withIcon("play", "Nauka teraz"))
-      : el("button", { type: "button", class: "btn btn-primary", disabled: true }, LM.ui.withIcon("play", "Nauka teraz"));
+      ? el("a", { class: "btn btn-primary", href: "#/review/session?only=deck:" + deckId + "&extra=1" }, LM.ui.withIcon("play", "Study now"))
+      : el("button", { type: "button", class: "btn btn-primary", disabled: true }, LM.ui.withIcon("play", "Study now"));
     view.appendChild(el("div", { class: "fc-study-now" }, [
       study,
       el("span", { class: "tool-note", text: studyNow
-        ? "Poza planem dnia, bez limitów: " + studyNow + " " + (studyNow === 1 ? "karta" : (studyNow % 10 >= 2 && studyNow % 10 <= 4 && (studyNow % 100 < 12 || studyNow % 100 > 14)) ? "karty" : "kart") + " (nowe, w nauce i zaległe)."
-        : "Nic do nauki teraz – pozostałe karty wrócą w swoich terminach." })
+        ? "Outside the day's plan, no limits: " + LM.plural(studyNow, "card") + " (new, learning and overdue)."
+        : "Nothing to study now – the other cards come back when they are due." })
     ]));
     view.appendChild(el("div", { class: "fc-actions" }, actions));
     view.appendChild(opts);
 
-    const search = el("input", { id: "fc-search", class: "field", type: "search", value: filter.query, placeholder: "Szukaj w talii…", autocomplete: "off", oninput: function () { filter.query = search.value; paint(); } });
-    const statuses = [["all", "Wszystkie"], ["new", "Nowe"], ["learning", "W nauce"], ["mastered", "Opanowane"], ["suspended", "Zawieszone"]];
+    const search = el("input", { id: "fc-search", class: "field", type: "search", value: filter.query, placeholder: "Search the deck…", autocomplete: "off", oninput: function () { filter.query = search.value; paint(); } });
+    const statuses = [["all", "All"], ["new", "New"], ["learning", "Learning"], ["mastered", "Mastered"], ["suspended", "Suspended"]];
     const sel = el("select", { id: "fc-status", class: "field", onchange: function () { filter.status = sel.value; paint(); } },
       statuses.map(function (x) { return el("option", { value: x[0], selected: filter.status === x[0], text: x[1] }); }));
-    // filtr „Egzamin” — tylko gdy talia ma karty z tagami egzaminów (też starsze karty z tagami e8 / matura)
-    const present = L().EXAMS.filter(function (e) { return cards.some(function (c) { return L().examsOf(c).some(function (x) { return x.code === e.code; }); }); });
+    // "Exam" filter — only when the deck has cards tagged with exam codes from the registry
+    const present = L().examList().filter(function (e) { return cards.some(function (c) { return L().examsOf(c).some(function (x) { return x.code === e.code; }); }); });
     const examSel = present.length ? el("select", { id: "fc-exam", class: "field", onchange: function () { filter.exam = examSel.value; paint(); } },
-      [el("option", { value: "all", selected: filter.exam === "all", text: "Wszystkie" })].concat(present.map(function (e) { return el("option", { value: e.code, selected: filter.exam === e.code, text: e.short + " – " + e.name }); }))) : null;
+      [el("option", { value: "all", selected: filter.exam === "all", text: "All" })].concat(present.map(function (e) { return el("option", { value: e.code, selected: filter.exam === e.code, text: e.short + " – " + e.name }); }))) : null;
     view.appendChild(el("div", { class: "journal-filters fc-filters", role: "search" }, [
-      el("div", { class: "form-field is-grow" }, [el("label", { class: "field-label", for: "fc-search", text: "Szukaj" }), search]),
+      el("div", { class: "form-field is-grow" }, [el("label", { class: "field-label", for: "fc-search", text: "Search" }), search]),
       el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-status", text: "Status" }), sel]),
-      examSel ? el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-exam", text: "Egzamin" }), examSel]) : null
+      examSel ? el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-exam", text: "Exam" }), examSel]) : null
     ]));
     const count = el("p", { class: "journal-count", "aria-live": "polite" });
     const list = el("ul", { class: "fc-card-list" });
@@ -127,9 +127,9 @@ window.LM = window.LM || {};
         if (filter.exam !== "all" && !L().examsOf(c).some(function (e) { return e.code === filter.exam; })) return false;
         return !q || fold(L().frontText(c) + " " + backText(c) + " " + (c.hint || "") + " " + (c.note || "")).indexOf(q) !== -1;
       });
-      count.textContent = "Karty: " + shown.length + " z " + cards.length;
+      count.textContent = "Cards: " + shown.length + " of " + cards.length;
       list.replaceChildren();
-      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "no-results", title: cards.length ? "Brak kart pasujących do filtrów." : "Ta talia nie ma jeszcze kart." })); return; }
+      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "no-results", title: cards.length ? "No cards match the filters." : "This deck has no cards yet." })); return; }
       shown.forEach(function (c) {
         const x = st().cards[c.id];
         const sts = statusOf(x);
@@ -142,13 +142,13 @@ window.LM = window.LM || {};
           ]),
           el("div", { class: "fc-row-meta" }, [
             el("span", { class: "fc-status is-" + sts.id }, [LM.icon(sts.icon, { size: 14 }), " " + sts.label]),
-            el("span", { class: "tool-note", text: x && x.state !== "new" ? "Termin: " + F().fmtWhen(Math.max(x.due, x.buriedUntil || 0)) : "Termin: —" })
+            el("span", { class: "tool-note", text: x && x.state !== "new" ? "Due: " + F().fmtWhen(Math.max(x.due, x.buriedUntil || 0)) : "Due: —" })
           ]),
           el("div", { class: "fc-row-actions" }, [
-            el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": (x && x.suspended ? "Przywróć kartę: " : "Zawieś kartę: ") + L().frontText(c),
-              onclick: function () { toggleSuspend(c.id); paint(); } }, x && x.suspended ? "Przywróć" : "Zawieś"),
-            own ? el("a", { class: "btn btn-link btn-small", href: HASH + "/deck/" + deckId + "/card/" + c.id, "aria-label": "Edytuj kartę: " + L().frontText(c) }, "Edytuj") : null,
-            own ? el("button", { type: "button", class: "btn btn-danger btn-small", "aria-label": "Usuń kartę: " + L().frontText(c), onclick: function () { deleteCard(c, paint); } }, "Usuń") : null
+            el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": (x && x.suspended ? "Restore card: " : "Suspend card: ") + L().frontText(c),
+              onclick: function () { toggleSuspend(c.id); paint(); } }, x && x.suspended ? "Restore" : "Suspend"),
+            own ? el("a", { class: "btn btn-link btn-small", href: HASH + "/deck/" + deckId + "/card/" + c.id, "aria-label": "Edit card: " + L().frontText(c) }, "Edit") : null,
+            own ? el("button", { type: "button", class: "btn btn-danger btn-small", "aria-label": "Delete card: " + L().frontText(c), onclick: function () { deleteCard(c, paint); } }, "Delete") : null
           ])
         ]));
       });
@@ -160,7 +160,7 @@ window.LM = window.LM || {};
     const cur = st().cards[id];
     if (cur && cur.suspended) {
       delete cur.suspended;
-      if (cur.state === "new" && !cur.reps) delete st().cards[id]; // nowa karta bez historii — znów „nieruszona”
+      if (cur.state === "new" && !cur.reps) delete st().cards[id]; // a new card without history — "untouched" again
     } else {
       st().cards[id] = Object.assign(LM.cardsSchedule.newCard(), cur || {}, { suspended: true });
     }
@@ -168,7 +168,7 @@ window.LM = window.LM || {};
   }
 
   function deleteCard(c, after) {
-    LM.dialogs.confirm({ title: "Usunąć kartę?", message: "„" + L().frontText(c) + "” zostanie usunięta razem z historią powtórek.", confirmLabel: "Usuń kartę" }).then(function (ok) {
+    LM.dialogs.confirm({ title: "Delete this card?", message: "“" + L().frontText(c) + "” will be deleted together with its review history.", confirmLabel: "Delete card" }).then(function (ok) {
       if (!ok) return;
       const list = st().userCards, i = list.findIndex(function (x) { return x.id === c.id; });
       if (i !== -1) list.splice(i, 1);
@@ -179,7 +179,7 @@ window.LM = window.LM || {};
   }
 
   function renameDeck(d) {
-    LM.dialogs.prompt({ title: "Zmień nazwę talii", label: "Nazwa talii", value: d.title, confirmLabel: "Zapisz" }).then(function (name) {
+    LM.dialogs.prompt({ title: "Rename deck", label: "Deck name", value: d.title, confirmLabel: "Save" }).then(function (name) {
       if (!name) return;
       const x = st().userDecks.find(function (u) { return u.id === d.id; });
       if (x) { x.title = name.trim().slice(0, 80); F().saveState(); LM.cards.render(); }
@@ -188,7 +188,7 @@ window.LM = window.LM || {};
 
   function deleteDeck(d) {
     const n = F().cardsOf(d.id).length;
-    LM.dialogs.confirm({ title: "Usunąć talię?", message: "Talia „" + d.title + "” i jej karty (" + n + ") zostaną usunięte razem z historią powtórek. Tej operacji nie można cofnąć.", confirmLabel: "Usuń talię" }).then(function (ok) {
+    LM.dialogs.confirm({ title: "Delete this deck?", message: "The deck “" + d.title + "” and its cards (" + n + ") will be deleted together with their review history. This cannot be undone.", confirmLabel: "Delete deck" }).then(function (ok) {
       if (!ok) return;
       const s = st();
       s.userCards = s.userCards.filter(function (c) { if (c.deck === d.id) { delete s.cards[c.id]; return false; } return true; });
@@ -200,7 +200,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // FORMULARZ KARTY (nowa / edycja)
+  // CARD FORM (new / edit)
   // =====================================================================
 
   function userDecks() { return st().userDecks; }
@@ -216,7 +216,7 @@ window.LM = window.LM || {};
     return d;
   }
 
-  /** Dodaje gotową kartę (z makeCard) do talii; zwraca zapisaną kartę. */
+  /** Adds a ready card (from makeCard) to a deck; returns the saved card. */
   function addCard(deckId, card, extra) {
     const c = Object.assign({ id: newId(), deck: deckId, createdAt: new Date().toISOString() }, card, extra || {});
     st().userCards.push(c);
@@ -226,15 +226,15 @@ window.LM = window.LM || {};
 
   function renderEdit(view, route) {
     const existing = route.card ? st().userCards.find(function (c) { return c.id === route.card; }) : null;
-    if (route.card && !existing) { view.appendChild(crumb()); view.appendChild(el("p", { class: "empty-state-text", text: "Nie ma takiej karty (karty wbudowanych talii są tylko do odczytu)." })); return; }
+    if (route.card && !existing) { view.appendChild(crumb()); view.appendChild(el("p", { class: "empty-state-text", text: "There is no such card (cards of built-in decks are read-only)." })); return; }
     const decks = userDecks();
     const fill = existing ? {
       deck: existing.deck, type: existing.type, front: existing.type === "cloze" ? existing.text : existing.front,
       back: existing.type === "typed" && existing.accepted ? existing.accepted.join("|") : existing.back || "", hint: existing.hint || "", example: existing.example || "", note: existing.note || "", tags: (existing.tags || []).join(" ")
     } : Object.assign({ deck: route.deck, type: "basic", front: "", back: "", hint: "", example: "", note: "", tags: "" }, pending || {});
     pending = null;
-    view.appendChild(crumb(existing ? "Edycja karty" : "Nowa karta"));
-    view.appendChild(F().head(existing ? "Edytuj kartę" : "Nowa karta", "Karta z luką: zaznacz odpowiedź w {{podwójnych nawiasach}}, alternatywy oddziel kreską: {{gave up|quit}}."));
+    view.appendChild(crumb(existing ? "Edit card" : "New card"));
+    view.appendChild(F().head(existing ? "Edit card" : "New card", "Card with a gap: mark the answer in {{double braces}}, separate alternatives with a bar: {{fui|estuve}}."));
     if (!decks.length && !fill.newDeck) {
       fill.newDeck = true;
     }
@@ -250,21 +250,21 @@ window.LM = window.LM || {};
       return { wrap: wrap, input: input };
     };
     const deckSel = el("select", { id: "fc-f-deck", class: "field" }, decks.map(function (d) { return el("option", { value: d.id, selected: d.id === fill.deck, text: d.title }); })
-      .concat([el("option", { value: "__new", selected: !decks.some(function (d) { return d.id === fill.deck; }), text: "+ Nowa talia…" })]));
-    const typeSel = el("select", { id: "fc-f-type", class: "field" }, [["basic", "Zwykła (przód i tył)"], ["cloze", "Z luką (zdanie z {{…}})"], ["typed", "Do wpisania (przód i odpowiedzi)"]]
+      .concat([el("option", { value: "__new", selected: !decks.some(function (d) { return d.id === fill.deck; }), text: "+ New deck…" })]));
+    const typeSel = el("select", { id: "fc-f-type", class: "field" }, [["basic", "Basic (front and back)"], ["cloze", "With a gap (sentence with {{…}})"], ["typed", "Type the answer (front and answers)"]]
       .map(function (t) { return el("option", { value: t[0], selected: fill.type === t[0], text: t[1] }); }));
-    const front = field("fc-f-front", "Przód", fill.front, { area: true });
-    const back = field("fc-f-back", "Tył", fill.back, { area: true });
-    const hint = field("fc-f-hint", "Podpowiedź (opcjonalnie)", fill.hint);
-    const example = field("fc-f-example", "Przykład (opcjonalnie)", fill.example);
-    const note = field("fc-f-note", "Notatka (opcjonalnie)", fill.note);
-    const tags = field("fc-f-tags", "Tagi (oddziel spacją)", fill.tags);
+    const front = field("fc-f-front", "Front", fill.front, { area: true });
+    const back = field("fc-f-back", "Back", fill.back, { area: true });
+    const hint = field("fc-f-hint", "Hint (optional)", fill.hint);
+    const example = field("fc-f-example", "Example (optional)", fill.example);
+    const note = field("fc-f-note", "Note (optional)", fill.note);
+    const tags = field("fc-f-tags", "Tags (separate with spaces)", fill.tags);
     const preview = el("div", { class: "fc-preview", "aria-live": "polite" });
 
     function labels() {
       const t = typeSel.value;
-      front.wrap.querySelector("label").textContent = t === "cloze" ? "Zdanie z luką {{…}}" : t === "typed" ? "Przód (np. słowo po polsku)" : "Przód";
-      back.wrap.querySelector("label").textContent = t === "typed" ? "Akceptowane odpowiedzi (oddziel kreską |)" : "Tył";
+      front.wrap.querySelector("label").textContent = t === "cloze" ? "Sentence with a gap {{…}}" : t === "typed" ? "Front (e.g. a word in English)" : "Front";
+      back.wrap.querySelector("label").textContent = t === "typed" ? "Accepted answers (separate with a bar |)" : "Back";
       back.wrap.hidden = t === "cloze";
     }
     function fields() {
@@ -274,10 +274,10 @@ window.LM = window.LM || {};
       labels();
       const res = L().makeCard(fields());
       preview.replaceChildren();
-      if (res.error) { preview.appendChild(el("p", { class: "tool-note", text: "Podgląd pojawi się, gdy karta będzie poprawna: " + res.error })); return res; }
-      preview.appendChild(el("p", { class: "review-label", text: "Podgląd – przód" }));
+      if (res.error) { preview.appendChild(el("p", { class: "tool-note", text: "The preview appears when the card is valid: " + res.error })); return res; }
+      preview.appendChild(el("p", { class: "review-label", text: "Preview – front" }));
       F().renderFront(res.card).forEach(function (n) { preview.appendChild(n); });
-      preview.appendChild(el("p", { class: "review-label", text: "Podgląd – tył" }));
+      preview.appendChild(el("p", { class: "review-label", text: "Preview – back" }));
       F().renderBack(res.card).forEach(function (n) { preview.appendChild(n); });
       err.textContent = "";
       return res;
@@ -286,16 +286,16 @@ window.LM = window.LM || {};
 
     U.appendChildren(form, [
       el("div", { class: "fc-form-grid" }, [
-        el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-f-deck", text: "Talia" }), deckSel]),
-        el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-f-type", text: "Typ karty" }), typeSel])
+        el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-f-deck", text: "Deck" }), deckSel]),
+        el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-f-type", text: "Card type" }), typeSel])
       ]),
       front.wrap, back.wrap, hint.wrap, example.wrap, note.wrap, tags.wrap,
-      el("section", { class: "fc-preview-box", "aria-label": "Podgląd karty" }, preview),
+      el("section", { class: "fc-preview-box", "aria-label": "Card preview" }, preview),
       err,
       el("div", { class: "fc-actions" }, [
-        el("button", { type: "submit", class: "btn btn-primary" }, existing ? "Zapisz zmiany" : "Dodaj kartę"),
-        el("a", { class: "btn btn-secondary", href: existing || route.deck ? HASH + "/deck/" + (existing ? existing.deck : route.deck) : HASH }, "Anuluj"),
-        existing ? el("button", { type: "button", class: "btn btn-danger", onclick: function () { deleteCard(existing, function () { location.hash = HASH + "/deck/" + existing.deck; }); } }, "Usuń kartę") : null
+        el("button", { type: "submit", class: "btn btn-primary" }, existing ? "Save changes" : "Add card"),
+        el("a", { class: "btn btn-secondary", href: existing || route.deck ? HASH + "/deck/" + (existing ? existing.deck : route.deck) : HASH }, "Cancel"),
+        existing ? el("button", { type: "button", class: "btn btn-danger", onclick: function () { deleteCard(existing, function () { location.hash = HASH + "/deck/" + existing.deck; }); } }, "Delete card") : null
       ])
     ]);
     form.addEventListener("submit", function (e) {
@@ -309,17 +309,17 @@ window.LM = window.LM || {};
           st().userCards[i] = Object.assign(keep, res.card);
           if (!keep.sourceItemId) delete st().userCards[i].sourceItemId;
           F().saveState();
-          LM.ui.toast({ text: "Zapisano kartę.", icon: "check" });
+          LM.ui.toast({ text: "Card saved.", icon: "check" });
           location.hash = HASH + "/deck/" + deckId;
         } else {
           const c = addCard(deckId, res.card);
-          LM.ui.toast({ text: "Dodano kartę do fiszek.", icon: "check", action: { label: "Cofnij", onClick: function () { removeCard(c.id); } } });
+          LM.ui.toast({ text: "Card added to your flashcards.", icon: "check", action: { label: "Undo", onClick: function () { removeCard(c.id); } } });
           front.input.value = ""; back.input.value = ""; hint.input.value = ""; example.input.value = ""; note.input.value = "";
           update(); front.input.focus();
         }
       };
       if (deckSel.value === "__new") {
-        LM.dialogs.prompt({ title: "Nowa talia", label: "Nazwa talii", confirmLabel: "Utwórz" }).then(function (name) {
+        LM.dialogs.prompt({ title: "New deck", label: "Deck name", confirmLabel: "Create" }).then(function (name) {
           if (!name) return;
           const d = ensureDeck(newDeckId(), name.trim().slice(0, 80));
           F().saveState();
@@ -348,36 +348,36 @@ window.LM = window.LM || {};
 
   function renderImport(view) {
     view.appendChild(crumb("Import"));
-    view.appendChild(F().head("Import fiszek", "Plik TSV albo CSV (UTF-8, separator: tabulator albo średnik). Kolumny: typ; przód; tył; podpowiedź; przykład; notatka; tagi. Pliki z Anki (przód, tył, tagi, luki {{c1::…}}) też działają."));
+    view.appendChild(F().head("Import flashcards", "A TSV or CSV file (UTF-8, separator: tab or semicolon). Columns: type; front; back; hint; example; note; tags. Anki files (front, back, tags, gaps {{c1::…}}) work too."));
     const decks = userDecks();
     const target = el("select", { id: "fc-i-deck", class: "field" }, decks.map(function (d) { return el("option", { value: d.id, selected: d.id === importTarget, text: d.title }); })
-      .concat([el("option", { value: "__new", selected: !decks.length || !importTarget, text: "+ Nowa talia" })]));
-    const area = el("textarea", { id: "fc-i-text", class: "field", rows: "8", placeholder: "typ\tprzód\ttył\nbasic\tZgadzam się.\tI agree.\ncloze\tShe {{came up with}} a plan.", spellcheck: "false" });
+      .concat([el("option", { value: "__new", selected: !decks.length || !importTarget, text: "+ New deck" })]));
+    const area = el("textarea", { id: "fc-i-text", class: "field", rows: "8", placeholder: "type\tfront\tback\nbasic\tEstoy de acuerdo.\tI agree.\ncloze\tAyer {{fui}} al cine.", spellcheck: "false" });
     const file = el("input", { id: "fc-i-file", type: "file", accept: ".tsv,.csv,.txt,text/tab-separated-values,text/csv,text/plain" });
     const out = el("section", { class: "fc-import-preview", "aria-live": "polite" });
     file.addEventListener("change", function () {
       const f = file.files && file.files[0];
       if (!f) return;
-      f.text().then(function (t) { area.value = t; show(); }, function () { out.replaceChildren(el("p", { class: "dialog-error", text: "Nie udało się odczytać pliku." })); });
+      f.text().then(function (t) { area.value = t; show(); }, function () { out.replaceChildren(el("p", { class: "dialog-error", text: "The file could not be read." })); });
     });
     let result = null;
     function show() {
       result = L().importCards(area.value);
       out.replaceChildren();
-      out.appendChild(el("h2", { class: "section-title", text: "Podgląd importu" }));
-      out.appendChild(el("p", null, [el("strong", { text: "Poprawne: " + result.cards.length }), " · odrzucone: " + result.rejected.length + " · separator: " + (result.separator === "\t" ? "tabulator" : result.separator)]));
+      out.appendChild(el("h2", { class: "section-title", text: "Import preview" }));
+      out.appendChild(el("p", null, [el("strong", { text: "Valid: " + result.cards.length }), " · refused: " + result.rejected.length + " · separator: " + (result.separator === "\t" ? "tab" : result.separator)]));
       if (result.cards.length) {
         out.appendChild(el("ul", { class: "fc-import-sample" }, result.cards.slice(0, 5).map(function (c) {
           return el("li", null, [el("span", { class: "c1-chip", text: c.type }), " " + L().frontText(c) + " → " + backText(c)]);
         })));
-        if (result.cards.length > 5) out.appendChild(el("p", { class: "tool-note", text: "…i " + (result.cards.length - 5) + " więcej." }));
+        if (result.cards.length > 5) out.appendChild(el("p", { class: "tool-note", text: "…and " + (result.cards.length - 5) + " more." }));
       }
       if (result.rejected.length) {
-        out.appendChild(el("h3", { class: "c1-check-title", text: "Odrzucone wiersze" }));
-        out.appendChild(el("ul", { class: "fc-import-rejected" }, result.rejected.slice(0, 50).map(function (r) { return el("li", { text: "Wiersz " + r.line + ": " + r.reason }); })));
+        out.appendChild(el("h3", { class: "c1-check-title", text: "Refused rows" }));
+        out.appendChild(el("ul", { class: "fc-import-rejected" }, result.rejected.slice(0, 50).map(function (r) { return el("li", { text: "Row " + r.line + ": " + r.reason }); })));
       }
       if (result.cards.length) {
-        out.appendChild(el("button", { type: "button", class: "btn btn-primary", onclick: commit }, "Importuj " + result.cards.length + " " + F().plural(result.cards.length, "kartę", "karty", "kart")));
+        out.appendChild(el("button", { type: "button", class: "btn btn-primary", onclick: commit }, "Import " + LM.plural(result.cards.length, "card")));
       }
     }
     function commit() {
@@ -385,13 +385,13 @@ window.LM = window.LM || {};
         const added = result.cards.map(function (c) { return Object.assign({ id: newId(), deck: deckId, createdAt: new Date().toISOString() }, c); });
         st().userCards = st().userCards.concat(added);
         F().saveState();
-        LM.ui.toast({ text: "Zaimportowano " + added.length + " " + F().plural(added.length, "kartę", "karty", "kart") + ".", icon: "check",
-          action: { label: "Cofnij", onClick: function () { const ids = {}; added.forEach(function (c) { ids[c.id] = true; }); st().userCards = st().userCards.filter(function (c) { return !ids[c.id]; }); F().saveState(); } } });
+        LM.ui.toast({ text: LM.plural(added.length, "card") + " imported.", icon: "check",
+          action: { label: "Undo", onClick: function () { const ids = {}; added.forEach(function (c) { ids[c.id] = true; }); st().userCards = st().userCards.filter(function (c) { return !ids[c.id]; }); F().saveState(); } } });
         importTarget = null;
         location.hash = HASH + "/deck/" + deckId;
       };
       if (target.value === "__new") {
-        LM.dialogs.prompt({ title: "Nowa talia", label: "Nazwa talii", value: "Import " + new Date().toLocaleDateString("pl-PL"), confirmLabel: "Utwórz" }).then(function (name) {
+        LM.dialogs.prompt({ title: "New deck", label: "Deck name", value: "Import " + LM.fmt.date(new Date()), confirmLabel: "Create" }).then(function (name) {
           if (!name) return;
           const d = ensureDeck(newDeckId(), name.trim().slice(0, 80));
           F().saveState();
@@ -400,10 +400,10 @@ window.LM = window.LM || {};
       } else go(target.value);
     }
     view.appendChild(el("div", { class: "card fc-form" }, [
-      el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-i-deck", text: "Do talii" }), target]),
-      el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-i-file", text: "Plik" }), file]),
-      el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-i-text", text: "…albo wklej tekst" }), area]),
-      el("div", { class: "fc-actions" }, [el("button", { type: "button", class: "btn btn-secondary", onclick: show }, "Pokaż podgląd")])
+      el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-i-deck", text: "Into deck" }), target]),
+      el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-i-file", text: "File" }), file]),
+      el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "fc-i-text", text: "…or paste text" }), area]),
+      el("div", { class: "fc-actions" }, [el("button", { type: "button", class: "btn btn-secondary", onclick: show }, "Show preview")])
     ]));
     view.appendChild(out);
   }

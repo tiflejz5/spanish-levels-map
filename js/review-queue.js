@@ -1,29 +1,29 @@
 /*
- * review-queue.js — jedna kolejka powtórek: fiszki z talii, „Moje błędy” i słabe punkty z ćwiczeń
- * (paczka v8, spec 20, sekcja R). Wszystko planuje schedule() z js/cards-schedule.js.
+ * review-queue.js — one review queue: deck flashcards, "My mistakes" and weak spots from exercises
+ * (pack v8, spec 20, section R). schedule() from js/cards-schedule.js plans everything.
  *
- *   Czysta logika (testy: node tools/tests.js), bez DOM i localStorage:
+ *   Pure logic (tests: node tools/tests.js), no DOM and no localStorage:
  *     queueFrom(ctx, now)      → [{ kind: "card"|"mistake"|"exercise", id, due, topic }]
- *                                 zaległe najstarsze pierwsze, przeplatanie (≤ 2 tego samego rodzaju i
- *                                 nie dwa razy ten sam temat z rzędu, gdy da się tego uniknąć), nowe na końcu; limity i granica dnia 04:00 jak w fiszkach
- *     summaryFrom(ctx, now)    → { card, mistake, exercise, total } — te same liczby bez wczytywania talii
- *     interleave(items)        przeplatanie
- *     weakTasks(rec, today)    kandydaci ze słabych punktów z dziennika podejść
- *     estimateMinutes(b)       karta 0,3 · błąd 0,5 · zadanie 0,7 min
- *   ctx = { state: stan fiszek, decks: [{ id, count }] (kolejność talii), cardsOf(deckId), deckOf(idStanu),
- *           weak: [{ id, topic }] (kandydaci), topicOfEx?(id), extraNew?: dodatkowe nowe karty ponad limit }
- *   Dane żywe: LM.reviewQueue.queue(now) / count() / breakdown() (poniżej, z LM.cards i LM.profileData).
- *   Stan zadania ze słabych punktów: klucz „ex:<idZadania>” w mapie cards fiszek (ocena automatyczna).
+ *                                 overdue oldest first, interleaving (≤ 2 of the same kind and
+ *                                 not the same topic twice in a row, when it can be avoided), new ones at the end; limits and the 04:00 day boundary as in flashcards
+ *     summaryFrom(ctx, now)    → { card, mistake, exercise, total } — the same numbers without loading the decks
+ *     interleave(items)        interleaving
+ *     weakTasks(rec, today)    weak-spot candidates from the attempts log
+ *     estimateMinutes(b)       card 0.3 · mistake 0.5 · item 0.7 min
+ *   ctx = { state: flashcard state, decks: [{ id, count }] (deck order), cardsOf(deckId), deckOf(stateId),
+ *           weak: [{ id, topic }] (candidates), topicOfEx?(id), extraNew?: extra new cards over the limit }
+ *   Live data: LM.reviewQueue.queue(now) / count() / breakdown() (below, from LM.cards and LM.profileData).
+ *   State of a weak-spot item: the key "ex:<item id>" in the flashcards' cards map (rated automatically).
  */
 window.LM = window.LM || {};
 
 (function (LM) {
   "use strict";
 
-  const EX_NEW_PER_DAY = 3;                 // maks. nowych zadań ze słabych punktów dziennie (w limicie nowych)
+  const EX_NEW_PER_DAY = 3;                 // at most this many new weak-spot items a day (within the new limit)
   const MINUTES = { card: 0.3, mistake: 0.5, exercise: 0.7 };
   const MAX_SAME_KIND = 2;
-  const WEAK_LIMIT = 60;                    // tylu kandydatów ze słabych punktów maksymalnie
+  const WEAK_LIMIT = 60;                    // at most this many weak-spot candidates
 
   function L() { return LM.cardsLogic; }
   function exKey(itemId) { return "ex:" + itemId; }
@@ -35,13 +35,13 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // SŁABE PUNKTY: kandydaci na zadania (z dziennika podejść)
+  // WEAK SPOTS: candidate items (from the attempts log)
   // =====================================================================
 
   /**
-   * Zadania z tematów słabych punktów (LM.stats.weakTopics), które w ostatnich 14 dniach nie zostały
-   * rozwiązane poprawnie (jak weakWeight = 2) i choć raz były błędne. Najświeższy błąd pierwszy.
-   * opts.noVoice — bez dyktand (brak głosu angielskiego). → [{ id, topic, type }]
+   * Items of the weak-spot topics (LM.stats.weakTopics) that were not answered right in the last 14 days
+   * (like weakWeight = 2) and were wrong at least once. The latest mistake first.
+   * opts.noVoice — no dictation (no voice). → [{ id, topic, type }]
    */
   function weakTasks(rec, today, opts) {
     opts = opts || {};
@@ -86,9 +86,9 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Przeplatanie: z pozostałych bierze pierwszy element spełniający oba warunki (≤ 2 tego samego rodzaju z rzędu, nie ten sam
-   * temat dwa razy z rzędu); gdy takiego nie ma — spełniający sam temat, potem sam rodzaj, na końcu pierwszy z brzegu.
-   * Kolejność wejściowa jest preferencją (zaległe najstarsze, nowe na końcu), więc dalsze elementy wchodzą tylko, gdy trzeba.
+   * Interleaving: from the rest, take the first element that meets both rules (≤ 2 of the same kind in a row, not the same
+   * topic twice in a row); when there is none — one that meets the topic rule, then the kind rule, finally the first one.
+   * The input order is a preference (overdue oldest first, new at the end), so later elements come in only when needed.
    */
   function interleave(list) {
     const rest = list.slice(), out = [];
@@ -99,12 +99,12 @@ window.LM = window.LM || {};
       const kindOk = function (it) { return !last || it.kind !== last.kind || run < MAX_SAME_KIND; };
       const topicOk = function (it) { return !last || !it.topic || it.topic !== last.topic; };
       const first = function (pred) { for (let i = 0; i < rest.length; i++) if (pred(rest[i])) return i; return -1; };
-      // Temat, który zajmuje co najmniej połowę reszty, musi iść teraz (inaczej na końcu zostałby blok jednego tematu)
+      // A topic that fills at least half of the rest must go now (otherwise a block of one topic would stay at the end)
       const counts = {};
       rest.forEach(function (it) { if (it.topic) counts[it.topic] = (counts[it.topic] || 0) + 1; });
       const crowded = Object.keys(counts).find(function (t) { return counts[t] * 2 >= rest.length && (!last || last.topic !== t) && rest.length > 1; });
       let pick = crowded ? first(function (it) { return it.topic === crowded && kindOk(it); }) : -1;
-      if (crowded && pick < 0) pick = first(function (it) { return it.topic === crowded; }); // temat ważniejszy niż rodzaj
+      if (crowded && pick < 0) pick = first(function (it) { return it.topic === crowded; }); // the topic matters more than the kind
       if (pick < 0) pick = first(function (it) { return kindOk(it) && topicOk(it); });
       if (pick < 0) pick = first(topicOk);
       if (pick < 0) pick = first(kindOk);
@@ -125,11 +125,11 @@ window.LM = window.LM || {};
       (ctx.cardsOf(d.id) || []).forEach(function (c) { deckOf[c.id] = d.id; });
       pool = pool.concat(ctx.cardsOf(d.id) || []);
     });
-    // Zadania: te z zapisanym stanem (nauka, powtórki) + nowe do limitu 3 dziennie, na końcu puli (nowe idą na końcu kolejki)
+    // Items: those with a saved state (learning, review) + new ones up to 3 a day, at the end of the pool (new go to the end of the queue)
     Object.keys(cards).forEach(function (id) {
       if (isEx(id)) pool.push({ id: id, deck: "ex", topic: weakTopic[id] || (ctx.topicOfEx && ctx.topicOfEx(id)) || "" });
     });
-    // Nowe zadania ze słabych punktów: do 3 dziennie, liczone w limicie nowych (miejsce rezerwujemy przed nowymi kartami)
+    // New weak-spot items: up to 3 a day, counted in the new limit (room is reserved before new cards)
     const ex = exAvailable(ctx, t);
     const newLeft = Math.max(0, st.settings.newPerDay - (t.new || 0));
     const exTake = ex.fresh.slice(0, Math.min(ex.cap, newLeft));
@@ -144,11 +144,11 @@ window.LM = window.LM || {};
       return { kind: kindOf(id, c.deck), id: id, due: cards[id] ? cards[id].due : 0, topic: c.topic || c.deck || "" };
     };
     const due = q.learning.concat(q.review).map(mk).sort(function (a, b) { return a.due - b.due; });
-    // Cała kolejka naraz: zaległe najpierw, nowe na końcu, a nowe wchodzą wcześniej tylko, gdy reguły przeplatania tego wymagają
+    // The whole queue at once: overdue first, new at the end, new come earlier only when the interleaving rules need it
     return interleave(due.concat(q.fresh.concat(exTake.map(function (w) { return exKey(w.id); })).map(mk)));
   }
 
-  /** Te same liczby co queueFrom, ale bez zawartości talii (plakietka paska, Dziś): z mapy stanów i liczności talii. */
+  /** The same numbers as queueFrom, but without the decks' content (sidebar badge, Today): from the state map and deck sizes. */
   function summaryFrom(ctx, now) {
     const st = ctx.state, cards = st.cards, end = L().dayEnd(now), s = st.settings;
     const t = todayOf(ctx, now);
@@ -170,7 +170,7 @@ window.LM = window.LM || {};
     });
     review.sort(function (a, b) { return a.due - b.due; });
     review = review.slice(0, Math.max(0, s.reviewsPerDay - (t.reviews || 0)));
-    // Do powtórki (due) i nowe (fresh) liczone osobno (spec v7 14, P3); card/mistake/exercise/total to jak dotąd cała kolejka dnia
+    // Due and new (fresh) counted apart (spec v7 14, P3); card/mistake/exercise/total are the whole queue of the day as before
     const due = { card: 0, mistake: 0, exercise: 0 }, fresh = { card: 0, mistake: 0, exercise: 0 };
     learning.concat(review).forEach(function (it) { due[it.kind]++; });
     const ex = exAvailable(ctx, t);
@@ -196,7 +196,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // DANE ŻYWE (profil aktywny)
+  // LIVE DATA (active profile)
   // =====================================================================
 
   function F() { return LM.cards && LM.cards.internal; }
@@ -233,22 +233,22 @@ window.LM = window.LM || {};
     return summaryFrom(ctxNow(), now());
   }
 
-  /** Cała kolejka dnia: do powtórki + nowe do limitu. */
+  /** The whole queue of the day: due + new up to the limit. */
   function count() { return breakdown().total; }
-  /** Tylko „do powtórki” (plakietka w panelu, nagłówek Fiszek i błędów): learning/relearning i review z terminem do dziś. */
+  /** Only "due" (badge in the panel, header of Review): learning/relearning and review due by today. */
   function dueCount() { return breakdown().due.total; }
-  /** Nowe karty i zadania na dziś (w limicie nowych). */
+  /** New cards and items for today (within the new limit). */
   function freshCount() { return breakdown().fresh.total; }
 
-  /** Pełna kolejka (talie wbudowane muszą być wczytane: LM.cards.internal.loadDecks()). */
+  /** The full queue (built-in decks must be loaded: LM.cards.internal.loadDecks()). */
   function queue(at) {
     if (!active()) return [];
     return queueFrom(ctxNow(), at || now());
   }
 
   /**
-   * Co dalej, gdy na dziś zrobione: { next: najbliższy termin (ms) po „now” albo null, tomorrow: ile pozycji wypada jutro
-   * (następny dzień nauki, granica 04:00) }. Karty włączonych talii, „Moje błędy” i zadania z zapisanym stanem.
+   * What next when today is done: { next: the nearest due time (ms) after "now" or null, tomorrow: how many items fall due tomorrow
+   * (the next study day, 04:00 boundary) }. Cards of the enabled decks, "My mistakes" and items with a saved state.
    */
   function upcomingFrom(ctx, now) {
     const ids = {};
@@ -270,7 +270,7 @@ window.LM = window.LM || {};
     return active() ? upcomingFrom(ctxNow(), at || now()) : { next: null, tomorrow: 0 };
   }
 
-  /** Najbliższy termin (ms) po chwili t wśród kart i zadań z zapisanym stanem albo null. */
+  /** The nearest due time (ms) after moment t among cards and items with a saved state, or null. */
   function nextDue(t) { return upcoming(t).next; }
 
   LM.reviewQueue = {

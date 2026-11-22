@@ -1,9 +1,9 @@
 /*
- * mistakes.js — zakładka „Moje błędy” (#/review/mistakes); sesja powtórek jest wspólna (#/review/session, js/cards.js).
+ * mistakes.js — the "My mistakes" tab (#/review/mistakes); the review session is shared (#/review/session, js/cards.js).
  *
- * Dane: LM.profileData (klucz slm.journal, osobno dla każdego profilu).
- * Harmonogram: schedule() z js/cards-schedule.js — każdy wpis ma kartę w talii „Moje błędy” (paczka v8).
- * Treść wpisana przez użytkownika trafia do strony wyłącznie jako tekst.
+ * Data: LM.profileData (key slm.journal, per profile).
+ * Schedule: schedule() from js/cards-schedule.js — every entry has a card in the "My mistakes" deck (pack v8).
+ * Text typed by the user goes into the page only as text.
  */
 window.LM = window.LM || {};
 
@@ -13,13 +13,13 @@ window.LM = window.LM || {};
   const U = LM.utils;
   const el = U.el;
 
-  const BASE = "#/review/mistakes";                 // zakładka „Moje błędy” (wcześniej #/bledy)
-  const REVIEW = "#/review/session?only=mistakes";         // sesja tylko z błędami (wcześniej #/bledy/powtorki)
+  const BASE = "#/review/mistakes";                // the "My mistakes" tab
+  const REVIEW = "#/review/session?only=mistakes";  // a session with mistakes only
 
   function pd() { return LM.profileData; }
   function learn() { return LM.learn; }
 
-  // Filtry listy (pamiętane do odświeżenia strony)
+  // List filters (kept until the page reloads)
   const filters = { status: "due", category: "", query: "", auto: false };
 
   // =====================================================================
@@ -31,12 +31,12 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // PUNKTY NIEZBĘDNIKA (wyszukiwalny wybór, link we wpisie)
+  // HANDBOOK TOPICS (searchable choice, link in an entry)
   // =====================================================================
 
   let itemCache = null;
 
-  /** Wszystkie punkty niezbędnika: [{ id, level, title, label, href }]. */
+  /** All topics of the handbook: [{ id, level, title, label, href }]. */
   function allItems() {
     if (itemCache) return itemCache;
     itemCache = LM.syl.topics().map(function (t) {
@@ -58,7 +58,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // FORMULARZ (dodawanie i edycja)
+  // FORM (add and edit)
   // =====================================================================
 
   let formCounter = 0;
@@ -72,11 +72,11 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Okno formularza wpisu. opts:
-   *   entry   — edytowany wpis (albo brak = nowy)
-   *   prefill — wstępne wartości nowego wpisu (np. z ćwiczenia C1); nic nie
-   *             zapisuje się bez kliknięcia „Zapisz”
-   * Zwraca Promise<wpis | null>.
+   * Entry form dialog. opts:
+   *   entry   — the entry being edited (or none = new)
+   *   prefill — starting values of a new entry (e.g. from an exercise); nothing
+   *             is saved without selecting "Save"
+   * Returns Promise<entry | null>.
    */
   function openForm(opts) {
     opts = opts || {};
@@ -85,12 +85,12 @@ window.LM = window.LM || {};
       const dup = pd().findDuplicate(opts.prefill.ref, opts.prefill.myAnswer);
       if (dup) {
         return LM.dialogs.alert({
-          title: "Ten błąd jest już w dzienniku",
-          message: "To zadanie z tą samą odpowiedzią zapisano " + dup.createdAt + ". Znajdziesz je w „Dzienniku błędów”."
+          title: "This mistake is already in the log",
+          message: "This item with the same answer was saved on " + LM.fmt.date(dup.createdAt) + ". You can find it in your mistake log."
         }).then(function () { return null; });
       }
     }
-    const v = Object.assign({ context: "", myAnswer: "", correct: "", rule: "", source: "", category: "Inne", itemId: "", ref: "" },
+    const v = Object.assign({ context: "", myAnswer: "", correct: "", rule: "", source: "", category: pd().CAT_OTHER, itemId: "", ref: "" },
       editing || opts.prefill || {});
     const L = pd().LIMITS;
     const n = ++formCounter;
@@ -106,13 +106,13 @@ window.LM = window.LM || {};
     const myAnswer = area("myAnswer", L.myAnswer, 2);
     const correct = area("correct", L.correct, 2);
     const rule = area("rule", L.rule, 2);
-    const source = el("input", { id: ids("source"), class: "field", type: "text", maxlength: String(L.source), value: v.source, placeholder: "np. Arkusz 1 RUE, Part 4, pyt. 29", autocomplete: "off" });
+    const source = el("input", { id: ids("source"), class: "field", type: "text", maxlength: String(L.source), value: v.source, placeholder: "e.g. Mock test 1, part 4, question 29", autocomplete: "off" });
     const category = el("select", { id: ids("category"), class: "field" }, pd().CATEGORIES.map(function (c) {
       return el("option", { value: c, selected: c === v.category ? "selected" : null }, c);
     }));
     category.value = v.category;
 
-    // Wyszukiwalny wybór punktu niezbędnika (input + datalist)
+    // Searchable choice of a handbook topic (input + datalist)
     const listId = ids("items");
     const datalist = el("datalist", { id: listId }, allItems().map(function (it) { return el("option", { value: it.label }); }));
     const current = findItem(v.itemId);
@@ -122,7 +122,7 @@ window.LM = window.LM || {};
       type: "search",
       list: listId,
       autocomplete: "off",
-      placeholder: "Zacznij pisać, np. Present Perfect",
+      placeholder: "Start typing, e.g. gustar",
       value: current ? current.label : "",
       "aria-describedby": ids("item") + "-hint"
     });
@@ -130,17 +130,17 @@ window.LM = window.LM || {};
     const error = el("p", { class: "dialog-error", role: "alert" });
 
     const body = el("form", { class: "journal-form", novalidate: true, onsubmit: function (e) { e.preventDefault(); } }, [
-      field(ids("context"), "Kontekst / pytanie", context, null, true),
-      field(ids("myAnswer"), "Moja odpowiedź", myAnswer),
-      field(ids("correct"), "Poprawna odpowiedź", correct, null, true),
-      field(ids("rule"), "Reguła / dlaczego", rule),
+      field(ids("context"), "Context / question", context, null, true),
+      field(ids("myAnswer"), "My answer", myAnswer),
+      field(ids("correct"), "Right answer", correct, null, true),
+      field(ids("rule"), "Rule / why", rule),
       el("div", { class: "form-row" }, [
-        field(ids("category"), "Kategoria", category),
-        field(ids("source"), "Źródło", source)
+        field(ids("category"), "Category", category),
+        field(ids("source"), "Source", source)
       ]),
-      field(ids("item"), "Punkt niezbędnika (opcjonalnie)", item, "Wybierz z listy podpowiedzi albo zostaw puste."),
+      field(ids("item"), "Handbook topic (optional)", item, "Choose from the suggestions or leave it empty."),
       datalist,
-      el("p", { class: "field-hint", text: "* pole wymagane" }),
+      el("p", { class: "field-hint", text: "* required field" }),
       error
     ]);
 
@@ -150,11 +150,11 @@ window.LM = window.LM || {};
       if (itemText) {
         const hit = allItems().find(function (it) { return it.label === itemText; }) ||
           allItems().find(function (it) { return it.title.toLocaleLowerCase("pl") === itemText.toLocaleLowerCase("pl"); });
-        if (!hit) return { error: "Nie znaleziono takiego punktu niezbędnika. Wybierz go z listy podpowiedzi albo wyczyść pole.", focus: item };
+        if (!hit) return { error: "There is no such handbook topic. Choose one from the suggestions or clear the field.", focus: item };
         itemId = hit.id;
       }
-      if (!context.value.trim()) return { error: "Wpisz kontekst albo pytanie.", focus: context };
-      if (!correct.value.trim()) return { error: "Wpisz poprawną odpowiedź.", focus: correct };
+      if (!context.value.trim()) return { error: "Type the context or the question.", focus: context };
+      if (!correct.value.trim()) return { error: "Type the right answer.", focus: correct };
       return {
         fields: {
           context: context.value, myAnswer: myAnswer.value, correct: correct.value, rule: rule.value,
@@ -165,14 +165,14 @@ window.LM = window.LM || {};
 
     let saved = null;
     const dlg = LM.dialogs.open({
-      title: editing ? "Edytuj wpis" : "Dodaj błąd do dziennika",
+      title: editing ? "Edit entry" : "Add mistake to the log",
       className: "dialog-wide",
       body: body,
       cancelValue: null,
       actions: [
-        { label: "Anuluj", value: null, variant: "btn-secondary" },
+        { label: "Cancel", value: null, variant: "btn-secondary" },
         {
-          label: "Zapisz",
+          label: "Save",
           value: "save",
           variant: "btn-primary",
           onClick: function () {
@@ -187,12 +187,12 @@ window.LM = window.LM || {};
             if (!editing) {
               const dup = pd().findDuplicate(r.fields.ref, r.fields.myAnswer);
               if (dup) {
-                error.textContent = "To zadanie z tą samą odpowiedzią jest już w dzienniku (dodane " + dup.createdAt + ").";
+                error.textContent = "This item with the same answer is already in the log (added " + LM.fmt.date(dup.createdAt) + ").";
                 return false;
               }
             }
             saved = editing ? pd().updateEntry(editing.id, r.fields) : pd().addEntry(r.fields);
-            if (!saved) { error.textContent = "Nie udało się zapisać wpisu."; return false; }
+            if (!saved) { error.textContent = "The entry could not be saved."; return false; }
             return true;
           }
         }
@@ -209,19 +209,19 @@ window.LM = window.LM || {};
   // LISTA
   // =====================================================================
 
-  function plural(n, one, few, many) { return LM.pluralPl(n, one, few, many); }
+  function plural(n, one, other) { return LM.plural(n, one, other); }
 
-  /** Stan karty wpisu (talia „Moje błędy”, harmonogram fiszek) zamiast etapu 1/3/7. */
+  /** State of the entry's card ("My mistakes" deck, flashcard schedule) instead of stage 1/3/7. */
   function reviewLabel(e) {
     const info = LM.cards ? LM.cards.mistakeInfo(e) : null;
-    if (!info) return { text: "Nowa karta", cls: "" };
-    if (info.suspended) return { text: "Zawieszona", cls: "" };
-    if (info.mastered) return { text: "Opanowane", cls: "is-mastered" };
-    if (info.state === "learning" || info.state === "relearning") return { text: "W nauce", cls: "is-due" };
+    if (!info) return { text: "New card", cls: "" };
+    if (info.suspended) return { text: "Suspended", cls: "" };
+    if (info.mastered) return { text: "Mastered", cls: "is-mastered" };
+    if (info.state === "learning" || info.state === "relearning") return { text: "Learning", cls: "is-due" };
     const d = Math.ceil((info.due - Date.now()) / 86400000);
-    if (info.due < LM.cardsLogic.dayEnd(Date.now())) return { text: "Do powtórki dziś", cls: "is-due" };
-    if (d <= 1) return { text: "Powtórka jutro", cls: "" };
-    return { text: "Powtórka za " + d + " " + plural(d, "dzień", "dni", "dni"), cls: "" };
+    if (info.due < LM.cardsLogic.dayEnd(Date.now())) return { text: "Due today", cls: "is-due" };
+    if (d <= 1) return { text: "Review tomorrow", cls: "" };
+    return { text: "Review in " + plural(d, "day"), cls: "" };
   }
 
   function matches(e) {
@@ -239,48 +239,48 @@ window.LM = window.LM || {};
     return true;
   }
 
-  /** Klasa paska kategorii (kolor tylko jako dodatek — nazwa kategorii jest w chipie). */
+  /** Class of the category bar (colour only as an extra — the category name is in the chip). */
   function catClass(category) {
-    const map = { "Use of English": "uoe", "Reading": "reading", "Writing": "writing", "Listening": "listening", "Speaking": "speaking", "Gramatyka": "grammar", "Słownictwo": "vocab", "Inne": "other" };
+    const map = { "Use of English": "uoe", "Reading": "reading", "Writing": "writing", "Listening": "listening", "Speaking": "speaking", "Grammar": "grammar", "Vocabulary": "vocab", "Other": "other" };
     return " cat-" + (map[category] || "other");
   }
 
   function entryCard(e, rerender) {
     const status = reviewLabel(e);
     const link = itemLink(e.itemId);
-    const auto = pd().autoInfo(e); // wpis dodany automatycznie z zadania (iskra)
+    const auto = pd().autoInfo(e); // an entry added automatically from an item (spark)
     return el("li", { class: "card journal-entry" + catClass(e.category) }, [
       el("div", { class: "journal-entry-head" }, [
         el("span", { class: "c1-chip", text: e.category }),
-        auto ? el("span", { class: "journal-auto", title: "Dodany automatycznie z zadania" }, [
-          LM.icon("sparkles", { size: 14 }), "Automatyczny" + (auto.returned ? " · wrócił" : "") + (auto.wrongCount > 1 ? " · błędów: " + auto.wrongCount : "")
+        auto ? el("span", { class: "journal-auto", title: "Added automatically from an item" }, [
+          LM.icon("sparkles", { size: 14 }), "Automatic" + (auto.returned ? " · came back" : "") + (auto.wrongCount > 1 ? " · mistakes: " + auto.wrongCount : "")
         ]) : null,
         el("span", { class: "journal-status " + status.cls, text: status.text }),
         e.source ? el("span", { class: "journal-source", text: e.source }) : null
       ]),
       el("p", { class: "journal-context", text: e.context }),
       el("dl", { class: "journal-answers" }, [
-        e.myAnswer ? el("div", { class: "journal-row is-wrong" }, [el("dt", { text: "Moja odpowiedź" }), el("dd", { text: e.myAnswer })]) : null,
-        el("div", { class: "journal-row is-right" }, [el("dt", { text: "Poprawnie" }), el("dd", { text: e.correct })]),
-        e.rule ? el("div", { class: "journal-row" }, [el("dt", { text: "Dlaczego" }), el("dd", { text: e.rule })]) : null,
-        link ? el("div", { class: "journal-row" }, [el("dt", { text: "Niezbędnik" }), el("dd", null, link)]) : null
+        e.myAnswer ? el("div", { class: "journal-row is-wrong" }, [el("dt", { text: "My answer" }), el("dd", { text: e.myAnswer })]) : null,
+        el("div", { class: "journal-row is-right" }, [el("dt", { text: "Right answer" }), el("dd", { text: e.correct })]),
+        e.rule ? el("div", { class: "journal-row" }, [el("dt", { text: "Why" }), el("dd", { text: e.rule })]) : null,
+        link ? el("div", { class: "journal-row" }, [el("dt", { text: "Handbook" }), el("dd", null, link)]) : null
       ]),
       el("div", { class: "journal-actions" }, [
         el("button", {
           type: "button",
           class: "btn btn-secondary btn-small",
-          "aria-label": "Edytuj wpis: " + e.context.slice(0, 60),
+          "aria-label": "Edit entry: " + e.context.slice(0, 60),
           onclick: function () { openForm({ entry: e }).then(function (r) { if (r) rerender(); }); }
-        }, "Edytuj"),
+        }, "Edit"),
         el("button", {
           type: "button",
           class: "btn btn-danger btn-small",
-          "aria-label": "Usuń wpis: " + e.context.slice(0, 60),
+          "aria-label": "Delete entry: " + e.context.slice(0, 60),
           onclick: function () {
             LM.dialogs.confirm({
-              title: "Usunąć wpis?",
-              message: "Wpis „" + e.context.slice(0, 120) + (e.context.length > 120 ? "…" : "") + "” zostanie usunięty z dziennika. Tej operacji nie można cofnąć.",
-              confirmLabel: "Usuń wpis"
+              title: "Delete this entry?",
+              message: "The entry “" + e.context.slice(0, 120) + (e.context.length > 120 ? "…" : "") + "” will be deleted from the log. This cannot be undone.",
+              confirmLabel: "Delete entry"
             }).then(function (ok) {
               if (!ok) return;
               pd().removeEntry(e.id);
@@ -288,7 +288,7 @@ window.LM = window.LM || {};
               rerender();
             });
           }
-        }, "Usuń")
+        }, "Delete")
       ])
     ]);
   }
@@ -300,7 +300,7 @@ window.LM = window.LM || {};
         type: "button",
         class: "btn btn-primary",
         onclick: function () { openForm().then(function (r) { if (r) render({ kind: "list" }); }); }
-      }, "Dodaj pierwszy błąd") : null
+      }, "Add your first mistake") : null
     });
   }
 
@@ -308,21 +308,21 @@ window.LM = window.LM || {};
     const all = pd().entries();
     const due = LM.reviewQueue ? LM.reviewQueue.breakdown().mistake : 0;
 
-    view.appendChild(LM.review.header("bledy", "Zapisuj błędy z ćwiczeń i arkuszy – każdy ma kartę, która wraca w rosnących odstępach (harmonogram fiszek). Karta opanowana wraca raz na kilka tygodni."));
+    view.appendChild(LM.review.header("mistakes", "Save mistakes from exercises and practice tests – each gets a card that comes back at growing intervals (the flashcard schedule). A mastered card comes back once every few weeks."));
 
     view.appendChild(el("div", { class: "tool-actions" }, [
       due
-        ? el("a", { class: "btn btn-primary", href: REVIEW }, "Zacznij powtórki (" + due + ")")
-        : el("p", { class: "tool-note", text: all.length ? "Na dziś czysto – brak powtórek." : "" }),
+        ? el("a", { class: "btn btn-primary", href: REVIEW }, "Start review (" + due + ")")
+        : el("p", { class: "tool-note", text: all.length ? "All clear for today – nothing to review." : "" }),
       el("button", {
         type: "button",
         class: "btn btn-secondary",
         onclick: function () { openForm().then(function (r) { if (r) render({ kind: "list" }); }); }
-      }, LM.ui.withIcon("plus", "Dodaj błąd"))
+      }, LM.ui.withIcon("plus", "Add mistake"))
     ]));
 
     if (!all.length) {
-      view.appendChild(emptyBox("Dziennik jest pusty. Zapisz pierwszy błąd – na przykład z ćwiczenia Use of English albo z próbnego arkusza.", true));
+      view.appendChild(emptyBox("The log is empty. Save your first mistake – for example from an exercise or a practice test.", true));
       return;
     }
 
@@ -331,21 +331,21 @@ window.LM = window.LM || {};
 
     function paint() {
       const shown = all.filter(matches);
-      countText.textContent = "Wpisy: " + shown.length + " z " + all.length;
+      countText.textContent = "Entries: " + shown.length + " of " + all.length;
       listBox.replaceChildren();
       if (!shown.length) {
         const msg = filters.status === "due" && !filters.query && !filters.category
-          ? "Na dziś czysto. Nie masz nic do powtórzenia – wróć jutro albo dodaj nowy błąd."
+          ? "All clear for today. Nothing to review – come back tomorrow or add a new mistake."
           : filters.status === "mastered" && !filters.query && !filters.category
-            ? "Jeszcze nic nie jest opanowane. Wpis staje się opanowany po trzech udanych powtórkach."
-            : "Brak wpisów pasujących do filtrów.";
+            ? "Nothing is mastered yet. An entry is mastered after three good reviews."
+            : "No entries match the filters.";
         listBox.appendChild(el("li", null, emptyBox(msg, false)));
         return;
       }
       shown.forEach(function (e) { listBox.appendChild(entryCard(e, function () { render({ kind: "list" }); })); });
     }
 
-    const statuses = [["due", "Do powtórki dziś"], ["all", "Wszystkie"], ["mastered", "Opanowane"]];
+    const statuses = [["due", "Due today"], ["all", "All"], ["mastered", "Mastered"]];
     const statusButtons = statuses.map(function (s) {
       return el("button", {
         type: "button",
@@ -367,7 +367,7 @@ window.LM = window.LM || {};
       id: "journal-cat",
       class: "field",
       onchange: function () { filters.category = catSelect.value; paint(); }
-    }, [el("option", { value: "" }, "Wszystkie kategorie")].concat(pd().CATEGORIES.map(function (c) { return el("option", { value: c }, c); })));
+    }, [el("option", { value: "" }, "All categories")].concat(pd().CATEGORIES.map(function (c) { return el("option", { value: c }, c); })));
     catSelect.value = filters.category;
 
     const search = el("input", {
@@ -375,7 +375,7 @@ window.LM = window.LM || {};
       class: "field",
       type: "search",
       value: filters.query,
-      placeholder: "Szukaj w dzienniku…",
+      placeholder: "Search the log…",
       autocomplete: "off",
       oninput: function () { filters.query = search.value; paint(); }
     });
@@ -391,17 +391,17 @@ window.LM = window.LM || {};
         autoBtn.setAttribute("aria-pressed", filters.auto ? "true" : "false");
         paint();
       }
-    }, [LM.icon("sparkles", { size: 16 }), "Automatyczne (" + autoCount + ")"]) : null;
+    }, [LM.icon("sparkles", { size: 16 }), "Automatic (" + autoCount + ")"]) : null;
     if (!autoCount) filters.auto = false;
 
     view.appendChild(el("div", { class: "journal-filters", role: "search" }, [
       el("div", { class: "journal-filter-top" }, [
-        el("div", { class: "segmented", role: "group", "aria-label": "Pokaż" }, statusButtons),
+        el("div", { class: "segmented", role: "group", "aria-label": "Show" }, statusButtons),
         autoBtn
       ]),
       el("div", { class: "journal-filter-row" }, [
-        el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "journal-cat", text: "Kategoria" }), catSelect]),
-        el("div", { class: "form-field is-grow" }, [el("label", { class: "field-label", for: "journal-search", text: "Szukaj" }), search])
+        el("div", { class: "form-field" }, [el("label", { class: "field-label", for: "journal-cat", text: "Category" }), catSelect]),
+        el("div", { class: "form-field is-grow" }, [el("label", { class: "field-label", for: "journal-search", text: "Search" }), search])
       ])
     ]));
     view.appendChild(countText);
@@ -412,9 +412,9 @@ window.LM = window.LM || {};
         class: "btn btn-danger btn-small",
         onclick: function () {
           LM.dialogs.confirm({
-            title: "Usunąć wszystkie automatyczne wpisy?",
-            message: "Z dziennika zniknie " + autoCount + " " + plural(autoCount, "wpis dodany", "wpisy dodane", "wpisów dodanych") + " automatycznie z zadań. Wpisy dodane ręcznie zostaną. Tej operacji nie można cofnąć.",
-            confirmLabel: "Usuń automatyczne"
+            title: "Delete all automatic entries?",
+            message: plural(autoCount, "entry added", "entries added") + " automatically from items will disappear from the log. Entries you added yourself stay. This cannot be undone.",
+            confirmLabel: "Delete automatic entries"
           }).then(function (ok) {
             if (!ok) return;
             pd().removeAllAuto();
@@ -423,7 +423,7 @@ window.LM = window.LM || {};
             render({ kind: "list" });
           });
         }
-      }, LM.ui.withIcon("trash", "Usuń wszystkie automatyczne"))));
+      }, LM.ui.withIcon("trash", "Delete all automatic entries"))));
     }
     paint();
   }
@@ -448,11 +448,11 @@ window.LM = window.LM || {};
     view.dataset.file = key;
     view.replaceChildren();
     renderList(view);
-    document.title = "Moje błędy · Fiszki i błędy · " + LM.APP.appTitle;
+    document.title = "My mistakes · Flashcards and mistakes · " + LM.APP.appTitle;
     U.setScroll(keepScroll);
   }
 
-  /** Wejście na widok: nic do przygotowania (sesja jest w js/cards.js). */
+  /** Entering the view: nothing to prepare (the session is in js/cards.js). */
   function onEnter() {}
 
   LM.mistakes = {

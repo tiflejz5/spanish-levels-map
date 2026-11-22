@@ -841,8 +841,8 @@ test("import starego pliku bez klucza slm.finals: część pomijana, dane tej pr
 });
 test("import: uszkodzony albo zbyt nowy klucz slm.finals → błąd, śmieci w danych odfiltrowane", function () {
   freshPD();
-  assert.throws(function () { LEARN.parseImport({ levelTests: { version: 99, profiles: {} } }); }, /Nieobsługiwana wersja/);
-  assert.throws(function () { LEARN.parseImport({ levelTests: { version: 1 } }); }, /Nieprawidłowy format/);
+  assert.throws(function () { LEARN.parseImport({ levelTests: { version: 99, profiles: {} } }); }, /Unsupported data version/);
+  assert.throws(function () { LEARN.parseImport({ levelTests: { version: 1 } }); }, /Wrong data format/);
   const parsed = LEARN.parseImport({ levelTests: { version: 1, profiles: { p1: { levels: {
     A1: { passedAt: "kiedyś", best: { score: 30, total: 20, date: "2026-01-01" }, last: { score: 15, total: 20, date: "2026-01-02" } }, // zły dzień, zły best
     A2: { passedAt: "2026-02-03", best: { score: 16, total: 20, date: "2026-02-03" } },                                               // brak last
@@ -1085,7 +1085,7 @@ test("preview i formatDelay: podgląd terminów czterech ocen", function () {
   const pv = FH.preview(FH.newCard(), 0);
   assert.deepStrictEqual(["again", "hard", "good", "easy"].map(function (g) { return FH.formatDelay(pv[g].delay); }), ["1 min", "1 min", "10 min", "4 d"]);
   assert.strictEqual(FH.formatDelay(3 * FH.DAY), "3 d");
-  assert.strictEqual(FH.formatDelay(90 * FH.DAY), "3 mies.");
+  assert.strictEqual(FH.formatDelay(90 * FH.DAY), "3 mo");
 });
 
 console.log("\nFiszki: ocena odpowiedzi, cloze, kolejka, TSV/CSV, stan (spec 10, sekcja 8)");
@@ -1177,7 +1177,7 @@ test("parseDelimited: tab / średnik, cudzysłowy RFC 4180, nowe linie w polu, p
   assert.strictEqual(FL.parseDelimited("a\tb\n").separator, "\t");
 });
 test("importCards: kolumny spec, format Anki ({{c1::…}}), odrzucenia z powodem, limit", function () {
-  const r = FL.importCards("typ\tprzód\ttył\tpodpowiedź\tprzykład\tnotatka\ttagi\n" +
+  const r = FL.importCards("type\tfront\tback\thint\texample\tnote\ttags\n" +
     "cloze\tShe {{c1::came up with}} it.\t\twymyślić\t\t\tfrazowe c1\n" +
     "typed\tlodówka\tfridge|refrigerator\n" +
     "cloze\tBez luki\n" +
@@ -1481,7 +1481,7 @@ test("slm.phrases: eksport, import (z filtrowaniem śmieci i duplikatów), usuni
   assert.deepStrictEqual(exp.phrases.profiles.p1.starred, ["opinia-01"]);
   const parsed = LEARN.parseImport({ phrases: { version: 1, profiles: { p1: { starred: ["a-01", "a-01", "ŹLE", 5, "b-02"] } } } });
   assert.deepStrictEqual(parsed.phrases.profiles.p1.starred, ["a-01", "b-02"]);
-  assert.throws(function () { LEARN.parseImport({ phrases: { version: 99, profiles: {} } }); }, /Nieobsługiwana wersja/);
+  assert.throws(function () { LEARN.parseImport({ phrases: { version: 99, profiles: {} } }); }, /Unsupported data version/);
   LEARN.applyImport(parsed, ["p1"]);
   assert.deepStrictEqual(PD.starredPhrases(), ["a-01", "b-02"]);
   // stary plik bez klucza: dane tej przeglądarki zostają
@@ -1530,14 +1530,18 @@ test("slm.speaking: stary zapis bez seen działa, seen jest opcjonalne, toleranc
 });
 
 console.log("\nEgzaminy z tagów karty (paczka v6, spec 15)");
-test("examsOf: e8, mp, mr, b2, c1; matura = MP + MR; bez powtórzeń, stała kolejność, wielkość liter bez znaczenia", function () {
+test("examsOf: codes from the exam registry (no hard-coded exams), registry order, no repeats, any case", function () {
+  const saved = global.LM.EXAM_REGISTRY;
+  global.LM.EXAM_REGISTRY = { exams: [{ id: "x-dele", code: "DELE", label: "DELE B1" }, { id: "x-siele", code: "SIELE", label: "SIELE" }] };
   const codes = function (tags) { return FL.examsOf({ tags: tags }).map(function (e) { return e.code; }); };
-  assert.deepStrictEqual(codes(["slownictwo", "e8", "matura"]), ["e8", "mp", "mr"]);
-  assert.deepStrictEqual(codes(["MR", "matura", "B2"]), ["mp", "mr", "b2"]);
-  assert.deepStrictEqual(codes(["c1", "kolokacje"]), ["c1"]);
-  assert.deepStrictEqual(codes([]), []);
+  assert.deepStrictEqual(codes(["vocabulary", "siele", "DELE", "dele"]), ["dele", "siele"]);
+  assert.deepStrictEqual(FL.examList()[0], { code: "dele", short: "DELE", name: "DELE B1" });
+  assert.deepStrictEqual(codes(["e8", "matura"]), [], "the reference app's Polish exam codes are gone");
   assert.deepStrictEqual(FL.examsOf({}), []);
   assert.deepStrictEqual(FL.examsOf(null), []);
+  global.LM.EXAM_REGISTRY = { exams: [] };
+  assert.deepStrictEqual(codes(["dele"]), [], "empty registry: no exam chips");
+  global.LM.EXAM_REGISTRY = saved;
 });
 
 console.log("\nMoje słowa (paczka v6, spec 14)");
@@ -1640,7 +1644,7 @@ legacyTest("exportWordsCsv: słowo; znaczenie; zdanie; źródło, cudzysłowy i 
     { type: "cloze", text: "Most people {{commute}} to work; by train.", hint: "dojeżdżać", word: "commute", source: { route: "#/b1/slownictwo", title: "Słownictwo B1" } },
     { type: "basic", front: "ephemeral", back: "He said \"hi\"." }
   ]).split("\n");
-  assert.strictEqual(csv[0], "słowo;znaczenie;zdanie;źródło");
+  assert.strictEqual(csv[0], "word;meaning;sentence;source");
   assert.strictEqual(csv[1], 'commute;dojeżdżać;"Most people commute to work; by train.";Słownictwo B1 (#/b1/slownictwo)');
   assert.strictEqual(csv[2], 'ephemeral;;"He said ""hi"".";');
 });
@@ -1717,7 +1721,7 @@ console.log("\nPowtórki v8: migracja Dziennika błędów do kart „Moje błęd
 (function () {
   const FLg = global.LM.cardsLogic;
   const NOW = new Date(2026, 10, 10, 12, 0, 0).getTime(); // 10.11.2026, południe
-  const entry = function (id, review, extra) { return Object.assign({ id: id, createdAt: "2026-11-01", context: "She ___ to school.", myAnswer: "go", correct: "goes", rule: "3. osoba: -s", source: "", category: "Gramatyka", itemId: "", ref: "", review: review }, extra || {}); };
+  const entry = function (id, review, extra) { return Object.assign({ id: id, createdAt: "2026-11-01", context: "She ___ to school.", myAnswer: "go", correct: "goes", rule: "3. osoba: -s", source: "", category: "Grammar", itemId: "", ref: "", review: review }, extra || {}); };
   const entries = [
     entry("err-s0", { stage: 0, due: "2026-11-11", mastered: false }),
     entry("err-s1", { stage: 1, due: "2026-11-12", mastered: false }),
