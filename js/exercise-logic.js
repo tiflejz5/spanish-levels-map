@@ -1,25 +1,25 @@
 /*
- * exercise-logic.js — czysta logika silnika zadań (bez DOM), testowana
- * w tools/tests.js. Specyfikacja: docs/rozbudowa-v2/spec/01-typy-zadan.md
- * i 02-laboratorium-czasow-i-mieszane.md (algorytm zestawów mieszanych).
+ * exercise-logic.js — pure logic of the exercise engine (no DOM), tested
+ * in tools/tests.js. Specification of the reference app: docs/rozbudowa-v2/spec/01-typy-zadan.md
+ * and 02-laboratorium-czasow-i-mieszane.md (the mixed-set algorithm).
  *
- *   normalize(str)                    porównywanie odpowiedzi (sekcja 4 spec 01)
- *   shuffle(list, rng)                tasowanie Fishera–Yatesa (kopia listy)
- *   prepareChoice(item, rng)          opcje multiple-choice w losowej kolejności
- *   reorderTokens(item, rng)          wyrazy do ułożenia (nigdy w poprawnej kolejności)
- *   evaluate(item, answer)            { correct, points, max, … } dla każdego typu zadania
- *   maxPoints(item)                   maksimum punktów za zadanie (stare typy: 1)
- *   sessionScore(results)             wynik sesji w punktach { score, total }
- *   scoreTransformationParts(item, answer, limit)  transformacja jak Cambridge (też C1/B2 Part 4)
- *   normalizeSentence(str)            zdanie do porównania: bez przecinków, skróty rozwinięte (spec v6 12, 2.4)
- *   matchesSentence(answer, accepted) zgodność zdania z którymkolwiek wariantem
- *   wordDiff(model, got)              porównanie słowo po słowie (brak / zbędne / zamienione)
- *   prepareMatch(item, rng)           prawa kolumna dopasowania (zawsze przetasowana)
+ *   normalize(str)                    answer comparison (section 4 of spec 01)
+ *   shuffle(list, rng)                Fisher–Yates shuffle (a copy of the list)
+ *   prepareChoice(item, rng)          multiple-choice options in random order
+ *   reorderTokens(item, rng)          words to put in order (never already in the right order)
+ *   evaluate(item, answer)            { correct, points, max, … } for every item type
+ *   maxPoints(item)                   maximum points of an item (old types: 1)
+ *   sessionScore(results)             session result in points { score, total }
+ *   scoreTransformationParts(item, answer, limit)  transformation scored like Cambridge Part 4
+ *   normalizeSentence(str)            sentence for comparison: no commas, contractions expanded (spec v6 12, 2.4)
+ *   matchesSentence(answer, accepted) whether a sentence matches any of the variants
+ *   wordDiff(model, got)              word-by-word comparison (missing / extra / replaced)
+ *   prepareMatch(item, rng)           the right column of Match pairs (always shuffled)
  *
- * Typy z paczki v6 (spec docs/rozbudowa-v6/spec/12-nowe-typy-zadan.md): gap-fill, match,
- * transformation, translate, dictation. Odpowiedzi: { texts: […] }, { pairs: { indeksLewej: tekstPrawej } },
- * { text }, { text }, { text } albo { skipped: true } (dyktando bez głosu).
- *   pickMix(pool, opts, rng)          losowanie zestawu mieszanego
+ * Types of pack v6 (spec docs/rozbudowa-v6/spec/12-nowe-typy-zadan.md): gap-fill, match,
+ * transformation, translate, dictation. Answers: { texts: […] }, { pairs: { leftIndex: rightText } },
+ * { text }, { text }, { text } or { skipped: true } (dictation without a voice).
+ *   pickMix(pool, opts, rng)          drawing a mixed set
  */
 window.LM = window.LM || {};
 
@@ -28,7 +28,7 @@ window.LM = window.LM || {};
 
   const TYPES = ["multiple-choice", "reorder", "find-error", "short-answer", "gap-fill", "match", "transformation", "translate", "dictation"];
 
-  /** Przycięcie, jedna spacja, ’ → ', bez interpunkcji na końcu, małe litery. Skróty NIE są rozwijane. */
+  /** Trimmed, single spaces, ’ → ', no punctuation at the end, lower case. Contractions are NOT expanded. */
   function normalize(str) {
     return String(str == null ? "" : str)
       .replace(/[‘’ʼ]/g, "'")
@@ -49,7 +49,7 @@ window.LM = window.LM || {};
     return out;
   }
 
-  /** Odległość edycyjna (do podpowiedzi „Uwaga na pisownię”). */
+  /** Edit distance (for the "Check the spelling" hint). */
   function distance(a, b) {
     if (a === b) return 0;
     const m = a.length, n = b.length;
@@ -66,8 +66,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Opcje w losowej kolejności (chyba że fixedOrder):
-   * [{ text, note, original }], correct = nowy indeks poprawnej.
+   * Options in random order (unless fixedOrder):
+   * [{ text, note, original }], correct = the new index of the right one.
    */
   function prepareChoice(item, rng) {
     const opts = item.options.map(function (text, i) {
@@ -77,7 +77,7 @@ window.LM = window.LM || {};
     return { options: order, correct: order.findIndex(function (o) { return o.original === item.correct; }) };
   }
 
-  /** Wyrazy wzorcowego zdania bez końcowej interpunkcji (pierwszy małą literą, chyba że to „I”). */
+  /** Words of the model sentence without final punctuation (the first in lower case, unless it is "I"). */
   function answerTokens(sentence) {
     const words = String(sentence).trim().replace(/[.!?;]+$/, "").split(/\s+/).filter(Boolean);
     if (words.length && !/^I(\b|')/.test(words[0])) words[0] = words[0].charAt(0).toLowerCase() + words[0].slice(1);
@@ -85,8 +85,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Pula wyrazów do ułożenia: [{ id, text }] z answers[0] + extraTokens, przetasowana tak,
-   * żeby NIE była od razu poprawnym zdaniem.
+   * Pool of words to put in order: [{ id, text }] from answers[0] + extraTokens, shuffled so that
+   * it is NOT the right sentence straight away.
    */
   function reorderTokens(item, rng) {
     const words = answerTokens(item.answers[0]).concat(item.extraTokens || []);
@@ -94,7 +94,7 @@ window.LM = window.LM || {};
     if (tokens.length < 2) return tokens;
     let out = shuffle(tokens, rng);
     for (let tries = 0; tries < 20 && isAccepted(item, out.map(function (t) { return t.text; })); tries++) out = shuffle(tokens, rng);
-    if (isAccepted(item, out.map(function (t) { return t.text; }))) out.push(out.shift()); // ostatnia deska ratunku
+    if (isAccepted(item, out.map(function (t) { return t.text; }))) out.push(out.shift()); // last resort
     return out;
   }
 
@@ -103,7 +103,7 @@ window.LM = window.LM || {};
     return item.answers.some(function (a) { return normalize(a) === s; });
   }
 
-  /** Indeks pierwszego wyrazu ułożenia, który różni się od wzorca (albo -1). */
+  /** Index of the first word of the answer that differs from the model (or -1). */
   function firstDifference(item, words) {
     const model = answerTokens(item.answers[0]).map(normalize);
     const got = words.map(normalize);
@@ -114,20 +114,20 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Ocena odpowiedzi. answer zależy od typu:
-   *   multiple-choice: { chosen: indeks w ORYGINALNYCH options }
-   *   reorder:         { words: [tekst…] }
-   *   find-error:      { noError: true } albo { range: [od, do], fix: "…" }
+   * Evaluates an answer. The answer depends on the type:
+   *   multiple-choice: { chosen: index in the ORIGINAL options }
+   *   reorder:         { words: [text…] }
+   *   find-error:      { noError: true } or { range: [from, to], fix: "…" }
    *   short-answer:    { text: "…" }
    */
   function evaluate(item, answer) {
     const res = evaluateType(item, answer || {});
-    // Punkty (spec v6 12, sekcja 1): typy jednopunktowe — 1 za poprawne zadanie
+    // Points (spec v6 12, section 1): one-point types — 1 for a right item
     if (res.max === undefined) { res.max = maxPoints(item); res.points = res.correct ? res.max : 0; }
     return res;
   }
 
-  /** Maksimum punktów za zadanie: luki i pary — po punkcie, transformacja z parts — 2, pozostałe — 1. */
+  /** Maximum points of an item: gaps and pairs — a point each, transformation with parts — 2, others — 1. */
   function maxPoints(item) {
     if (item.type === "gap-fill") return (item.gaps || []).length || 1;
     if (item.type === "match") return (item.pairs || []).length || 1;
@@ -136,8 +136,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Wynik sesji w punktach: results = [{ item, res }] (res = null → zadanie bez odpowiedzi, 0 z maxPoints).
-   * Zadanie z res.max = 0 (np. dyktando pominięte bez głosu) nie liczy się do wyniku.
+   * Session result in points: results = [{ item, res }] (res = null → item without an answer, 0 of maxPoints).
+   * An item with res.max = 0 (e.g. a dictation skipped without a voice) does not count.
    */
   function sessionScore(results) {
     let score = 0, total = 0;
@@ -183,14 +183,14 @@ window.LM = window.LM || {};
     if (item.type === "transformation") return evaluateTransformation(item, answer.text);
     if (item.type === "translate") return evaluateSentence(item.accepted, answer.text);
     if (item.type === "dictation") {
-      // Brak głosu angielskiego: zadanie pominięte, nie liczy się do wyniku ani statystyk
+      // No voice: the item is skipped and counts neither in the result nor in the stats
       if (answer.skipped) return { correct: false, answered: true, skipped: true, points: 0, max: 0 };
       return evaluateSentence([item.text].concat(item.accepted || []), answer.text);
     }
     return { correct: false, answered: false };
   }
 
-  /** Jedno pole jak short-answer: pełna zgodność po normalize; różnica 1 litery → uwaga o pisowni (0 pkt). */
+  /** One field like short-answer: full match after normalize; a difference of 1 letter → a spelling note (0 points). */
   function shortAnswer(accepted, value) {
     const text = normalize(value);
     const ok = text !== "" && accepted.some(function (a) { return normalize(a) === text; });
@@ -199,15 +199,15 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // ZDANIA (translate, dictation): normalizacja, warianty skrótów, porównanie słowo po słowie
+  // SENTENCES (translate, dictation): normalization, contraction variants, word-by-word comparison
   // =====================================================================
 
   const FIXED_CONTRACTIONS = { "won't": "will not", "can't": "cannot", "shan't": "shall not", "let's": "let us" };
 
   /**
-   * normalize + bez przecinków i interpunkcji wewnątrz zdania + rozwinięte jednoznaczne skróty
+   * normalize + no commas and no punctuation inside the sentence + unambiguous contractions expanded
    * (n't → not, 're → are, 've → have, 'll → will, 'm → am, won't → will not, can't → cannot).
-   * Niejednoznaczne 's i 'd zostają (porównanie sprawdza oba rozwinięcia — sentenceVariants).
+   * Ambiguous 's and 'd stay (the comparison checks both readings — sentenceVariants). Stage 3 moves this into LM.lang.
    */
   function normalizeSentence(str) {
     return normalize(str)
@@ -227,7 +227,7 @@ window.LM = window.LM || {};
 
   const AMBIGUOUS = { s: ["is", "has"], d: ["would", "had"] };
 
-  /** Wszystkie odczytania zdania: 's = is / has / dopełniacz, 'd = would / had (najwyżej 64 warianty). */
+  /** All readings of a sentence: 's = is / has / possessive, 'd = would / had (at most 64 variants). */
   function sentenceVariants(str) {
     let out = [[]];
     normalizeSentence(str).split(" ").filter(Boolean).forEach(function (w) {
@@ -240,7 +240,7 @@ window.LM = window.LM || {};
     return out.map(function (words) { return words.join(" "); });
   }
 
-  /** Czy zdanie pasuje (po normalizacji i rozwinięciu skrótów) do któregokolwiek z akceptowanych. */
+  /** Whether a sentence matches (after normalization and expanding contractions) any of the accepted ones. */
   function matchesSentence(answer, accepted) {
     const mine = sentenceVariants(answer);
     if (!mine.join("")) return false;
@@ -251,8 +251,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Porównanie słowo po słowie (odległość edycyjna na wyrazach):
-   * [{ op: "same" | "missing" | "extra" | "replace", word (wzór), got (odpowiedź) }].
+   * Word-by-word comparison (edit distance on words):
+   * [{ op: "same" | "missing" | "extra" | "replace", word (model), got (answer) }].
    */
   function wordDiff(model, got) {
     const m = model.length, n = got.length;
@@ -265,7 +265,7 @@ window.LM = window.LM || {};
     }
     const ops = [];
     let i = m, j = n;
-    // Przy remisie: najpierw zgodne wyrazy, potem brak / zbędne (więcej wyrazów zostaje „na swoim miejscu”), na końcu zamiana
+    // On a tie: matching words first, then missing / extra (more words stay "in place"), replacement last
     while (i > 0 || j > 0) {
       if (i > 0 && j > 0 && model[i - 1] === got[j - 1] && d[i][j] === d[i - 1][j - 1]) {
         ops.unshift({ op: "same", word: model[i - 1] });
@@ -284,7 +284,7 @@ window.LM = window.LM || {};
     return { distance: d[m][n], ops: ops };
   }
 
-  /** Najbliższy akceptowany wariant (najmniej zmian na wyrazach) i porównanie z nim. */
+  /** The nearest accepted variant (fewest word changes) and the comparison with it. */
   function closestDiff(answer, accepted) {
     const mine = sentenceVariants(answer).map(function (v) { return v.split(" ").filter(Boolean); });
     let best = null;
@@ -300,7 +300,7 @@ window.LM = window.LM || {};
     return best;
   }
 
-  /** translate / dictation: 1 pkt za zgodność; inaczej porównanie z najbliższym wariantem i ewentualna literówka. */
+  /** translate / dictation: 1 point for a match; otherwise a comparison with the nearest variant and a possible typo. */
   function evaluateSentence(accepted, text) {
     const answered = normalize(text) !== "";
     if (answered && matchesSentence(text, accepted)) return { correct: true, answered: true, points: 1, max: 1 };
@@ -313,24 +313,24 @@ window.LM = window.LM || {};
     return { correct: false, answered: answered, points: 0, max: 1, diff: best ? best.diff.ops : null, closest: best ? best.index : 0, spelling: spelling };
   }
 
-  /** Liczba słów w transformacji i powód odrzucenia przed oceną (limit, słowo kluczowe) albo null. */
+  /** Number of words in a transformation and the reason it is refused before scoring (limit, key word), or null. */
   function transformationCheck(item, text, lim) {
     const t = trTokens(text);
-    if (!t.length) return { words: 0, msg: "Brak odpowiedzi." };
-    if (t.length < lim[0] || t.length > lim[1]) return { words: t.length, msg: "Wpisz " + lim[0] + "–" + lim[1] + " słów (masz " + t.length + " " + plural(t.length, "słowo", "słowa", "słów") + ", skróty liczą się jako dwa)." };
-    if (!findSeq(t, trTokens(item.keyword), 0).length) return { words: t.length, msg: "Użyj słowa kluczowego bez zmian (" + item.keyword + ")." };
+    if (!t.length) return { words: 0, msg: "No answer." };
+    if (t.length < lim[0] || t.length > lim[1]) return { words: t.length, msg: "Use " + lim[0] + "–" + lim[1] + " words (you have " + plural(t.length, "word") + "; contractions count as two)." };
+    if (!findSeq(t, trTokens(item.keyword), 0).length) return { words: t.length, msg: "Use the key word without changing it (" + item.keyword + ")." };
     return { words: t.length, msg: null };
   }
 
-  /** Limit słów zadania transformacji: wordLimit albo 2–5 (B1–B2). */
+  /** Word limit of a transformation item: wordLimit or 2–5 (B1–B2). */
   function transformationLimit(item) {
     const w = item.wordLimit;
     return Array.isArray(w) && w.length === 2 && w[0] >= 1 && w[0] <= w[1] ? w : [2, 5];
   }
 
   /**
-   * transformation: bez parts — 1 pkt za zgodność z answers (po normalizacji, skróty rozwinięte);
-   * z parts — 2 pkt jak Cambridge (scoreTransformationParts), pełna zgodność z answers zawsze 2.
+   * transformation: without parts — 1 point for matching the answers (after normalization, contractions expanded);
+   * with parts — 2 points like Cambridge (scoreTransformationParts), a full match with the answers is always 2.
    */
   function evaluateTransformation(item, text) {
     const lim = transformationLimit(item);
@@ -345,8 +345,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Prawa kolumna dopasowania: [{ id, text }] (pary + extraRight), zawsze przetasowana —
-   * nigdy w kolejności par z pliku.
+   * Right column of Match pairs: [{ id, text }] (pairs + extraRight), always shuffled —
+   * never in the order of the pairs in the file.
    */
   function prepareMatch(item, rng) {
     const right = item.pairs.map(function (p, i) { return { id: "r" + i, text: p[1] }; })
@@ -359,16 +359,12 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // TRANSFORMACJE ZDAŃ (wspólne: C1/B2 Part 4 w js/c1-exercises.js i typ „transformation”)
+  // SENTENCE TRANSFORMATION (shared by the "transformation" type)
   // =====================================================================
 
-  function plural(n, one, few, many) {
-    if (n === 1) return one;
-    const d = n % 10, t = n % 100;
-    return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
-  }
+  function plural(n, one, other) { return LM.plural ? LM.plural(n, one, other) : n + " " + (n === 1 ? one : other || one + "s"); }
 
-  /** Wielkie litery, ’ → ', bez interpunkcji (poza apostrofem), pojedyncze spacje. */
+  /** Upper case, ’ → ', no punctuation (except the apostrophe), single spaces. */
   function trNorm(text) {
     return String(text || "")
       .toUpperCase()
@@ -378,10 +374,10 @@ window.LM = window.LM || {};
       .trim();
   }
 
-  // Skróty liczą się jako dwa słowa: DOESN'T = DOES + N'T, I'M = I + 'M …
+  // Contractions count as two words: DOESN'T = DOES + N'T, I'M = I + 'M …
   const CONTRACTION = /^(.+?)(N'T|'S|'RE|'VE|'D|'LL|'M)$/;
 
-  /** Słowa odpowiedzi w transformacji (wielkie litery; skrót = dwa słowa). */
+  /** Words of a transformation answer (upper case; a contraction = two words). */
   function trTokens(text) {
     const out = [];
     trNorm(text).split(" ").filter(Boolean).forEach(function (word) {
@@ -392,7 +388,7 @@ window.LM = window.LM || {};
     return out;
   }
 
-  /** Pozycje, od których ciąg „needle” występuje w „hay” (od indeksu from). */
+  /** Positions where the sequence "needle" occurs in "hay" (from index from). */
   function findSeq(hay, needle, from) {
     const hits = [];
     if (!needle.length) return hits;
@@ -406,24 +402,24 @@ window.LM = window.LM || {};
     return hits;
   }
 
-  const TR_DEFAULT_LIMIT = [3, 6]; // C1 Advanced
+  const TR_DEFAULT_LIMIT = [3, 6]; // Cambridge C1
 
   /**
-   * Transformacja jak Cambridge (C1/B2 Part 4): liczba słów w limicie (limit = [min, max], domyślnie 3–6),
-   * słowo kluczowe bez zmian, po 1 pkt za każdą część (item.parts = [[warianty]…]); kolejna część liczy się,
-   * gdy występuje PO poprzedniej. Zadanie z jedną częścią: 2 pkt albo 0.
-   * Zwraca { score, parts: [true/false…], msg } (msg — powód 0 pkt przed oceną części albo null).
+   * Transformation like Cambridge Part 4: number of words within the limit (limit = [min, max], default 3–6),
+   * the key word unchanged, 1 point for each part (item.parts = [[variants]…]); the next part counts
+   * when it comes AFTER the previous one. An item with one part: 2 points or 0.
+   * Returns { score, parts: [true/false…], msg } (msg — the reason for 0 points before scoring the parts, or null).
    */
   function scoreTransformationParts(item, answer, limit) {
     const lim = Array.isArray(limit) ? limit : TR_DEFAULT_LIMIT;
     const t = trTokens(answer);
     const parts = item.parts.map(function () { return false; });
-    if (!t.length) return { score: 0, parts: parts, msg: "Brak odpowiedzi." };
+    if (!t.length) return { score: 0, parts: parts, msg: "No answer." };
     if (t.length < lim[0] || t.length > lim[1]) {
-      return { score: 0, parts: parts, msg: "Wpisz " + lim[0] + "–" + lim[1] + " słów (masz " + t.length + " " + plural(t.length, "słowo", "słowa", "słów") + ", skróty liczą się jako dwa)." };
+      return { score: 0, parts: parts, msg: "Use " + lim[0] + "–" + lim[1] + " words (you have " + plural(t.length, "word") + "; contractions count as two)." };
     }
     if (!findSeq(t, trTokens(item.keyword), 0).length) {
-      return { score: 0, parts: parts, msg: "Użyj słowa kluczowego bez zmian (" + item.keyword + ")." };
+      return { score: 0, parts: parts, msg: "Use the key word without changing it (" + item.keyword + ")." };
     }
     let cursor = 0;
     item.parts.forEach(function (variants, k) {
@@ -444,12 +440,12 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Zestaw mieszany (spec 02, B.3).
-   * pool: zadania (z polem topic); opts: { count, exclude: [id…], types: [typ…], weight: fn(zadanie) → waga }.
-   * Wagi (np. LM.stats.mixWeight) zwiększają szansę wylosowania słabych / niewidzianych zadań w obrębie tematu.
-   * 1. filtr typów, 2. wykluczenie ostatniej sesji (gdy starcza puli),
-   * 3. round-robin po tematach (w temacie losowo), 4. kolejność: najwyżej 2 zadania tego samego typu pod rząd.
-   * Zwraca { items, requested, available }.
+   * Mixed set (spec 02, B.3).
+   * pool: items (with a topic field); opts: { count, exclude: [id…], types: [type…], weight: fn(item) → weight }.
+   * Weights (e.g. LM.stats.mixWeight) raise the chance of drawing weak / unseen items within a topic.
+   * 1. filter by type, 2. leave out the last session (when the pool is big enough),
+   * 3. round-robin over topics (random inside a topic), 4. order: at most 2 items of the same type in a row.
+   * Returns { items, requested, available }.
    */
   function pickMix(pool, opts, rng) {
     opts = opts || {};
@@ -482,8 +478,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Losowa kolejność z wagami (Efraimidis–Spirakis): element o wadze 2 ma dwa razy
-   * większą szansę trafić na początek niż element o wadze 1. Bez wag = zwykłe tasowanie.
+   * Weighted random order (Efraimidis–Spirakis): an element with weight 2 has twice
+   * the chance to come first of an element with weight 1. Without weights = a plain shuffle.
    */
   function weightedOrder(list, weight, rng) {
     const r = rng || Math.random;
@@ -493,7 +489,7 @@ window.LM = window.LM || {};
     }).sort(function (a, b) { return b.key - a.key; }).map(function (x) { return x.it; });
   }
 
-  /** Przestawia zadania tak, żeby ten sam typ nie wystąpił więcej niż max razy pod rząd (gdy się da). */
+  /** Reorders the items so the same type does not appear more than max times in a row (when possible). */
   function limitRuns(list, max) {
     const out = list.slice();
     for (let i = max; i < out.length; i++) {
@@ -508,9 +504,9 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Etykieta „zestaw 8/10” na liście poziomu (paczka v8, S4): z najlepszych wyników zestawów tematu
-   * ([{ score, total }]) wybiera zestaw o najwyższym procencie (remis: więcej punktów). → { score, total, high, text } albo null.
-   * high = wynik ≥ 80% (kropka w kolorze krainy).
+   * The "set 8/10" label on the level page (pack v8, S4): from the best results of the topic's sets
+   * ([{ score, total }]) picks the set with the highest percentage (tie: more points). → { score, total, high, text } or null.
+   * high = result ≥ 80% (a dot in the land colour).
    */
   function bestSetLabel(bests) {
     let top = null;
@@ -519,12 +515,12 @@ window.LM = window.LM || {};
       const pct = b.score / b.total;
       if (!top || pct > top.pct || (pct === top.pct && b.total > top.total)) top = { score: b.score, total: b.total, pct: pct };
     });
-    return top ? { score: top.score, total: top.total, high: top.pct >= 0.8, text: "zestaw " + top.score + "/" + top.total } : null;
+    return top ? { score: top.score, total: top.total, high: top.pct >= 0.8, text: "set " + top.score + "/" + top.total } : null;
   }
 
   /**
-   * Zdanie do odsłuchu klawiszem S (paczka v8, S5): przed sprawdzeniem luka to pauza (" … "), po sprawdzeniu — wzorcowa odpowiedź.
-   * Zwraca tekst albo "" (typ bez zdania do odczytania: dopasowanie, dyktando, układanie przed sprawdzeniem).
+   * Sentence for playback with the S key (pack v8, S5): before checking a gap is a pause (" … "), after checking — the model answer.
+   * Returns the text or "" (a type without a sentence to read: Match pairs, dictation, Put in order before checking).
    */
   function speechText(item, answered) {
     const PAUSE = " … ";

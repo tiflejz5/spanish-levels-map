@@ -1,3 +1,5 @@
 # check-lang allow list: <path glob> <regex>. Each entry says why and until when.
 # Search folding still maps the Polish ł (tests depend on it); stage 3 moves folding into LM.lang.fold.
 js/search-logic.js const FOLD = \{
+# Sentence normalization strips „ and other quote marks from answers; stage 3 moves normalizeSentence into LM.lang.
+js/exercise-logic.js \.replace\(/\[,\.!\?;:

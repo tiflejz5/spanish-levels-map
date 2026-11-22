@@ -426,9 +426,9 @@ const OLD_PART4 = (function () {
     const lim = Array.isArray(limit) ? limit : [3, 6];
     const t = tokens(answer);
     const parts = item.parts.map(function () { return false; });
-    if (!t.length) return { score: 0, parts: parts, msg: "Brak odpowiedzi." };
-    if (t.length < lim[0] || t.length > lim[1]) return { score: 0, parts: parts, msg: "Wpisz " + lim[0] + "–" + lim[1] + " słów (masz " + t.length + " " + plural(t.length, "słowo", "słowa", "słów") + ", skróty liczą się jako dwa)." };
-    if (!findSeq(t, tokens(item.keyword), 0).length) return { score: 0, parts: parts, msg: "Użyj słowa kluczowego bez zmian (" + item.keyword + ")." };
+    if (!t.length) return { score: 0, parts: parts, msg: "No answer." };
+    if (t.length < lim[0] || t.length > lim[1]) return { score: 0, parts: parts, msg: "Use " + lim[0] + "–" + lim[1] + " words (you have " + t.length + " " + (t.length === 1 ? "word" : "words") + "; contractions count as two)." };
+    if (!findSeq(t, tokens(item.keyword), 0).length) return { score: 0, parts: parts, msg: "Use the key word without changing it (" + item.keyword + ")." };
     let cursor = 0;
     item.parts.forEach(function (variants, k) {
       let bestEnd = -1;
@@ -532,9 +532,9 @@ legacyTest("transformation: answers, skróty, limit słów, słowo kluczowe; z p
   assert.ok(X.evaluate(it, { text: "that I saw Tom was" }).correct);
   assert.ok(X.evaluate(it, { text: "i SAW tom was" }).correct);
   const long = X.evaluate(it, { text: "I saw Tom for the first time was" });
-  assert.ok(!long.correct && /2–5 słów \(masz 8 słów/.test(long.msg));
+  assert.ok(!long.correct && /2–5 words \(you have 8 words/.test(long.msg));
   const kw = X.evaluate(it, { text: "I seen Tom was" });
-  assert.ok(!kw.correct && /słowa kluczowego bez zmian \(SAW\)/.test(kw.msg));
+  assert.ok(!kw.correct && /key word without changing it \(SAW\)/.test(kw.msg));
   assert.strictEqual(X.evaluate(it, { text: "I saw him was" }).points, 0);
   const p = pilot("v6-pilot-06");
   const one = X.evaluate(p, { text: "is said to being" });
@@ -544,7 +544,7 @@ legacyTest("transformation: answers, skróty, limit słów, słowo kluczowe; z p
   // skrót = dwa słowa: „didn't” mieści się w limicie jak „did not”
   const c = { type: "transformation", keyword: "NOT", answers: ["did not go"], wordLimit: [2, 3] };
   assert.ok(X.evaluate({ type: "transformation", keyword: "DID", answers: ["did not go"], wordLimit: [2, 3] }, { text: "didn't go" }).correct);
-  assert.ok(/masz 4 słowa/.test(X.evaluate(c, { text: "didn't not go" }).msg));
+  assert.ok(/you have 4 words/.test(X.evaluate(c, { text: "didn't not go" }).msg));
 });
 test("normalizeSentence: skróty rozwinięte po obu stronach, przecinki i apostrofy", function () {
   const N = X.normalizeSentence;
@@ -1981,14 +1981,14 @@ test("topicNeighbors: poprzedni i następny w kolejności poziomu, brzegi i niez
 console.log("\nTreści v8: etykieta zestawu na liście poziomu (S4)");
 test("bestSetLabel: najlepszy zestaw tematu, próg 80% (kropka), brak wyników = null", function () {
   const f = global.LM.exLogic.bestSetLabel;
-  assert.deepStrictEqual(f([{ score: 8, total: 10 }]), { score: 8, total: 10, high: true, text: "zestaw 8/10" });
+  assert.deepStrictEqual(f([{ score: 8, total: 10 }]), { score: 8, total: 10, high: true, text: "set 8/10" });
   assert.strictEqual(f([{ score: 7, total: 10 }]).high, false);
-  assert.strictEqual(f([{ score: 7, total: 10 }, { score: 5, total: 5 }]).text, "zestaw 5/5", "wyższy procent wygrywa");
-  assert.strictEqual(f([{ score: 5, total: 5 }, { score: 10, total: 10 }]).text, "zestaw 10/10", "remis: więcej punktów");
+  assert.strictEqual(f([{ score: 7, total: 10 }, { score: 5, total: 5 }]).text, "set 5/5", "wyższy procent wygrywa");
+  assert.strictEqual(f([{ score: 5, total: 5 }, { score: 10, total: 10 }]).text, "set 10/10", "remis: więcej punktów");
   assert.strictEqual(f([null, undefined, { score: 3, total: 0 }]), null);
   assert.strictEqual(f([]), null);
   assert.strictEqual(f(undefined), null);
-  assert.strictEqual(f([{ score: 0, total: 6 }]).text, "zestaw 0/6");
+  assert.strictEqual(f([{ score: 0, total: 6 }]).text, "set 0/6");
 });
 
 console.log("\nTreści v8: odsłuch zdania klawiszem S (S5)");

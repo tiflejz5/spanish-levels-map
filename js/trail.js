@@ -201,13 +201,13 @@ window.LM = window.LM || {};
     const needed = SL().PASS_QUIZ;
     const wrong = run.items.filter(api.isWrong);
     const missing = isQuiz ? (n.stop.items || []).filter(function (id) { return LM.state.progress[id] !== true; }) : [];
-    const knownBox = isQuiz && fin.passed && missing.length ? el("div", { class: "ex-umiem", role: "status" }, [
-      el("span", { class: "ex-umiem-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
-      el("div", { class: "ex-umiem-body" }, [
+    const knownBox = isQuiz && fin.passed && missing.length ? el("div", { class: "ex-known", role: "status" }, [
+      el("span", { class: "ex-known-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
+      el("div", { class: "ex-known-body" }, [
         el("p", null, [el("strong", { text: "Zaznaczyć „Umiem”? " }), "Quiz zaliczony, ale „Umiem” zaznaczysz tylko Ty. Zaznaczyć dla: " + node.stop.title + "?"]),
         el("p", { class: "ex-journal-actions" }, el("button", { type: "button", class: "btn btn-primary btn-small", onclick: function (e) {
           missing.forEach(function (id) { LM.app.setProgress(id, true); });
-          e.currentTarget.closest(".ex-umiem").replaceWith(el("div", { class: "ex-umiem is-done", role: "status" }, [LM.icon("check", { size: 18 }), el("p", { text: "Zaznaczono „Umiem”. Brawo!" })]));
+          e.currentTarget.closest(".ex-known").replaceWith(el("div", { class: "ex-known is-done", role: "status" }, [LM.icon("check", { size: 18 }), el("p", { text: "Zaznaczono „Umiem”. Brawo!" })]));
         } }, LM.ui.withIcon("check", "Zaznacz „Umiem”")))
       ])
     ]) : null;
@@ -340,9 +340,9 @@ window.LM = window.LM || {};
     // propozycja „Umiem” po quizie (nigdy automatycznie)
     const missing = (n.stop.items || []).filter(function (itemId) { return LM.state.progress[itemId] !== true; });
     if (n.via === "quiz" && missing.length) {
-      parts.push(el("div", { class: "ex-umiem", role: "status" }, [
-        el("span", { class: "ex-umiem-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
-        el("div", { class: "ex-umiem-body" }, [
+      parts.push(el("div", { class: "ex-known", role: "status" }, [
+        el("span", { class: "ex-known-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
+        el("div", { class: "ex-known-body" }, [
           el("p", null, [el("strong", { text: "Zaznaczyć „Umiem”? " }), "Quiz zaliczony. Zaznaczyć dla: " + n.stop.title + "?"]),
           el("p", { class: "ex-journal-actions" }, el("button", { type: "button", class: "btn btn-primary btn-small", onclick: function () {
             missing.forEach(function (itemId) { LM.app.setProgress(itemId, true); });
