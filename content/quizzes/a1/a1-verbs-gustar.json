@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "id": "a1-verbs-gustar",
+  "topic": "a1-verbs-gustar",
+  "level": "A1",
+  "title": "Stop: gustar",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-verbs-gustar-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ gusta el cine. (I like movies.)",
+      "options": ["Yo", "Me", "Mi", "Mí"],
+      "correct": 1,
+      "explanation": "The person who likes something is shown by the pronoun me, te, le, nos, os, les: Me gusta el cine.",
+      "optionNotes": ["Yo is a subject pronoun, but with gustar the subject is the thing you like.", null, "Mi means “my”.", "Mí is used after a: a mí me gusta."]
+    },
+    {
+      "id": "a1-verbs-gustar-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Me ___ los libros de historia.",
+      "options": ["gusta", "gusto", "gustan", "gustamos"],
+      "correct": 2,
+      "explanation": "Los libros is plural, and the verb agrees with the thing you like: gustan.",
+      "optionNotes": ["Gusta is for one thing or an action.", "Gusto would mean “I am pleasing”.", null, "The verb does not agree with the person who likes."]
+    },
+    {
+      "id": "a1-verbs-gustar-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "A Pedro ___ gusta nadar.",
+      "options": ["se", "lo", "él", "le"],
+      "correct": 3,
+      "explanation": "For he, she and usted the pronoun is le: A Pedro le gusta nadar.",
+      "optionNotes": ["Se is a reflexive pronoun.", "Lo is a direct object pronoun.", "Él is a subject pronoun.", null]
+    },
+    {
+      "id": "a1-verbs-gustar-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "—No me gusta el invierno.\n—___ (Me neither.)",
+      "options": ["A mí también.", "Me también.", "A mí tampoco.", "Yo tampoco gusto."],
+      "correct": 2,
+      "explanation": "To agree with a negative sentence, use tampoco. With gustar the answer starts with a mí.",
+      "optionNotes": ["También agrees with a positive sentence.", "Me cannot stand alone; say a mí.", null, "The person is not the subject of gustar."]
+    }
+  ]
+}

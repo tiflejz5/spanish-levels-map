@@ -1,0 +1,204 @@
+{
+ "version": 1,
+ "lang": "es",
+ "language": "Spanish",
+ "categories": {"verbs": "Verbs: tenses and moods", "grammar": "Grammar", "functions": "Communication", "vocabulary": "Vocabulary"},
+ "levels": [
+  {"id": "A1", "land": "Meadow", "goal": "Introduce yourself and handle the simplest everyday situations when people speak slowly and clearly.", "units": [
+   {"id": "a1-u1", "title": "Sounds and first words", "topics": [
+    {"id": "a1-grammar-alphabet-pronunciation", "category": "grammar", "title": "Alphabet, pronunciation and stress", "example": "ñ, ll, rr, j, silent h; written accents; ¿…? ¡…!"},
+    {"id": "a1-functions-greetings-introductions", "category": "functions", "title": "Greet people, say goodbye and introduce yourself", "example": "Hola, me llamo Ana. Mucho gusto. ¡Hasta luego!"},
+    {"id": "a1-grammar-subject-pronouns", "category": "grammar", "title": "Subject pronouns; tú vs usted", "example": "yo, tú, él, ella, usted, nosotros, vosotros, ellos, ustedes"},
+    {"id": "a1-verbs-ser", "category": "verbs", "title": "ser: identity, origin and profession", "example": "Soy Marta. Soy de Canadá. Es profesor."},
+    {"id": "a1-vocabulary-numbers-days-months", "category": "vocabulary", "title": "Numbers 0–100, days of the week, months", "example": "veintidós, el lunes, en julio"}
+   ]},
+   {"id": "a1-u2", "title": "People and things", "topics": [
+    {"id": "a1-grammar-gender-number", "category": "grammar", "title": "Gender and number of nouns", "example": "el libro, la mesa, los libros, las ciudades"},
+    {"id": "a1-grammar-articles", "category": "grammar", "title": "Definite and indefinite articles; al and del", "example": "el, la, los, las, un, una; voy al cine"},
+    {"id": "a1-grammar-adjective-agreement", "category": "grammar", "title": "Adjective agreement and position", "example": "una casa blanca, unos chicos simpáticos"},
+    {"id": "a1-verbs-tener", "category": "verbs", "title": "tener: possession, age and common expressions", "example": "Tengo dos hermanos. Tengo 30 años. Tengo hambre."},
+    {"id": "a1-functions-personal-details", "category": "functions", "title": "Give and ask for personal details", "example": "¿De dónde eres? ¿A qué te dedicas? ¿Cuántos años tienes?"},
+    {"id": "a1-vocabulary-family-people", "category": "vocabulary", "title": "Family, describing people, nationalities, jobs", "example": "mi hermana es alta; es médica; soy estadounidense"}
+   ]},
+   {"id": "a1-u3", "title": "Everyday life", "topics": [
+    {"id": "a1-verbs-present-regular", "category": "verbs", "title": "Present tense of regular -ar, -er, -ir verbs", "example": "hablo, comes, vive, trabajamos"},
+    {"id": "a1-grammar-questions-negation", "category": "grammar", "title": "Question words and negation", "example": "¿qué? ¿quién? ¿dónde? ¿cuándo? ¿cómo? ¿cuánto? ¿por qué?; no hablo"},
+    {"id": "a1-verbs-estar-hay", "category": "verbs", "title": "estar for location and states; hay vs está", "example": "Estoy en casa. Estoy cansado. Hay un banco; el banco está allí."},
+    {"id": "a1-verbs-ser-vs-estar-basics", "category": "verbs", "title": "ser vs estar: the basics", "example": "Es simpático. Está enfermo. Es de Madrid; está en Madrid."},
+    {"id": "a1-vocabulary-home-city", "category": "vocabulary", "title": "Home, furniture and places in town", "example": "la cocina, el dormitorio, la farmacia, la estación"}
+   ]},
+   {"id": "a1-u4", "title": "Likes and routines", "topics": [
+    {"id": "a1-verbs-gustar", "category": "verbs", "title": "gustar and similar verbs", "example": "Me gusta el café. Me gustan los gatos. ¿Te gusta bailar?"},
+    {"id": "a1-verbs-present-irregular", "category": "verbs", "title": "Common irregular and stem-changing verbs in the present", "example": "voy, hago, quiero, puedo, salgo, juego"},
+    {"id": "a1-verbs-reflexive-routine", "category": "verbs", "title": "Reflexive verbs for the daily routine", "example": "Me levanto a las siete. Se ducha por la noche."},
+    {"id": "a1-functions-time-dates", "category": "functions", "title": "Tell the time, give dates and talk about schedules", "example": "Son las tres y media. Es el 5 de mayo. ¿A qué hora abre?"},
+    {"id": "a1-vocabulary-food-shopping", "category": "vocabulary", "title": "Food, drink, shops and prices", "example": "el pan, la fruta, un café con leche; ¿cuánto cuesta?"}
+   ]},
+   {"id": "a1-u5", "title": "Out and about", "topics": [
+    {"id": "a1-grammar-possessives-demonstratives", "category": "grammar", "title": "Possessives and demonstratives", "example": "mi, tu, su, nuestro; este, ese, aquel"},
+    {"id": "a1-grammar-prepositions-place-time", "category": "grammar", "title": "Basic prepositions of place and time", "example": "en, a, de, con, entre; a las tres, por la mañana, en julio"},
+    {"id": "a1-verbs-ir-a-infinitive", "category": "verbs", "title": "ir a + infinitive: plans", "example": "Voy a visitar a mi madre. ¿Qué vas a hacer mañana?"},
+    {"id": "a1-functions-ordering-shopping", "category": "functions", "title": "Order in a café and buy things", "example": "Quería un bocadillo, por favor. ¿Me cobra? La cuenta, por favor."},
+    {"id": "a1-functions-asking-to-repeat", "category": "functions", "title": "Survival phrases: ask people to repeat, slow down, explain", "example": "¿Puede repetir, por favor? Más despacio. ¿Cómo se dice…?"}
+   ]}
+  ]},
+  {"id": "A2", "land": "Forest", "goal": "Get by in everyday situations: travel, shopping, plans, and simple stories about the past.", "units": [
+   {"id": "a2-u1", "title": "Talking about the past", "topics": [
+    {"id": "a2-verbs-preterite-regular", "category": "verbs", "title": "Pretérito indefinido: regular verbs", "example": "hablé, comiste, vivió; ayer, el año pasado"},
+    {"id": "a2-verbs-preterite-irregular", "category": "verbs", "title": "Pretérito indefinido: common irregular verbs", "example": "fui, hice, tuve, estuve, dije, pude, vine"},
+    {"id": "a2-functions-weekend-vacation", "category": "functions", "title": "Say what you did last weekend or on vacation", "example": "El sábado fui a la playa y comí paella."},
+    {"id": "a2-vocabulary-travel-transport", "category": "vocabulary", "title": "Travel, transportation and accommodation", "example": "el billete, el andén, la maleta, una habitación doble"}
+   ]},
+   {"id": "a2-u2", "title": "How things used to be", "topics": [
+    {"id": "a2-verbs-imperfect", "category": "verbs", "title": "Pretérito imperfecto: descriptions and habits in the past", "example": "Cuando era niño, jugaba en la calle."},
+    {"id": "a2-verbs-preterite-vs-imperfect-basics", "category": "verbs", "title": "Indefinido vs imperfecto: first contrast", "example": "Llovía cuando salí de casa."},
+    {"id": "a2-verbs-present-perfect", "category": "verbs", "title": "Pretérito perfecto; ya, todavía no, alguna vez", "example": "¿Has estado alguna vez en México? Todavía no he comido."},
+    {"id": "a2-functions-describing", "category": "functions", "title": "Describe people, places and things", "example": "Es un piso pequeño pero muy luminoso."},
+    {"id": "a2-vocabulary-free-time-weather", "category": "vocabulary", "title": "Free time, sports and weather", "example": "hace calor, llueve; jugar al tenis, salir con amigos"}
+   ]},
+   {"id": "a2-u3", "title": "Objects and comparisons", "topics": [
+    {"id": "a2-grammar-direct-object-pronouns", "category": "grammar", "title": "Direct object pronouns and personal a", "example": "Lo veo. La compré ayer. Conozco a tu hermano."},
+    {"id": "a2-grammar-indirect-object-pronouns", "category": "grammar", "title": "Indirect object pronouns", "example": "Le doy el libro. ¿Me dices la hora? Les escribo."},
+    {"id": "a2-grammar-comparatives-superlatives", "category": "grammar", "title": "Comparatives and superlatives", "example": "más alto que, tan caro como, el mejor, la más grande"},
+    {"id": "a2-grammar-indefinites-quantifiers", "category": "grammar", "title": "Indefinites and quantifiers", "example": "algo, nada, alguien, nadie, algún, ningún; mucho, poco, bastante, demasiado"},
+    {"id": "a2-vocabulary-shopping-clothes", "category": "vocabulary", "title": "Shopping, clothes and colors", "example": "¿Tiene una talla más grande? Me queda bien."}
+   ]},
+   {"id": "a2-u4", "title": "Now and next", "topics": [
+    {"id": "a2-verbs-estar-gerund", "category": "verbs", "title": "estar + gerundio: actions in progress", "example": "Estoy leyendo. ¿Qué estás haciendo?"},
+    {"id": "a2-verbs-obligation-ability", "category": "verbs", "title": "Obligation, necessity and ability", "example": "tengo que, hay que, debo, puedo, sé nadar"},
+    {"id": "a2-verbs-future-simple", "category": "verbs", "title": "Future simple: predictions and promises", "example": "Mañana lloverá. Te llamaré luego."},
+    {"id": "a2-verbs-imperative-affirmative", "category": "verbs", "title": "Affirmative imperative: instructions and directions", "example": "Gira a la derecha. Toma. Siga recto."},
+    {"id": "a2-functions-directions", "category": "functions", "title": "Ask for and give directions", "example": "¿Para ir a la estación? Sigue todo recto y gira a la izquierda."}
+   ]},
+   {"id": "a2-u5", "title": "Getting things done", "topics": [
+    {"id": "a2-grammar-por-para-basics", "category": "grammar", "title": "por and para: the basics", "example": "Es para ti. Gracias por todo. Paso por el parque."},
+    {"id": "a2-grammar-saber-conocer", "category": "grammar", "title": "Tricky verb pairs: saber vs conocer, pedir vs preguntar", "example": "Sé cocinar. Conozco Sevilla. Pido un café; pregunto la hora."},
+    {"id": "a2-grammar-connectors-basic", "category": "grammar", "title": "Basic connectors; también and tampoco", "example": "y, pero, porque, por eso, cuando, entonces; yo también, yo tampoco"},
+    {"id": "a2-functions-invitations-plans", "category": "functions", "title": "Suggest, invite, accept and decline", "example": "¿Quedamos a las ocho? ¿Te apetece ir al cine? Lo siento, no puedo."},
+    {"id": "a2-functions-tickets-bookings-problems", "category": "functions", "title": "Buy tickets, make bookings and report a simple problem", "example": "Quería reservar una mesa para dos. El aire no funciona."},
+    {"id": "a2-functions-health", "category": "functions", "title": "Talk about health at the doctor's or pharmacy", "example": "Me duele la cabeza. Tengo fiebre. ¿Tiene algo para la tos?"},
+    {"id": "a2-vocabulary-health-body", "category": "vocabulary", "title": "Body, health and feelings", "example": "la espalda, el estómago; estoy resfriado, nervioso, contento"}
+   ]}
+  ]},
+  {"id": "B1", "land": "Hills", "goal": "Speak in connected sentences about experiences, plans and opinions, and cope with most situations while travelling.", "units": [
+   {"id": "b1-u1", "title": "The subjunctive arrives", "topics": [
+    {"id": "b1-verbs-present-subjunctive-forms", "category": "verbs", "title": "Present subjunctive: forms", "example": "hable, coma, viva; tenga, sea, vaya, haga"},
+    {"id": "b1-verbs-subjunctive-wishes-requests", "category": "verbs", "title": "Subjunctive for wishes and requests", "example": "Quiero que vengas. Espero que estés bien. Ojalá llueva."},
+    {"id": "b1-verbs-imperative-full", "category": "verbs", "title": "Imperative: negative and formal forms, with pronouns", "example": "No lo hagas. Dímelo. Siéntese, por favor."},
+    {"id": "b1-functions-advice", "category": "functions", "title": "Give and ask for advice", "example": "Te recomiendo que descanses. Deberías ir al médico. Yo que tú…"}
+   ]},
+   {"id": "b1-u2", "title": "Telling stories", "topics": [
+    {"id": "b1-verbs-preterite-vs-imperfect", "category": "verbs", "title": "Indefinido vs imperfecto in narration", "example": "Estaba durmiendo cuando sonó el teléfono."},
+    {"id": "b1-verbs-pluperfect", "category": "verbs", "title": "Pretérito pluscuamperfecto", "example": "Cuando llegué, la película ya había empezado."},
+    {"id": "b1-grammar-time-expressions", "category": "grammar", "title": "Time expressions and duration", "example": "hace dos años, desde hace, llevo tres meses estudiando, mientras, en cuanto"},
+    {"id": "b1-functions-storytelling", "category": "functions", "title": "Tell an anecdote and react to one", "example": "Resulta que… Total, que… ¿En serio? ¡No me digas!"},
+    {"id": "b1-vocabulary-life-events-relationships", "category": "vocabulary", "title": "Life events, relationships and emotions", "example": "casarse, mudarse, llevarse bien con, echar de menos"}
+   ]},
+   {"id": "b1-u3", "title": "Opinions and feelings", "topics": [
+    {"id": "b1-verbs-subjunctive-emotion-opinion", "category": "verbs", "title": "Subjunctive after emotion, judgment and negated opinion", "example": "Me alegra que vengas. Es importante que… No creo que sea verdad."},
+    {"id": "b1-functions-opinion", "category": "functions", "title": "Express and justify an opinion", "example": "En mi opinión… Creo que… porque… Me parece que…"},
+    {"id": "b1-functions-agree-disagree", "category": "functions", "title": "Agree and disagree politely", "example": "Tienes razón. Puede ser, pero… No estoy de acuerdo."},
+    {"id": "b1-grammar-ser-estar-adjectives", "category": "grammar", "title": "ser and estar with adjectives that change meaning", "example": "ser listo / estar listo; ser aburrido / estar aburrido"},
+    {"id": "b1-vocabulary-work-education", "category": "vocabulary", "title": "Work and education", "example": "solicitar un puesto, el sueldo, aprobar, suspender, la carrera"}
+   ]},
+   {"id": "b1-u4", "title": "Possibilities", "topics": [
+    {"id": "b1-verbs-future-conditional", "category": "verbs", "title": "Future and conditional: forms, irregulars and probability", "example": "Tendré, podría; Serán las diez. ¿Podrías ayudarme?"},
+    {"id": "b1-verbs-subjunctive-time-purpose", "category": "verbs", "title": "Subjunctive after cuando, para que, antes de que, hasta que", "example": "Cuando llegues, llámame. Te lo digo para que lo sepas."},
+    {"id": "b1-grammar-si-clauses-real", "category": "grammar", "title": "Real conditions with si", "example": "Si tengo tiempo, iré. Si llueve, nos quedamos en casa."},
+    {"id": "b1-functions-plans-hopes", "category": "functions", "title": "Describe plans, hopes and ambitions", "example": "Me gustaría… Tengo pensado… Espero poder…"},
+    {"id": "b1-vocabulary-media-technology-environment", "category": "vocabulary", "title": "Media, technology and the environment", "example": "descargar, la red, el cambio climático, reciclar"}
+   ]},
+   {"id": "b1-u5", "title": "Precision", "topics": [
+    {"id": "b1-grammar-relative-clauses", "category": "grammar", "title": "Relative clauses", "example": "que, quien, donde, lo que, el que"},
+    {"id": "b1-grammar-por-para", "category": "grammar", "title": "por vs para: the full picture", "example": "Lo hice por ti. Salgo para Madrid. Para mí… Por cierto…"},
+    {"id": "b1-grammar-pronoun-combinations", "category": "grammar", "title": "Combining and placing object pronouns", "example": "Se lo doy. Dámelo. Voy a decírtelo / te lo voy a decir."},
+    {"id": "b1-grammar-verbal-periphrases", "category": "grammar", "title": "Common verbal periphrases", "example": "volver a, dejar de, acabar de, seguir + gerundio, empezar a, soler"},
+    {"id": "b1-functions-complaints-problems", "category": "functions", "title": "Make a complaint and clear up a misunderstanding", "example": "Quería hacer una reclamación. Creo que ha habido un malentendido."},
+    {"id": "b1-functions-rescue-strategies", "category": "functions", "title": "Rescue strategies: work around a missing word, keep a conversation going", "example": "Es una cosa que sirve para… ¿Qué significa…? ¿Y tú qué tal?"}
+   ]}
+  ]},
+  {"id": "B2", "land": "Lake", "goal": "Talk fluently and in detail with native speakers, argue a point and understand the main ideas of complex texts.", "units": [
+   {"id": "b2-u1", "title": "The past subjunctive", "topics": [
+    {"id": "b2-verbs-imperfect-subjunctive", "category": "verbs", "title": "Imperfect subjunctive: forms and uses", "example": "Quería que vinieras. Me pidió que le ayudara / ayudase."},
+    {"id": "b2-grammar-si-clauses-unreal", "category": "grammar", "title": "Unreal conditions; como si", "example": "Si tuviera dinero, viajaría más. Habla como si lo supiera todo."},
+    {"id": "b2-verbs-perfect-subjunctive", "category": "verbs", "title": "Perfect subjunctive", "example": "Espero que hayas llegado bien. No creo que lo haya visto."},
+    {"id": "b2-functions-hypothesising", "category": "functions", "title": "Speculate about the present and the future", "example": "A lo mejor viene. Quizá esté enfermo. Estará en casa."}
+   ]},
+   {"id": "b2-u2", "title": "Regrets and what-ifs", "topics": [
+    {"id": "b2-verbs-pluperfect-subjunctive-conditional-perfect", "category": "verbs", "title": "Pluperfect subjunctive and conditional perfect", "example": "hubiera sabido, habría ido"},
+    {"id": "b2-grammar-si-clauses-past-mixed", "category": "grammar", "title": "Past and mixed conditions", "example": "Si hubiera estudiado, habría aprobado / ahora sería médico."},
+    {"id": "b2-verbs-future-perfect-probability", "category": "verbs", "title": "Future perfect and probability about the past", "example": "Para las cinco habré terminado. Habrá perdido el tren."},
+    {"id": "b2-functions-regrets-reproaches", "category": "functions", "title": "Express regrets and reproaches", "example": "Ojalá lo hubiera sabido. Deberías haberme avisado."}
+   ]},
+   {"id": "b2-u3", "title": "Reporting and connecting", "topics": [
+    {"id": "b2-grammar-reported-speech", "category": "grammar", "title": "Reported speech: statements, questions and commands", "example": "Dijo que vendría. Me preguntó si quería ir. Me pidió que esperara."},
+    {"id": "b2-grammar-subjunctive-relative-clauses", "category": "grammar", "title": "Indicative vs subjunctive in relative clauses", "example": "Busco a alguien que sepa alemán. Tengo un amigo que sabe alemán."},
+    {"id": "b2-grammar-concession-cause-consequence", "category": "grammar", "title": "Concession, cause and consequence", "example": "aunque llueve / aunque llueva, a pesar de, puesto que, de modo que"},
+    {"id": "b2-grammar-passive-impersonal-se", "category": "grammar", "title": "Passive and impersonal constructions", "example": "fue construido, se venden pisos, se dice que, uno nunca sabe"},
+    {"id": "b2-vocabulary-collocations-idioms", "category": "vocabulary", "title": "Collocations and everyday idioms", "example": "tomar una decisión, echar una mano, meter la pata, estar en las nubes"}
+   ]},
+   {"id": "b2-u4", "title": "Shades of meaning", "topics": [
+    {"id": "b2-grammar-verbs-of-change", "category": "grammar", "title": "Verbs of change: ways to say 'become'", "example": "ponerse nervioso, volverse loco, hacerse rico, quedarse sin, convertirse en"},
+    {"id": "b2-grammar-se-uses", "category": "grammar", "title": "The many uses of se", "example": "se lava, se escriben, se me cayó, se comió toda la tarta"},
+    {"id": "b2-grammar-relative-pronouns-advanced", "category": "grammar", "title": "Advanced relatives", "example": "el cual, cuyo, con quien, en la que, lo cual"},
+    {"id": "b2-vocabulary-word-formation-register", "category": "vocabulary", "title": "Word formation and register", "example": "des-, re-, -ción, -dad; -ito, -azo; formal vs colloquial"},
+    {"id": "b2-vocabulary-false-friends", "category": "vocabulary", "title": "False friends for English speakers", "example": "actualmente, embarazada, realizar, asistir, sensible, éxito"}
+   ]},
+   {"id": "b2-u5", "title": "Holding your own", "topics": [
+    {"id": "b2-functions-arguing", "category": "functions", "title": "Argue a case: for, against and rebuttal", "example": "Por un lado… por otro… Si bien es cierto que… Eso no quita que…"},
+    {"id": "b2-functions-negotiating", "category": "functions", "title": "Negotiate, persuade and reach a compromise", "example": "¿Y si…? Estaría dispuesto a… Podríamos quedar en…"},
+    {"id": "b2-functions-interrupting-softening", "category": "functions", "title": "Interrupt politely and soften what you say", "example": "Perdona que te interrumpa… Como iba diciendo… No sé si estoy del todo de acuerdo."},
+    {"id": "b2-functions-work-interviews", "category": "functions", "title": "Take part in meetings and job interviews", "example": "Me gustaría destacar… En mi anterior puesto… ¿Podría concretar…?"},
+    {"id": "b2-functions-accents-varieties", "category": "functions", "title": "Understand different accents and varieties of Spanish", "example": "vosotros / ustedes, voseo, seseo, aspirated s; coche / carro"}
+   ]}
+  ]},
+  {"id": "C1", "land": "Mountains", "goal": "Express yourself flexibly and precisely in social, academic and professional settings.", "units": [
+   {"id": "c1-u1", "title": "Mood with nuance", "topics": [
+    {"id": "c1-verbs-subjunctive-nuances", "category": "verbs", "title": "Indicative or subjunctive: when the choice changes the meaning", "example": "aunque, el hecho de que, no porque, siempre que, de ahí que"},
+    {"id": "c1-verbs-conditional-connectors", "category": "verbs", "title": "Conditions without si", "example": "con tal de que, a no ser que, siempre y cuando, en caso de que; de haberlo sabido"},
+    {"id": "c1-verbs-tenses-stylistic", "category": "verbs", "title": "Stylistic uses of tenses", "example": "historical present; quería pedirle…; será muy listo, pero…"},
+    {"id": "c1-verbs-periphrases-advanced", "category": "verbs", "title": "Advanced verbal periphrases", "example": "llegar a, venir a, andar + gerundio, dar por, tener + participio"}
+   ]},
+   {"id": "c1-u2", "title": "Shaping the sentence", "topics": [
+    {"id": "c1-grammar-emphasis-word-order", "category": "grammar", "title": "Emphasis and word order", "example": "El libro lo compré ayer. Lo que necesito es… Fue Juan quien…"},
+    {"id": "c1-grammar-nominalization-lo", "category": "grammar", "title": "Nominal style and the neuter lo", "example": "lo importante, lo de ayer, el hecho de + infinitivo, la puesta en marcha de"},
+    {"id": "c1-grammar-nonfinite-clauses", "category": "grammar", "title": "Infinitive, gerund and participle clauses", "example": "al llegar, una vez terminado el informe, habiendo dicho esto"},
+    {"id": "c1-grammar-impersonal-formal", "category": "grammar", "title": "Formal impersonal structures", "example": "se ruega, cabe destacar, es de esperar que, conviene señalar"},
+    {"id": "c1-grammar-prepositional-verbs", "category": "grammar", "title": "Verbs with fixed prepositions; dequeísmo and queísmo", "example": "confiar en, depender de, acordarse de que, pensar que"}
+   ]},
+   {"id": "c1-u3", "title": "Speaking with range", "topics": [
+    {"id": "c1-functions-register", "category": "functions", "title": "Adapt register to the situation and the listener", "example": "from a chat with friends to a formal presentation"},
+    {"id": "c1-functions-hedging", "category": "functions", "title": "Hedge and qualify claims", "example": "Parecería que… hasta cierto punto, en cierto modo, podría decirse que"},
+    {"id": "c1-functions-discourse-markers", "category": "functions", "title": "Use discourse markers", "example": "ahora bien, dicho esto, es más, en definitiva, o sea, pues, vaya"},
+    {"id": "c1-functions-presentations", "category": "functions", "title": "Give a presentation and handle difficult questions", "example": "Como pueden ver… Si me permite, volveré a eso más adelante."},
+    {"id": "c1-functions-implicature-irony", "category": "functions", "title": "Understand implication, humor and irony", "example": "¡Pues qué bien! Menudo día. Ya, claro."},
+    {"id": "c1-functions-paraphrasing-summarizing", "category": "functions", "title": "Paraphrase and summarize other people's arguments", "example": "En otras palabras… Lo que viene a decir es que…"}
+   ]},
+   {"id": "c1-u4", "title": "Words", "topics": [
+    {"id": "c1-vocabulary-precise-synonyms-collocations", "category": "vocabulary", "title": "Precise synonyms and advanced collocations", "example": "mirar / ver / observar / contemplar; plantear una duda, entablar una conversación"},
+    {"id": "c1-vocabulary-idioms-colloquial", "category": "vocabulary", "title": "Idioms and colloquial Spanish", "example": "estar hecho polvo, ir al grano, no tener pelos en la lengua; mola, vale, chévere"},
+    {"id": "c1-vocabulary-academic-professional", "category": "vocabulary", "title": "Academic and professional vocabulary", "example": "llevar a cabo, poner de manifiesto, en lo que respecta a"}
+   ]}
+  ]},
+  {"id": "C2", "land": "Summit", "goal": "Understand virtually everything and express fine shades of meaning effortlessly, even in complex situations.", "units": [
+   {"id": "c2-u1", "title": "Structures", "topics": [
+    {"id": "c2-grammar-control-under-pressure", "category": "grammar", "title": "Full control of all structures, even under pressure", "example": "no systematic errors in spontaneous speech"},
+    {"id": "c2-grammar-archaic-literary-forms", "category": "grammar", "title": "Archaic, legal and literary forms", "example": "future subjunctive (fuere, hubiere), -se forms, sea como fuere"},
+    {"id": "c2-grammar-bending-rules", "category": "grammar", "title": "Regional norms and deliberate rule-bending", "example": "leísmo, laísmo, voseo, colloquial syntax"},
+    {"id": "c2-grammar-extreme-registers", "category": "grammar", "title": "Extreme registers: from legal and academic Spanish to slang", "example": "en virtud de lo dispuesto… vs tío, es que flipas"}
+   ]},
+   {"id": "c2-u2", "title": "Mastery in conversation", "topics": [
+    {"id": "c2-functions-fluency-intonation", "category": "functions", "title": "Speak fluently with natural rhythm and intonation", "example": "no noticeable searching for words"},
+    {"id": "c2-functions-reformulating", "category": "functions", "title": "Reformulate on the fly without losing the thread", "example": "Dicho de otro modo… A lo que voy es…"},
+    {"id": "c2-functions-fast-speech-wordplay", "category": "functions", "title": "Follow fast speech, strong regional accents and wordplay", "example": "puns, double meanings, cultural references"},
+    {"id": "c2-functions-difficult-conversations", "category": "functions", "title": "Handle negotiations, mediation and difficult conversations", "example": "dismissal, conflict, bad news, with the right tone"},
+    {"id": "c2-functions-humor-irony", "category": "functions", "title": "Use humor, irony and understatement", "example": "No está mal del todo. Tampoco es para tanto."},
+    {"id": "c2-functions-mediation-translation", "category": "functions", "title": "Mediate and summarize between English and Spanish", "example": "convey tone and intent, not just words"}
+   ]},
+   {"id": "c2-u3", "title": "Words and culture", "topics": [
+    {"id": "c2-vocabulary-proverbs-culture-connotation", "category": "vocabulary", "title": "Proverbs, cultural references and connotation", "example": "A quien madruga, Dios le ayuda. delgado / flaco / esquelético"},
+    {"id": "c2-vocabulary-pan-hispanic-variation", "category": "vocabulary", "title": "Vocabulary across the Spanish-speaking world", "example": "ordenador / computadora, zumo / jugo, guay / chévere / padre"}
+   ]}
+  ]}
+ ]
+}
