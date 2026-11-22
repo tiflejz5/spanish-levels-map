@@ -1270,7 +1270,7 @@ console.log("\nSzlak: logika (spec v7 13)");
     umiem.e_a1_g05 = true;
     assert.strictEqual(SL.statusOf(stopOf("a1-02"), st, env).status, "open", "tylko część punktów");
     umiem.e_a1_g06 = true;
-    assert.deepStrictEqual(SL.statusOf(stopOf("a1-02"), st, env), { status: "done", via: "umiem" });
+    assert.deepStrictEqual(SL.statusOf(stopOf("a1-02"), st, env), { status: "done", via: "known" });
     umiem.e_a1_g06 = false;
     assert.strictEqual(SL.statusOf(stopOf("a1-02"), st, env).status, "open", "odznaczenie cofa zaliczenie");
   });

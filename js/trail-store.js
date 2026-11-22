@@ -1,21 +1,21 @@
 /*
- * trail-store.js — stan Szlaku w localStorage (spec v7 13, sekcja 3).
+ * trail-store.js — trail state in localStorage (spec v7 13, section 3).
  *
- *   Klucz per profil: slm.trail.<profileId>
+ *   Key per profile: slm.trail.<profileId>
  *   { version: 1, start: { level, source: "test"|"manual"|"default", at } | null,
- *     stops: { <idPrzystanku>: { done, via: "quiz"|"umiem"|"skip"|"set", best?, at } },
- *     reviews: { <idPowtórki>: { best, of, at } } }
+ *     stops: { <stopId>: { done, via: "quiz"|"known"|"skip"|"set", best?, at } },
+ *     reviews: { <checkpointId>: { best, of, at } } }
  *
- * Nowy klucz: istniejące klucze (slm.profiles, slm.placement, slm.cards.<id>…) bez zmian. Eksport / import / reset
- * i usuwanie profilu działają jak w js/cards-store.js (część „szlak” kopii; stary plik jej nie ma → dane zostają).
- * Walidacja: LM.trailLogic.sanitizeState. Bez profilu: stan tymczasowy, niezapisywany.
+ * Export / import / reset and profile deletion go through the storage key registry (js/profile-data.js),
+ * like js/cards-store.js (a backup without the "trail" part leaves the data unchanged).
+ * Validation: LM.trailLogic.sanitizeState. Without a profile: a temporary state, not saved.
  */
 window.LM = window.LM || {};
 
 (function (LM) {
   "use strict";
 
-  const memory = {}; // { profileId: stan }
+  const memory = {}; // { profileId: state }
 
   function L() { return LM.trailLogic; }
   function app() { return LM.app; }
@@ -44,17 +44,17 @@ window.LM = window.LM || {};
     if (!pid || !memory[pid]) return true;
     if (LM.state && LM.state.storageOk === false) return false;
     try { window.localStorage.setItem(keyOf(pid), JSON.stringify(memory[pid])); return true; } catch (e) {
-      if (app() && app().reportSaveError) app().reportSaveError("Nie zapisano postępu na Szlaku! Brak miejsca albo dostępu do pamięci przeglądarki.");
+      if (app() && app().reportSaveError) app().reportSaveError("Your trail progress was not saved! The browser storage is full or not available.");
       return false;
     }
   }
 
-  /** Stan aktywnego profilu (bez profilu — tymczasowy). */
+  /** State of the active profile (without a profile — temporary). */
   function data() { return load(activeId()); }
 
-  // ---------- zmiany stanu ----------
+  // ---------- state changes ----------
 
-  /** Punkt startu. source: „test” (wynik testu poziomu), „manual” (ręcznie), „default”. Ręczny wybór nie jest nadpisywany testem. */
+  /** The start. source: "test" (placement result), "manual" (by hand), "default". A manual choice is never overwritten by a test. */
   function setStart(level, source, force) {
     if (!activeId() || L().LEVELS.indexOf(level) === -1) return false;
     const d = data();
@@ -63,7 +63,7 @@ window.LM = window.LM || {};
     return save();
   }
 
-  /** Wynik quizu przystanku (liczba dobrych odpowiedzi); zapamiętujemy najlepszy. Zaliczenie ≥ 3/4 (via „quiz”). */
+  /** A stop's quiz result (number of right answers); the best is kept. Passed at ≥ 3/4 (via "quiz"). */
   function recordQuiz(stopId, score) {
     if (!activeId()) return null;
     const d = data();
@@ -79,7 +79,7 @@ window.LM = window.LM || {};
     if (!activeId()) return false;
     const d = data();
     const cur = d.stops[stopId];
-    if (cur && cur.via === "quiz" && cur.best >= L().PASS_QUIZ) return false; // zaliczony quizem zostaje zaliczony
+    if (cur && cur.via === "quiz" && cur.best >= L().PASS_QUIZ) return false; // passed by a quiz stays passed
     d.stops[stopId] = { done: false, via: "skip", at: stamp() };
     return save();
   }
@@ -100,7 +100,7 @@ window.LM = window.LM || {};
     return d.reviews[id];
   }
 
-  // ---------- profile, eksport, import, reset ----------
+  // ---------- profiles, export, import, reset ----------
 
   function storedIds() {
     const out = LM.storage.storedProfileIds("trail");
@@ -110,29 +110,29 @@ window.LM = window.LM || {};
 
   function removeProfile(pid) {
     delete memory[pid];
-    try { window.localStorage.removeItem(keyOf(pid)); } catch (e) { /* brak dostępu */ }
+    try { window.localStorage.removeItem(keyOf(pid)); } catch (e) { /* no access */ }
   }
 
-  /** Część eksportu: { <profileId>: stan } (tylko profile z danymi). */
+  /** Export part: { <profileId>: state } (only profiles with data). */
   function exportData() {
     const out = {};
     storedIds().forEach(function (pid) { out[pid] = JSON.parse(JSON.stringify(load(pid))); });
     return out;
   }
 
-  /** Część importu: brak (stary plik) → null; zły format → wyjątek z opisem. */
+  /** Import part: missing (an old file) → null; a wrong format → an exception with a description. */
   function parseImport(raw) {
     if (raw === undefined || raw === null) return null;
-    if (typeof raw !== "object" || Array.isArray(raw)) throw new Error("Część „szlak” pliku ma nieprawidłowy format.");
+    if (typeof raw !== "object" || Array.isArray(raw)) throw new Error("The “trail” part of the file has a wrong format.");
     const out = {};
     Object.keys(raw).slice(0, 500).forEach(function (pid) {
       if (typeof pid !== "string" || pid.length > 80) return;
-      out[pid] = L().sanitizeState(raw[pid]); // wyjątek = cały import odrzucony
+      out[pid] = L().sanitizeState(raw[pid]); // an exception = the whole import is refused
     });
     return out;
   }
 
-  /** Zapis importu: część obecna w pliku zastępuje dane Szlaku; profile spoza listy są usuwane. */
+  /** Saving an import: the part in the file replaces the trail data; profiles not on the list are removed. */
   function applyImport(parsed, profileIds) {
     if (parsed) {
       storedIds().forEach(function (pid) { if (!parsed[pid]) removeProfile(pid); });
