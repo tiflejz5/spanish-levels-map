@@ -1,5 +1,5 @@
 /*
- * practice-hub.js — „Centrum ćwiczeń” (#/cwiczenia, spec 02, część B):
+ * practice-hub.js — „Centrum ćwiczeń” (#/practice, spec 02, część B):
  *   1. Zestawy tematów (z dane/cwiczenia-tematy.json) według poziomu i kategorii, filtr poziomu,
  *   2. Zestawy mieszane: gotowe (dane/mixes.json) i generator,
  *   3. Trening słabych punktów (spec 03, pkt 5): tematy z ≥ 5 próbami i trafnością < 70%.
@@ -8,7 +8,7 @@
  * typy zadań (bez dyktanda, gdy przeglądarka nie ma głosu angielskiego), liczba (10/15/20), tryb. Losowanie: LM.exLogic.pickMix (równo po
  * tematach, bez zadań z ostatniej sesji mieszanej, gdy starcza puli; ≤ 2 tego samego
  * typu pod rząd) z wagami z dziennika podejść: trafność < 60% × 2, nigdy niewidziane × 1,5.
- * Sesję uruchamia LM.exercises.startCustom (adres #/cwiczenia/sesja).
+ * Sesję uruchamia LM.exercises.startCustom (adres #/practice/session).
  */
 window.LM = window.LM || {};
 
@@ -27,21 +27,15 @@ window.LM = window.LM || {};
   const filter = { level: "" };
   const gen = { from: "A1", to: "C2", topics: null, types: null, count: 10, mode: "learn", message: "" };
 
-  /** Kategorie z niezbednik/index.json ({ czasy: "Czasy", … }). */
-  function categories() { return (LM.PAGES && LM.PAGES.index.categories) || {}; }
+  /** Syllabus categories ({ verbs: "Verbs: tenses and moods", … }). */
+  function categories() { return (LM.SYLLABUS && LM.SYLLABUS.categories) || {}; }
 
   /** Punkt niezbędnika po id: { id, level, category, title, href }. */
   function topicMeta(id) {
-    const N = LM.PAGES;
-    if (!N) return null;
-    for (const lvl of N.index.levels) {
-      const item = lvl.items.find(function (it) { return it.id === id; });
-      if (item) {
-        const info = ex().topicInfo(id);
-        return { id: id, level: lvl.level, category: item.category, title: info ? info.title : item.label, href: info ? info.href : null };
-      }
-    }
-    return null;
+    const t = LM.syl.topic(id);
+    if (!t) return null;
+    const info = ex().topicInfo(id);
+    return { id: id, level: t.level, category: t.category, title: info ? info.title : t.title, href: info ? info.href : null };
   }
 
   function levelIn(level, from, to) {
@@ -105,9 +99,7 @@ window.LM = window.LM || {};
   }
 
   function levelName(id) {
-    const level = LM.state.content.levels.find(function (l) { return l.id === id; });
-    const m = level && /^\*\*(.+?)\*\*/.exec(String(level.description || ""));
-    return m ? m[1] : "";
+    return LM.syl.landName(id);
   }
 
   // =====================================================================
@@ -278,7 +270,7 @@ window.LM = window.LM || {};
           return el("li", null, [t ? el("a", { href: t.href, text: t.title }) : w.key, el("span", { class: "tool-note", text: " – " + Math.round(w.acc * 100) + "% z " + w.n + " prób" })]);
         })),
         el("p", { class: "tool-note", text: "12 zadań z tych tematów; częściej trafiają te, których ostatnio nie udało się rozwiązać." }),
-        el("a", { class: "btn btn-primary", href: ex().BASE + "/slabe" }, LM.ui.withIcon("target", "Zacznij trening"))
+        el("a", { class: "btn btn-primary", href: ex().BASE + "/weak" }, LM.ui.withIcon("target", "Zacznij trening"))
       ] : [
         el("p", { class: "hub-soon-title" }, [el("strong", { text: "Na razie nie widzę słabych punktów" })]),
         el("p", { class: "tool-note", text: "Zrób kilka zestawów, a podpowiem, nad czym popracować. Trening pojawi się, gdy temat będzie miał co najmniej 5 prób i trafność poniżej 70%." })
@@ -295,13 +287,13 @@ window.LM = window.LM || {};
     view.className = "view tool-view hub-view";
     view.dataset.file = ex().BASE;
     view.replaceChildren(LM.ui.pageHead({ eyebrow: "Nauka · Ćwiczenia", title: "Centrum ćwiczeń", lead: "Zestawy zadań do tematów, gotowe zestawy mieszane i losowanie własnego zestawu. Wybór formy, układanie zdań, szukanie błędów, luki do wpisania, dopasowanie par, transformacje, tłumaczenie i dyktando – w trybie Nauki albo Egzaminu. Wyniki liczą się w punktach." }));
-    document.title = "Centrum ćwiczeń · English Levels Map";
+    document.title = "Centrum ćwiczeń · " + LM.APP.appTitle;
     ex().loadIndex().then(function (index) {
       const now = ex().parseRoute(location.hash);
       if (!now || now.kind !== "hub") return; // w międzyczasie zmieniła się strona
       U.appendChildren(view, [
         topicSets(index),
-        el("section", { class: "hub-section", id: "mieszane", "aria-labelledby": "hub-mixes" }, [
+        el("section", { class: "hub-section", id: "mixes", "aria-labelledby": "hub-mixes" }, [
           el("h2", { class: "section-title", id: "hub-mixes", text: "Zestawy mieszane" }),
           el("p", { class: "tool-note", text: "Zadania z kilku tematów naraz – bez podpowiedzi, który czas albo konstrukcja jest potrzebna." }),
           index.mixes.length ? el("div", { class: "ex-set-grid" }, index.mixes.map(function (m) { return mixCard(m, index); })) : null,
@@ -312,8 +304,8 @@ window.LM = window.LM || {};
           weakCard()
         ])
       ]);
-      if (route && route.section === "mieszane") {
-        const sec = document.getElementById("mieszane");
+      if (route && route.section === "mixes") {
+        const sec = document.getElementById("mixes");
         if (sec) { sec.scrollIntoView({ block: "start" }); sec.setAttribute("tabindex", "-1"); sec.focus({ preventScroll: true }); }
       }
     });

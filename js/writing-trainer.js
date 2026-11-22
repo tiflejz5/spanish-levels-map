@@ -25,7 +25,7 @@
  *   lowScope                co się ocenia poniżej warnBelow (mianownik), np. „treść”, „realizacja zadania”
  *   lowNote(n, T)           opcjonalnie: własna uwaga w samoocenie poniżej warnBelow (zamiast lowScope)
  *   partGroups(T)           opcjonalnie: [{ label, tasks }] — lista zadań w grupach (B2: Part 1 / Part 2)
- *   modelHref(task)         opcjonalnie: adres wzorca z komentarzami (#/pisanie/wzorce/…) — link w zadaniu z modelNotes
+ *   modelHref(task)         opcjonalnie: adres wzorca z komentarzami (#/writing/models/…) — link w zadaniu z modelNotes
  *   examId                  id egzaminu z rejestru (albo "certyfikat-c1") — poziom zwrotów w panelu „Zwroty” (spec 17, 2.4)
  *   choices()               opcjonalnie: obiekt { grupa: idZadania } — wybór jednego z dwóch zadań
  *                           (zadania z choiceGroup, opis grupy w T.choiceGroups; spec 06, 4.1)
@@ -303,7 +303,7 @@ window.LM = window.LM || {};
               el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": "Zamknij panel zwrotów", onclick: closePhrases }, LM.ui.withIcon("x", "Zamknij"))
             ]),
             body,
-            el("p", { class: "tool-note zw-panel-foot" }, el("a", { href: LM.writing.HASH + "/zwroty", text: "Cały bank zwrotów" }))
+            el("p", { class: "tool-note zw-panel-foot" }, el("a", { href: LM.writing.HASH + "/phrases", text: "Cały bank zwrotów" }))
           ]);
           view.appendChild(panel);
           LM.loadModule("js/writing-phrases.js").then(function () { return LM.writingPhrases.load(); }).then(function () { fillPhrases(body); }, function () {

@@ -7,9 +7,8 @@
  *   content/cheatsheets/<level>.md               cheat sheets
  *   content/home.md                              home page
  *
- * LM.PAGES = { index, pages: { "a1/verbs-gustar.md": md }, summaries: { A1: md }, cheatsheets: { A1: md }, home }
- * `index` keeps the reference shape ({ categories, levels: [{ level, items: [{ id, category, file, label }] }] })
- * and is derived from the syllabus, so the handbook keeps working until stage 1B reads LM.SYLLABUS directly.
+ * LM.PAGES = { pages: { "a1/verbs-gustar.md": md }, summaries: { A1: md }, cheatsheets: { A1: md }, home }
+ * Which topics exist, their titles and categories come from LM.SYLLABUS (data/syllabus.js), not from here.
  */
 "use strict";
 
@@ -35,20 +34,6 @@ function build(ctx) {
     });
   });
 
-  const index = {
-    version: 2,
-    categories: ctx.syllabus.categories,
-    levels: ctx.syllabus.levels.map(function (level) {
-      const items = [];
-      level.units.forEach(function (unit) {
-        unit.topics.forEach(function (t) {
-          items.push({ id: t.id, category: t.category, unit: unit.id, file: C.pageFileOf(t.id), label: (byFile[t.id] || t).title });
-        });
-      });
-      return { level: level.id, items: items };
-    })
-  };
-
   const byLevel = function (sub, re) {
     const out = {};
     C.listFiles(C.path.join(C.CONTENT, sub), re).forEach(function (f) {
@@ -63,7 +48,7 @@ function build(ctx) {
 
   ctx.pageMeta = byFile;
   C.writeData("pages.js", "content/pages, summaries, cheatsheets, home.md",
-    C.assign("PAGES", { index: index, pages: pages, summaries: summaries, cheatsheets: cheatsheets, home: home }));
+    C.assign("PAGES", { pages: pages, summaries: summaries, cheatsheets: cheatsheets, home: home }));
   ctx.log("Pages: " + Object.keys(pages).length + " of " + Object.keys(ctx.topics).length + " topics; summaries " +
     (Object.keys(summaries).join(", ") || "none") + "; cheat sheets " + (Object.keys(cheatsheets).join(", ") || "none") +
     "; home " + (home ? "yes" : "no"));

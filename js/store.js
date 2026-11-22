@@ -2,12 +2,11 @@
  * store.js — profiles and the "I know this" progress in localStorage, plus file download.
  *
  *   slm.profiles  { version: 1, activeId, profiles: [{ id, name, progress: { <topic id>: true } }] }
- *   slm.ui        { levelId, categoryId } (device, convenience only)
+ *   slm.ui        { levelId } (device, convenience only)
  * Keys come from the registry in js/profile-data.js (LM.storage). Export, import, reset and profile deletion are
  * driven by that registry; this file provides the handler of the "profiles" entry (LM.store.profilesHandler).
  *
- * Stage 1A: the editable content store of the reference app is gone (D3, D9). The checklist still comes from the
- * built-in list (LM.createDefaultData, js/base-content.js), kept in memory only, until stage 1B reads LM.SYLLABUS.
+ * There is no content store (D3, D9): levels and topics come from LM.SYLLABUS (js/syllabus.js), never from storage.
  * No migrations: schemas start at version 1. A damaged save is copied to "<key>.corrupt" and the app starts empty.
  */
 window.LM = window.LM || {};
@@ -123,22 +122,14 @@ window.LM = window.LM || {};
     }
   };
 
-  // ---------- Checklist content (in memory only, until stage 1B) ----------
-
-  /** The built-in checklist. Never stored: content comes from the code / data files, not from localStorage. */
-  function loadContent() { return { status: "new", data: LM.createDefaultData() }; }
-
   // ---------- Interface state (device, convenience only) ----------
 
   function loadUI() {
-    const fallback = { levelId: LM.LEVEL_IDS[0], categoryId: null };
+    const fallback = { levelId: LM.LEVEL_IDS[0] };
     try {
       const ui = JSON.parse(readRaw(uiKey()) || "null");
       if (!U.isPlainObject(ui)) return fallback;
-      return {
-        levelId: typeof ui.levelId === "string" ? ui.levelId : fallback.levelId,
-        categoryId: typeof ui.categoryId === "string" ? ui.categoryId : null
-      };
+      return { levelId: typeof ui.levelId === "string" ? ui.levelId : fallback.levelId };
     } catch (e) {
       return fallback;
     }
@@ -168,7 +159,6 @@ window.LM = window.LM || {};
     loadProfiles: loadProfiles,
     saveProfiles: saveProfiles,
     profilesHandler: profilesHandler,
-    loadContent: loadContent,
     loadUI: loadUI,
     saveUI: saveUI,
     downloadJSON: downloadJSON

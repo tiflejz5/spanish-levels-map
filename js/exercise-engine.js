@@ -5,11 +5,11 @@
  * transformation, translate, dictation i wynik w punktach: docs/rozbudowa-v6/spec/12-nowe-typy-zadan.md.
  *
  * Adresy:
- *   #/cwiczenia[/mieszane]           Centrum ćwiczeń (js/practice-hub.js)
- *   #/cwiczenia/zestaw/<idZestawu>   zestaw z cwiczenia/tematy/
- *   #/cwiczenia/mix/<idMixu>         gotowy zestaw mieszany (dane/mixes.json)
- *   #/cwiczenia/sesja                zestaw wylosowany w generatorze (Centrum ćwiczeń)
- *   #/cwiczenia/slabe[/<temat>]      trening słabych punktów (spec 03, pkt 5)
+ *   #/practice[/mixes]                Centrum ćwiczeń (js/practice-hub.js)
+ *   #/practice/set/<idZestawu>   zestaw z cwiczenia/tematy/
+ *   #/practice/mix/<idMixu>          gotowy zestaw mieszany (dane/mixes.json)
+ *   #/practice/session               zestaw wylosowany w generatorze (Centrum ćwiczeń)
+ *   #/practice/weak[/<temat>]      trening słabych punktów (spec 03, pkt 5)
  *
  * Dane ładujemy NA ŻĄDANIE zwykłym <script> (działa z file://):
  *   cwiczenia/cwiczenia-indeks.js → LM.SETS_INDEX (mapa, opisy zestawów, mixy)
@@ -27,7 +27,7 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const BASE = "#/cwiczenia";
+  const BASE = "#/practice";
 
   function X() { return LM.exLogic; }
   function pd() { return LM.profileData; }
@@ -122,23 +122,23 @@ window.LM = window.LM || {};
   function parseRoute(hash) {
     const fin = /^#\/([abcABC][12])\/test\/?$/.exec(hash || "");
     if (fin) return { kind: "final", id: fin[1].toUpperCase() }; // test końcowy poziomu (js/final.js)
-    const weak =/^#\/cwiczenia\/slabe(?:\/([a-z0-9-]+))?\/?$/.exec(hash || "");
+    const weak =/^#\/practice\/weak(?:\/([a-z0-9-]+))?\/?$/.exec(hash || "");
     if (weak) return { kind: "weak", id: weak[1] || "" }; // trening słabych punktów (cały albo jeden temat)
-    const hub = /^#\/cwiczenia(\/mieszane)?\/?$/.exec(hash || "");
-    if (hub) return { kind: "hub", section: hub[1] ? "mieszane" : null }; // Centrum ćwiczeń (js/practice-hub.js)
-    let m = /^#\/cwiczenia\/(zestaw|mix)\/([a-z0-9-]+)\/?$/.exec(hash || "");
-    if (m) return { kind: m[1] === "zestaw" ? "set" : "mix", id: m[2] };
-    if (/^#\/cwiczenia\/sesja\/?$/.test(hash || "")) return { kind: "custom" };
+    const hub = /^#\/practice(\/mixes)?\/?$/.exec(hash || "");
+    if (hub) return { kind: "hub", section: hub[1] ? "mixes" : null }; // Centrum ćwiczeń (js/practice-hub.js)
+    let m = /^#\/practice\/(set|mix)\/([a-z0-9-]+)\/?$/.exec(hash || "");
+    if (m) return { kind: m[1] === "set" ? "set" : "mix", id: m[2] };
+    if (/^#\/practice\/session\/?$/.test(hash || "")) return { kind: "custom" };
     return null;
   }
 
   function hrefOf(route) {
     if (route.kind === "hub") return BASE;
-    if (route.kind === "set") return BASE + "/zestaw/" + route.id;
+    if (route.kind === "set") return BASE + "/set/" + route.id;
     if (route.kind === "mix") return BASE + "/mix/" + route.id;
-    if (route.kind === "weak") return BASE + "/slabe" + (route.id ? "/" + route.id : "");
+    if (route.kind === "weak") return BASE + "/weak" + (route.id ? "/" + route.id : "");
     if (route.kind === "final") return "#/" + route.id.toLowerCase() + "/test";
-    return BASE + "/sesja";
+    return BASE + "/session";
   }
 
   // Bieżąca sesja (w pamięci karty; zamknięcie karty = brak zapisu częściowego wyniku)
@@ -260,16 +260,8 @@ window.LM = window.LM || {};
 
   // ---------- Automatyczny dziennik błędów (spec 03, pkt 2) ----------
 
-  const JOURNAL_CATEGORY = { czasy: "Gramatyka", gramatyka: "Gramatyka", slownictwo: "Słownictwo" };
-
   function journalCategory(topic) {
-    const N = LM.PAGES;
-    if (!N || !topic) return "Inne";
-    for (const lvl of N.index.levels) {
-      const it = lvl.items.find(function (x) { return x.id === topic; });
-      if (it) return JOURNAL_CATEGORY[it.category] || "Inne";
-    }
-    return "Inne";
+    return pd().journalCategoryOf(topic);
   }
 
   /** Treść wpisu dziennika dla zadania (kontekst wg typu, wzorcowa odpowiedź, reguła z pułapką). */
@@ -1298,7 +1290,7 @@ window.LM = window.LM || {};
       wrong.length ? el("button", { type: "button", class: "btn btn-primary", onclick: retryWrong }, LM.ui.withIcon("rotate-ccw", "Powtórz tylko błędne (" + wrong.length + ")")) : null,
       el("button", { type: "button", class: "btn " + (wrong.length ? "btn-secondary" : "btn-primary"), onclick: redo }, run.isMix ? "Wylosuj nowy zestaw" : "Zrób jeszcze raz (inna kolejność)"),
       t ? el("a", { class: "btn btn-secondary", href: t.href }, "Wróć do tematu") : null,
-      !run.isMix ? el("a", { class: "btn btn-link", href: mix ? BASE + "/mix/" + mix.id : BASE + "/mieszane" }, LM.ui.withIcon("arrow-right", "Dalej: zestaw mieszany")) : el("a", { class: "btn btn-link", href: BASE }, "Centrum ćwiczeń")
+      !run.isMix ? el("a", { class: "btn btn-link", href: mix ? BASE + "/mix/" + mix.id : BASE + "/mixes" }, LM.ui.withIcon("arrow-right", "Dalej: zestaw mieszany")) : el("a", { class: "btn btn-link", href: BASE }, "Centrum ćwiczeń")
     ];
 
     const saved = run.saved;
@@ -1392,7 +1384,7 @@ window.LM = window.LM || {};
         lines.length ? el("p", { text: lines.join(" ") }) : null,
         off ? el("p", { class: "tool-note", text: "Automatyczne dodawanie błędów do dziennika jest wyłączone (menu profilu → Ustawienia nauki)." }) : null,
         j.added.length ? el("p", { class: "ex-journal-actions" }, [
-          el("a", { class: "btn btn-secondary btn-small", href: "#/powtorki/moje-bledy" }, "Zobacz"),
+          el("a", { class: "btn btn-secondary btn-small", href: "#/review/mistakes" }, "Zobacz"),
           el("button", { type: "button", class: "btn btn-link btn-small", onclick: function () {
             j.added.slice().reverse().forEach(function (x) { pd().undoAuto(x.undo); });
             j.added = [];
@@ -1540,12 +1532,12 @@ window.LM = window.LM || {};
     });
   }
 
-  /** Sesja z generatora (Centrum ćwiczeń): ustawia stan i przechodzi na #/cwiczenia/sesja. */
+  /** Sesja z generatora (Centrum ćwiczeń): ustawia stan i przechodzi na #/practice/session. */
   function startCustom(cfg) {
     newRun(Object.assign({ key: "custom:", isMix: true, title: "Zestaw mieszany", saveId: null }, cfg));
     if (cfg.autostart) { run.phase = "item"; run.i = 0; }
-    if (location.hash === BASE + "/sesja") render();
-    else location.hash = BASE + "/sesja";
+    if (location.hash === BASE + "/session") render();
+    else location.hash = BASE + "/session";
   }
 
   /**
@@ -1610,7 +1602,7 @@ window.LM = window.LM || {};
 
   function render(route) {
     const view = document.getElementById("view");
-    route = route || parseRoute(location.hash) || (run && run.fixedRoute); // sesja powtórek (startSingle) działa pod adresem #/powtorki/sesja
+    route = route || parseRoute(location.hash) || (run && run.fixedRoute); // sesja powtórek (startSingle) działa pod adresem #/review/session
     if (!route) return;
     if (route.kind === "hub") return LM.practiceHub.render(route);
     const profile = LM.app.getActiveProfile();
@@ -1618,7 +1610,7 @@ window.LM = window.LM || {};
     view.className = "view tool-view ex-view";
     view.dataset.file = hrefOf(route);
     view.replaceChildren();
-    document.title = "Ćwiczenia · English Levels Map";
+    document.title = "Ćwiczenia · " + LM.APP.appTitle;
 
     // Test końcowy poziomu: bez rozpoczętej sesji — ekran startowy (js/final.js)
     if (route.kind === "final" && (!run || run.key !== "final:" + route.id)) return LM.final.renderStart(view, route.id);
@@ -1630,7 +1622,7 @@ window.LM = window.LM || {};
     }
     if (ready === null) return loading(view);
     if (run.missing) return missing(view, run.missingText || "Tego zestawu nie ma w banku zadań.");
-    document.title = run.title + " · English Levels Map";
+    document.title = run.title + " · " + LM.APP.appTitle;
     if (run.phase === "intro") renderIntro(view);
     else if (run.phase === "item") renderItem(view);
     else renderDone(view);
@@ -1719,7 +1711,7 @@ window.LM = window.LM || {};
       el("p", { class: "ex-set-score" + (score ? "" : " is-empty") }, score
         ? [el("span", null, ["Najlepszy: ", el("strong", { class: "num", text: scoreText(score.best) })]), el("span", null, ["Ostatni: ", el("span", { class: "num", text: scoreText(score.last) })])]
         : "Jeszcze nie rozwiązany"),
-      el("a", { class: "btn btn-primary btn-small", href: BASE + "/zestaw/" + meta.id, "aria-label": (score ? "Zacznij ponownie: " : "Zacznij: ") + meta.title }, LM.ui.withIcon("play", score ? "Zacznij ponownie" : "Zacznij"))
+      el("a", { class: "btn btn-primary btn-small", href: BASE + "/set/" + meta.id, "aria-label": (score ? "Zacznij ponownie: " : "Zacznij: ") + meta.title }, LM.ui.withIcon("play", score ? "Zacznij ponownie" : "Zacznij"))
     ]);
   }
 
@@ -1756,7 +1748,7 @@ window.LM = window.LM || {};
           "Sprawdź się"
         ]),
         sets.length ? el("div", { class: "ex-set-grid" }, sets.map(setCard)) : null,
-        tense ? el("p", { class: "ex-topic-lab" }, el("a", { class: "btn btn-secondary", href: "#/laboratorium-czasow/" + tense.id }, LM.ui.withIcon("flask-conical", "Zobacz na osi czasu: " + tense.name))) : null
+        tense ? el("p", { class: "ex-topic-lab" }, el("a", { class: "btn btn-secondary", href: "#/lab/" + tense.id }, LM.ui.withIcon("flask-conical", "Zobacz na osi czasu: " + tense.name))) : null
       ]);
       box.hidden = false;
     });

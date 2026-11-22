@@ -38,9 +38,7 @@ window.LM = window.LM || {};
   function pd() { return LM.profileData; }
 
   function levelName(id) {
-    const level = LM.state.content.levels.find(function (l) { return l.id === id; });
-    const m = level && /^\*\*(.+?)\*\*\s*$/.exec(String(level.description || "").split("\n")[0]);
-    return m ? m[1] : "";
+    return LM.syl.landName(id);
   }
 
   // ---------- Teksty (krótko, konkretnie, bez przesady) ----------
@@ -85,7 +83,7 @@ window.LM = window.LM || {};
   /** Kamienie wynikające ze stanu (bez zdarzeń). */
   function fromState() {
     const ids = [];
-    if (!LM.state.content || !LM.app.getActiveProfile()) return ids;
+    if (!LM.app.getActiveProfile()) return ids;
     const total = LM.app.countDone(LM.state.progress);
     TOTALS.forEach(function (n) { if (total >= n) ids.push(n === 1 ? "first-umiem" : "total-" + n); });
     LM.LEVEL_IDS.forEach(function (lvl) {
@@ -215,7 +213,7 @@ window.LM = window.LM || {};
    * dostaje zapis tego, co już osiągnął (bez pokazywania). Nowy profil — pusty zbiór.
    */
   function baseline() {
-    if (!LM.app || !LM.app.getActiveProfile() || !pd() || !LM.state.content) return;
+    if (!LM.app || !LM.app.getActiveProfile() || !pd()) return;
     if (pd().celebrated() === null) pd().addCelebrated(fromState());
   }
 

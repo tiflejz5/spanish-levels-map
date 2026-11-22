@@ -394,7 +394,7 @@ window.LM = window.LM || {};
         });
       } : null,
       lowNote: cam ? function (n, T) { return "Masz mniej niż " + T.warnBelow + " słów – " + cam.low + "."; } : null,
-      modelHref: function (task) { return "#/pisanie/wzorce/" + e.id + "/" + task.id; },
+      modelHref: function (task) { return "#/writing/models/" + e.id + "/" + task.id; },
       timerKey: function (task) { return e.id + ":writing:" + task.id; },
       timerNote: cam
         ? "Zostaw kilka minut na sprawdzenie pisowni – edytor jej nie podkreśla. Licznik słów jest orientacyjny."
@@ -454,7 +454,7 @@ window.LM = window.LM || {};
         e.soonDescription ? el("p", { class: "soon-desc", text: e.soonDescription }) : null,
         el("p", { class: "tool-note", text: "Pracujemy nad tą zakładką. Wróć wkrótce." }),
         el("div", { class: "tool-actions" }, [
-          el("a", { class: "btn btn-primary", href: "#/dzis" }, LM.ui.withIcon("sunrise", "Wróć do Dziś")),
+          el("a", { class: "btn btn-primary", href: "#/today" }, LM.ui.withIcon("sunrise", "Wróć do Dziś")),
           active ? el("a", { class: "btn btn-secondary", href: base(active) }, LM.ui.withIcon("arrow-right", "Zobacz: " + active.label)) : null
         ])
       ])
@@ -474,7 +474,7 @@ window.LM = window.LM || {};
     view.replaceChildren();
     if (route.kind === "soon") {
       const t = renderSoon(view, e);
-      document.title = t + " · English Levels Map";
+      document.title = t + " · " + LM.APP.appTitle;
       return;
     }
     if (!data(e)) {
@@ -503,7 +503,7 @@ window.LM = window.LM || {};
         title = "Trener mówienia";
       }
     }
-    document.title = (title ? title + " · " : "") + e.label + " · English Levels Map";
+    document.title = (title ? title + " · " : "") + e.label + " · " + LM.APP.appTitle;
     if (title && pd()) pd().setLastPage(location.hash, e.label + " · " + title);
   }
 
@@ -767,7 +767,7 @@ window.LM = window.LM || {};
       if (!meta) { console.warn("Ramka " + e.code + ": nieznany zestaw " + id); return null; }
       const score = pd() ? pd().setScore(id) : null;
       return el("li", null, [
-        el("a", { href: meta.href || "#/cwiczenia/zestaw/" + id }, [meta.group + ": " + meta.label, LM.icon("chevron-right", { size: 16 })]),
+        el("a", { href: meta.href || "#/practice/set/" + id }, [meta.group + ": " + meta.label, LM.icon("chevron-right", { size: 16 })]),
         el("span", { class: "c1-exam-box-best", text: score ? "najlepszy wynik " + score.best.score + "/" + score.best.total : "jeszcze nie rozwiązany" })
       ]);
     }).filter(Boolean);

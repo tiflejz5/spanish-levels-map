@@ -1,8 +1,8 @@
 /*
  * writing.js — sekcja „Pisanie” (paczka v6, spec 17, sekcja 1): wzorcowe wypracowania z komentarzami.
  *
- *   #/pisanie                              lista wzorców pogrupowana po egzaminie i gatunku
- *   #/pisanie/wzorce/<egzamin>/<id>        wzorzec z komentarzami (widok: js/writing-model.js)
+ *   #/writing                              lista wzorców pogrupowana po egzaminie i gatunku
+ *   #/writing/models/<egzamin>/<id>        wzorzec z komentarzami (widok: js/writing-model.js)
  *
  * Dane: zadania z polem modelNotes w niezbednik/<egzamin>/trening/pisanie.json (LM.EXAMS[id].trainers
  * dla egzaminów z rejestru, LM.C1.trainers dla Certyfikatu C1). Tekstów `model` nie zmieniamy — komentarze
@@ -18,7 +18,7 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const HASH = "#/pisanie";
+  const HASH = "#/writing";
 
   const GENRES = { essay: "Rozprawka / essay", email: "E-mail", letter: "List", blog: "Wpis na blogu", forum: "Wpis na forum",
     article: "Artykuł", review: "Recenzja", report: "Raport", proposal: "Propozycja", story: "Opowiadanie" };
@@ -36,7 +36,7 @@ window.LM = window.LM || {};
   function reg() { return LM.EXAM_REGISTRY || { exams: [] }; }
   function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
   function genreLabel(g) { return GENRES[g] || g; }
-  function hrefModel(examId, taskId) { return HASH + "/wzorce/" + examId + "/" + taskId; }
+  function hrefModel(examId, taskId) { return HASH + "/models/" + examId + "/" + taskId; }
 
   /** Liczba słów wzorca tak, jak liczy trener danego egzaminu (E8 i matury: bez podanego początku). */
   function wordCount(examId, task) {
@@ -84,11 +84,11 @@ window.LM = window.LM || {};
   // =====================================================================
 
   function parseRoute(hash) {
-    const m = /^#\/pisanie(?:\/(.*))?$/.exec(hash || "");
+    const m = /^#\/writing(?:\/(.*))?$/.exec(hash || "");
     if (!m) return null;
     const p = (m[1] || "").replace(/\/+$/, "").split("/").filter(Boolean).map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } });
-    if (p[0] === "wzorce" && p[1] && p[2]) return { kind: "model", exam: p[1], task: p[2] };
-    if (p[0] === "zwroty") return { kind: "phrases", group: p[1] || "" };
+    if (p[0] === "models" && p[1] && p[2]) return { kind: "model", exam: p[1], task: p[2] };
+    if (p[0] === "phrases") return { kind: "phrases", group: p[1] || "" };
     return { kind: "list" };
   }
 
@@ -119,7 +119,7 @@ window.LM = window.LM || {};
   function renderList(view) {
     view.appendChild(head("Pisanie – wzorcowe wypracowania", "Teksty modelowe z komentarzami na marginesie: co realizuje polecenie, jak działają łączniki i rejestr, co podnosi zakres językowy i co można zrobić lepiej."));
     view.appendChild(el("p", { class: "card wz-phrases-link" }, [
-      el("a", { href: HASH + "/zwroty", class: "wz-card-title", text: "Bank zwrotów do pisania" }),
+      el("a", { href: HASH + "/phrases", class: "wz-card-title", text: "Bank zwrotów do pisania" }),
       el("span", { class: "tool-note", text: " – zwroty według funkcji (opinia, kontrargument, prośby…), z filtrem poziomu, rejestru i gatunku." })
     ]));
     const body = el("div", { class: "wz-list", "aria-live": "polite" }, el("p", { class: "tool-note", role: "status", text: "Wczytuję wzorce…" }));
@@ -185,11 +185,11 @@ window.LM = window.LM || {};
       if (LM[lazy[0]]) { draw(); return; }
       view.appendChild(el("p", { class: "tool-note", role: "status", text: "Wczytuję…" }));
       LM.loadModule(lazy[1]).then(function () {
-        if (view.isConnected && LM.state.view === "pisanie" && !view.querySelector(".tool-head")) { view.replaceChildren(); draw(); }
+        if (view.isConnected && LM.state.view === "writing" && !view.querySelector(".tool-head")) { view.replaceChildren(); draw(); }
       }, function (err) { console.warn(err.message); view.replaceChildren(el("p", { class: "tool-note", text: "Nie udało się wczytać widoku. Odśwież stronę." })); });
       return;
     }
-    document.title = "Pisanie · English Levels Map";
+    document.title = "Pisanie · " + LM.APP.appTitle;
     renderList(view);
   }
 

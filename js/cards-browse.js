@@ -16,7 +16,7 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const HASH = "#/powtorki/talie";
+  const HASH = "#/review/decks";
 
   function F() { return LM.cards.internal; }
   function L() { return LM.cardsLogic; }
@@ -29,7 +29,7 @@ window.LM = window.LM || {};
 
   /** Okruszki: „Fiszki i błędy › Talie › <talia>” (bez etykiety: kończy się na „Talie”). */
   function crumb(label) {
-    const items = [{ label: "Fiszki i błędy", href: "#/powtorki" }];
+    const items = [{ label: "Fiszki i błędy", href: "#/review" }];
     items.push(label ? { label: "Talie", href: HASH } : { label: "Talie" });
     if (label) items.push({ label: label });
     return LM.ui.breadcrumbs(items);
@@ -81,7 +81,7 @@ window.LM = window.LM || {};
       el("button", { type: "button", class: "btn btn-secondary", onclick: function () { F().exportDeck(d); } }, LM.ui.withIcon("download", "Eksportuj TSV"))
     ];
     if (!d.builtIn) {
-      actions.unshift(el("a", { class: "btn btn-primary", href: HASH + "/talia/" + deckId + "/nowa" }, LM.ui.withIcon("plus", "Dodaj kartę")));
+      actions.unshift(el("a", { class: "btn btn-primary", href: HASH + "/deck/" + deckId + "/new" }, LM.ui.withIcon("plus", "Dodaj kartę")));
       actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { importTarget = deckId; location.hash = HASH + "/import"; } }, LM.ui.withIcon("upload", "Importuj")));
       actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { renameDeck(d); } }, LM.ui.withIcon("pencil", "Zmień nazwę")));
       actions.push(el("button", { type: "button", class: "btn btn-danger", onclick: function () { deleteDeck(d); } }, LM.ui.withIcon("trash", "Usuń talię")));
@@ -90,7 +90,7 @@ window.LM = window.LM || {};
     const stats = L().deckStats(cards, st().cards, now());
     const studyNow = stats.new + stats.learning + stats.due;
     const study = studyNow
-      ? el("a", { class: "btn btn-primary", href: "#/powtorki/sesja?tylko=talia:" + deckId + "&poza=1" }, LM.ui.withIcon("play", "Nauka teraz"))
+      ? el("a", { class: "btn btn-primary", href: "#/review/session?only=deck:" + deckId + "&extra=1" }, LM.ui.withIcon("play", "Nauka teraz"))
       : el("button", { type: "button", class: "btn btn-primary", disabled: true }, LM.ui.withIcon("play", "Nauka teraz"));
     view.appendChild(el("div", { class: "fc-study-now" }, [
       study,
@@ -147,7 +147,7 @@ window.LM = window.LM || {};
           el("div", { class: "fc-row-actions" }, [
             el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": (x && x.suspended ? "Przywróć kartę: " : "Zawieś kartę: ") + L().frontText(c),
               onclick: function () { toggleSuspend(c.id); paint(); } }, x && x.suspended ? "Przywróć" : "Zawieś"),
-            own ? el("a", { class: "btn btn-link btn-small", href: HASH + "/talia/" + deckId + "/karta/" + c.id, "aria-label": "Edytuj kartę: " + L().frontText(c) }, "Edytuj") : null,
+            own ? el("a", { class: "btn btn-link btn-small", href: HASH + "/deck/" + deckId + "/card/" + c.id, "aria-label": "Edytuj kartę: " + L().frontText(c) }, "Edytuj") : null,
             own ? el("button", { type: "button", class: "btn btn-danger btn-small", "aria-label": "Usuń kartę: " + L().frontText(c), onclick: function () { deleteCard(c, paint); } }, "Usuń") : null
           ])
         ]));
@@ -294,8 +294,8 @@ window.LM = window.LM || {};
       err,
       el("div", { class: "fc-actions" }, [
         el("button", { type: "submit", class: "btn btn-primary" }, existing ? "Zapisz zmiany" : "Dodaj kartę"),
-        el("a", { class: "btn btn-secondary", href: existing || route.deck ? HASH + "/talia/" + (existing ? existing.deck : route.deck) : HASH }, "Anuluj"),
-        existing ? el("button", { type: "button", class: "btn btn-danger", onclick: function () { deleteCard(existing, function () { location.hash = HASH + "/talia/" + existing.deck; }); } }, "Usuń kartę") : null
+        el("a", { class: "btn btn-secondary", href: existing || route.deck ? HASH + "/deck/" + (existing ? existing.deck : route.deck) : HASH }, "Anuluj"),
+        existing ? el("button", { type: "button", class: "btn btn-danger", onclick: function () { deleteCard(existing, function () { location.hash = HASH + "/deck/" + existing.deck; }); } }, "Usuń kartę") : null
       ])
     ]);
     form.addEventListener("submit", function (e) {
@@ -310,7 +310,7 @@ window.LM = window.LM || {};
           if (!keep.sourceItemId) delete st().userCards[i].sourceItemId;
           F().saveState();
           LM.ui.toast({ text: "Zapisano kartę.", icon: "check" });
-          location.hash = HASH + "/talia/" + deckId;
+          location.hash = HASH + "/deck/" + deckId;
         } else {
           const c = addCard(deckId, res.card);
           LM.ui.toast({ text: "Dodano kartę do fiszek.", icon: "check", action: { label: "Cofnij", onClick: function () { removeCard(c.id); } } });
@@ -339,7 +339,7 @@ window.LM = window.LM || {};
     if (i !== -1) s.userCards.splice(i, 1);
     delete s.cards[id];
     F().saveState();
-    if (LM.state && LM.state.view === "fiszki") LM.cards.render();
+    if (LM.state && LM.state.view === "cards") LM.cards.render();
   }
 
   // =====================================================================
@@ -388,7 +388,7 @@ window.LM = window.LM || {};
         LM.ui.toast({ text: "Zaimportowano " + added.length + " " + F().plural(added.length, "kartę", "karty", "kart") + ".", icon: "check",
           action: { label: "Cofnij", onClick: function () { const ids = {}; added.forEach(function (c) { ids[c.id] = true; }); st().userCards = st().userCards.filter(function (c) { return !ids[c.id]; }); F().saveState(); } } });
         importTarget = null;
-        location.hash = HASH + "/talia/" + deckId;
+        location.hash = HASH + "/deck/" + deckId;
       };
       if (target.value === "__new") {
         LM.dialogs.prompt({ title: "Nowa talia", label: "Nazwa talii", value: "Import " + new Date().toLocaleDateString("pl-PL"), confirmLabel: "Utwórz" }).then(function (name) {

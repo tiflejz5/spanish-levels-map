@@ -1,5 +1,5 @@
 /*
- * placement.js — szybki test poziomu (#/test-poziomu).
+ * placement.js — szybki test poziomu (#/placement).
  *
  * Pytania: LM.PLACEMENT z pliku niezbednik/test-poziomu-dane.js
  * (źródło: niezbednik/test-poziomu/pytania.json, generuje
@@ -26,7 +26,7 @@ window.LM = window.LM || {};
   const U = LM.utils;
   const el = U.el;
 
-  const HASH = "#/test-poziomu";
+  const HASH = "#/placement";
   const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
   function learn() { return LM.learn; }
@@ -48,7 +48,7 @@ window.LM = window.LM || {};
   }
 
   function parseRoute(hash) {
-    return /^#\/test-poziomu\/?$/.test(hash || "") ? { kind: "test" } : null;
+    return /^#\/placement\/?$/.test(hash || "") ? { kind: "test" } : null;
   }
 
   // Stan bieżącego podejścia (w pamięci karty)
@@ -226,8 +226,8 @@ window.LM = window.LM || {};
     const saved = run.saved;
     if (!saved) { run = null; return renderIntro(view); }
     const level = saved.level;
-    const levelData = LM.state.content.levels.find(function (l) { return l.id === level; });
-    const desc = levelData && levelData.description ? levelData.description.split("\n")[0] : "";
+    const levelData = LM.syl.level(level);
+    const desc = levelData ? levelData.goal : "";
 
     // Błędne pytania (z wyniku zapisanego w profilu, więc działa także po odświeżeniu)
     const wrong = saved.answers.filter(function (a) { return !a.correct; })
@@ -306,13 +306,7 @@ window.LM = window.LM || {};
 
   /** Kategoria wpisu w dzienniku na podstawie punktu niezbędnika pytania. */
   function categoryOf(q) {
-    const N = LM.PAGES;
-    if (!N || !q.itemId) return "Inne";
-    for (const lvl of N.index.levels) {
-      const item = lvl.items.find(function (it) { return it.id === q.itemId; });
-      if (item) return item.category === "slownictwo" ? "Słownictwo" : item.category === "czasy" || item.category === "gramatyka" ? "Gramatyka" : "Inne";
-    }
-    return "Inne";
+    return pd().journalCategoryOf(q.itemId);
   }
 
   /** Dodaje błędne pytania do dziennika (bez duplikatów: to samo pytanie + ta sama odpowiedź). */
@@ -342,12 +336,12 @@ window.LM = window.LM || {};
   function render() {
     const view = document.getElementById("view");
     if (!LM.PLACEMENT) {
-      // 60 pytań ładuje się dopiero po wejściu na #/test-poziomu
+      // 60 pytań ładuje się dopiero po wejściu na #/placement
       view.className = "view tool-view lt-view";
       view.replaceChildren(el("p", { class: "tool-note", role: "status", text: "Wczytuję pytania…" }));
       LM.loadModule("data/placement.js").then(function () {
-        if (LM.state.view === "leveltest") render();
-      }, function (err) { console.warn(err.message + " — uruchom: npm run build"); LM.PLACEMENT = { version: 1, questions: [] }; if (LM.state.view === "leveltest") render(); });
+        if (LM.state.view === "placement") render();
+      }, function (err) { console.warn(err.message + " — uruchom: npm run build"); LM.PLACEMENT = { version: 1, questions: [] }; if (LM.state.view === "placement") render(); });
       return;
     }
     const profile = LM.app.getActiveProfile();
@@ -358,7 +352,7 @@ window.LM = window.LM || {};
     if (!run) renderIntro(view);
     else if (run.finished) renderResult(view);
     else renderQuestion(view);
-    document.title = "Test poziomu · English Levels Map";
+    document.title = "Test poziomu · " + LM.APP.appTitle;
     U.setScroll(0);
   }
 

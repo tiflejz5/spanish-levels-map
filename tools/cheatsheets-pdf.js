@@ -76,7 +76,7 @@ async function main() {
     const errors = [];
     page.on("pageerror", function (e) { errors.push(e.message); });
     await page.goto(url + "#/" + level + "/sciaga");
-    await page.waitForFunction("window.LM && LM.state && LM.state.content && LM.print && LM.handbook", null, { timeout: 15000 });
+    await page.waitForFunction("window.LM && LM.state && LM.state.profiles && LM.print && LM.handbook", null, { timeout: 15000 });
     await page.evaluate("LM.app.addProfile && !LM.app.getActiveProfile() && LM.app.addProfile('PDF')");
     await page.goto(url + "#/" + level + "/sciaga");
     await page.waitForSelector(".sciaga.md", { timeout: 15000 });

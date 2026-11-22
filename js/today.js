@@ -1,5 +1,5 @@
 /*
- * today.js — strona „Dziś” (#/dzis) jako kokpit (układ bento, DESIGN.md sekcja 3.2):
+ * today.js — strona „Dziś” (#/today) jako kokpit (układ bento, DESIGN.md sekcja 3.2):
  *   hero (powitanie, pierścień „Twoja mapa”, jedna propozycja), powtórki,
  *   seria (płomień + ostatnie 7 dni), egzamin C1 (gdy data jest ustawiona),
  *   szlak A1→C2 (SVG ze stacjami-linkami i znacznikiem „Tu jesteś”),
@@ -21,7 +21,7 @@ window.LM = window.LM || {};
   const el = U.el;
   const SVG_NS = "http://www.w3.org/2000/svg";
 
-  const HASH = "#/dzis";
+  const HASH = "#/today";
   const DAY_NAMES = ["niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"];
   const DAY_SHORT = ["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "So"];
   const MONTHS = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"];
@@ -34,7 +34,7 @@ window.LM = window.LM || {};
   function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
 
   function parseRoute(hash) {
-    return /^#\/dzis\/?$/.test(hash || "") ? { kind: "today" } : null;
+    return /^#\/today\/?$/.test(hash || "") ? { kind: "today" } : null;
   }
 
   function svgEl(tag, attrs) {
@@ -81,26 +81,13 @@ window.LM = window.LM || {};
   }
 
   function levelName(id) {
-    const level = LM.state.content.levels.find(function (l) { return l.id === id; });
-    const m = level && /^\*\*(.+?)\*\*\s*$/.exec(String(level.description || "").split("\n")[0]);
-    return m ? m[1] : "";
+    return LM.syl.landName(id);
   }
 
-  /** Następny nieodhaczony punkt na poziomie (z podstroną, jeśli istnieje). */
+  /** Next unticked topic of a level (its page when it exists). */
   function nextItem(levelId) {
-    const level = LM.state.content.levels.find(function (l) { return l.id === levelId; });
-    if (!level) return null;
-    LM.handbook.computeLinks();
-    for (const cat of LM.state.content.categories) {
-      const bucket = level.content[cat.id];
-      if (!bucket) continue;
-      for (const e of bucket.essentials) {
-        if (U.isBlank(e.text) || LM.state.progress[e.id] === true) continue;
-        const info = LM.handbook.linkForEssential(e.id);
-        return { text: e.text.replace(/\s*\(.*\)\s*$/, ""), href: info ? LM.handbook.routeOf(info.item) : LM.app.levelHash(levelId) };
-      }
-    }
-    return null;
+    const t = LM.syl.topics(levelId).find(function (x) { return LM.state.progress[x.id] !== true; });
+    return t ? { text: LM.handbook.titleOf(t), href: LM.handbook.routeOf(t) } : null;
   }
 
   function greetingWord() {
@@ -235,7 +222,7 @@ window.LM = window.LM || {};
   function shortcutsTile() {
     const rows = [];
     if (LM.placement) rows.push(shortcutRow("a", { href: LM.placement.HASH }, "target", "Test poziomu", "12 pytań, ok. 6 minut – sprawdź, od czego zacząć."));
-    rows.push(shortcutRow("a", { href: "#/statystyki" }, "chart-column", "Statystyki", "Trafność, najsłabsze tematy i aktywność."));
+    rows.push(shortcutRow("a", { href: "#/stats" }, "chart-column", "Statystyki", "Trafność, najsłabsze tematy i aktywność."));
     return tile("bento-shortcuts", "Na skróty", [
       el("h2", { class: "tile-title" }, ["Na skróty"]),
       el("ul", { class: "row-list" }, rows)
@@ -449,7 +436,7 @@ window.LM = window.LM || {};
       LM.review ? LM.review.todayCard() : null, // „Fiszki i błędy”: stan z liczbą albo niska karta zerowa
       el("div", { class: "today-row" }, [streakTile(), exam || shortcutsTile()])
     ]));
-    document.title = "Dziś · English Levels Map";
+    document.title = "Dziś · " + LM.APP.appTitle;
     U.setScroll(keepScroll);
 
     const stage = map._stage;

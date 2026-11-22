@@ -2,10 +2,10 @@
  * lab.js — „Laboratorium czasów” (spec 02, część A).
  *
  * Adresy (zakładki):
- *   #/laboratorium-czasow                     Mapa czasów
- *   #/laboratorium-czasow/<idCzasu>           Karta czasu
- *   #/laboratorium-czasow/dobierz             Dobierz czas (drzewo pytań, reguły — nie AI)
- *   #/laboratorium-czasow/porownaj[/<a>/<b>]  Porównaj dwa czasy
+ *   #/lab                     Mapa czasów
+ *   #/lab/<idCzasu>           Karta czasu
+ *   #/lab/dobierz             Dobierz czas (drzewo pytań, reguły — nie AI)
+ *   #/lab/porownaj[/<a>/<b>]  Porównaj dwa czasy
  *
  * Dane: dane/lab-dane.js (LM.LAB = { tenses, tree }) — generowane z
  * dane/lab-czasow.json i dane/lab-wybor-czasu.json przez tools/zbuduj-cwiczenia.js,
@@ -22,7 +22,7 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const BASE = "#/laboratorium-czasow";
+  const BASE = "#/lab";
   const SVG_NS = "http://www.w3.org/2000/svg";
 
   const GROUPS = [
@@ -61,11 +61,11 @@ window.LM = window.LM || {};
   // =====================================================================
 
   function parseRoute(hash) {
-    const m = /^#\/laboratorium-czasow(?:\/([a-z0-9-]+)(?:\/([a-z0-9-]+)\/([a-z0-9-]+))?)?\/?$/.exec(hash || "");
+    const m = /^#\/lab(?:\/([a-z0-9-]+)(?:\/([a-z0-9-]+)\/([a-z0-9-]+))?)?\/?$/.exec(hash || "");
     if (!m) return null;
     if (!m[1]) return { tab: "map" };
-    if (m[1] === "dobierz") return { tab: "pick" };
-    if (m[1] === "porownaj") return { tab: "compare", a: m[2] || null, b: m[3] || null };
+    if (m[1] === "pick") return { tab: "pick" };
+    if (m[1] === "compare") return { tab: "compare", a: m[2] || null, b: m[3] || null };
     if (m[2]) return null;
     return { tab: "card", id: m[1] };
   }
@@ -262,8 +262,8 @@ window.LM = window.LM || {};
     const items = [
       { id: "map", label: "Mapa czasów", icon: "layout-grid", href: BASE },
       { id: "card", label: "Karta czasu", icon: "notebook-text", href: BASE + "/" + (route && route.tab === "card" ? route.id : lastTense) },
-      { id: "pick", label: "Dobierz czas", icon: "route", href: BASE + "/dobierz" },
-      { id: "compare", label: "Porównaj", icon: "arrow-left-right", href: BASE + "/porownaj" }
+      { id: "pick", label: "Dobierz czas", icon: "route", href: BASE + "/pick" },
+      { id: "compare", label: "Porównaj", icon: "arrow-left-right", href: BASE + "/compare" }
     ];
     return el("nav", { class: "lab-tabs", "aria-label": "Zakładki Laboratorium czasów" }, el("ul", null, items.map(function (it) {
       const on = it.id === active;
@@ -402,7 +402,7 @@ window.LM = window.LM || {};
           el("p", { class: "lab-contrast-head" }, [el("strong", { lang: "en", text: t.name }), " vs ", el("strong", { lang: "en", text: other ? other.name : c.with })]),
           el("p", { text: c.rule }),
           c.examples && c.examples.length ? el("ul", { class: "lab-contrast-ex", lang: "en" }, c.examples.map(function (x) { return el("li", { text: x }); })) : null,
-          el("a", { class: "btn btn-secondary btn-small", href: BASE + "/porownaj/" + t.id + "/" + c.with }, LM.ui.withIcon("arrow-left-right", "Porównaj obok siebie"))
+          el("a", { class: "btn btn-secondary btn-small", href: BASE + "/compare/" + t.id + "/" + c.with }, LM.ui.withIcon("arrow-left-right", "Porównaj obok siebie"))
         ]);
       }))));
     }
@@ -504,7 +504,7 @@ window.LM = window.LM || {};
     const select = function (id, value, label) {
       const s = el("select", { class: "field lab-select", id: id, onchange: function () {
         const av = document.getElementById("lab-a").value, bv = document.getElementById("lab-b").value;
-        location.hash = BASE + "/porownaj/" + av + "/" + bv;
+        location.hash = BASE + "/compare/" + av + "/" + bv;
       } }, all.map(function (t) { return el("option", { value: t.id, text: t.name + " (" + t.level + ")" }); }));
       s.value = value;
       return el("div", { class: "lab-select-wrap" }, [el("label", { class: "field-label", for: id, text: label }), s]);
@@ -615,7 +615,7 @@ window.LM = window.LM || {};
     view.className = "view tool-view lab-view";
     view.dataset.file = BASE;
     view.replaceChildren();
-    document.title = "Laboratorium czasów · English Levels Map";
+    document.title = "Laboratorium czasów · " + LM.APP.appTitle;
     header(route.tab, route).forEach(function (n) { view.appendChild(n); });
     if (!LM.LAB) {
       view.appendChild(skeleton(route.tab)); // szkielet układu zamiast samego napisu (spec v7 14, P4)

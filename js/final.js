@@ -41,9 +41,8 @@ window.LM = window.LM || {};
     return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
   }
 
-  function categories() { return (LM.PAGES && LM.PAGES.index.categories) || {}; }
-  function categoryLabel(key) { return categories()[key] || key; }
-  function categoryOf(item) { return item.category || "gramatyka"; }
+  function categoryLabel(key) { return LM.syl.categoryName(key); }
+  function categoryOf(item) { return item.category || "grammar"; }
 
   // =====================================================================
   // ZNACZEK POZIOMU (Szlak, panel, nagłówek poziomu)
@@ -110,7 +109,7 @@ window.LM = window.LM || {};
   function backTo(level) { return { href: levelHash(level), label: "Wróć do poziomu " + level }; }
 
   function renderStart(view, level) {
-    document.title = "Test końcowy " + level + " · English Levels Map";
+    document.title = "Test końcowy " + level + " · " + LM.APP.appTitle;
     view.className = "view tool-view ex-view lf-view lvl-" + level;
     const info = pd().finalResult(level);
     const msg = el("p", { class: "tool-note lf-msg", role: "status", "aria-live": "polite" });
@@ -194,7 +193,7 @@ window.LM = window.LM || {};
     const total = run.total;
     const pct = total ? Math.round(run.score / total * 100) : 0;
     const passed = fin && fin.passed;
-    document.title = "Wynik testu końcowego " + level + " · English Levels Map";
+    document.title = "Wynik testu końcowego " + level + " · " + LM.APP.appTitle;
     view.className = "view tool-view ex-view lf-view lvl-" + level;
     view.appendChild(el("header", { class: "tool-head" }, [
       el("p", { class: "tool-eyebrow" }, el("a", { href: levelHash(level) }, "Poziom " + level)),
@@ -217,7 +216,7 @@ window.LM = window.LM || {};
     const actions = el("div", { class: "tool-actions" }, [
       el("button", { type: "button", class: "btn " + (passed ? "btn-secondary" : "btn-primary"), "data-fk": "again", onclick: function () { start(level, set); } }, LM.ui.withIcon("rotate-ccw", "Zrób test jeszcze raz")),
       el("a", { class: "btn btn-secondary", href: levelHash(level) }, "Wróć do poziomu " + level),
-      passed ? el("a", { class: "btn btn-link", href: "#/dzis" }, LM.ui.withIcon("arrow-right", "Zobacz Szlak")) : null
+      passed ? el("a", { class: "btn btn-link", href: "#/today" }, LM.ui.withIcon("arrow-right", "Zobacz Szlak")) : null
     ]);
 
     view.appendChild(el("section", { class: "card ex-result lf-result " + (passed ? "is-passed" : "is-failed"), "aria-live": "polite" }, [
@@ -261,9 +260,9 @@ window.LM = window.LM || {};
       sets.replaceChildren(el("span", { class: "review-label", text: "Zestawy do tych tematów: " }));
       found.slice(0, 4).forEach(function (id, k) {
         if (k) sets.appendChild(document.createTextNode(", "));
-        sets.appendChild(el("a", { href: "#/cwiczenia/zestaw/" + id, text: index.sets[id].title }));
+        sets.appendChild(el("a", { href: "#/practice/set/" + id, text: index.sets[id].title }));
       });
-      actions.insertBefore(el("a", { class: "btn btn-secondary", href: "#/cwiczenia/zestaw/" + found[0] }, "Zestawy do tych tematów"), actions.children[1]);
+      actions.insertBefore(el("a", { class: "btn btn-secondary", href: "#/practice/set/" + found[0] }, "Zestawy do tych tematów"), actions.children[1]);
     });
 
     view.appendChild(el("section", { class: "card ex-review" }, [

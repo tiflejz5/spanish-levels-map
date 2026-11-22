@@ -1,5 +1,5 @@
 /*
- * stats-page.js — „Statystyki” (#/statystyki, spec 03, sekcja 3).
+ * stats-page.js — „Statystyki” (#/stats, spec 03, sekcja 3).
  *
  * Dane: dziennik podejść (slm.attempts), wyniki zestawów, Dziennik błędów
  * i dni aktywności — wszystko z LM.profileData; liczenie w js/learning-stats.js.
@@ -18,7 +18,7 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const HASH = "#/statystyki";
+  const HASH = "#/stats";
   const SVG_NS = "http://www.w3.org/2000/svg";
   const TYPE_LABEL = {
     "multiple-choice": "Wybór odpowiedzi", "reorder": "Ułóż zdanie", "find-error": "Znajdź błąd", "short-answer": "Krótka odpowiedź",
@@ -30,7 +30,7 @@ window.LM = window.LM || {};
   function learn() { return LM.learn; }
   function S() { return LM.stats; }
 
-  function parseRoute(hash) { return /^#\/statystyki\/?$/.test(hash || "") ? { kind: "stats" } : null; }
+  function parseRoute(hash) { return /^#\/stats\/?$/.test(hash || "") ? { kind: "stats" } : null; }
 
   function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
   function tries(n) { return n + " " + plural(n, "próba", "próby", "prób"); }
@@ -135,10 +135,10 @@ window.LM = window.LM || {};
             t ? el("a", { href: t.href, text: t.title }) : el("span", { text: r.key }),
             el("span", { class: "st-weak-meta" }, [el("strong", { class: "num", text: pct(r.acc) }), " · " + tries(r.n)])
           ]),
-          el("a", { class: "btn btn-secondary btn-small", href: "#/cwiczenia/slabe/" + r.key, "aria-label": "Ćwicz: " + (t ? t.title : r.key) }, LM.ui.withIcon("dumbbell", "Ćwicz"))
+          el("a", { class: "btn btn-secondary btn-small", href: "#/practice/weak/" + r.key, "aria-label": "Ćwicz: " + (t ? t.title : r.key) }, LM.ui.withIcon("dumbbell", "Ćwicz"))
         ]);
       })) : emptyNote("Na razie nie widzę słabych punktów. Zrób kilka zestawów, a podpowiem, nad czym popracować."),
-      weak.length ? el("p", { class: "st-weak-cta" }, el("a", { class: "btn btn-primary", href: "#/cwiczenia/slabe" }, LM.ui.withIcon("target", "Trening słabych punktów"))) : null
+      weak.length ? el("p", { class: "st-weak-cta" }, el("a", { class: "btn btn-primary", href: "#/practice/weak" }, LM.ui.withIcon("target", "Trening słabych punktów"))) : null
     ]);
   }
 
@@ -246,13 +246,13 @@ window.LM = window.LM || {};
       return el("div", { class: "st-stat" }, [el("p", { class: "st-stat-label", text: label }), href && n ? el("a", { class: "st-stat-value", href: href, text: String(n) }) : el("p", { class: "st-stat-value", text: String(n) })]);
     };
     return tile("Dziennik błędów", "st-journal", all.length ? [
-      el("div", { class: "st-stats is-three" }, [stat("Aktywne", active.length), stat("Do powtórki dziś", due, "#/powtorki/sesja?tylko=bledy"), stat("Opanowane", mastered)]),
+      el("div", { class: "st-stats is-three" }, [stat("Aktywne", active.length), stat("Do powtórki dziś", due, "#/review/session?only=mistakes"), stat("Opanowane", mastered)]),
       cats.length ? el("p", { class: "st-tops" }, [el("span", { class: "review-label", text: "Najczęstsze kategorie: " }), cats.map(function (c) { return c.k + " (" + c.n + ")"; }).join(", ")]) : null,
       topics.length ? el("p", { class: "st-tops" }, [el("span", { class: "review-label", text: "Najczęstsze tematy: " })].concat(topics.map(function (t, i) {
         const info = topic(t.k);
         return [i ? ", " : "", info ? el("a", { href: info.href, text: info.title }) : t.k, " (" + t.n + ")"];
       }))) : null,
-      el("p", null, el("a", { class: "btn btn-secondary btn-small", href: "#/powtorki/moje-bledy" }, "Otwórz Moje błędy"))
+      el("p", null, el("a", { class: "btn btn-secondary btn-small", href: "#/review/mistakes" }, "Otwórz Moje błędy"))
     ] : [emptyNote("Dziennik jest pusty. Błędy z zadań trafiają tu same – możesz to wyłączyć w menu profilu.")]);
   }
 
@@ -265,13 +265,13 @@ window.LM = window.LM || {};
     view.className = "view tool-view st-view";
     view.dataset.file = HASH;
     view.replaceChildren();
-    document.title = "Statystyki · English Levels Map";
+    document.title = "Statystyki · " + LM.APP.appTitle;
     const hasData = rec.items.length || Object.keys(rec.aggregates).length;
     view.appendChild(LM.ui.pageHead({ eyebrow: "Twoje postępy · Statystyki", title: "Statystyki", lead: "Twoje odpowiedzi w zadaniach, trafność i aktywność. Liczymy tylko Twoje dane – bez porównań z innymi." }));
     if (!hasData) {
       view.appendChild(LM.ui.emptyState({
         art: "pusty-dziennik", title: "Tu pojawią się Twoje statystyki", hint: "Rozwiąż pierwszy zestaw zadań – każda odpowiedź się liczy. Po kilku zestawach zobaczysz, które tematy idą Ci najlepiej, a które warto powtórzyć.",
-        action: el("a", { class: "btn btn-primary", href: "#/cwiczenia" }, LM.ui.withIcon("dumbbell", "Przejdź do ćwiczeń"))
+        action: el("a", { class: "btn btn-primary", href: "#/practice" }, LM.ui.withIcon("dumbbell", "Przejdź do ćwiczeń"))
       }));
     }
     const grid = el("div", { class: "st-grid-layout" });

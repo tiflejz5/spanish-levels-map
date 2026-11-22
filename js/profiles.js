@@ -249,9 +249,9 @@ window.LM = window.LM || {};
       parts.push(el("div", { class: "menu-sep", role: "separator" }));
       parts.push(el("p", { class: "menu-title", text: "Moje" }));
       [
-        ["#/statystyki", "chart-column", "Statystyki"],
-        ["#/notatki", "notebook", "Moje notatki"],
-        ["#/test-poziomu", "target", "Test poziomu"]
+        ["#/stats", "chart-column", "Statystyki"],
+        ["#/notes", "notebook", "Moje notatki"],
+        ["#/placement", "target", "Test poziomu"]
       ].forEach(function (it) {
         parts.push(el("a", {
           class: "menu-action", href: it[0], "data-menu-item": "",
@@ -509,7 +509,7 @@ window.LM = window.LM || {};
     view.className = "view welcome-view";
     view.dataset.file = "#welcome";
     view.replaceChildren();
-    document.title = "English Levels Map (A1–C2)";
+    document.title = LM.APP.appTitle + " (A1–C2)";
 
     const input = el("input", {
       type: "text",
@@ -534,7 +534,7 @@ window.LM = window.LM || {};
         thenTest = false;
         app().addProfile(v.name);
         if (goTest) location.hash = LM.placement.HASH;
-        else if (LM.trail && /^#\/dzis\/?$/.test(location.hash)) location.hash = LM.trail.HASH; // pierwsze uruchomienie: wybór „test poziomu albo od A1” na Szlaku
+        else if (LM.trail && /^#\/today\/?$/.test(location.hash)) location.hash = LM.trail.HASH; // pierwsze uruchomienie: wybór „test poziomu albo od A1” na Szlaku
       }
     }, [
       el("label", { class: "field-label", for: "welcome-name", text: "Nazwa profilu" }),

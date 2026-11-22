@@ -1,5 +1,5 @@
 /*
- * writing-phrases.js — bank zwrotów do pisania (paczka v6, spec 17, sekcja 2): #/pisanie/zwroty[/<grupa>].
+ * writing-phrases.js — bank zwrotów do pisania (paczka v6, spec 17, sekcja 2): #/writing/phrases[/<grupa>].
  *
  * Dane: LM.PHRASES z dane/pisanie/zwroty-dane.js (generowany z dane/pisanie/zwroty.json przez tools/zbuduj-zwroty.js,
  * ładowany dopiero po wejściu do banku). Zwroty są pogrupowane według funkcji (opinia, kontrargument, …).
@@ -20,7 +20,7 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const HASH = "#/pisanie/zwroty";
+  const HASH = "#/writing/phrases";
 
   const LEVELS = ["B1", "B2", "C1"];
   const REGISTERS = { formal: "Formalny", neutral: "Neutralny", informal: "Nieformalny" };
@@ -104,7 +104,7 @@ window.LM = window.LM || {};
   // ---------- widok ----------
 
   function render(view, route) {
-    document.title = "Bank zwrotów · Pisanie · English Levels Map";
+    document.title = "Bank zwrotów · Pisanie · " + LM.APP.appTitle;
     view.appendChild(LM.ui.breadcrumbs([{ label: "Pisanie", href: LM.writing.HASH }, { label: "Bank zwrotów" }]));
     view.appendChild(LM.writing.head("Bank zwrotów do pisania", "Zwroty według funkcji: od prostych do formalnych. Wybierz poziom, rejestr i gatunek, skopiuj frazę albo zapisz ją do powtórek."));
     const body = el("div", { class: "zw-root" }, el("p", { class: "tool-note", role: "status", text: "Wczytuję zwroty…" }));

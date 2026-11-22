@@ -2,8 +2,8 @@
  * trail.js — widok Szlaku (spec v7 13, sekcja 4): ścieżka nauki A1 → C2 z krainami, odcinkami, przystankami, powtórkami
  * i odnogami egzaminów; arkusz przystanku (Przeczytaj → Sprawdź się → Zaliczone / Pomiń); quizy i powtórki w silniku zadań.
  *
- *   #/szlak              widok szlaku (bieżący przystanek przewinięty do widoku)
- *   #/szlak/<idPrzystanku>   jak wyżej, z otwartym arkuszem przystanku (linki z „Dziś”; adres wraca do #/szlak)
+ *   #/trail              widok szlaku (bieżący przystanek przewinięty do widoku)
+ *   #/trail/<idPrzystanku>   jak wyżej, z otwartym arkuszem przystanku (linki z „Dziś”; adres wraca do #/trail)
  *
  * Czysta logika: js/trail-logic.js. Stan: js/trail-store.js (slm.trail.<profil>). Dane: szlak/szlak-dane.js (LM.TRAIL,
  * ładowane przy starcie) i szlak/quizy-<poziom>.js (LM.QUIZZES, na żądanie).
@@ -16,7 +16,7 @@ window.LM = window.LM || {};
 
   const U = LM.utils;
   const el = U.el;
-  const HASH = "#/szlak";
+  const HASH = "#/trail";
   const ROW = 108;                 // wysokość wiersza przystanku (px)
   const ACC = { A1: "Polanę", A2: "Las", B1: "Wzgórza", B2: "Jezioro", C1: "Góry", C2: "Szczyt" }; // „Zalecamy najpierw skończyć …”
   const LOC = { A1: "na Polanie", A2: "w Lesie", B1: "na Wzgórzach", B2: "nad Jeziorem", C1: "w Górach", C2: "na Szczycie" };
@@ -69,7 +69,7 @@ window.LM = window.LM || {};
   }
 
   function pageHref(stop) { return "#/" + stop.page; }
-  function setHref(stop) { return "#/cwiczenia/zestaw/" + stop.set; }
+  function setHref(stop) { return "#/practice/set/" + stop.set; }
 
   /** Tekst do etykiet: „Przystanek 7 z 22 na Polanie”. */
   function positionText(n) { return "Przystanek " + n.number + " z " + n.levelTotal + " " + LOC[n.level]; }
@@ -179,7 +179,7 @@ window.LM = window.LM || {};
   function runSession(cfg) {
     const n = cfg.node;
     LM.exercises.startCustom({
-      title: cfg.title, intro: cfg.intro, items: cfg.items, mode: "learn", autostart: true, // klucz „custom:” — sesja pod #/cwiczenia/sesja
+      title: cfg.title, intro: cfg.intro, items: cfg.items, mode: "learn", autostart: true, // klucz „custom:” — sesja pod #/practice/session
       back: { href: HASH, label: "Wróć na szlak" },
       hooks: {
         finish: function (run, s) {
@@ -204,7 +204,7 @@ window.LM = window.LM || {};
     const next = nextLesson(tr, node);
     const isQuiz = cfg.kind === "quiz";
     view.className = "view tool-view ex-view sz-result-view lvl-" + n.level;
-    document.title = (isQuiz ? "Wynik quizu" : "Wynik powtórki") + " · Szlak · English Levels Map";
+    document.title = (isQuiz ? "Wynik quizu" : "Wynik powtórki") + " · Szlak · " + LM.APP.appTitle;
     view.appendChild(el("header", { class: "tool-head" }, [
       LM.ui.breadcrumbs([{ label: "Szlak", href: HASH }, { label: cfg.title }]),
       el("h1", { class: "tool-title", text: isQuiz ? "Wynik: " + n.stop.title : cfg.title })
@@ -417,11 +417,11 @@ window.LM = window.LM || {};
   // =====================================================================
 
   function parseRoute(hash) {
-    const m = /^#\/szlak(?:\/([a-z0-9-]+))?\/?$/.exec(String(hash || ""));
+    const m = /^#\/trail(?:\/([a-z0-9-]+))?\/?$/.exec(String(hash || ""));
     return m ? { kind: "trail", open: m[1] || null } : null;
   }
 
-  function refreshView() { if (LM.state.view === "szlak") render({ kind: "trail", open: null }, { keepScroll: true }); }
+  function refreshView() { if (LM.state.view === "trail") render({ kind: "trail", open: null }, { keepScroll: true }); }
 
   function nodeButton(n, geo) {
     const st = n.current ? "current" : n.status;
@@ -528,7 +528,7 @@ window.LM = window.LM || {};
       el("h2", { class: "sz-first-title", id: "sz-first-title", text: "Od czego zaczynamy?" }),
       el("p", { text: "Szlak to jedna droga przez sześć krain, od Polany po Szczyt. Możesz zacząć od początku albo zrobić krótki test poziomu, a szlak ustawi się tam, gdzie warto zacząć." }),
       el("div", { class: "tool-actions" }, [
-        el("a", { class: "btn btn-primary", href: LM.placement ? LM.placement.HASH : "#/test-poziomu" }, LM.ui.withIcon("target", "Zrób test poziomu (6 min)")),
+        el("a", { class: "btn btn-primary", href: LM.placement ? LM.placement.HASH : "#/placement" }, LM.ui.withIcon("target", "Zrób test poziomu (6 min)")),
         el("button", { type: "button", class: "btn btn-secondary", onclick: function () { ST().setStart("A1", "default"); refreshView(); } }, "Zacznij od A1")
       ])
     ]);
@@ -547,7 +547,7 @@ window.LM = window.LM || {};
     view.className = "view tool-view sz-view";
     view.dataset.file = HASH;
     view.replaceChildren();
-    document.title = "Szlak · English Levels Map";
+    document.title = "Szlak · " + LM.APP.appTitle;
     if (!ready()) {
       view.appendChild(el("p", { class: "tool-note", role: "status", text: "Wczytuję Szlak…" }));
       return;
@@ -587,7 +587,7 @@ window.LM = window.LM || {};
       } else U.setScroll(0);
     }
     if (route.open) {
-      history.replaceState(null, "", HASH); // adres wraca do #/szlak, odświeżenie nie otwiera arkusza ponownie
+      history.replaceState(null, "", HASH); // adres wraca do #/trail, odświeżenie nie otwiera arkusza ponownie
       openSheet(route.open);
     }
   }

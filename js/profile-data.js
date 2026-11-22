@@ -71,6 +71,14 @@ window.LM = window.LM || {};
   const VERSION = 1;
 
   const CATEGORIES = ["Use of English", "Reading", "Writing", "Listening", "Speaking", "Gramatyka", "Słownictwo", "Inne"];
+  const CAT_GRAMMAR = CATEGORIES[5], CAT_VOCABULARY = CATEGORIES[6], CAT_OTHER = CATEGORIES[7];
+
+  /** Mistake-log category of a syllabus topic: vocabulary → vocabulary, verbs and grammar → grammar, else other. */
+  function journalCategoryOf(topicId) {
+    const t = topicId && LM.syl ? LM.syl.topic(topicId) : null;
+    if (!t) return CAT_OTHER;
+    return t.category === "vocabulary" ? CAT_VOCABULARY : t.category === "verbs" || t.category === "grammar" ? CAT_GRAMMAR : CAT_OTHER;
+  }
 
   // Limity długości (także przy imporcie)
   const LIMITS = {
@@ -1081,6 +1089,7 @@ window.LM = window.LM || {};
   LM.profileData = {
     KEYS: KEYS,
     CATEGORIES: CATEGORIES,
+    journalCategoryOf: journalCategoryOf,
     LIMITS: LIMITS,
     normalizeEntry: normalizeEntry,
     entries: entries,

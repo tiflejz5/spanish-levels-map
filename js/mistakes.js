@@ -1,5 +1,5 @@
 /*
- * mistakes.js — zakładka „Moje błędy” (#/powtorki/moje-bledy); sesja powtórek jest wspólna (#/powtorki/sesja, js/cards.js).
+ * mistakes.js — zakładka „Moje błędy” (#/review/mistakes); sesja powtórek jest wspólna (#/review/session, js/cards.js).
  *
  * Dane: LM.profileData (klucz slm.journal, osobno dla każdego profilu).
  * Harmonogram: schedule() z js/cards-schedule.js — każdy wpis ma kartę w talii „Moje błędy” (paczka v8).
@@ -13,8 +13,8 @@ window.LM = window.LM || {};
   const U = LM.utils;
   const el = U.el;
 
-  const BASE = "#/powtorki/moje-bledy";                 // zakładka „Moje błędy” (wcześniej #/bledy)
-  const REVIEW = "#/powtorki/sesja?tylko=bledy";         // sesja tylko z błędami (wcześniej #/bledy/powtorki)
+  const BASE = "#/review/mistakes";                 // zakładka „Moje błędy” (wcześniej #/bledy)
+  const REVIEW = "#/review/session?only=mistakes";         // sesja tylko z błędami (wcześniej #/bledy/powtorki)
 
   function pd() { return LM.profileData; }
   function learn() { return LM.learn; }
@@ -27,7 +27,7 @@ window.LM = window.LM || {};
   // =====================================================================
 
   function parseRoute(hash) {
-    return /^#[/]powtorki[/]moje-bledy[/]?$/.test(hash || "") ? { kind: "list" } : null;
+    return /^#[/]review[/]mistakes[/]?$/.test(hash || "") ? { kind: "list" } : null;
   }
 
   // =====================================================================
@@ -39,21 +39,9 @@ window.LM = window.LM || {};
   /** Wszystkie punkty niezbędnika: [{ id, level, title, label, href }]. */
   function allItems() {
     if (itemCache) return itemCache;
-    const N = LM.PAGES;
-    itemCache = [];
-    if (!N) return itemCache;
-    N.index.levels.forEach(function (lvl) {
-      lvl.items.forEach(function (item) {
-        const md = N.pages[item.file];
-        const title = md ? LM.markdown.parseFrontmatter(md).meta.title : null;
-        itemCache.push({
-          id: item.id,
-          level: lvl.level,
-          title: title || item.label,
-          label: lvl.level + " · " + (title || item.label),
-          href: LM.handbook.routeOf(item)
-        });
-      });
+    itemCache = LM.syl.topics().map(function (t) {
+      const title = LM.handbook.titleOf(t);
+      return { id: t.id, level: t.level, title: title, label: t.level + " · " + title, href: LM.handbook.routeOf(t) };
     });
     return itemCache;
   }
@@ -460,7 +448,7 @@ window.LM = window.LM || {};
     view.dataset.file = key;
     view.replaceChildren();
     renderList(view);
-    document.title = "Moje błędy · Fiszki i błędy · English Levels Map";
+    document.title = "Moje błędy · Fiszki i błędy · " + LM.APP.appTitle;
     U.setScroll(keepScroll);
   }
 

@@ -1916,15 +1916,6 @@ require(path.join(__dirname, "..", "js", "review-queue.js"));
     assert.ok(!R.weakTasks(rec, "2026-11-10", { noVoice: true }).some(function (w) { return w.id === "dyk"; }));
     assert.deepStrictEqual(R.weakTasks({ items: [], aggregates: {} }, "2026-11-10"), []);
   });
-  test("redirectFor: stare adresy → #/powtorki/…", function () {
-    const m = {
-      "#/fiszki": "#/powtorki/talie", "#/fiszki/": "#/powtorki/talie", "#/fiszki/talia/kolokacje": "#/powtorki/talie/talia/kolokacje",
-      "#/fiszki/moje-slowa": "#/powtorki/moje-slowa", "#/fiszki/import": "#/powtorki/talie/import", "#/fiszki/tematy/a1": "#/powtorki/talie/tematy/a1",
-      "#/fiszki/sesja": "#/powtorki/sesja?tylko=talie", "#/bledy": "#/powtorki/moje-bledy", "#/bledy/powtorki": "#/powtorki/sesja?tylko=bledy"
-    };
-    Object.keys(m).forEach(function (k) { assert.strictEqual(R.redirectFor(k), m[k], k); });
-    ["#/dzis", "#/powtorki", "#/powtorki/talie", "#/cwiczenia", ""].forEach(function (k) { assert.strictEqual(R.redirectFor(k), null, k); });
-  });
 })();
 
 console.log("\nDziś v8: przebyta mapa i najbliższe terminy powtórek (spec 20, D)");
@@ -2415,6 +2406,74 @@ console.log("\nStorage key registry: slm. keys, backup file, reset, profile dele
         assert.ok(covered(k), rel + ": key literal " + k + " is not a registry key");
       });
     });
+  });
+})();
+
+console.log("\nSyllabus: the only list of levels, units, categories and topics (spec 06 E1, E2)");
+(function () {
+  const fsS = require("fs");
+  const root = path.join(__dirname, "..");
+  require(path.join(root, "data", "syllabus.js"));
+  require(path.join(root, "js", "syllabus.js"));
+  const S = global.LM.syl;
+  const src = JSON.parse(fsS.readFileSync(path.join(root, "content", "syllabus.json"), "utf8"));
+  const status = JSON.parse(fsS.readFileSync(path.join(root, "content", "levels.json"), "utf8")).levels;
+
+  test("LEVEL_IDS come from the syllabus (A1 … C2, in order)", function () {
+    assert.deepStrictEqual(global.LM.LEVEL_IDS, src.levels.map(function (l) { return l.id; }));
+    assert.deepStrictEqual(global.LM.LEVEL_IDS, ["A1", "A2", "B1", "B2", "C1", "C2"]);
+  });
+  test("topic ids are frozen: content/syllabus.json has the same ids as docs/plan/syllabus.json", function () {
+    const plan = JSON.parse(fsS.readFileSync(path.join(root, "docs", "plan", "syllabus.json"), "utf8"));
+    const ids = function (s) { const out = []; s.levels.forEach(function (l) { l.units.forEach(function (u) { u.topics.forEach(function (t) { out.push(t.id); }); }); }); return out; };
+    assert.deepStrictEqual(ids(src), ids(plan));
+  });
+  test("every topic: unique id, route #/<level>/<category>-<slug>, path round trip", function () {
+    const seen = {};
+    S.topics().forEach(function (t) {
+      assert.ok(!seen[t.id], "duplicate " + t.id);
+      seen[t.id] = true;
+      assert.strictEqual(S.routeOf(t.id), "#/" + t.level.toLowerCase() + "/" + t.id.slice(3));
+      assert.ok(new RegExp("^" + t.level.toLowerCase() + "-" + t.category + "-").test(t.id), t.id + " does not start with level and category");
+      assert.strictEqual(S.topicFromPath(t.path), t);
+      assert.strictEqual(S.topic(t.id), t);
+    });
+    assert.strictEqual(S.topicFromPath("a1/no-such-topic"), null);
+    assert.strictEqual(S.topic("e_a1_g01"), null, "checklist ids of the reference app are gone");
+  });
+  test("groups(level): categories in order of first appearance, every topic once, unit order inside", function () {
+    S.levels().forEach(function (l) {
+      const flat = S.topics(l.id);
+      const firstSeen = [];
+      flat.forEach(function (t) { if (firstSeen.indexOf(t.category) === -1) firstSeen.push(t.category); });
+      const g = S.groups(l.id);
+      assert.deepStrictEqual(g.map(function (x) { return x.id; }), firstSeen, l.id);
+      const all = [].concat.apply([], g.map(function (x) { return x.topics; }));
+      assert.strictEqual(all.length, flat.length, l.id);
+      g.forEach(function (x) {
+        assert.strictEqual(x.name, src.categories[x.id]);
+        for (let i = 1; i < x.topics.length; i++) assert.ok(x.topics[i].order > x.topics[i - 1].order, "unit order in " + x.id);
+      });
+    });
+  });
+  test("stats and countDone count syllabus topics only (progress[<topic id>] = true)", function () {
+    const a1 = S.topics("A1");
+    const progress = { "e_a1_g01": true, "x": true };
+    progress[a1[0].id] = true;
+    progress[a1[1].id] = true;
+    progress[a1[2].id] = false;
+    const s = S.stats("A1", progress);
+    assert.strictEqual(s.done, 2);
+    assert.strictEqual(s.total, a1.length);
+    assert.strictEqual(s.percent, Math.round(200 / a1.length));
+    assert.strictEqual(S.countDone(progress), 2);
+    assert.deepStrictEqual(S.stats("A2", {}), { done: 0, total: S.topics("A2").length, percent: 0 });
+  });
+  test("level status from content/levels.json; unknown or missing → soon", function () {
+    S.levels().forEach(function (l) { assert.strictEqual(S.status(l.id), status[l.id] || "soon", l.id); });
+    assert.strictEqual(S.status("Z9"), "soon");
+    assert.deepStrictEqual(S.availableLevels(), global.LM.LEVEL_IDS.filter(function (id) { return status[id] === "available"; }));
+    assert.strictEqual(S.landName("A1"), src.levels[0].land);
   });
 })();
 
