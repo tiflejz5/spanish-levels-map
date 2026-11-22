@@ -2477,5 +2477,94 @@ console.log("\nSyllabus: the only list of levels, units, categories and topics (
   });
 })();
 
+console.log("\nTrail generated from the syllabus (spec 06 E9)");
+(function () {
+  const fsT = require("fs");
+  const root = path.join(__dirname, "..");
+  const G = require(path.join(root, "tools", "build", "trail.js"));
+  const SL = global.LM.trailLogic;
+  const syllabus = JSON.parse(fsT.readFileSync(path.join(root, "content", "syllabus.json"), "utf8"));
+  const status = { A1: "available", A2: "soon", B1: "soon", B2: "soon", C1: "soon", C2: "soon" };
+  const firstA1 = syllabus.levels[0].units[0].topics[0].id;
+  const tr = G.generate(syllabus, status, { quizzes: { [firstA1]: true }, sets: { [firstA1]: ["set-x", "set-y"] }, titles: {} });
+
+  test("one lesson stop per topic (id = topic id), one checkpoint per unit at its end", function () {
+    syllabus.levels.forEach(function (l, li) {
+      assert.strictEqual(tr.levels[li].level, l.id);
+      assert.strictEqual(tr.levels[li].land, l.land);
+      assert.strictEqual(tr.levels[li].finalTest, "#/" + l.id.toLowerCase() + "/test");
+      l.units.forEach(function (u, ui) {
+        const stops = tr.levels[li].units[ui].stops;
+        assert.strictEqual(tr.levels[li].units[ui].id, u.id);
+        assert.deepStrictEqual(stops.slice(0, -1).map(function (s) { return s.id; }), u.topics.map(function (t) { return t.id; }));
+        stops.slice(0, -1).forEach(function (s, i) {
+          assert.strictEqual(s.type, "lesson");
+          assert.deepStrictEqual(s.items, [s.id], "checklist item = topic");
+          assert.strictEqual(s.page, s.id.slice(0, 2) + "/" + s.id.slice(3));
+          assert.strictEqual(s.category, u.topics[i].category);
+        });
+        const cp = stops[stops.length - 1];
+        assert.strictEqual(cp.id, u.id + "-checkpoint");
+        assert.strictEqual(cp.type, "review");
+        assert.deepStrictEqual(cp.from, u.topics.map(function (t) { return t.id; }));
+        assert.strictEqual(cp.size, Math.min(8, 2 * u.topics.length));
+      });
+    });
+  });
+  test("quiz only when the quiz file exists; set = first set of the topic; status per level", function () {
+    const stops = [].concat.apply([], tr.levels.map(function (l) { return [].concat.apply([], l.units.map(function (u) { return u.stops; })); }));
+    const first = stops.find(function (s) { return s.id === firstA1; });
+    assert.strictEqual(first.quiz, firstA1);
+    assert.strictEqual(first.set, "set-x");
+    assert.ok(stops.filter(function (s) { return s.type === "lesson" && s.id !== firstA1; }).every(function (s) { return !("quiz" in s) && !("set" in s); }));
+    assert.deepStrictEqual(tr.levels.map(function (l) { return l.status; }), ["available", "soon", "soon", "soon", "soon", "soon"]);
+  });
+  test("overrides rename a stop and change a checkpoint", function () {
+    const u = syllabus.levels[0].units[0];
+    const t2 = G.generate(syllabus, status, {}, { stops: { [firstA1]: { title: "Renamed" } }, checkpoints: { [u.id + "-checkpoint"]: { size: 3, title: "Check" } } });
+    assert.strictEqual(t2.levels[0].units[0].stops[0].title, "Renamed");
+    const cp = t2.levels[0].units[0].stops[u.topics.length];
+    assert.strictEqual(cp.size, 3);
+    assert.strictEqual(cp.title, "Check");
+  });
+  test("passing rules: quiz ≥ 3 of 4, or I know this, or best set ≥ 80% without a quiz, or skip; a quiz never ticks I know this", function () {
+    const env = { isUmiem: function () { return false; }, setPercent: function () { return null; } };
+    const lesson = tr.levels[0].units[0].stops[0];
+    const st = SL.emptyState();
+    st.stops[lesson.id] = { done: true, via: "quiz", best: 3, at: "" };
+    assert.strictEqual(SL.statusOf(lesson, st, env).status, "done");
+    assert.strictEqual(env.isUmiem(lesson.id), false, "the quiz result does not tick the topic");
+    const other = tr.levels[0].units[0].stops[1];
+    assert.strictEqual(SL.statusOf(other, SL.emptyState(), { isUmiem: function (id) { return id === other.id; }, setPercent: env.setPercent }).status, "done");
+    const withSet = Object.assign({}, other, { set: "s1" });
+    assert.strictEqual(SL.statusOf(withSet, SL.emptyState(), { isUmiem: env.isUmiem, setPercent: function () { return 80; } }).status, "done");
+    assert.strictEqual(SL.statusOf(Object.assign({}, withSet, { quiz: other.id }), SL.emptyState(), { isUmiem: env.isUmiem, setPercent: function () { return 100; } }).status, "open", "a set does not pass a stop that has a quiz");
+  });
+  test("soon levels: status soon, never current; a start in a soon land moves back to the last available land", function () {
+    const env = { isUmiem: function () { return false; }, setPercent: function () { return null; } };
+    const b = SL.buildTrail(tr, SL.emptyState(), env, "B1");
+    assert.strictEqual(b.startIndex, 0, "start moved back to A1");
+    assert.strictEqual(b.current.level, "A1");
+    assert.ok(b.nodes.filter(function (n) { return n.level !== "A1"; }).every(function (n) { return n.status === "soon" && n.soon && !n.current; }));
+    const allDone = { isUmiem: function (id) { return /^a1-/.test(id); }, setPercent: function () { return null; } };
+    const st = SL.emptyState();
+    tr.levels[0].units.forEach(function (u) { st.reviews[u.id + "-checkpoint"] = { best: 1, of: 1, at: "" }; });
+    assert.strictEqual(SL.buildTrail(tr, st, allDone, "A1").current, null, "A1 done: no current stop in a soon land");
+    assert.deepStrictEqual(SL.levelProgress(b, "A2"), { done: 0, total: tr.levels[1].units.reduce(function (a, u) { return a + u.stops.length - 1; }, 0), percent: 0 });
+  });
+  test("data/trail.js is the generated trail of the current content", function () {
+    global.LM.TRAIL = null;
+    require(path.join(root, "data", "trail.js"));
+    const lv = JSON.parse(fsT.readFileSync(path.join(root, "content", "levels.json"), "utf8")).levels;
+    assert.deepStrictEqual(global.LM.TRAIL.levels.map(function (l) { return l.status; }), syllabus.levels.map(function (l) { return lv[l.id] === "available" ? "available" : "soon"; }));
+    const ids = [];
+    global.LM.TRAIL.levels.forEach(function (l) { l.units.forEach(function (u) { u.stops.forEach(function (s) { if (s.type === "lesson") ids.push(s.id); }); }); });
+    assert.strictEqual(ids.length, 130);
+    global.LM.TRAIL.levels.forEach(function (l) { l.units.forEach(function (u) { u.stops.forEach(function (s) {
+      if (s.quiz) assert.ok(fsT.existsSync(path.join(root, "content", "quizzes", l.level.toLowerCase(), s.quiz + ".json")), "quiz file of " + s.id);
+    }); }); });
+  });
+})();
+
 console.log("\nWynik: " + passed + " ok, " + failures.length + " błędów" + (skipped ? ", pominięte (bez treści referencyjnej): " + skipped : ""));
 if (failures.length) process.exit(1);

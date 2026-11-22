@@ -4437,3 +4437,9 @@ a.pw-row-label:hover { text-decoration: underline; }
 .trail-station.is-soon .trail-name, .trail-station.is-soon .trail-pct { color: var(--ink-muted); }
 .notfound { max-width: 40rem; }
 .notfound-title { margin: 0 0 10px; font-size: var(--fs-2xl); }
+.sz-level.is-soon .sz-level-icon { opacity: 0.6; }
+.sz-level.is-soon .sz-level-head { border-left-style: dashed; background: var(--surface-2); }
+.sz-level.is-soon .sz-level-title, .sz-level.is-soon .sz-level-sub { color: var(--ink-muted); }
+.chip.is-soon { background: var(--warning-soft); color: var(--warning); border-color: var(--warning-border); }
+.sz-soon-units { margin: 4px 0 8px; padding-left: 1.4em; color: var(--ink-muted); columns: 2 14rem; column-gap: 24px; }
+.sz-soon-units li { margin: 0 0 4px; break-inside: avoid; }

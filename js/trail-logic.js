@@ -3,7 +3,10 @@
  *
  *   emptyState(), sanitizeState(raw)     stan profilu slm.trail.<id> { version, start, stops, reviews }; zły format → wyjątek
  *   statusOf(stop, state, env)           { status: "done" | "skipped" | "open", via }  (sekcja 3.1)
- *   buildTrail(data, state, env)         cały szlak z kolejnością, statusami, krainami przed startem jako „pominięte”
+ *   buildTrail(data, state, env)         cały szlak z kolejnością, statusami, krainami przed startem jako „pominięte”;
+ *                                        data = LM.TRAIL (generated from the syllabus by tools/build/trail.js, spec 06 E9);
+ *                                        a level with status "soon" gives nodes with status "soon" that never become current,
+ *                                        and the start is moved back to the last available level (spec 06 E1)
  *   currentStop(trail)                   pierwszy niezaliczony przystanek od punktu startu albo null
  *   levelProgress(trail, level)          { done, total, percent } — postęp krainy = zaliczone przystanki / wszystkie
  *   unitProgress(trail, unitId)          { done, total, index, count } dla odcinka
@@ -20,7 +23,8 @@ window.LM = window.LM || {};
   "use strict";
 
   const VERSION = 1;
-  const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
+  // Level order comes from the syllabus (js/syllabus.js sets LM.LEVEL_IDS); the fallback serves the unit tests
+  const LEVELS = (LM.LEVEL_IDS && LM.LEVEL_IDS.length ? LM.LEVEL_IDS : ["A1", "A2", "B1", "B2", "C1", "C2"]).slice();
   const PASS_QUIZ = 3;      // z 4 pytań
   const PASS_SET_PERCENT = 80;
   const VIA = ["quiz", "umiem", "skip", "set"];
@@ -84,24 +88,28 @@ window.LM = window.LM || {};
    * dostają „skipped” (via „start”). Zwraca { nodes, startIndex, current }.
    */
   function buildTrail(data, state, env, startLevel) {
-    const start = levelIndex(startLevel || (state.start && state.start.level) || "A1");
+    let start = levelIndex(startLevel || (state.start && state.start.level) || "A1");
+    let lastAvailable = -1;
+    data.levels.forEach(function (lv) { if (lv.status !== "soon") lastAvailable = Math.max(lastAvailable, levelIndex(lv.level)); });
+    if (lastAvailable !== -1 && start > lastAvailable) start = lastAvailable;
     const nodes = [];
     let lesson = 0;
     data.levels.forEach(function (lv) {
       const li = levelIndex(lv.level); // numer poziomu A1…C2 (dane testowe mogą nie mieć wszystkich)
+      const soon = lv.status === "soon";
       let inLevel = 0;
       const total = lv.units.reduce(function (a, u) { return a + u.stops.filter(function (s) { return s.type === "lesson"; }).length; }, 0);
       lv.units.forEach(function (u, ui) {
         let inUnit = 0;
         const unitTotal = u.stops.filter(function (s) { return s.type === "lesson"; }).length;
         u.stops.forEach(function (stop) {
-          const st = statusOf(stop, state, env);
+          const st = soon ? { status: "soon", via: null } : statusOf(stop, state, env);
           let status = st.status, via = st.via;
           if (li < start && status === "open") { status = "skipped"; via = "start"; }
           const isLesson = stop.type === "lesson";
           if (isLesson) { inLevel++; inUnit++; lesson++; }
           nodes.push({
-            id: stop.id, stop: stop, type: stop.type, status: status, via: via, level: lv.level, levelIndex: li, land: lv.land,
+            id: stop.id, stop: stop, type: stop.type, status: status, via: via, level: lv.level, levelIndex: li, land: lv.land, soon: soon,
             unitId: u.id, unitIndex: ui, unitTitle: u.title, unitCount: lv.units.length,
             number: isLesson ? inLevel : null, levelTotal: total, inUnit: isLesson ? inUnit : null, unitTotal: unitTotal, global: isLesson ? lesson : null
           });
