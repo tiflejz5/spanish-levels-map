@@ -178,7 +178,9 @@ let checked = 0;
   bad.forEach(function (b) { console.log(b); });
 });
 // Okładka mini (kafel na stronie głównej i Dziś): kolory z rejestru, poza sekcją egzaminu → pasek akcentu na --surface (3:1)
-const manifest = JSON.parse(fs.readFileSync(path.join(__dirname, "..", "dane", "egzaminy-manifest.json"), "utf8"));
+// Exam colours come from the exam registry (empty until stage E, spec 06 E8)
+const registryFile = path.join(__dirname, "..", "content", "exams", "registry.json");
+const manifest = fs.existsSync(registryFile) ? JSON.parse(fs.readFileSync(registryFile, "utf8")) : { exams: [] };
 [["JASNY", light], ["CIEMNY", dark]].forEach(function (theme) {
   const bad = [];
   manifest.exams.forEach(function (e) {

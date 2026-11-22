@@ -30,7 +30,8 @@ const files = walk(path.join(ROOT, "js"), []).concat(walk(path.join(ROOT, "css")
 let total = 0;
 const rows = [];
 files.forEach(function (file) {
-  if (/js[\\/](lang|config)\.js$/.test(file)) return; // the only places where target-language text may live
+  // lang.js / config.js may hold target-language text; this file holds the pattern itself
+  if (/js[\\/](lang|config)\.js$/.test(file) || /tools[\\/]check-lang\.js$/.test(file)) return;
   const lines = fs.readFileSync(file, "utf8").split("\n");
   let n = 0;
   lines.forEach(function (l) { if (PL.test(l)) n++; PL.lastIndex = 0; });
