@@ -14,7 +14,7 @@
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = path.join(__dirname, "..", "niezbednik");
+const ROOT = path.join(__dirname, "..", "..", "content");
 const MAX_SHARE = 0.5;
 const MAX_RUN = 2;
 
