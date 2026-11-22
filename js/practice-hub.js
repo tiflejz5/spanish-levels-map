@@ -28,11 +28,11 @@ window.LM = window.LM || {};
   const gen = { from: "A1", to: "C2", topics: null, types: null, count: 10, mode: "learn", message: "" };
 
   /** Kategorie z niezbednik/index.json ({ czasy: "Czasy", … }). */
-  function categories() { return (LM.NIEZBEDNIK && LM.NIEZBEDNIK.index.categories) || {}; }
+  function categories() { return (LM.PAGES && LM.PAGES.index.categories) || {}; }
 
   /** Punkt niezbędnika po id: { id, level, category, title, href }. */
   function topicMeta(id) {
-    const N = LM.NIEZBEDNIK;
+    const N = LM.PAGES;
     if (!N) return null;
     for (const lvl of N.index.levels) {
       const item = lvl.items.find(function (it) { return it.id === id; });

@@ -5,8 +5,8 @@
  *   #/szlak              widok szlaku (bieżący przystanek przewinięty do widoku)
  *   #/szlak/<idPrzystanku>   jak wyżej, z otwartym arkuszem przystanku (linki z „Dziś”; adres wraca do #/szlak)
  *
- * Czysta logika: js/trail-logic.js. Stan: js/trail-store.js (elm.<profil>.szlak). Dane: szlak/szlak-dane.js (LM.SZLAK,
- * ładowane przy starcie) i szlak/quizy-<poziom>.js (LM.SZLAK_QUIZY, na żądanie).
+ * Czysta logika: js/trail-logic.js. Stan: js/trail-store.js (elm.<profil>.szlak). Dane: szlak/szlak-dane.js (LM.TRAIL,
+ * ładowane przy starcie) i szlak/quizy-<poziom>.js (LM.QUIZZES, na żądanie).
  * Dostępność: lista przystanków to <ol> z przyciskami, stan zapisany tekstem („zaliczony”, „bieżący”, „pominięty”).
  */
 window.LM = window.LM || {};
@@ -39,7 +39,7 @@ window.LM = window.LM || {};
   // =====================================================================
 
   /** Dane szlaku są wczytane (skrypt startowy), a logika i magazyn gotowe. */
-  function loaded() { return !!(LM.SZLAK && LM.trailLogic && LM.trailStore); }
+  function loaded() { return !!(LM.TRAIL && LM.trailLogic && LM.trailStore); }
   /** Szlak da się policzyć dla aktywnego profilu. */
   function ready() { return loaded() && hasProfile() && !!(LM.state && LM.state.content); }
 
@@ -56,7 +56,7 @@ window.LM = window.LM || {};
   function startInfo() { return SL().effectiveStart(ST().data(), testLevel()); }
 
   /** Cały szlak z bieżącym stanem (142 węzły — liczone na bieżąco, bez pamięci podręcznej, więc nigdy nieaktualne). */
-  function trail() { return SL().buildTrail(LM.SZLAK, ST().data(), env(), startInfo().level); }
+  function trail() { return SL().buildTrail(LM.TRAIL, ST().data(), env(), startInfo().level); }
 
   function nodeById(tr, id) { return tr.nodes.find(function (n) { return n.id === id; }) || null; }
 
@@ -100,10 +100,10 @@ window.LM = window.LM || {};
   function barFor(page) {
     if (!loaded()) return null;
     let found = null;
-    LM.SZLAK.levels.forEach(function (lv) { lv.units.forEach(function (u) { u.stops.forEach(function (s) { if (s.type === "lesson" && s.page === page && !found) found = s.id; }); }); });
+    LM.TRAIL.levels.forEach(function (lv) { lv.units.forEach(function (u) { u.stops.forEach(function (s) { if (s.type === "lesson" && s.page === page && !found) found = s.id; }); }); });
     if (!found) return null;
     const guest = !hasProfile();
-    const tr = guest ? SL().buildTrail(LM.SZLAK, SL().emptyState(), { isUmiem: function () { return false; }, setPercent: function () { return null; } }, "A1") : trail();
+    const tr = guest ? SL().buildTrail(LM.TRAIL, SL().emptyState(), { isUmiem: function () { return false; }, setPercent: function () { return null; } }, "A1") : trail();
     const n = nodeById(tr, found);
     if (!n) return null;
     const lessons = tr.nodes.filter(function (x) { return x.type === "lesson"; });
@@ -127,8 +127,8 @@ window.LM = window.LM || {};
 
   function loadQuizzes(level) {
     const lvl = String(level).toLowerCase();
-    if (LM.SZLAK_QUIZY && Object.keys(LM.SZLAK_QUIZY).some(function (k) { return k.indexOf("szlak-" + lvl + "-") === 0; })) return Promise.resolve();
-    return LM.loadModule("szlak/quizy-" + lvl + ".js").catch(function () { /* poziom bez quizów */ });
+    if (LM.QUIZZES && Object.keys(LM.QUIZZES).some(function (k) { return k.indexOf("szlak-" + lvl + "-") === 0; })) return Promise.resolve();
+    return LM.loadModule("data/quizzes-" + lvl + ".js").catch(function () { /* poziom bez quizów */ });
   }
 
   /** Zadania quizu w formacie silnika (temat, poziom i zestaw potrzebne do dziennika podejść i statystyk). */
@@ -137,7 +137,7 @@ window.LM = window.LM || {};
   }
 
   /** Quiz przystanku (po załadowaniu poziomu) albo null. */
-  function quizById(id) { return (LM.SZLAK_QUIZY && LM.SZLAK_QUIZY[id]) || null; }
+  function quizById(id) { return (LM.QUIZZES && LM.QUIZZES[id]) || null; }
 
   function startQuiz(n) {
     LM.app.withProfile("Wynik quizu zapisuje się w profilu.", function () {
@@ -156,7 +156,7 @@ window.LM = window.LM || {};
     LM.app.withProfile("Wynik powtórki zapisuje się w profilu.", function () {
       const level = n.level;
       const stops = {};
-      LM.SZLAK.levels.forEach(function (lv) { lv.units.forEach(function (u) { u.stops.forEach(function (s) { stops[s.id] = s; }); }); });
+      LM.TRAIL.levels.forEach(function (lv) { lv.units.forEach(function (u) { u.stops.forEach(function (s) { stops[s.id] = s; }); }); });
       const setIds = (n.stop.from || []).map(function (id) { return stops[id] && stops[id].set; }).filter(Boolean);
       Promise.all([loadQuizzes(level), setIds.length ? LM.exercises.loadSets(setIds) : Promise.resolve([]), LM.final ? LM.final.load(level) : Promise.resolve(null)]).then(function (res) {
         const sets = {};
@@ -574,7 +574,7 @@ window.LM = window.LM || {};
     view.appendChild(el("p", { class: "tool-note sz-start-note" }, "Punkt startu: " + LM.ui.landLabel(start.level) + " (" + startText + ")."));
 
     const curLevel = cur ? cur.level : null;
-    LM.SZLAK.levels.forEach(function (lv) { view.appendChild(levelSection(tr, lv, curLevel)); });
+    LM.TRAIL.levels.forEach(function (lv) { view.appendChild(levelSection(tr, lv, curLevel)); });
 
     if (opts.keepScroll) U.setScroll(scroll);
     else {

@@ -69,8 +69,7 @@ window.LM = window.LM || {};
 
   function loadIndex() {
     if (publicIndex) return Promise.resolve(publicIndex);
-    const src = LM.exercises ? LM.exercises.asset("dane/szukaj-indeks.js") : "dane/szukaj-indeks.js";
-    return LM.loadScript(src).then(function () {
+    return LM.loadModule("data/search-index.js").then(function () {
       publicIndex = S().prepare((LM.SEARCH_INDEX && LM.SEARCH_INDEX.records) || []);
       return publicIndex;
     }, function () { publicIndex = []; return publicIndex; });

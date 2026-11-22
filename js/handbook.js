@@ -1,7 +1,7 @@
 /*
  * handbook.js — podstrony „Niezbędnika” (folder niezbednik/).
  *
- * Dane: LM.NIEZBEDNIK z pliku niezbednik/niezbednik-dane.js
+ * Dane: LM.PAGES z pliku niezbednik/niezbednik-dane.js
  * (generowanego przez: node tools/zbuduj-niezbednik.js).
  *
  * Adresy podstron: index.html#/a1/czasy-present-simple
@@ -35,7 +35,7 @@ window.LM = window.LM || {};
   let links = { byEssential: {}, byFile: {}, report: [] };
   const metaCache = {};
 
-  function data() { return LM.NIEZBEDNIK || null; }
+  function data() { return LM.PAGES || null; }
 
   // =====================================================================
   // ADRESY
@@ -283,7 +283,7 @@ window.LM = window.LM || {};
 
   function sciagaText(levelId) {
     const d = data();
-    return (d && d.sciagi && d.sciagi[levelId]) || null;
+    return (d && d.cheatsheets && d.cheatsheets[levelId]) || null;
   }
 
   function printSciaga() { if (LM.print) LM.print.now(); else window.print(); }

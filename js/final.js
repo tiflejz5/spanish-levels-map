@@ -24,12 +24,6 @@ window.LM = window.LM || {};
   const MINUTES = 15;
   const READY_PERCENT = 70; // od tylu % „Umiem” na poziomie podpowiadamy test końcowy
 
-  const VERSION = (function () {
-    const s = document.querySelector('script[src*="js/final.js"]');
-    const m = s && /[?&]v=(\d+)/.exec(s.getAttribute("src"));
-    return m ? m[1] : "1";
-  })();
-
   function pd() { return LM.profileData; }
   function F() { return LM.finalLogic; }
   function levelHash(level) { return LM.app.levelHash(level); }
@@ -47,7 +41,7 @@ window.LM = window.LM || {};
     return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
   }
 
-  function categories() { return (LM.NIEZBEDNIK && LM.NIEZBEDNIK.index.categories) || {}; }
+  function categories() { return (LM.PAGES && LM.PAGES.index.categories) || {}; }
   function categoryLabel(key) { return categories()[key] || key; }
   function categoryOf(item) { return item.category || "gramatyka"; }
 
@@ -98,10 +92,9 @@ window.LM = window.LM || {};
 
   /** Pula poziomu (Promise → zestaw albo null, gdy pliku nie ma). */
   function load(level) {
-    if (LM.LEVEL_TESTS && LM.LEVEL_TESTS[level]) return Promise.resolve(LM.LEVEL_TESTS[level]);
-    const src = "niezbednik/testy-poziomow/" + level.toLowerCase() + ".js?v=" + VERSION;
-    return LM.loadScript(src).then(function () {
-      return (LM.LEVEL_TESTS && LM.LEVEL_TESTS[level]) || null;
+    if (LM.FINALS && LM.FINALS[level]) return Promise.resolve(LM.FINALS[level]);
+    return LM.loadModule("data/final-" + level.toLowerCase() + ".js").then(function () {
+      return (LM.FINALS && LM.FINALS[level]) || null;
     }, function () { return null; });
   }
 

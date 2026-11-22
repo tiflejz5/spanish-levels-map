@@ -12,7 +12,7 @@
  *   #/cwiczenia/slabe[/<temat>]      trening słabych punktów (spec 03, pkt 5)
  *
  * Dane ładujemy NA ŻĄDANIE zwykłym <script> (działa z file://):
- *   cwiczenia/cwiczenia-indeks.js → LM.CWICZENIA (mapa, opisy zestawów, mixy)
+ *   cwiczenia/cwiczenia-indeks.js → LM.SETS_INDEX (mapa, opisy zestawów, mixy)
  *   cwiczenia/tematy/<id>.js      → LM.EX_SETS[<id>]
  * Pliki generuje: node tools/zbuduj-cwiczenia.js (część npm run build).
  *
@@ -59,20 +59,12 @@ window.LM = window.LM || {};
   // DANE (ładowane na żądanie)
   // =====================================================================
 
-  /** Numer wersji z adresu tego skryptu (?v=…), żeby dane nie brały się ze starej pamięci podręcznej. */
-  const VERSION = (function () {
-    const s = document.querySelector('script[src*="js/exercise-engine.js"]');
-    const m = s && /[?&]v=(\d+)/.exec(s.getAttribute("src"));
-    return m ? m[1] : "1";
-  })();
-
-  function asset(src) { return src + "?v=" + VERSION; }
 
   /** Indeks ćwiczeń (Promise). Brak pliku → pusty indeks, aplikacja działa dalej. */
   function loadIndex() {
-    if (LM.CWICZENIA) return Promise.resolve(LM.CWICZENIA);
-    return LM.loadScript(asset("cwiczenia/cwiczenia-indeks.js")).then(function () {
-      return LM.CWICZENIA || emptyIndex();
+    if (LM.SETS_INDEX) return Promise.resolve(LM.SETS_INDEX);
+    return LM.loadModule("data/sets-index.js").then(function () {
+      return LM.SETS_INDEX || emptyIndex();
     }, function (e) {
       console.warn(e.message + " — uruchom: npm run build");
       return emptyIndex();
@@ -88,7 +80,7 @@ window.LM = window.LM || {};
         const meta = index.sets[id];
         if (!meta) { console.warn("Ćwiczenia: brak zestawu " + id); return null; }
         if (LM.EX_SETS && LM.EX_SETS[id]) return LM.EX_SETS[id];
-        return LM.loadScript(asset(meta.file)).then(function () {
+        return LM.loadModule(meta.file).then(function () {
           return (LM.EX_SETS && LM.EX_SETS[id]) || null;
         }, function (e) { console.warn(e.message); return null; });
       }));
@@ -271,7 +263,7 @@ window.LM = window.LM || {};
   const JOURNAL_CATEGORY = { czasy: "Gramatyka", gramatyka: "Gramatyka", slownictwo: "Słownictwo" };
 
   function journalCategory(topic) {
-    const N = LM.NIEZBEDNIK;
+    const N = LM.PAGES;
     if (!N || !topic) return "Inne";
     for (const lvl of N.index.levels) {
       const it = lvl.items.find(function (x) { return x.id === topic; });
@@ -1443,7 +1435,7 @@ window.LM = window.LM || {};
 
   /** Pierwszy gotowy mix zawierający temat (link „Dalej: zestaw mieszany”). */
   function mixFor(topic) {
-    const index = LM.CWICZENIA;
+    const index = LM.SETS_INDEX;
     if (!index || !topic) return null;
     return index.mixes.find(function (m) { return m.topics.indexOf(topic) !== -1; }) || null;
   }
@@ -1490,7 +1482,7 @@ window.LM = window.LM || {};
         if (location.hash !== hash) return;
         if (!sets.length) { run = { key: key, missing: true, profileId: profile && profile.id }; return render(); }
         const s = sets[0];
-        const meta = (LM.CWICZENIA && LM.CWICZENIA.sets[s.id]) || {};
+        const meta = (LM.SETS_INDEX && LM.SETS_INDEX.sets[s.id]) || {};
         newRun({ key: key, title: s.title, intro: s.intro, items: s.items, mode: s.defaultMode, topic: s.topic, saveId: s.id, passage: s.passage || null, script: s.script || null, exam: meta.exam || null });
         render();
       });
@@ -1773,7 +1765,6 @@ window.LM = window.LM || {};
 
   LM.exercises = {
     BASE: BASE,
-    asset: asset,
     TYPE_SHORT: TYPE_SHORT,
     TYPE_LABEL: TYPE_LABEL,
     playablePool: playablePool,

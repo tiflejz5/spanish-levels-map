@@ -1,7 +1,7 @@
 /*
  * writing-phrases.js — bank zwrotów do pisania (paczka v6, spec 17, sekcja 2): #/pisanie/zwroty[/<grupa>].
  *
- * Dane: LM.ZWROTY z dane/pisanie/zwroty-dane.js (generowany z dane/pisanie/zwroty.json przez tools/zbuduj-zwroty.js,
+ * Dane: LM.PHRASES z dane/pisanie/zwroty-dane.js (generowany z dane/pisanie/zwroty.json przez tools/zbuduj-zwroty.js,
  * ładowany dopiero po wejściu do banku). Zwroty są pogrupowane według funkcji (opinia, kontrargument, …).
  *
  *   - filtry: poziom (B1 / B2 / C1) z przełącznikiem „do tego poziomu włącznie”, rejestr, gatunek, tylko ulubione,
@@ -38,10 +38,9 @@ window.LM = window.LM || {};
 
   /** Wczytuje bank (jednorazowo). */
   function load() {
-    if (LM.ZWROTY) return Promise.resolve(LM.ZWROTY);
+    if (LM.PHRASES) return Promise.resolve(LM.PHRASES);
     if (loading) return loading;
-    const src = "dane/pisanie/zwroty-dane.js";
-    loading = LM.loadScript(LM.exercises && LM.exercises.asset ? LM.exercises.asset(src) : src).then(function () { return LM.ZWROTY || null; }, function (err) {
+    loading = LM.loadModule("data/phrases.js").then(function () { return LM.PHRASES || null; }, function (err) {
       console.warn((err && err.message) + " — uruchom: npm run build");
       loading = null;
       return null;
@@ -56,7 +55,7 @@ window.LM = window.LM || {};
 
   /** Zwroty pasujące do gatunku i poziomu egzaminu, pogrupowane (panel w trenerze pisania). */
   function forTrainer(genre, examId) {
-    const data = LM.ZWROTY;
+    const data = LM.PHRASES;
     if (!data) return [];
     const max = LEVELS.indexOf(EXAM_LEVEL[examId] || "C1");
     const out = [];

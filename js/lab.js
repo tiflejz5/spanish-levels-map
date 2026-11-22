@@ -53,8 +53,7 @@ window.LM = window.LM || {};
 
   function load() {
     if (LM.LAB) return Promise.resolve(LM.LAB);
-    const src = LM.exercises ? LM.exercises.asset("dane/lab-dane.js") : "dane/lab-dane.js";
-    return LM.loadScript(src).then(function () { return LM.LAB; }, function (e) { console.warn(e.message + " — uruchom: npm run build"); return null; });
+    return LM.loadModule("data/lab.js").then(function () { return LM.LAB; }, function (e) { console.warn(e.message + " — uruchom: npm run build"); return null; });
   }
 
   // =====================================================================
@@ -565,7 +564,7 @@ window.LM = window.LM || {};
   // =====================================================================
 
   /**
-   * Szkielet widoku do czasu wczytania danych (dane/lab-dane.js): układ siatki Mapy czasów jest znany z góry
+   * Szkielet widoku do czasu wczytania danych (data/lab.js): układ siatki Mapy czasów jest znany z góry
    * (kolumny i aspekty), więc wiersze i kolumny rysują się od razu, a kafelki są pustymi placeholderami.
    * Dla pozostałych zakładek: trzy paski. Czytnik ekranu dostaje jeden komunikat „Wczytuję…”.
    */
@@ -624,7 +623,7 @@ window.LM = window.LM || {};
         if (!data) {
           const sk = view.querySelector(".lab-skeleton");
           if (sk) sk.remove();
-          view.appendChild(el("p", { class: "tool-note", text: "Nie udało się wczytać danych Laboratorium (dane/lab-dane.js)." }));
+          view.appendChild(el("p", { class: "tool-note", text: "Nie udało się wczytać danych Laboratorium (data/lab.js)." }));
           return;
         }
         if (parseRoute(location.hash)) render(parseRoute(location.hash));

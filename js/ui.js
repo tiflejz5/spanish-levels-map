@@ -317,11 +317,13 @@ window.LM = window.LM || {};
     return loading[src];
   }
 
-  /** Moduł JS (albo plik danych) ładowany na żądanie, z tym samym ?v=… co skrypty startowe (index.html). Zwraca Promise. */
+  /**
+   * Module or data file loaded on demand (js/…, data/…), with the same ?v= as the start-up scripts:
+   * LM.VERSION from js/config.js, stamped by `npm run build -- --bump`. A plain <script>, so it works on file://
+   * and over http. Returns a Promise; a failed load can be retried.
+   */
   function loadModule(file) {
-    const tag = document.querySelector('script[src*="js/ui.js"]');
-    const m = tag && /[?&]v=([\w.-]+)/.exec(tag.getAttribute("src") || "");
-    return loadScript(file + (m ? "?v=" + m[1] : ""));
+    return loadScript(file + (LM.VERSION ? "?v=" + LM.VERSION : ""));
   }
 
   /**

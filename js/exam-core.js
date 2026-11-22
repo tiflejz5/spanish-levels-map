@@ -42,8 +42,7 @@ window.LM = window.LM || {};
 
   function load(e) {
     if (data(e)) return Promise.resolve(data(e));
-    const src = (LM.exercises ? LM.exercises.asset("niezbednik/" + e.id + "-dane.js") : "niezbednik/" + e.id + "-dane.js");
-    return LM.loadScript(src).then(function () { return data(e); }, function (err) { console.warn(err.message + " — uruchom: npm run build"); return null; });
+    return LM.loadModule("data/exam-" + e.id + ".js").then(function () { return data(e); }, function (err) { console.warn(err.message + " — uruchom: npm run build"); return null; });
   }
 
   // =====================================================================
@@ -481,7 +480,7 @@ window.LM = window.LM || {};
     if (!data(e)) {
       view.appendChild(el("p", { class: "tool-note", role: "status", text: "Wczytuję zakładkę…" }));
       load(e).then(function (d) {
-        if (!d) { view.replaceChildren(notFound(e, "Brak danych zakładki (niezbednik/" + e.id + "-dane.js). Uruchom: npm run build")); return; }
+        if (!d) { view.replaceChildren(notFound(e, "Brak danych zakładki (data/exam-" + e.id + ".js). Uruchom: npm run build")); return; }
         const now = parseRoute(location.hash);
         if (now && now.examId === e.id) { render(now); renderNav(); }
       });

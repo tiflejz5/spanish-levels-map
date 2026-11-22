@@ -83,8 +83,7 @@ window.LM = window.LM || {};
 
   function loadExamData(exam) {
     if (LM.EXAMS && LM.EXAMS[exam.id]) return Promise.resolve(LM.EXAMS[exam.id]);
-    const src = LM.exercises ? LM.exercises.asset("niezbednik/" + exam.id + "-dane.js") : "niezbednik/" + exam.id + "-dane.js";
-    return LM.loadScript(src).then(function () { return (LM.EXAMS && LM.EXAMS[exam.id]) || null; }, function () { return null; });
+    return LM.loadModule("data/exam-" + exam.id + ".js").then(function () { return (LM.EXAMS && LM.EXAMS[exam.id]) || null; }, function () { return null; });
   }
 
   /** Oryginalne zadanie wpisu albo null (wpis ręczny, usunięty zestaw, brak pliku — wtedy sesja pokazuje kartę). */

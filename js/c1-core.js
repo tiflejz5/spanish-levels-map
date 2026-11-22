@@ -451,7 +451,7 @@ window.LM = window.LM || {};
   LM.markdown.resolveWiki = function (id) {
     const set = findSet(id);
     if (set) return { href: hrefSet(id), text: set.set.label, level: "C1", kind: "c1" };
-    const N = LM.NIEZBEDNIK;
+    const N = LM.PAGES;
     if (N) {
       for (const level of N.index.levels) {
         const item = level.items.find(function (it) { return it.id === id; });

@@ -10,7 +10,7 @@
  *   #/powtorki/talie/import          import TSV/CSV z podglądem
  *
  * Dane: talie wbudowane (dane/fiszki/talie/<id>.js, ładowane na żądanie; indeks
- * LM.FISZKI_INDEX), stan i własne karty w LM.cardsStore (elm.<profileId>.fiszki).
+ * LM.DECKS_INDEX), stan i własne karty w LM.cardsStore (elm.<profileId>.fiszki).
  * Logika bez DOM: LM.cardsLogic, LM.cardsSchedule. Treści użytkownika tylko jako
  * tekst (textContent / węzły tekstowe), bez innerHTML.
  */
@@ -51,15 +51,15 @@ window.LM = window.LM || {};
   // TALIE I KARTY
   // =====================================================================
 
-  function index() { return (LM.FISZKI_INDEX && LM.FISZKI_INDEX.decks) || []; }
+  function index() { return (LM.DECKS_INDEX && LM.DECKS_INDEX.decks) || []; }
   function builtInDeck(id) { return index().find(function (d) { return d.id === id; }) || null; }
-  function loaded(id) { return LM.FISZKI_DECKS && LM.FISZKI_DECKS[id]; }
+  function loaded(id) { return LM.DECKS && LM.DECKS[id]; }
 
   /** Wczytuje talie wbudowane (wszystkie z indeksu). Promise. */
   function loadDecks() {
     return Promise.all(index().map(function (d) {
       if (loaded(d.id)) return null;
-      return LM.loadScript(d.file).catch(function () { return null; });
+      return LM.loadModule(d.file).catch(function () { return null; });
     }));
   }
 

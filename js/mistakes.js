@@ -39,7 +39,7 @@ window.LM = window.LM || {};
   /** Wszystkie punkty niezbędnika: [{ id, level, title, label, href }]. */
   function allItems() {
     if (itemCache) return itemCache;
-    const N = LM.NIEZBEDNIK;
+    const N = LM.PAGES;
     itemCache = [];
     if (!N) return itemCache;
     N.index.levels.forEach(function (lvl) {
