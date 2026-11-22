@@ -45,4 +45,23 @@ function build(ctx) {
     Object.keys(ctx.status).map(function (l) { return l + " " + ctx.status[l]; }).join(", "));
 }
 
-module.exports = { load: load, build: build };
+/**
+ * Spec 06 E1: an AVAILABLE level must be complete: every topic has a page and a quiz; summary and cheat sheet exist
+ * (the final-test pool is checked in tests.js). A WARNING until the first content stage, then an error.
+ */
+function checkAvailable(ctx) {
+  Object.keys(ctx.status).forEach(function (L) {
+    if (ctx.status[L] !== "available") return;
+    const ids = Object.keys(ctx.topics).filter(function (id) { return ctx.topics[id].level === L; });
+    const noPage = ids.filter(function (id) { return !(ctx.pageMeta || {})[id]; });
+    const noQuiz = ids.filter(function (id) { return !(ctx.quizzes || {})[id]; });
+    const gaps = [];
+    if (noPage.length) gaps.push(noPage.length + " of " + ids.length + " topics without a page");
+    if (noQuiz.length) gaps.push(noQuiz.length + " of " + ids.length + " topics without a quiz");
+    if (!(ctx.summaries || {})[L]) gaps.push("no summaries/" + L.toLowerCase() + ".md");
+    if (!(ctx.cheatsheets || {})[L]) gaps.push("no cheatsheets/" + L.toLowerCase() + ".md");
+    if (gaps.length) ctx.warn("level " + L + " is available but incomplete: " + gaps.join("; ") + " (an error from the first content stage)");
+  });
+}
+
+module.exports = { load: load, build: build, checkAvailable: checkAvailable };

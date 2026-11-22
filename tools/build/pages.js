@@ -47,6 +47,8 @@ function build(ctx) {
   const home = C.exists(homeFile) ? C.read(homeFile) : null;
 
   ctx.pageMeta = byFile;
+  ctx.summaries = summaries;
+  ctx.cheatsheets = cheatsheets;
   C.writeData("pages.js", "content/pages, summaries, cheatsheets, home.md",
     C.assign("PAGES", { pages: pages, summaries: summaries, cheatsheets: cheatsheets, home: home }));
   ctx.log("Pages: " + Object.keys(pages).length + " of " + Object.keys(ctx.topics).length + " topics; summaries " +

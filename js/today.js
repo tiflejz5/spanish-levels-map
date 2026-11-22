@@ -66,7 +66,7 @@ window.LM = window.LM || {};
    */
   function levelStats() {
     return LM.LEVEL_IDS.map(function (id) {
-      const s = Object.assign({ id: id }, LM.app.getLevelStats(id));
+      const s = Object.assign({ id: id, soon: !LM.syl.isAvailable(id) }, LM.app.getLevelStats(id));
       const li = LM.trail && LM.trail.ready() ? LM.trail.levelInfo(id) : null;
       return li ? Object.assign(s, { done: li.done, total: li.total, percent: li.percent, skipped: li.skipped, szlak: true }) : s;
     });
@@ -75,9 +75,13 @@ window.LM = window.LM || {};
   /** Pierwsza stacja z postępem poniżej 100% (gdy wszystko zrobione — ostatnia). */
   function currentIndex(stats) {
     const sz = LM.trail && LM.trail.ready() ? LM.trail.current() : null; // Szlak: kraina bieżącego przystanku (po teście C1 = C1)
-    if (sz) { const k = stats.findIndex(function (s) { return s.id === sz.level; }); if (k !== -1) return k; }
-    const i = stats.findIndex(function (s) { return s.total && s.percent < 100; });
-    return i === -1 ? stats.length - 1 : i;
+    if (sz) { const k = stats.findIndex(function (s) { return s.id === sz.level && !s.soon; }); if (k !== -1) return k; }
+    // "soon" levels never become the current land (spec 06 E1)
+    const i = stats.findIndex(function (s) { return !s.soon && s.total && s.percent < 100; });
+    if (i !== -1) return i;
+    let last = 0;
+    stats.forEach(function (s, k) { if (!s.soon) last = k; });
+    return last;
   }
 
   function levelName(id) {
@@ -152,7 +156,7 @@ window.LM = window.LM || {};
     const p = LM.app.getActiveProfile();
     const d = dateOf(learn().today());
     const cur = stats[currentIndex(stats)];
-    const mp = learn().mapProgress(stats);
+    const mp = learn().mapProgress(stats.filter(function (s) { return !s.soon; })); // available levels only (spec 06 E1)
     const stage = el("div", { class: "trail-stage" });
     const card = el("section", { class: "card bento-tile map-card", "aria-labelledby": "today-title" }, [
       el("div", { class: "map-top" }, [
@@ -385,12 +389,12 @@ window.LM = window.LM || {};
       const here = i === cur;
       const passed = LM.final ? LM.final.passedText(s.id) : null; // „A1 zaliczony 12.11.2026” (test końcowy)
       list.appendChild(el("li", {
-        class: "trail-station lvl-" + s.id + (here ? " is-current" : "") + (s.percent >= 100 ? " is-done" : "") + (s.skipped ? " is-skipped" : ""),
+        class: "trail-station lvl-" + s.id + (here ? " is-current" : "") + (s.percent >= 100 ? " is-done" : "") + (s.skipped ? " is-skipped" : "") + (s.soon ? " is-soon" : ""),
         style: vertical ? "left:" + pt[0] + "px;top:" + pt[1] + "px" : "left:" + (pt[0] / g.w * 100) + "%;top:" + (pt[1] / g.h * 100) + "%"
       }, el("a", {
         class: "trail-link",
         href: LM.app.levelHash(s.id),
-        "aria-label": "Poziom " + s.id + (name ? ", " + name : "") + ": " + (s.skipped ? "pominięte testem poziomu" : s.percent + (s.szlak ? "% przystanków szlaku" : "% punktów „Umiem”")) + (here ? " – tu jesteś" : "") + (passed ? ". " + passed : "")
+        "aria-label": s.soon ? "Level " + s.id + (name ? ", " + name : "") + ": coming soon" : "Poziom " + s.id + (name ? ", " + name : "") + ": " + (s.skipped ? "pominięte testem poziomu" : s.percent + (s.szlak ? "% przystanków szlaku" : "% punktów „Umiem”")) + (here ? " – tu jesteś" : "") + (passed ? ". " + passed : "")
       }, [
         el("span", { class: "trail-ring" }, [
           LM.ui.progressRing(s.skipped ? 100 : s.percent, { size: 56, stroke: 5, node: LM.ui.landIcon(s.id, { size: 26 }) }),
@@ -399,7 +403,7 @@ window.LM = window.LM || {};
         ]),
         el("span", { class: "trail-label", "aria-hidden": "true" }, [
           el("span", { class: "trail-name", text: LM.ui.landLabel(s.id) }),
-          el("span", { class: "trail-pct num", text: s.skipped ? "pominięte" : s.percent + "%" }),
+          el("span", { class: "trail-pct num", text: s.soon ? "soon" : s.skipped ? "pominięte" : s.percent + "%" }),
           passed ? el("span", { class: "trail-passed", text: "Zaliczony " + LM.final.fmtDate(LM.final.passedAt(s.id)) }) : null,
           here ? el("span", { class: "trail-here", text: "Tu jesteś" }) : null
         ])

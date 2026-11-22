@@ -244,6 +244,7 @@ window.LM = window.LM || {};
       el("p", { class: "lt-result-label", text: "Szacowany poziom:" }),
       el("p", { class: "lt-result-level" }, [el("strong", { class: "lt-result-code", text: level }), el("span", { class: "lt-result-note", text: "orientacyjnie" })]),
       desc ? el("p", { class: "tool-lead" }, U.formatText(desc)) : null,
+      LM.syl.isAvailable(level) ? null : el("p", { class: "lt-result-soon", role: "note", text: level + " is on its way, so its pages are not written yet. Until then, the trail starts from the highest available level, and the " + level + " page shows what it will cover." }),
       skillBreakdown(saved.answers),
       el("p", null, el("a", { class: "wiki-link", href: LM.app.levelHash(level) + "" }, "Co umiesz na " + level)),
       el("div", { class: "tool-actions" }, [

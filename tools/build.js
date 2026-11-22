@@ -73,6 +73,7 @@ C.fs.rmSync(OUT, { recursive: true, force: true });
 C.fs.mkdirSync(OUT, { recursive: true });
 C.OUT = OUT;
 MODULES.forEach(function (m) { require("./build/" + m).build(ctx); });
+require("./build/syllabus").checkAvailable(ctx);
 if (!CHECK && !ctx.errors.length) {
   C.fs.rmSync(C.DATA, { recursive: true, force: true });
   C.fs.renameSync(OUT, C.DATA);

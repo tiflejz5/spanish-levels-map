@@ -160,8 +160,10 @@ window.LM = window.LM || {};
         n = levelNodes[level.id] = { a: a, ring: ring, ringWrap: ringWrap, fill: fill, count: count, title: title };
         ul.appendChild(el("li", null, a));
       }
+      const soon = !LM.syl.isAvailable(level.id);
       n.title.textContent = level.id + (name ? " · " + name : "");
-      n.count.textContent = s.done + " / " + s.total + " known";
+      n.count.textContent = soon ? "soon" : s.done + " / " + s.total + " known";
+      n.a.classList.toggle("is-soon", soon);
       n.fill.style.transform = "scaleX(" + s.percent / 100 + ")";
       LM.ui.setRing(n.ring, s.percent);
       n.ring.removeAttribute("role"); // nazwę i wartość ogłasza link (aria-label), pierścień jest ozdobą
@@ -175,8 +177,8 @@ window.LM = window.LM || {};
       if (passedText) n.ringWrap.appendChild(LM.ui.stamp(level.id, { size: 16 })); // pieczątka ✓ w rogu kółka
       n.a.classList.toggle("is-passed", !!passedText);
       n.a.classList.toggle("is-current", level.id === currentId);
-      n.a.setAttribute("aria-label", "Level " + level.id + (name ? ", " + name : "") + ": " + s.done + " of " + s.total +
-        " topics known (" + s.percent + "%)" + (passedText ? ". " + passedText : "") + (level.id === currentId ? ". Current land" : ""));
+      n.a.setAttribute("aria-label", "Level " + level.id + (name ? ", " + name : "") + (soon ? ": coming soon" : ": " + s.done + " of " + s.total +
+        " topics known (" + s.percent + "%)") + (passedText ? ". " + passedText : "") + (level.id === currentId ? ". Current land" : ""));
     });
 
     // Pod poziomami: grupa „Egzaminy” z rejestru (E8, matury, B2…), na końcu Certyfikat C1 (własny moduł)
@@ -221,6 +223,12 @@ window.LM = window.LM || {};
     view.replaceChildren();
     document.title = level.id + " · " + LM.APP.appTitle;
 
+    if (!LM.syl.isAvailable(level.id)) {
+      view.appendChild(renderLevelHeader(level));
+      view.appendChild(renderPlannedTopics(level));
+      U.setScroll(typeof opts.scrollTop === "number" ? opts.scrollTop : scroll);
+      return;
+    }
     view.appendChild(renderLevelHeader(level));
     view.appendChild(renderTopics(level));
     // Below the list: level summary (content/summaries/<level>.md)
@@ -256,6 +264,19 @@ window.LM = window.LM || {};
    */
   function renderLevelHeader(level) {
     const name = levelName(level.id);
+    if (!LM.syl.isAvailable(level.id)) {
+      return el("header", { class: "card level-hero is-soon" }, [
+        el("div", { class: "level-hero-text" }, [
+          el("p", { class: "level-kicker" }, [LM.ui.landIcon(level.id, { size: 16 }), LM.ui.landLabel(level.id)]),
+          el("h1", { class: "level-title" }, [
+            el("span", { class: "level-code-big", text: level.id }),
+            name ? el("span", { class: "level-name", text: name }) : null
+          ]),
+          level.goal ? el("p", { class: "level-desc", text: level.goal }) : null,
+          el("p", { class: "level-soon-badge" }, [LM.icon("clock", { size: 16 }), "Coming soon"])
+        ])
+      ]);
+    }
     const s = app().getLevelStats(level.id);
     const ring = LM.ui.progressRing(s.percent, { size: 104, stroke: 8, label: "Progress in " + level.id, text: s.percent + "%" });
     ring.id = "level-ring";
@@ -314,6 +335,29 @@ window.LM = window.LM || {};
         ]))
     ]);
     return li;
+  }
+
+  /**
+   * A "soon" level (spec 06 E1): the planned topics from the syllabus, titles and examples only (no links, no checkboxes),
+   * grouped by category like an available level.
+   */
+  function renderPlannedTopics(level) {
+    const section = el("section", { class: "essentials is-planned", "aria-labelledby": "ess-title" }, [
+      el("div", { class: "section-head" }, [
+        el("h2", { class: "section-title", id: "ess-title", text: "Planned topics" }),
+        el("span", { class: "section-sub", text: level.id + " is on its way. The topics below are what it will cover." })
+      ])
+    ]);
+    LM.syl.groups(level.id).forEach(function (g) {
+      section.appendChild(el("h3", { class: "ess-group-title", text: g.name }));
+      section.appendChild(el("ul", { class: "ess-list is-planned" }, g.topics.map(function (t) {
+        return el("li", { class: "ess-item is-planned", "data-topic": t.id }, el("div", { class: "ess-text" }, [
+          el("span", { class: "ess-title", text: t.title }),
+          t.example ? el("span", { class: "ess-example", lang: LM.APP.targetLang, text: t.example }) : null
+        ]));
+      })));
+    });
+    return section;
   }
 
   /** The level's topics grouped by syllabus category (order of first appearance on the level). */

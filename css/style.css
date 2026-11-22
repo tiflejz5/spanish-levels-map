@@ -4404,3 +4404,36 @@ a.pw-row-label:hover { text-decoration: underline; }
 /* Szlak: kontrast AA w nagłówku krainy (chipy i linki na tle koloru krainy) */
 .sz-level-sub .chip { background: var(--surface); color: var(--ink); border: 1px solid var(--line-strong); }
 .sz-level-links .btn-link { background: var(--surface); border: 1px solid var(--line-strong); }
+
+/* =====================================================================
+   Level status and missing pages (spec 06 E1), "Page not found" (spec 02 §6)
+   Tokens only; colour is never the only signal: every state also has a text label.
+   ===================================================================== */
+.sb-item.is-level.is-soon .sb-ring-wrap { opacity: 0.6; }
+.sb-item.is-level.is-soon .sb-label-sub { font-style: italic; }
+.sb-item.is-level.is-soon .sb-bar { display: none; }
+.level-hero.is-soon { border-style: dashed; }
+.level-soon-badge {
+  display: inline-flex; align-self: flex-start; align-items: center; gap: 6px; margin: 8px 0 0; padding: 4px 12px;
+  border-radius: var(--radius-pill); background: var(--warning-soft); color: var(--warning);
+  border: 1px solid var(--warning-border); font-size: var(--fs-sm); font-weight: 600;
+}
+.essentials .ess-item.is-planned { grid-template-columns: minmax(0, 1fr); padding: 10px 8px 10px 12px; cursor: default; }
+.essentials .ess-item.is-planned:hover { background: none; }
+.ess-item.is-planned .ess-text { display: flex; flex-direction: column; gap: 2px; white-space: normal; }
+.ess-title { overflow-wrap: anywhere; }
+.ess-example { color: var(--ink-muted); font-size: var(--fs-sm); overflow-wrap: anywhere; }
+.ess-soon {
+  flex: none; margin-left: 8px; padding: 1px 8px; border-radius: var(--radius-pill);
+  border: 1px solid var(--line-strong); color: var(--ink-muted); font-size: var(--fs-xs); white-space: nowrap;
+}
+.page-soon { max-width: 46rem; }
+.page-soon-kicker { margin: 0 0 6px; color: var(--ink-muted); font-size: var(--fs-sm); }
+.page-soon-title { margin: 0 0 10px; font-size: var(--fs-2xl); overflow-wrap: anywhere; }
+.page-soon-example { margin: 0 0 14px; color: var(--ink-muted); overflow-wrap: anywhere; }
+.page-soon-text { margin: 0 0 18px; }
+.lt-result-soon { padding: 10px 14px; border-radius: var(--radius-sm); background: var(--warning-soft); border: 1px solid var(--warning-border); color: var(--ink); }
+.trail-station.is-soon .trail-ring { opacity: 0.45; }
+.trail-station.is-soon .trail-name, .trail-station.is-soon .trail-pct { color: var(--ink-muted); }
+.notfound { max-width: 40rem; }
+.notfound-title { margin: 0 0 10px; font-size: var(--fs-2xl); }
