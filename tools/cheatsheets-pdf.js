@@ -1,15 +1,15 @@
 /*
- * sciagi-pdf.js — drukuje ściągi poziomów do PDF i sprawdza, że każda ma dokładnie 1 stronę A4
+ * cheatsheets-pdf.js — drukuje ściągi poziomów do PDF i sprawdza, że każda ma dokładnie 1 stronę A4
  * (paczka v6, spec 16, sekcja 1.4). Narzędzie deweloperskie: NIE jest częścią `npm run build`.
  *
  * Wymaga Playwrighta (np. `npm i -D playwright-core` albo `npx playwright install chromium`) i przeglądarki
  * Chromium / Edge / Chrome. Strona jest otwierana z dysku (file://), więc nie trzeba uruchamiać serwera.
  *
  * Użycie (z folderu projektu):
- *   node tools/sciagi-pdf.js                 # wszystkie ściągi z niezbednik/sciagi/
- *   node tools/sciagi-pdf.js a2 b1           # wybrane poziomy
- *   node tools/sciagi-pdf.js --out tmp/pdf   # folder na PDF-y (domyślnie tmp/sciagi-pdf)
- *   node tools/sciagi-pdf.js --browser msedge  # kanał przeglądarki (msedge, chrome); domyślnie próbuje po kolei
+ *   node tools/cheatsheets-pdf.js                 # wszystkie ściągi z niezbednik/sciagi/
+ *   node tools/cheatsheets-pdf.js a2 b1           # wybrane poziomy
+ *   node tools/cheatsheets-pdf.js --out tmp/pdf   # folder na PDF-y (domyślnie tmp/sciagi-pdf)
+ *   node tools/cheatsheets-pdf.js --browser msedge  # kanał przeglądarki (msedge, chrome); domyślnie próbuje po kolei
  *
  * Raport: poziom, liczba stron, najmniejszy krój w pt (musi być ≥ 9,5 pt). Kod wyjścia 1, gdy któraś ściąga
  * ma więcej niż 1 stronę albo krój poniżej 9,5 pt — wtedy skróć treść ściągi (nie zmniejszaj kroju).
@@ -76,12 +76,12 @@ async function main() {
     const errors = [];
     page.on("pageerror", function (e) { errors.push(e.message); });
     await page.goto(url + "#/" + level + "/sciaga");
-    await page.waitForFunction("window.ELM && ELM.state && ELM.state.content && ELM.print && ELM.niezbednik", null, { timeout: 15000 });
-    await page.evaluate("ELM.app.addProfile && !ELM.app.getActiveProfile() && ELM.app.addProfile('PDF')");
+    await page.waitForFunction("window.LM && LM.state && LM.state.content && LM.print && LM.handbook", null, { timeout: 15000 });
+    await page.evaluate("LM.app.addProfile && !LM.app.getActiveProfile() && LM.app.addProfile('PDF')");
     await page.goto(url + "#/" + level + "/sciaga");
     await page.waitForSelector(".sciaga.md", { timeout: 15000 });
     await page.evaluate("document.fonts && document.fonts.ready");
-    await page.evaluate("ELM.print.before()");
+    await page.evaluate("LM.print.before()");
     await page.emulateMedia({ media: "print" });
     const file = path.join(opts.out, "sciaga-" + level + ".pdf");
     const pdf = await page.pdf({ path: file, format: "A4", margin: { top: "12mm", bottom: "12mm", left: "12mm", right: "12mm" }, printBackground: true, preferCSSPageSize: true });

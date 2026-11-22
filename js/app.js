@@ -1,7 +1,7 @@
 /*
  * app.js — start aplikacji, stan, zdarzenia i automatyczny zapis.
  *
- * ELM.state przechowuje wszystko, co aplikacja wie w danej chwili:
+ * LM.state przechowuje wszystko, co aplikacja wie w danej chwili:
  *   content  — treści (zapisywane w elm_content_v1)
  *   profiles — profile z osobnym postępem (zapisywane w elm_profiles_v1)
  *   progress — postęp AKTYWNEGO profilu (odnośnik do profiles…progress)
@@ -11,19 +11,19 @@
  *   route    — otwarta podstrona niezbędnika ({ file }) albo null
  *   c1Route  — widok zakładki „Certyfikat C1” (view "c1"), patrz js/c1-core.js
  *   toolRoute — widoki nauki: "today" (#/dzis, js/today.js),
- *              "leveltest" (#/test-poziomu, js/level-test.js),
- *              "powtorki" (#/powtorki, js/powtorki.js: Fiszki i błędy, zakładka „Na dziś”)
- *              "journal" (#/powtorki/moje-bledy, js/journal.js)
+ *              "leveltest" (#/test-poziomu, js/placement.js),
+ *              "powtorki" (#/powtorki, js/review.js: Fiszki i błędy, zakładka „Na dziś”)
+ *              "journal" (#/powtorki/moje-bledy, js/mistakes.js)
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
-  const state = ELM.state = {
+  const state = LM.state = {
     content: null,
     profiles: null,
     progress: {},
@@ -45,26 +45,26 @@ window.ELM = window.ELM || {};
   function init() {
     try {
       bindStaticEvents();
-      state.storageOk = ELM.store.isStorageAvailable();
+      state.storageOk = LM.store.isStorageAvailable();
 
       if (!state.storageOk) {
         // Bez localStorage aplikacja działa, ale tylko do zamknięcia karty
-        state.content = ELM.createDefaultData();
-        state.profiles = ELM.createEmptyProfiles();
+        state.content = LM.createDefaultData();
+        state.profiles = LM.createEmptyProfiles();
         syncProgress();
         addBanner("error", "Pamięć przeglądarki (localStorage) jest niedostępna, więc zmiany NIE będą zapisywane. " +
           "Sprawdź ustawienia przeglądarki (np. tryb prywatny, blokada plików cookie). Możesz zaimportować kopię i korzystać ze strony do zamknięcia karty.",
-          { label: "Importuj kopię…", onClick: function () { ELM.dataMenu.importAll(); } });
+          { label: "Importuj kopię…", onClick: function () { LM.dataMenu.importAll(); } });
         fixUi();
         applyRoute();
         renderAll();
         return;
       }
 
-      const prof = ELM.store.loadProfiles();
+      const prof = LM.store.loadProfiles();
       state.profiles = prof.data;
       syncProgress();
-      if (prof.status === "new") ELM.store.saveProfiles(state.profiles);
+      if (prof.status === "new") LM.store.saveProfiles(state.profiles);
       if (prof.migrated && getActiveProfile()) {
         addBanner("info", "Wprowadzono profile. Dotychczasowe zaznaczenia „Umiem” (" + prof.migrated + ") przypisano do profilu „" + getActiveProfile().name + "”.");
       }
@@ -72,9 +72,9 @@ window.ELM = window.ELM || {};
         addBanner("warning", "Zapisane profile były uszkodzone. Uszkodzony zapis odłożono w kopii awaryjnej; jeśli masz kopię, zaimportuj ją w menu „Dane”.");
       }
 
-      state.ui = ELM.store.loadUI();
+      state.ui = LM.store.loadUI();
 
-      const loaded = ELM.store.loadContent();
+      const loaded = LM.store.loadContent();
       if (loaded.status === "corrupt") {
         showCorruptScreen(loaded);
         return;
@@ -82,14 +82,14 @@ window.ELM = window.ELM || {};
       state.content = loaded.data;
       // Zapisany pusty szkielet (np. z wcześniejszej wizyty) zastępujemy bazową listą.
       // Nie ma w nim żadnej treści, więc nic nie ginie.
-      if (loaded.status === "ok" && ELM.BASE_CONTENT && ELM.store.isContentEmpty(state.content)) {
-        state.content = ELM.createDefaultData();
-        ELM.store.saveContent(state.content);
+      if (loaded.status === "ok" && LM.BASE_CONTENT && LM.store.isContentEmpty(state.content)) {
+        state.content = LM.createDefaultData();
+        LM.store.saveContent(state.content);
       }
-      if (loaded.status === "new") ELM.store.saveContent(state.content);
+      if (loaded.status === "new") LM.store.saveContent(state.content);
 
       fixUi();
-      if (ELM.celebrate) ELM.celebrate.baseline();
+      if (LM.celebrate) LM.celebrate.baseline();
       applyRoute();
       syncSection();
       renderAll();
@@ -99,7 +99,7 @@ window.ELM = window.ELM || {};
   }
 
   function bindStaticEvents() {
-    ELM.profiles.bindEvents();
+    LM.profiles.bindEvents();
     // Zapisz zaległe zmiany przy zamykaniu / chowaniu karty
     window.addEventListener("beforeunload", flushSave);
     // Podstrony niezbędnika: adresy #/a1/… (zmiana adresu = zmiana widoku)
@@ -124,7 +124,7 @@ window.ELM = window.ELM || {};
   /** Pilnuje, żeby wybrany poziom i kategoria istniały. */
   function fixUi() {
     const ui = state.ui;
-    if (ELM.LEVEL_IDS.indexOf(ui.levelId) === -1) ui.levelId = ELM.LEVEL_IDS[0];
+    if (LM.LEVEL_IDS.indexOf(ui.levelId) === -1) ui.levelId = LM.LEVEL_IDS[0];
     const cats = state.content.categories;
     if (ui.categoryId !== ALL_CATEGORIES && !cats.some(function (c) { return c.id === ui.categoryId; })) {
       ui.categoryId = cats.length ? cats[0].id : null;
@@ -200,16 +200,16 @@ window.ELM = window.ELM || {};
   //   "#/a1/<podstrona>"  → podstrona punktu (niezbędnik)
   //   "#/dzis"            → strona „Dziś”
   //   "#/test-poziomu"    → szybki test poziomu
-  //   "#/powtorki[/na-dzis]" → Fiszki i błędy, zakładka „Na dziś” (js/powtorki.js)
-  //   "#/powtorki/talie[/…]" → zakładka „Talie” (js/fiszki.js); "#/powtorki/moje-slowa" → „Moje słowa”
-  //   "#/powtorki/moje-bledy" → zakładka „Moje błędy” (js/journal.js)
-  //   "#/powtorki/sesja[?tylko=bledy|slabe|talie|talia:<id>]" → sesja powtórek (js/fiszki.js)
-  //   stare adresy #/fiszki…, #/bledy[/powtorki] przekierowuje ELM.reviews.redirectFor
+  //   "#/powtorki[/na-dzis]" → Fiszki i błędy, zakładka „Na dziś” (js/review.js)
+  //   "#/powtorki/talie[/…]" → zakładka „Talie” (js/cards.js); "#/powtorki/moje-slowa" → „Moje słowa”
+  //   "#/powtorki/moje-bledy" → zakładka „Moje błędy” (js/mistakes.js)
+  //   "#/powtorki/sesja[?tylko=bledy|slabe|talie|talia:<id>]" → sesja powtórek (js/cards.js)
+  //   stare adresy #/fiszki…, #/bledy[/powtorki] przekierowuje LM.reviewQueue.redirectFor
   //   "#/cwiczenia/zestaw|mix/<id>", "#/cwiczenia/sesja" → sesja zadań (js/exercise-engine.js)
-  //   "#/laboratorium-czasow[/…]" → Laboratorium czasów (js/tense-lab.js)
+  //   "#/laboratorium-czasow[/…]" → Laboratorium czasów (js/lab.js)
   //   "#/statystyki"      → Statystyki (js/stats-page.js)
   //   "#/notatki"         → Moje notatki (js/notes.js)
-  //   "#/pisanie[/…]"     → Pisanie: wzorce z komentarzami (js/pisanie.js)
+  //   "#/pisanie[/…]"     → Pisanie: wzorce z komentarzami (js/writing.js)
   //   "#/<egzamin>[/…]"   → egzamin z rejestru dane/egzaminy-manifest.json (js/exam-core.js)
   // =====================================================================
 
@@ -217,22 +217,22 @@ window.ELM = window.ELM || {};
   function applyRoute() {
     let hash = location.hash || "";
     // Stare adresy (#/fiszki…, #/bledy…) przekierowują do widoku „Fiszki i błędy” (location.replace: bez wpisu w historii)
-    const legacy = ELM.reviews ? ELM.reviews.redirectFor(hash) : null;
+    const legacy = LM.reviewQueue ? LM.reviewQueue.redirectFor(hash) : null;
     if (legacy) { location.replace(legacy); hash = legacy; }
     const level = /^#\/([abcABC][12])\/?$/.exec(hash);
-    const c1 = ELM.c1 ? ELM.c1.parseRoute(hash) : null;
-    const exam = ELM.exams ? ELM.exams.parseRoute(hash) : null;
-    const powtorki = ELM.powtorki ? ELM.powtorki.parseRoute(hash) : null;
-    const journal = ELM.journal ? ELM.journal.parseRoute(hash) : null;
-    const today = ELM.today ? ELM.today.parseRoute(hash) : null;
-    const levelTest = ELM.levelTest ? ELM.levelTest.parseRoute(hash) : null;
-    const exercises = ELM.exercises ? ELM.exercises.parseRoute(hash) : null;
-    const lab = ELM.tenseLab ? ELM.tenseLab.parseRoute(hash) : null;
-    const statsRoute = ELM.statsPage ? ELM.statsPage.parseRoute(hash) : null;
-    const notesRoute = ELM.notes ? ELM.notes.parseRoute(hash) : null;
-    const fiszkiRoute = ELM.fiszki ? ELM.fiszki.parseRoute(hash) : null;
-    const pisanieRoute = ELM.pisanie ? ELM.pisanie.parseRoute(hash) : null;
-    const szlakRoute = ELM.szlak ? ELM.szlak.parseRoute(hash) : null;
+    const c1 = LM.c1 ? LM.c1.parseRoute(hash) : null;
+    const exam = LM.exams ? LM.exams.parseRoute(hash) : null;
+    const powtorki = LM.review ? LM.review.parseRoute(hash) : null;
+    const journal = LM.mistakes ? LM.mistakes.parseRoute(hash) : null;
+    const today = LM.today ? LM.today.parseRoute(hash) : null;
+    const levelTest = LM.placement ? LM.placement.parseRoute(hash) : null;
+    const exercises = LM.exercises ? LM.exercises.parseRoute(hash) : null;
+    const lab = LM.lab ? LM.lab.parseRoute(hash) : null;
+    const statsRoute = LM.statsPage ? LM.statsPage.parseRoute(hash) : null;
+    const notesRoute = LM.notes ? LM.notes.parseRoute(hash) : null;
+    const fiszkiRoute = LM.cards ? LM.cards.parseRoute(hash) : null;
+    const pisanieRoute = LM.writing ? LM.writing.parseRoute(hash) : null;
+    const szlakRoute = LM.trail ? LM.trail.parseRoute(hash) : null;
     state.route = null;
     state.c1Route = null;
     state.toolRoute = null;
@@ -246,7 +246,7 @@ window.ELM = window.ELM || {};
       state.view = "today";
       state.toolRoute = today;
     } else if (powtorki) {
-      state.view = "powtorki"; // „Fiszki i błędy”, zakładka „Na dziś” (js/powtorki.js)
+      state.view = "powtorki"; // „Fiszki i błędy”, zakładka „Na dziś” (js/review.js)
       state.toolRoute = powtorki;
     } else if (journal) {
       state.view = "journal";
@@ -267,10 +267,10 @@ window.ELM = window.ELM || {};
       state.view = "fiszki";
       state.toolRoute = fiszkiRoute;
     } else if (szlakRoute) {
-      state.view = "szlak"; // Szlak nauki A1 → C2 (js/szlak.js)
+      state.view = "szlak"; // Szlak nauki A1 → C2 (js/trail.js)
       state.toolRoute = szlakRoute;
     } else if (pisanieRoute) {
-      state.view = "pisanie"; // wzorcowe wypracowania z komentarzami (js/pisanie.js)
+      state.view = "pisanie"; // wzorcowe wypracowania z komentarzami (js/writing.js)
       state.toolRoute = pisanieRoute;
     } else if (c1) {
       state.view = "c1"; // zakładka „Certyfikat C1”
@@ -282,11 +282,11 @@ window.ELM = window.ELM || {};
       state.view = "level";
       state.ui.levelId = level[1].toUpperCase();
     } else {
-      state.route = ELM.niezbednik.parseRoute(hash);
+      state.route = LM.handbook.parseRoute(hash);
       state.view = state.route ? "page" : "home";
       if (state.route) {
-        const found = ELM.niezbednik.findItem(state.route.file);
-        if (found && ELM.LEVEL_IDS.indexOf(found.level) !== -1) state.ui.levelId = found.level;
+        const found = LM.handbook.findItem(state.route.file);
+        if (found && LM.LEVEL_IDS.indexOf(found.level) !== -1) state.ui.levelId = found.level;
       }
     }
   }
@@ -304,15 +304,15 @@ window.ELM = window.ELM || {};
     const previousHash = state.lastHash;
     if (previous === "level") state.listScroll = U.getScroll();
     setNavOpen(false);
-    if (ELM.sidebar) ELM.sidebar.afterNavigate();
-    if (ELM.motion) ELM.motion.cleanup(); // animacje poprzedniej strony (GSAP) sprzątamy
+    if (LM.sidebar) LM.sidebar.afterNavigate();
+    if (LM.motion) LM.motion.cleanup(); // animacje poprzedniej strony (GSAP) sprzątamy
     applyRoute();
     syncSection();
     document.documentElement.classList.remove("focus-mode"); // tryb skupienia trenera kończy się przy zmianie strony
     state.lastHash = location.hash;
-    if (state.view === "journal" && previousHash !== location.hash) ELM.journal.onEnter(state.toolRoute);
-    if (state.view === "leveltest" && previousHash !== location.hash) ELM.levelTest.onEnter();
-    if (state.view === "exercises" && previousHash !== location.hash) ELM.exercises.onEnter(state.toolRoute);
+    if (state.view === "journal" && previousHash !== location.hash) LM.mistakes.onEnter(state.toolRoute);
+    if (state.view === "leveltest" && previousHash !== location.hash) LM.placement.onEnter();
+    if (state.view === "exercises" && previousHash !== location.hash) LM.exercises.onEnter(state.toolRoute);
     saveUI();
     if (state.view !== "page") document.title = "English Levels Map (A1–C2)";
     if (state.view === "level" && previous === "page") {
@@ -367,24 +367,24 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   function renderAll(opts) {
-    ELM.profiles.render();
-    ELM.render.renderSidebar();
-    ELM.render.renderMain(opts);
+    LM.profiles.render();
+    LM.render.renderSidebar();
+    LM.render.renderMain(opts);
   }
 
   function renderMainOnly(opts) {
-    ELM.render.renderMain(opts);
+    LM.render.renderMain(opts);
   }
 
   /** Odświeża plakietki nauki w lewym panelu (np. liczbę powtórek na dziś). */
   function refreshLearning() {
-    ELM.render.renderToolsNav();
+    LM.render.renderToolsNav();
   }
 
   /** Odświeża liczniki i paski postępu bez przerysowania treści (fokus zostaje). */
   function refreshProgress() {
-    ELM.render.renderSidebar();
-    ELM.render.updateEssentialsProgress();
+    LM.render.renderSidebar();
+    LM.render.updateEssentialsProgress();
   }
 
   // =====================================================================
@@ -397,7 +397,7 @@ window.ELM = window.ELM || {};
     saveTimer = null;
     if (!state.content) return;
     if (!state.storageOk) return; // komunikat o braku pamięci jest już na banerze
-    const res = ELM.store.saveContent(state.content);
+    const res = LM.store.saveContent(state.content);
     if (!res.ok) reportSaveError("Nie zapisano treści! " + res.error);
   }
 
@@ -409,12 +409,12 @@ window.ELM = window.ELM || {};
   /** Zapisuje profile (razem z postępem każdego z nich). */
   function saveProgressNow() {
     if (!state.storageOk) return;
-    const res = ELM.store.saveProfiles(state.profiles);
+    const res = LM.store.saveProfiles(state.profiles);
     if (!res.ok) reportSaveError("Nie zapisano postępu! " + res.error);
   }
 
   function saveUI() {
-    if (state.storageOk) ELM.store.saveUI(state.ui);
+    if (state.storageOk) LM.store.saveUI(state.ui);
   }
 
   /** Błąd zapisu: pokazujemy baner (tylko raz dla tego samego komunikatu). */
@@ -434,8 +434,8 @@ window.ELM = window.ELM || {};
     if (checked) state.progress[essentialId] = true;
     else delete state.progress[essentialId];
     saveProgressNow();
-    ELM.markActivity(); // zmiana „Umiem” = dzień nauki
-    if (ELM.celebrate) ELM.celebrate.check(); // kamienie milowe „Umiem” i poziomów
+    LM.markActivity(); // zmiana „Umiem” = dzień nauki
+    if (LM.celebrate) LM.celebrate.check(); // kamienie milowe „Umiem” i poziomów
     refreshProgress();
   }
 
@@ -469,11 +469,11 @@ window.ELM = window.ELM || {};
   function replaceProfiles(profilesData, learning, fiszki, szlak) {
     state.profiles = profilesData;
     const ids = profilesData.profiles.map(function (p) { return p.id; });
-    if (ELM.profileData) ELM.profileData.applyImport(learning || null, ids);
-    if (ELM.fiszkiStore) ELM.fiszkiStore.applyImport(fiszki || null, ids);
-    if (ELM.szlakStore) ELM.szlakStore.applyImport(szlak || null, ids);
-    if (!fiszki && ELM.fiszkiStore) ELM.fiszkiStore.clearMigrationFlags(); // stary plik: Dziennik z pliku dostaje karty „Moje błędy”
-    if (ELM.reviews) ELM.reviews.resetMigrationMemo();
+    if (LM.profileData) LM.profileData.applyImport(learning || null, ids);
+    if (LM.cardsStore) LM.cardsStore.applyImport(fiszki || null, ids);
+    if (LM.trailStore) LM.trailStore.applyImport(szlak || null, ids);
+    if (!fiszki && LM.cardsStore) LM.cardsStore.clearMigrationFlags(); // stary plik: Dziennik z pliku dostaje karty „Moje błędy”
+    if (LM.reviewQueue) LM.reviewQueue.resetMigrationMemo();
     profilesChanged();
   }
 
@@ -498,7 +498,7 @@ window.ELM = window.ELM || {};
    */
   function withProfile(reason, fn) {
     if (getActiveProfile()) { fn(); return; }
-    ELM.profiles.requireProfile({ reason: reason }).then(function (ok) { if (ok) fn(); });
+    LM.profiles.requireProfile({ reason: reason }).then(function (ok) { if (ok) fn(); });
   }
 
   /** Ustawia state.progress na postęp aktywnego profilu (bez profilu: pusty). */
@@ -526,7 +526,7 @@ window.ELM = window.ELM || {};
   function profilesChanged() {
     syncProgress();
     saveProgressNow();
-    if (ELM.celebrate) ELM.celebrate.baseline();
+    if (LM.celebrate) LM.celebrate.baseline();
     if (state.content) renderAll();
   }
 
@@ -560,7 +560,7 @@ window.ELM = window.ELM || {};
         "data-tooltip": "Zamknij komunikat",
         "data-tooltip-align": "end",
         onclick: function () { banner.remove(); }
-      }, ELM.icon("x", { size: 18 }))
+      }, LM.icon("x", { size: 18 }))
     ]);
     document.getElementById("banners").appendChild(banner);
   }
@@ -581,8 +581,8 @@ window.ELM = window.ELM || {};
           type: "button",
           class: "btn btn-primary",
           onclick: function () {
-            ELM.store.backupCorrupt(loaded.raw);
-            ELM.dataMenu.importAll();
+            LM.store.backupCorrupt(loaded.raw);
+            LM.dataMenu.importAll();
           }
         }, "Importuj kopię treści…"),
         el("button", {
@@ -602,14 +602,14 @@ window.ELM = window.ELM || {};
           type: "button",
           class: "btn btn-danger",
           onclick: function () {
-            ELM.dialogs.confirm({
+            LM.dialogs.confirm({
               title: "Zacząć od listy bazowej?",
               message: "Uszkodzone dane zostaną odłożone w kopii awaryjnej (klucz elm_content_corrupt_backup), a aplikacja wystartuje od listy bazowej. Postęp ucznia zostaje.",
               confirmLabel: "Zacznij od nowa"
             }).then(function (ok) {
               if (!ok) return;
-              ELM.store.backupCorrupt(loaded.raw);
-              replaceContent(ELM.createDefaultData());
+              LM.store.backupCorrupt(loaded.raw);
+              replaceContent(LM.createDefaultData());
             });
           }
         }, "Zacznij od listy bazowej")
@@ -628,12 +628,12 @@ window.ELM = window.ELM || {};
       el("div", { class: "error-details", text: String(err && err.stack || err) }),
       el("div", { class: "error-actions" }, [
         el("button", { type: "button", class: "btn btn-primary", onclick: function () { location.reload(); } }, "Odśwież stronę"),
-        el("button", { type: "button", class: "btn btn-secondary", onclick: function () { ELM.dataMenu.importAll(); } }, "Importuj dane…")
+        el("button", { type: "button", class: "btn btn-secondary", onclick: function () { LM.dataMenu.importAll(); } }, "Importuj dane…")
       ])
     ]));
   }
 
-  ELM.app = {
+  LM.app = {
     init: init,
     getActiveLevel: getActiveLevel,
     getActiveCategory: getActiveCategory,
@@ -668,4 +668,4 @@ window.ELM = window.ELM || {};
   // Start po wczytaniu strony
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
-})(window.ELM);
+})(window.LM);

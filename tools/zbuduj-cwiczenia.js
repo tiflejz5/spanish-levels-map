@@ -10,9 +10,9 @@
  *   dane/lab-czasow.json, dane/lab-wybor-czasu.json   Laboratorium czasów
  *
  * Wyjście (GENEROWANE, nie edytuj ręcznie):
- *   cwiczenia/cwiczenia-indeks.js      ELM.CWICZENIA: mapa, opisy zestawów (bez zadań), mixy
- *   cwiczenia/tematy/<id>.js           ELM.EX_SETS[<id>] = pełny zestaw
- *   dane/lab-dane.js                   ELM.LAB = { tenses, tree }
+ *   cwiczenia/cwiczenia-indeks.js      LM.CWICZENIA: mapa, opisy zestawów (bez zadań), mixy
+ *   cwiczenia/tematy/<id>.js           LM.EX_SETS[<id>] = pełny zestaw
+ *   dane/lab-dane.js                   LM.LAB = { tenses, tree }
  *
  * Pozycja mapy bez pliku zestawu jest pomijana z ostrzeżeniem (nie przerywa budowania).
  * Poprawność treści sprawdza osobno: npm run validate (tools/waliduj-cwiczenia.js).
@@ -34,7 +34,7 @@ function readJson(file) {
 
 function writeJs(file, header, assignment) {
   fs.writeFileSync(file, "/* " + header + " — GENEROWANY przez tools/zbuduj-cwiczenia.js, nie edytuj ręcznie. */\n" +
-    "window.ELM = window.ELM || {};\n" + assignment + "\n", "utf8");
+    "window.LM = window.LM || {};\n" + assignment + "\n", "utf8");
 }
 
 const warnings = [];
@@ -51,7 +51,7 @@ function typeCounts(items) {
 global.window = global.window || global;
 require(path.join(ROOT, "js", "exercise-logic.js"));
 function pointsOf(items) {
-  return items.reduce(function (s, it) { return s + global.window.ELM.exLogic.maxPoints(it); }, 0);
+  return items.reduce(function (s, it) { return s + global.window.LM.exLogic.maxPoints(it); }, 0);
 }
 
 const topics = {};
@@ -66,7 +66,7 @@ Object.keys(map.topics || {}).forEach(function (topic) {
       return Object.assign({ topic: set.topic || null, level: set.level || null, tags: [], setId: setId }, it);
     });
     writeJs(path.join(SETS_DIR, setId + ".js"), "Zestaw ćwiczeń " + setId,
-      "(ELM.EX_SETS = ELM.EX_SETS || {})[" + JSON.stringify(setId) + "] = " + JSON.stringify(set) + ";");
+      "(LM.EX_SETS = LM.EX_SETS || {})[" + JSON.stringify(setId) + "] = " + JSON.stringify(set) + ";");
     (topics[topic] = topics[topic] || []).push(setId);
     sets[setId] = {
       id: setId,
@@ -101,7 +101,7 @@ examRegistry.forEach(function (exam) {
         });
         const rel = "niezbednik/" + exam.id + "/" + meta.file.replace(/\.json$/, ".js");
         writeJs(path.join(ROOT, rel), "Zestaw egzaminu " + meta.id,
-          "(ELM.EX_SETS = ELM.EX_SETS || {})[" + JSON.stringify(meta.id) + "] = " + JSON.stringify(set) + ";");
+          "(LM.EX_SETS = LM.EX_SETS || {})[" + JSON.stringify(meta.id) + "] = " + JSON.stringify(set) + ";");
         sets[meta.id] = {
           id: meta.id, topic: null, level: set.level || null, title: set.title || meta.label, intro: set.intro || "",
           count: set.items.length, points: pointsOf(set.items), types: typeCounts(set.items), defaultMode: set.defaultMode === "exam" ? "exam" : "learn",
@@ -125,11 +125,11 @@ if (fs.existsSync(path.join(DANE, "lab-czasow.json"))) {
   tenses.forEach(function (t) {
     (t.niezbednikIds || []).forEach(function (n) { if (!tenseByTopic[n]) tenseByTopic[n] = { id: t.id, name: t.name }; });
   });
-  writeJs(path.join(DANE, "lab-dane.js"), "Laboratorium czasów", "ELM.LAB = " + JSON.stringify(lab) + ";");
+  writeJs(path.join(DANE, "lab-dane.js"), "Laboratorium czasów", "LM.LAB = " + JSON.stringify(lab) + ";");
 }
 
 writeJs(path.join(ROOT, "cwiczenia", "cwiczenia-indeks.js"), "Indeks ćwiczeń",
-  "ELM.CWICZENIA = " + JSON.stringify({ version: 1, topics: topics, sets: sets, mixes: mixes, tenseByTopic: tenseByTopic }) + ";");
+  "LM.CWICZENIA = " + JSON.stringify({ version: 1, topics: topics, sets: sets, mixes: mixes, tenseByTopic: tenseByTopic }) + ";");
 
 const nItems = Object.keys(sets).reduce(function (s, k) { return s + sets[k].count; }, 0);
 console.log("Ćwiczenia: zestawy " + Object.keys(sets).length + ", zadania " + nItems + ", mixy " + mixes.length +

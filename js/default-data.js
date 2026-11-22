@@ -7,13 +7,13 @@
  * Jeśli dołączony jest js/base-content.js, startujemy od bazowej listy
  * umiejętności. Bez niego startujemy od pustego szkieletu (poniżej).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   // Stała lista poziomów CEFR. Poziomów nie można usuwać w aplikacji.
-  ELM.LEVEL_IDS = ["A1", "A2", "B1", "B2", "C1", "C2"];
+  LM.LEVEL_IDS = ["A1", "A2", "B1", "B2", "C1", "C2"];
 
   // Kategorie, z którymi startuje PUSTA aplikacja.
   // Aby dodać kolejną kategorię domyślną, dopisz np.:
@@ -21,7 +21,7 @@ window.ELM = window.ELM || {};
   // (id musi być unikalne i nie powinno się później zmieniać).
   // Uwaga: zmiana działa tylko dla nowych danych / po „Resetuj dane”.
   // Istniejące dane dodasz w aplikacji przyciskiem „+ Kategoria”.
-  ELM.DEFAULT_CATEGORIES = [
+  LM.DEFAULT_CATEGORIES = [
     { id: "cat_grammar", name: "Gramatyka i czasy" }
   ];
 
@@ -30,7 +30,7 @@ window.ELM = window.ELM || {};
   // Profile i postęp „Umiem” zapisują się tylko w tej przeglądarce.
 
   /** Zwraca NOWĄ, pustą listę profili. */
-  ELM.createEmptyProfiles = function () {
+  LM.createEmptyProfiles = function () {
     return { version: 2, activeId: null, profiles: [] };
   };
 
@@ -38,22 +38,22 @@ window.ELM = window.ELM || {};
    * Dane startowe: bazowa lista z js/base-content.js (jeśli jest dołączona),
    * w przeciwnym razie pusty szkielet. Zawsze zwraca NOWĄ kopię.
    */
-  ELM.createDefaultData = function () {
-    if (ELM.BASE_CONTENT) return JSON.parse(JSON.stringify(ELM.BASE_CONTENT));
-    return ELM.createEmptyData();
+  LM.createDefaultData = function () {
+    if (LM.BASE_CONTENT) return JSON.parse(JSON.stringify(LM.BASE_CONTENT));
+    return LM.createEmptyData();
   };
 
   /** Zwraca NOWĄ kopię pustego szkieletu danych. */
-  ELM.createEmptyData = function () {
+  LM.createEmptyData = function () {
     const data = {
       version: 1,
-      categories: ELM.DEFAULT_CATEGORIES.map(function (c) {
+      categories: LM.DEFAULT_CATEGORIES.map(function (c) {
         return { id: c.id, name: c.name };
       }),
       levels: []
     };
 
-    ELM.LEVEL_IDS.forEach(function (levelId) {
+    LM.LEVEL_IDS.forEach(function (levelId) {
       const level = { id: levelId, description: "", content: {} };
       // Dla każdej kategorii pusta lista essentials i tematów
       data.categories.forEach(function (cat) {
@@ -64,4 +64,4 @@ window.ELM = window.ELM || {};
 
     return data;
   };
-})(window.ELM);
+})(window.LM);

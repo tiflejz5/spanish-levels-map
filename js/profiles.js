@@ -16,19 +16,19 @@
  * Bez żadnego profilu treść strony to ekran powitalny (renderWelcome).
  * Profile i postęp zapisują się tylko w tej przeglądarce (localStorage).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   const MAX_NAME = 30;
   const CLOSE_DELAY_MS = 250;
 
-  function app() { return ELM.app; }
-  function data() { return ELM.state.profiles; }
+  function app() { return LM.app; }
+  function data() { return LM.state.profiles; }
 
   // Stan menu
   let root = null, button = null, menu = null;
@@ -111,14 +111,14 @@ window.ELM = window.ELM || {};
         el("span", { class: "profile-btn-name", text: active.name }),
         el("span", { class: "visually-hidden", text: " – otwórz menu profilu" })
       ]),
-      el("span", { class: "profile-caret", "aria-hidden": "true" }, ELM.icon("chevron-down", { size: 16 }))
+      el("span", { class: "profile-caret", "aria-hidden": "true" }, LM.icon("chevron-down", { size: 16 }))
     ] : [
-      el("span", { class: "avatar", "aria-hidden": "true" }, ELM.icon("user-round", { size: 18 })),
+      el("span", { class: "avatar", "aria-hidden": "true" }, LM.icon("user-round", { size: 18 })),
       el("span", { class: "profile-btn-text" }, [
         el("span", { class: "profile-btn-name", text: "Profil" }),
         el("span", { class: "visually-hidden", text: " – brak profilu, otwórz menu" })
       ]),
-      el("span", { class: "profile-caret", "aria-hidden": "true" }, ELM.icon("chevron-down", { size: 16 }))
+      el("span", { class: "profile-caret", "aria-hidden": "true" }, LM.icon("chevron-down", { size: 16 }))
     ]);
     // Nazwa dostępna zawiera widoczny tekst („Profil” + nazwa; WCAG 2.5.3). Poniżej ~480 px przycisk zwija się do awatara
     // (spec v7 14, P5), więc pełna nazwa musi być w aria-label, a nie tylko w ukrytym tekście.
@@ -167,7 +167,7 @@ window.ELM = window.ELM || {};
           avatar(p),
           el("span", { class: "profile-item-name", text: p.name }),
           el("span", { class: "profile-item-count", text: app().countDone(p.progress) + " umiem" }),
-          el("span", { class: "profile-check", "aria-hidden": "true" }, isActive ? ELM.icon("check", { size: 16 }) : null)
+          el("span", { class: "profile-check", "aria-hidden": "true" }, isActive ? LM.icon("check", { size: 16 }) : null)
         ]),
         el("button", {
           type: "button",
@@ -176,7 +176,7 @@ window.ELM = window.ELM || {};
           "data-tooltip": "Zmień nazwę",
           "data-menu-item": "",
           onclick: function () { startForm({ type: "rename", id: p.id }); }
-        }, ELM.icon("pencil", { size: 18 })),
+        }, LM.icon("pencil", { size: 18 })),
         el("button", {
           type: "button",
           class: "icon-btn menu-icon is-danger",
@@ -185,7 +185,7 @@ window.ELM = window.ELM || {};
           "data-tooltip-align": "end",
           "data-menu-item": "",
           onclick: function () { remove(p.id); }
-        }, ELM.icon("x", { size: 18 }))
+        }, LM.icon("x", { size: 18 }))
       ]));
     });
 
@@ -210,12 +210,12 @@ window.ELM = window.ELM || {};
         class: "menu-action menu-add",
         "data-menu-item": "",
         onclick: function () { startForm({ type: "add" }); }
-      }, ELM.ui.withIcon("plus", "Dodaj profil")));
+      }, LM.ui.withIcon("plus", "Dodaj profil")));
     }
 
     // Sekcja „Ustawienia nauki” (dla aktywnego profilu)
-    if (activeId && ELM.profileData) {
-      const prefs = ELM.profileData.prefs();
+    if (activeId && LM.profileData) {
+      const prefs = LM.profileData.prefs();
       parts.push(el("div", { class: "menu-sep", role: "separator" }));
       parts.push(el("p", { class: "menu-title", text: "Ustawienia nauki" }));
       [
@@ -232,8 +232,8 @@ window.ELM = window.ELM || {};
           "data-menu-item": "",
           "data-switch": sw[0],
           onclick: function () {
-            ELM.profileData.setPref(sw[0], !on);
-            if (ELM.fiszkiWords) ELM.fiszkiWords.prefsChanged();
+            LM.profileData.setPref(sw[0], !on);
+            if (LM.words) LM.words.prefsChanged();
             renderMenu();
             focusInMenu('[data-switch="' + sw[0] + '"]');
           }
@@ -257,16 +257,16 @@ window.ELM = window.ELM || {};
           class: "menu-action", href: it[0], "data-menu-item": "",
           "aria-current": location.hash === it[0] ? "page" : null,
           onclick: function () { close(false); }
-        }, ELM.ui.withIcon(it[1], it[2])));
+        }, LM.ui.withIcon(it[1], it[2])));
       });
     }
 
     // Sekcja „Dane”
     parts.push(el("div", { class: "menu-sep", role: "separator" }));
     parts.push(el("p", { class: "menu-title", text: "Dane" }));
-    parts.push(dataAction("Eksportuj dane", function () { ELM.dataMenu.exportAll(); }, false, "download"));
-    parts.push(dataAction("Importuj dane…", function () { ELM.dataMenu.importAll(); }, false, "upload"));
-    parts.push(dataAction("Resetuj dane…", function () { ELM.dataMenu.resetAll(); }, true, "rotate-ccw"));
+    parts.push(dataAction("Eksportuj dane", function () { LM.dataMenu.exportAll(); }, false, "download"));
+    parts.push(dataAction("Importuj dane…", function () { LM.dataMenu.importAll(); }, false, "upload"));
+    parts.push(dataAction("Resetuj dane…", function () { LM.dataMenu.resetAll(); }, true, "rotate-ccw"));
     parts.push(el("p", { class: "menu-note", text: "Dane zapisują się tylko w tej przeglądarce. Rób eksport co jakiś czas." }));
 
     menu.replaceChildren.apply(menu, parts);
@@ -278,7 +278,7 @@ window.ELM = window.ELM || {};
       class: "menu-action" + (danger ? " is-danger" : ""),
       "data-menu-item": "",
       onclick: function () { close(true); fn(); }
-    }, iconName ? ELM.ui.withIcon(iconName, label) : label);
+    }, iconName ? LM.ui.withIcon(iconName, label) : label);
   }
 
   /** Formularz nazwy (dodawanie / zmiana nazwy). onSubmit zwraca komunikat błędu albo null. */
@@ -435,7 +435,7 @@ window.ELM = window.ELM || {};
     if (index === -1) return;
     const profile = list[index];
     close(false);
-    ELM.dialogs.confirm({
+    LM.dialogs.confirm({
       title: "Usunąć profil?",
       message: "Profil „" + profile.name + "” zostanie usunięty razem z jego postępem (zaznaczenia „Umiem”: " +
         app().countDone(profile.progress) + "), dziennikiem błędów, serią nauki i wynikiem testu poziomu. Tej operacji nie można cofnąć.",
@@ -443,9 +443,9 @@ window.ELM = window.ELM || {};
     }).then(function (ok) {
       if (ok) {
         list.splice(index, 1);
-        if (ELM.profileData) ELM.profileData.removeProfile(profileId);
-        if (ELM.fiszkiStore) ELM.fiszkiStore.removeProfile(profileId);
-        if (ELM.szlakStore) ELM.szlakStore.removeProfile(profileId);
+        if (LM.profileData) LM.profileData.removeProfile(profileId);
+        if (LM.cardsStore) LM.cardsStore.removeProfile(profileId);
+        if (LM.trailStore) LM.trailStore.removeProfile(profileId);
         if (data().activeId === profileId) {
           // Po usunięciu ostatniego profilu: brak aktywnego → ekran powitalny
           data().activeId = list.length ? list[Math.min(index, list.length - 1)].id : null;
@@ -482,7 +482,7 @@ window.ELM = window.ELM || {};
       app().addProfile(v.name);
       return true;
     }
-    const dlg = ELM.dialogs.open({
+    const dlg = LM.dialogs.open({
       title: "Utwórz profil",
       className: "dialog-guest",
       body: [
@@ -532,17 +532,17 @@ window.ELM = window.ELM || {};
         e.preventDefault();
         const v = validateName(input.value, null);
         if (v.error) { error.textContent = v.error; input.setAttribute("aria-invalid", "true"); input.focus(); thenTest = false; return; }
-        const goTest = thenTest && ELM.levelTest;
+        const goTest = thenTest && LM.placement;
         thenTest = false;
         app().addProfile(v.name);
-        if (goTest) location.hash = ELM.levelTest.HASH;
-        else if (ELM.szlak && /^#\/dzis\/?$/.test(location.hash)) location.hash = ELM.szlak.HASH; // pierwsze uruchomienie: wybór „test poziomu albo od A1” na Szlaku
+        if (goTest) location.hash = LM.placement.HASH;
+        else if (LM.trail && /^#\/dzis\/?$/.test(location.hash)) location.hash = LM.trail.HASH; // pierwsze uruchomienie: wybór „test poziomu albo od A1” na Szlaku
       }
     }, [
       el("label", { class: "field-label", for: "welcome-name", text: "Nazwa profilu" }),
       el("div", { class: "welcome-row" }, [input, el("button", { type: "submit", class: "btn btn-primary" }, "Dodaj profil")]),
       error,
-      ELM.levelTest ? el("div", { class: "welcome-test" }, [
+      LM.placement ? el("div", { class: "welcome-test" }, [
         el("p", { class: "tool-note", text: "Nie wiesz, od którego poziomu zacząć? Po dodaniu profilu zrób szybki test poziomu (12 pytań, ok. 6 minut)." }),
         el("button", { type: "submit", class: "btn btn-secondary", onclick: function () { thenTest = true; } }, "Dodaj profil i zrób test poziomu")
       ]) : null
@@ -563,11 +563,11 @@ window.ELM = window.ELM || {};
     input.focus();
   }
 
-  ELM.profiles = {
+  LM.profiles = {
     render: render,
     renderWelcome: renderWelcome,
     requireProfile: requireProfile,
     bindEvents: bindEvents,
     validateName: validateName
   };
-})(window.ELM);
+})(window.LM);

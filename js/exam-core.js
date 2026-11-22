@@ -1,7 +1,7 @@
 /*
  * exam-core.js — moduł „Egzaminy” (spec 05).
  *
- * Rejestr (dane/egzaminy-rejestr.js → ELM.EXAM_REGISTRY, z dane/egzaminy-manifest.json) jest
+ * Rejestr (dane/egzaminy-rejestr.js → LM.EXAM_REGISTRY, z dane/egzaminy-manifest.json) jest
  * jedynym źródłem etykiet, kodów, kolorów, statusów i opisów egzaminów. Kod nie zna ich nazw.
  *
  *   status „active” + folder w nowym formacie (np. Egzamin ósmoklasisty):
@@ -14,36 +14,36 @@
  *   „existing” (Certyfikat C1): własny, niezmieniony moduł js/c1-*.js
  *
  * Dane egzaminu (manifest, strony, trenery) ładujemy dopiero po wejściu do zakładki:
- * niezbednik/<id>-dane.js (tools/zbuduj-egzaminy.js). Dane użytkownika: ELM.profileData
+ * niezbednik/<id>-dane.js (tools/zbuduj-egzaminy.js). Dane użytkownika: LM.profileData
  * (elm_exams_v1, per profil): data egzaminu, szkice pisania, odhaczone listy.
  *
  * Ramki „Na egzaminie …” na stronach tematów: osobna ramka dla każdego egzaminu z powiązaniem,
  * w kolejności z rejestru (C1 rysuje swój moduł — bez zmian).
  * Klimat wizualny: html[data-section="<id egzaminu>"] (tokeny w css/style.css).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const HIDDEN_SECTIONS = ["Odpowiedzi", "Przykładowe odpowiedzi"];
 
-  function reg() { return ELM.EXAM_REGISTRY || { exams: [], links: {}, sets: {} }; }
+  function reg() { return LM.EXAM_REGISTRY || { exams: [], links: {}, sets: {} }; }
   function exams() { return reg().exams; }
   function byId(id) { return exams().find(function (e) { return e.id === id; }) || null; }
-  function pd() { return ELM.profileData; }
-  function plural(n, one, few, many) { return ELM.c1 ? ELM.c1.plural(n, one, few, many) : many; }
+  function pd() { return LM.profileData; }
+  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
   /** Egzamin obsługiwany przez ten moduł (nie istniejący C1). */
   function isGeneric(e) { return e && !e.existing; }
   function base(e) { return "#" + e.route; }
-  function data(e) { return (ELM.EXAMS && ELM.EXAMS[e.id]) || null; }
+  function data(e) { return (LM.EXAMS && LM.EXAMS[e.id]) || null; }
 
   function load(e) {
     if (data(e)) return Promise.resolve(data(e));
-    const src = (ELM.exercises ? ELM.exercises.asset("niezbednik/" + e.id + "-dane.js") : "niezbednik/" + e.id + "-dane.js");
-    return ELM.loadScript(src).then(function () { return data(e); }, function (err) { console.warn(err.message + " — uruchom: npm run build"); return null; });
+    const src = (LM.exercises ? LM.exercises.asset("niezbednik/" + e.id + "-dane.js") : "niezbednik/" + e.id + "-dane.js");
+    return LM.loadScript(src).then(function () { return data(e); }, function (err) { console.warn(err.message + " — uruchom: npm run build"); return null; });
   }
 
   // =====================================================================
@@ -118,7 +118,7 @@ window.ELM = window.ELM || {};
 
   /** Strona startowa egzaminu: pełna okładka; podstrony: kompaktowa (spec 19, B3). */
   function masthead(e, withCount) {
-    return ELM.examCover[withCount ? "compact" : "full"](e);
+    return LM.examCover[withCount ? "compact" : "full"](e);
   }
 
   // =====================================================================
@@ -126,7 +126,7 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   function crumb(e, text) {
-    return ELM.ui.breadcrumbs(text ? [{ label: e.label, href: base(e) }, { label: text }] : [{ label: e.label, href: base(e) }]);
+    return LM.ui.breadcrumbs(text ? [{ label: e.label, href: base(e) }, { label: text }] : [{ label: e.label, href: base(e) }]);
   }
 
   function notFound(e, message) {
@@ -162,8 +162,8 @@ window.ELM = window.ELM || {};
     const prev = all[i - 1], next = all[i + 1];
     if (!prev && !next) return null;
     return el("nav", { class: "c1-pager", "aria-label": "Sąsiednie strony" }, [
-      prev ? el("a", { class: "btn btn-secondary", href: hrefPage(e, prev.id) }, ELM.ui.withIcon("arrow-left", prev.label)) : el("span"),
-      next ? el("a", { class: "btn btn-secondary", href: hrefPage(e, next.id) }, [next.label, ELM.icon("arrow-right", { size: 18 })]) : null
+      prev ? el("a", { class: "btn btn-secondary", href: hrefPage(e, prev.id) }, LM.ui.withIcon("arrow-left", prev.label)) : el("span"),
+      next ? el("a", { class: "btn btn-secondary", href: hrefPage(e, next.id) }, [next.label, LM.icon("arrow-right", { size: 18 })]) : null
     ]);
   }
 
@@ -173,7 +173,7 @@ window.ELM = window.ELM || {};
     // Źródło faktów: Cambridge English (B2 First) albo CKE (E8, matury) — po domenie linków z manifestu
     const cambridge = links.some(function (l) { return /(^|\.)cambridgeenglish\.org\//.test(l.url.replace(/^https:\/\//, "")); });
     return el("aside", { class: "callout callout-trap exam-facts-note", "aria-label": "Aktualność informacji" }, [
-      el("p", { class: "callout-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, ELM.icon("info", { size: 20 })), "Stan na październik 2026"]),
+      el("p", { class: "callout-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon("info", { size: 20 })), "Stan na październik 2026"]),
       el("p", null, [(cambridge
         ? "Format egzaminu pochodzi z oficjalnej strony Cambridge English. Terminy ustala centrum egzaminacyjne. Przed egzaminem sprawdź aktualne informacje"
         : "Format, punktacja i terminy pochodzą z informatora i komunikatów CKE. Przed egzaminem sprawdź aktualny komunikat CKE") +
@@ -185,8 +185,8 @@ window.ELM = window.ELM || {};
 
   // Linki [[id]] w stronach egzaminu: najpierw dotychczasowe (zestawy C1, tematy), potem strony bieżącego egzaminu
   let wikiExam = null;
-  const prevResolve = ELM.markdown.resolveWiki;
-  ELM.markdown.resolveWiki = function (id) {
+  const prevResolve = LM.markdown.resolveWiki;
+  LM.markdown.resolveWiki = function (id) {
     const r = prevResolve ? prevResolve(id) : null;
     if (r || !wikiExam) return r;
     const f = findPage(wikiExam, id);
@@ -197,27 +197,27 @@ window.ELM = window.ELM || {};
     const found = findPage(e, id);
     const text = found && data(e).pages[id];
     if (!text) { view.appendChild(notFound(e)); return null; }
-    const doc = ELM.markdown.parse(text);
+    const doc = LM.markdown.parse(text);
     wikiExam = e;
     view.appendChild(el("div", { class: "c1-page-tools" }, [
       crumb(e, found.section.label),
       el("div", { class: "c1-page-actions" }, [
-        id === "przeglad" ? ELM.examCover.pinButton(e) : null,
-        ELM.notes ? ELM.notes.button(e.code.toLowerCase() + ":" + id, { title: e.code + " · " + (doc.meta.title || found.page.label), route: location.hash }) : null
+        id === "przeglad" ? LM.examCover.pinButton(e) : null,
+        LM.notes ? LM.notes.button(e.code.toLowerCase() + ":" + id, { title: e.code + " · " + (doc.meta.title || found.page.label), route: location.hash }) : null
       ])
     ]));
-    const article = el("article", { class: "md c1-page exam-page" }, ELM.markdown.render(doc.blocks, { hiddenSections: HIDDEN_SECTIONS }));
+    const article = el("article", { class: "md c1-page exam-page" }, LM.markdown.render(doc.blocks, { hiddenSections: HIDDEN_SECTIONS }));
     wikiExam = null; // kontekst linków [[id]] tylko na czas rysowania strony egzaminu
     if (id === "przeglad") {
       // Nota o aktualności (stan na październik 2026 + link do CKE) — chyba że treść strony już ją ma
       const hasNote = /Stan na październik 2026/i.test(text);
-      ELM.c1.insertAfterIntro(article, el("div", { class: "exam-overview-top" }, [ELM.examDate.cardFor(e), hasNote ? null : sourcesNote(e)]));
+      LM.c1.insertAfterIntro(article, el("div", { class: "exam-overview-top" }, [LM.examDate.cardFor(e), hasNote ? null : sourcesNote(e)]));
     }
     wireTasks(e, article, id);
-    if (ELM.callouts) ELM.callouts.apply(article);
+    if (LM.callouts) LM.callouts.apply(article);
     view.appendChild(article);
-    if (/^(wypowiedz-pisemna|writing)(-|$)/.test(id) && ELM.pisanie) view.appendChild(ELM.pisanie.pageSection(e.id));
-    if (id === "przeglad" && ELM.fiszki && ELM.fiszki.examTile) { const ft = ELM.fiszki.examTile(e.id); if (ft) view.appendChild(ft); }
+    if (/^(wypowiedz-pisemna|writing)(-|$)/.test(id) && LM.writing) view.appendChild(LM.writing.pageSection(e.id));
+    if (id === "przeglad" && LM.cards && LM.cards.examTile) { const ft = LM.cards.examTile(e.id); if (ft) view.appendChild(ft); }
     const nav = pageNav(e, id);
     if (nav) view.appendChild(nav);
     return doc.meta.title || found.page.label;
@@ -232,7 +232,7 @@ window.ELM = window.ELM || {};
     view.appendChild(el("p", { class: "c1-lead", text: "Zestawy w formacie zadań egzaminacyjnych. Wynik i błędy zapisują się w Twoim profilu, a błędy trafiają do Dziennika błędów." }));
     const box = el("div", { class: "exam-groups" }, el("p", { class: "tool-note", text: "Wczytuję zestawy…" }));
     view.appendChild(box);
-    ELM.exercises.loadIndex().then(function (index) {
+    LM.exercises.loadIndex().then(function (index) {
       box.replaceChildren();
       section.exerciseGroups.forEach(function (g) {
         const cards = g.sets.map(function (s) {
@@ -241,9 +241,9 @@ window.ELM = window.ELM || {};
           return index.sets[s.id];
         }).filter(Boolean).map(function (meta) {
           if (meta.nodeType) return meta;
-          const card = ELM.exercises.setCard(meta);
-          if (meta.listening) card.insertBefore(el("p", { class: "exam-tts-note" }, [ELM.icon("volume-2", { size: 14 }), " Głos syntezowany w przeglądarce"]), card.children[1]);
-          if (meta.hasPassage) card.insertBefore(el("p", { class: "exam-tts-note" }, [ELM.icon("file-text", { size: 14 }), " Tekst do przeczytania"]), card.children[1]);
+          const card = LM.exercises.setCard(meta);
+          if (meta.listening) card.insertBefore(el("p", { class: "exam-tts-note" }, [LM.icon("volume-2", { size: 14 }), " Głos syntezowany w przeglądarce"]), card.children[1]);
+          if (meta.hasPassage) card.insertBefore(el("p", { class: "exam-tts-note" }, [LM.icon("file-text", { size: 14 }), " Tekst do przeczytania"]), card.children[1]);
           return card;
         });
         box.appendChild(el("section", { class: "exam-group", "aria-label": g.label }, [
@@ -265,7 +265,7 @@ window.ELM = window.ELM || {};
       el("p", { class: "ex-set-score" + (score ? "" : " is-empty") }, score
         ? [el("span", null, ["Najlepszy: ", el("strong", { class: "num", text: score.best.score + "/" + score.best.total })]), el("span", null, ["Ostatni: ", el("span", { class: "num", text: score.last.score + "/" + score.last.total })])]
         : "Jeszcze nie rozwiązany"),
-      el("a", { class: "btn btn-primary btn-small", href: base(e) + "/cwiczenia/" + s.id, "aria-label": (score ? "Zacznij ponownie: " : "Zacznij: ") + (ex.title || s.label) }, ELM.ui.withIcon("play", score ? "Zacznij ponownie" : "Zacznij"))
+      el("a", { class: "btn btn-primary btn-small", href: base(e) + "/cwiczenia/" + s.id, "aria-label": (score ? "Zacznij ponownie: " : "Zacznij: ") + (ex.title || s.label) }, LM.ui.withIcon("play", score ? "Zacznij ponownie" : "Zacznij"))
     ]);
   }
 
@@ -277,7 +277,7 @@ window.ELM = window.ELM || {};
     sections(e).forEach(function (s) { (s.exerciseGroups || []).forEach(function (g) { g.sets.forEach(function (x) { if (x.id === id) found = { set: x, group: g }; }); }); });
     const ex = data(e).exercises && data(e).exercises[id];
     if (!found || !ex) { view.appendChild(notFound(e, "Nie znaleziono takiego zestawu ćwiczeń.")); return null; }
-    return ELM.c1Exercises.renderWith(view, {
+    return LM.c1Exercises.renderWith(view, {
       ex: ex,
       found: found,
       crumb: function (label) { return crumb(e, label); },
@@ -320,7 +320,7 @@ window.ELM = window.ELM || {};
 
   function writingTrainer(e) {
     if (trainers[e.id]) return trainers[e.id];
-    const L = ELM.examLogic;
+    const L = LM.examLogic;
     const href = function (taskId) { return base(e) + "/trening-pisanie" + (taskId ? "/" + taskId : ""); };
     const cam = CAMBRIDGE_WRITING[e.id] || null;
     const wordsLabel = cam
@@ -329,7 +329,7 @@ window.ELM = window.ELM || {};
     const unit = cam ? "słów" : "wyrazów";
     const low = LOW_SCOPE[e.id] || LOW_DEFAULT;
     const genreName = function (g) { return cam ? cam.genres[g] || g : GENRES[g] || g; };
-    trainers[e.id] = ELM.writingTrainer.create({
+    trainers[e.id] = LM.writingTrainer.create({
       trainer: function () { return data(e) && data(e).trainers["trening-pisanie"]; },
       section: function () { return trainerSection(e); },
       crumb: function (label) { return crumb(e, label); },
@@ -414,7 +414,7 @@ window.ELM = window.ELM || {};
 
   function speakingTrainer(e) {
     if (speakers[e.id]) return speakers[e.id];
-    speakers[e.id] = ELM.speakingTrainer.create({
+    speakers[e.id] = LM.speakingTrainer.create({
       data: function () {
         const s = speakingSection(e);
         return s && data(e) ? data(e).trainers[speakingTrainerOf(s).id] || null : null;
@@ -450,13 +450,13 @@ window.ELM = window.ELM || {};
     view.appendChild(el("section", { class: "card soon-card", "aria-labelledby": "soon-title" }, [
       soonIllustration(),
       el("div", { class: "soon-body" }, [
-        el("p", { class: "soon-badge" }, [ELM.icon("clock", { size: 16 }), "W trakcie pracy"]),
+        el("p", { class: "soon-badge" }, [LM.icon("clock", { size: 16 }), "W trakcie pracy"]),
         el("h1", { class: "soon-title", id: "soon-title", text: e.label }),
         e.soonDescription ? el("p", { class: "soon-desc", text: e.soonDescription }) : null,
         el("p", { class: "tool-note", text: "Pracujemy nad tą zakładką. Wróć wkrótce." }),
         el("div", { class: "tool-actions" }, [
-          el("a", { class: "btn btn-primary", href: "#/dzis" }, ELM.ui.withIcon("sunrise", "Wróć do Dziś")),
-          active ? el("a", { class: "btn btn-secondary", href: base(active) }, ELM.ui.withIcon("arrow-right", "Zobacz: " + active.label)) : null
+          el("a", { class: "btn btn-primary", href: "#/dzis" }, LM.ui.withIcon("sunrise", "Wróć do Dziś")),
+          active ? el("a", { class: "btn btn-secondary", href: base(active) }, LM.ui.withIcon("arrow-right", "Zobacz: " + active.label)) : null
         ])
       ])
     ]));
@@ -494,10 +494,10 @@ window.ELM = window.ELM || {};
     else if (route.kind === "set") title = renderC1Set(view, e, route.id);
     else if (route.kind === "writing") title = writingTrainer(e).render(view, route.task);
     else if (route.kind === "speaking") {
-      if (ELM.speakingTrainer) title = speakingTrainer(e).render(view);
+      if (LM.speakingTrainer) title = speakingTrainer(e).render(view);
       else {
         view.appendChild(el("p", { class: "tool-note", role: "status", text: "Wczytuję trener…" }));
-        ELM.loadModule("js/recorder.js").then(function () { return ELM.loadModule("js/speaking-trainer.js"); }).then(function () {
+        LM.loadModule("js/recorder.js").then(function () { return LM.loadModule("js/speaking-trainer.js"); }).then(function () {
           const now = parseRoute(location.hash);
           if (now && now.examId === e.id && now.kind === "speaking") render(now);
         }, function (err) { console.warn(err.message); view.replaceChildren(notFound(e, "Nie udało się wczytać trenera. Odśwież stronę.")); });
@@ -520,8 +520,8 @@ window.ELM = window.ELM || {};
       class: "c1-nav-link" + (active ? " is-active" : "") + (extraClass ? " " + extraClass : ""),
       href: href, "aria-current": active ? "page" : null
     }, [
-      extraClass === "is-trainer" ? ELM.icon("pencil", { size: 16, class: "c1-nav-icon" }) : null,
-      extraClass === "is-trainer is-speaking" ? ELM.icon("mic", { size: 16, class: "c1-nav-icon" }) : null,
+      extraClass === "is-trainer" ? LM.icon("pencil", { size: 16, class: "c1-nav-icon" }) : null,
+      extraClass === "is-trainer is-speaking" ? LM.icon("mic", { size: 16, class: "c1-nav-icon" }) : null,
       el("span", { class: "c1-nav-label", text: label }),
       badge ? el("span", { class: "c1-nav-badge", text: badge }) : null
     ]));
@@ -529,7 +529,7 @@ window.ELM = window.ELM || {};
 
   /** Odliczanie do kafelka: „15 d”, „dziś”, albo null (brak daty / po terminie). */
   function tileDays(e) {
-    const i = ELM.examMy.info(e.id);
+    const i = LM.examMy.info(e.id);
     if (i.days === null || i.days < 0) return null;
     return i.days === 0 ? "dziś" : i.days + " d";
   }
@@ -540,8 +540,8 @@ window.ELM = window.ELM || {};
     const c1 = !!e.existing;
     const style = c1 ? "--exam-accent:var(--c1-navy);--exam-accent-2:var(--c1-gold)"
       : e.accent ? "--exam-accent:" + e.accent + ";--exam-accent-2:" + (e.accent2 || e.accent) : null;
-    const info = ELM.examMy.info(e.id);
-    const countdown = !soon && info.days !== null && info.days >= 0 ? ELM.examDate.stateText(info.days) : "";
+    const info = LM.examMy.info(e.id);
+    const countdown = !soon && info.days !== null && info.days >= 0 ? LM.examDate.stateText(info.days) : "";
     return el("a", {
       class: "sb-item exam-chip" + (c1 ? " is-c1" : "") + (soon ? " is-soon" : "") + (here ? " is-active" : ""),
       href: base(e),
@@ -556,21 +556,21 @@ window.ELM = window.ELM || {};
       el("span", { class: "sb-label" }, [
         el("span", { class: "sb-label-title", text: e.label }),
         soon ? el("span", { class: "sb-label-sub" }, el("span", { class: "exam-soon-tag", text: "wkrótce" }))
-          : el("span", { class: "sb-label-sub", text: ELM.examMy.navSub(e) })
+          : el("span", { class: "sb-label-sub", text: LM.examMy.navSub(e) })
       ])
     ]);
   }
 
   /** Egzamin otwarty na ekranie (generyczny lub C1) – zostaje w pasku, nawet jeśli nie jest „mój”. */
   function currentExamId() {
-    const st = ELM.state;
+    const st = LM.state;
     if (st && st.view === "exam" && st.toolRoute) return st.toolRoute.examId;
     if (st && st.view === "c1") return "certyfikat-c1";
     return null;
   }
 
   function split() {
-    return ELM.examLogic.navSplit(reg(), ELM.examMy.list().map(function (m) { return m.id; }), currentExamId());
+    return LM.examLogic.navSplit(reg(), LM.examMy.list().map(function (m) { return m.id; }), currentExamId());
   }
 
   function renderNav() {
@@ -579,14 +579,14 @@ window.ELM = window.ELM || {};
     box.replaceChildren();
     const moreBox = document.getElementById("exams-soon-nav"); // za sekcjami C1: przycisk „+N”
     if (moreBox) moreBox.replaceChildren();
-    const route = ELM.state && ELM.state.view === "exam" ? ELM.state.toolRoute : null;
+    const route = LM.state && LM.state.view === "exam" ? LM.state.toolRoute : null;
     const sp = split();
     const list = el("ul", { class: "sb-list exam-list" });
     sp.shown.forEach(function (id) {
       const e = byId(id);
       if (!e) return;
       const soon = e.status !== "active";
-      const here = e.existing ? ELM.state.view === "c1" : !!(route && route.examId === e.id);
+      const here = e.existing ? LM.state.view === "c1" : !!(route && route.examId === e.id);
       const li = el("li", null, examTile(e, here, soon));
       list.appendChild(li);
       // Sekcje aktywnego egzaminu, gdy w nim jesteśmy (tylko w rozwiniętym panelu); sekcje C1 rysuje js/c1-core.js w #c1-nav
@@ -611,7 +611,7 @@ window.ELM = window.ELM || {};
                 const again = document.querySelector('[aria-controls="' + listId + '"]');
                 if (again) again.focus();
               }
-            }, [el("span", { class: "c1-sec-caret", "aria-hidden": "true" }, ELM.icon("chevron-right", { size: 16 })), s.label]),
+            }, [el("span", { class: "c1-sec-caret", "aria-hidden": "true" }, LM.icon("chevron-right", { size: 16 })), s.label]),
             ul
           ]));
         });
@@ -648,7 +648,7 @@ window.ELM = window.ELM || {};
       const e = byId(id);
       if (!e) return null;
       const soon = e.status !== "active";
-      const mine = ELM.examMy.isMine(id);
+      const mine = LM.examMy.isMine(id);
       const style = e.existing ? "--exam-accent:var(--c1-navy);--exam-accent-2:var(--c1-gold)"
         : e.accent ? "--exam-accent:" + e.accent + ";--exam-accent-2:" + (e.accent2 || e.accent) : null;
       const inner = [
@@ -664,7 +664,7 @@ window.ELM = window.ELM || {};
         soon ? null : el("button", {
           type: "button", class: "exam-pop-pin", role: "switch", "aria-checked": mine ? "true" : "false", "data-pin": id,
           "aria-label": "Przypnij: " + e.label,
-          onclick: function () { if (mine) ELM.examMy.unpin(id); else ELM.examMy.pin(id); }
+          onclick: function () { if (mine) LM.examMy.unpin(id); else LM.examMy.pin(id); }
         }, [el("span", { text: "Przypnij" }), el("span", { class: "switch-track", "aria-hidden": "true" }, el("span", { class: "switch-thumb" }))])
       ]);
     }).filter(Boolean);
@@ -735,7 +735,7 @@ window.ELM = window.ELM || {};
     document.addEventListener("pointerdown", onPopoverOutside, true);
     window.addEventListener("resize", placePopover);
     window.addEventListener("hashchange", closeOnRoute);
-    if (ELM.sidebar && ELM.sidebar.hold) ELM.sidebar.hold(true);
+    if (LM.sidebar && LM.sidebar.hold) LM.sidebar.hold(true);
     const first = node.querySelector("a, button");
     if (first) first.focus();
   }
@@ -748,7 +748,7 @@ window.ELM = window.ELM || {};
     document.removeEventListener("pointerdown", onPopoverOutside, true);
     window.removeEventListener("resize", placePopover);
     window.removeEventListener("hashchange", closeOnRoute);
-    if (ELM.sidebar && ELM.sidebar.hold) ELM.sidebar.hold(false);
+    if (LM.sidebar && LM.sidebar.hold) LM.sidebar.hold(false);
     const btn = document.getElementById("exam-more");
     if (btn) btn.setAttribute("aria-expanded", "false");
     if (focus) {
@@ -768,7 +768,7 @@ window.ELM = window.ELM || {};
       if (!meta) { console.warn("Ramka " + e.code + ": nieznany zestaw " + id); return null; }
       const score = pd() ? pd().setScore(id) : null;
       return el("li", null, [
-        el("a", { href: meta.href || "#/cwiczenia/zestaw/" + id }, [meta.group + ": " + meta.label, ELM.icon("chevron-right", { size: 16 })]),
+        el("a", { href: meta.href || "#/cwiczenia/zestaw/" + id }, [meta.group + ": " + meta.label, LM.icon("chevron-right", { size: 16 })]),
         el("span", { class: "c1-exam-box-best", text: score ? "najlepszy wynik " + score.best.score + "/" + score.best.total : "jeszcze nie rozwiązany" })
       ]);
     }).filter(Boolean);
@@ -779,7 +779,7 @@ window.ELM = window.ELM || {};
         el("a", { class: "c1-exam-box-title exam-box-title", href: base(e) }, title)
       ]),
       (link.examParts || []).length ? el("div", { class: "c1-chips" }, link.examParts.map(function (p) { return el("span", { class: "c1-chip", text: p }); })) : null,
-      link.note ? el("p", { class: "c1-exam-box-note" }, ELM.markdown.inline(link.note)) : null,
+      link.note ? el("p", { class: "c1-exam-box-note" }, LM.markdown.inline(link.note)) : null,
       items.length ? el("ul", { class: "c1-exam-box-links" }, items) : null
     ]);
   }
@@ -789,7 +789,7 @@ window.ELM = window.ELM || {};
     const out = [];
     exams().forEach(function (e) {
       if (e.status !== "active") return;
-      if (e.existing) { if (e.id === "certyfikat-c1" && ELM.c1) { const b = ELM.c1.examBoxFor(itemId); if (b) out.push(b); } return; }
+      if (e.existing) { if (e.id === "certyfikat-c1" && LM.c1) { const b = LM.c1.examBoxFor(itemId); if (b) out.push(b); } return; }
       const link = (reg().links[e.id] || []).find(function (l) { return l.itemId === itemId; });
       if (link) out.push(examBox(e, link));
     });
@@ -803,7 +803,7 @@ window.ELM = window.ELM || {};
     return e ? { href: base(e) + "/cwiczenia", label: "Wróć do zestawów: " + e.label } : null;
   }
 
-  ELM.exams = {
+  LM.exams = {
     parseRoute: parseRoute,
     render: render,
     renderNav: renderNav,
@@ -814,4 +814,4 @@ window.ELM = window.ELM || {};
     list: exams,
     load: load
   };
-})(window.ELM);
+})(window.LM);

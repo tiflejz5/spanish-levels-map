@@ -1,5 +1,5 @@
 /*
- * search-logic.js — silnik wyszukiwarki bez DOM (spec 04, A.2; testy w tools/testy.js).
+ * search-logic.js — silnik wyszukiwarki bez DOM (spec 04, A.2; testy w tools/tests.js).
  *
  *   fold(str)               małe litery bez polskich znaków (ą→a, ł→l…), ta sama długość co wejście
  *   tokenize(str)           wyrazy po fold()
@@ -11,9 +11,9 @@
  * (tylko wyrazy zapytania ≥ 5 znaków, odległość ≤ 20% długości). Wszystkie wyrazy
  * zapytania muszą się gdzieś dopasować. Wagi pól: tytuł > nagłówki > summary > treść.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const WEIGHTS = { title: 10, headings: 5, summary: 3, text: 1 };
@@ -185,5 +185,5 @@ window.ELM = window.ELM || {};
     return parts;
   }
 
-  ELM.searchLogic = { WEIGHTS: WEIGHTS, fold: fold, tokenize: tokenize, distance: distance, prepare: prepare, search: search, snippet: snippet, highlight: highlight };
-})(window.ELM);
+  LM.searchLogic = { WEIGHTS: WEIGHTS, fold: fold, tokenize: tokenize, distance: distance, prepare: prepare, search: search, snippet: snippet, highlight: highlight };
+})(window.LM);

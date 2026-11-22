@@ -1,25 +1,25 @@
 /*
- * fiszki-browse.js — przeglądanie i edycja fiszek (spec 10, sekcja 5.3), część zakładki js/fiszki.js.
+ * cards-browse.js — przeglądanie i edycja fiszek (spec 10, sekcja 5.3), część zakładki js/cards.js.
  *
- *   ELM.fiszkiBrowse.render(view, route)   route: { kind: "deck"|"edit"|"import", deck, card }
- *   ELM.fiszkiBrowse.prefill(fields)       wypełnienie formularza nowej karty (np. z zaznaczenia tekstu)
- *   ELM.fiszkiBrowse.addCard(deckId, card) dodanie karty z innego miejsca aplikacji → zapisana karta
+ *   LM.cardsBrowse.render(view, route)   route: { kind: "deck"|"edit"|"import", deck, card }
+ *   LM.cardsBrowse.prefill(fields)       wypełnienie formularza nowej karty (np. z zaznaczenia tekstu)
+ *   LM.cardsBrowse.addCard(deckId, card) dodanie karty z innego miejsca aplikacji → zapisana karta
  *
  * Lista kart talii z wyszukiwaniem i filtrami statusu, zawieszanie (także kart wbudowanych),
  * formularz własnej karty z podglądem na żywo i walidacją (cloze: jedna luka, 500 znaków na pole),
  * import TSV/CSV z podglądem (poprawne / odrzucone z powodem) i eksport talii do TSV (Anki).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const HASH = "#/powtorki/talie";
 
-  function F() { return ELM.fiszki.internal; }
-  function L() { return ELM.fiszkiLogic; }
+  function F() { return LM.cards.internal; }
+  function L() { return LM.cardsLogic; }
   function st() { return F().st(); }
   function now() { return Date.now(); }
 
@@ -32,7 +32,7 @@ window.ELM = window.ELM || {};
     const items = [{ label: "Fiszki i błędy", href: "#/powtorki" }];
     items.push(label ? { label: "Talie", href: HASH } : { label: "Talie" });
     if (label) items.push({ label: label });
-    return ELM.ui.breadcrumbs(items);
+    return LM.ui.breadcrumbs(items);
   }
 
   function statusOf(x) {
@@ -76,22 +76,22 @@ window.ELM = window.ELM || {};
       el("label", { for: "fc-random", text: "Nowe karty w losowej kolejności (domyślnie jak w talii)" })
     ]);
     const actions = [
-      el("button", { type: "button", class: "btn btn-secondary", "aria-pressed": on ? "true" : "false", onclick: function () { F().toggleDeck(deckId, !on); ELM.fiszki.render(); } },
+      el("button", { type: "button", class: "btn btn-secondary", "aria-pressed": on ? "true" : "false", onclick: function () { F().toggleDeck(deckId, !on); LM.cards.render(); } },
         on ? "Wyłącz z nauki" : "Włącz do nauki"),
-      el("button", { type: "button", class: "btn btn-secondary", onclick: function () { F().exportDeck(d); } }, ELM.ui.withIcon("download", "Eksportuj TSV"))
+      el("button", { type: "button", class: "btn btn-secondary", onclick: function () { F().exportDeck(d); } }, LM.ui.withIcon("download", "Eksportuj TSV"))
     ];
     if (!d.builtIn) {
-      actions.unshift(el("a", { class: "btn btn-primary", href: HASH + "/talia/" + deckId + "/nowa" }, ELM.ui.withIcon("plus", "Dodaj kartę")));
-      actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { importTarget = deckId; location.hash = HASH + "/import"; } }, ELM.ui.withIcon("upload", "Importuj")));
-      actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { renameDeck(d); } }, ELM.ui.withIcon("pencil", "Zmień nazwę")));
-      actions.push(el("button", { type: "button", class: "btn btn-danger", onclick: function () { deleteDeck(d); } }, ELM.ui.withIcon("trash", "Usuń talię")));
+      actions.unshift(el("a", { class: "btn btn-primary", href: HASH + "/talia/" + deckId + "/nowa" }, LM.ui.withIcon("plus", "Dodaj kartę")));
+      actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { importTarget = deckId; location.hash = HASH + "/import"; } }, LM.ui.withIcon("upload", "Importuj")));
+      actions.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { renameDeck(d); } }, LM.ui.withIcon("pencil", "Zmień nazwę")));
+      actions.push(el("button", { type: "button", class: "btn btn-danger", onclick: function () { deleteDeck(d); } }, LM.ui.withIcon("trash", "Usuń talię")));
     }
     // „Nauka teraz”: sesja z tej talii poza planem dnia (bez limitów; nowe, w nauce i zaległe karty)
     const stats = L().deckStats(cards, st().cards, now());
     const studyNow = stats.new + stats.learning + stats.due;
     const study = studyNow
-      ? el("a", { class: "btn btn-primary", href: "#/powtorki/sesja?tylko=talia:" + deckId + "&poza=1" }, ELM.ui.withIcon("play", "Nauka teraz"))
-      : el("button", { type: "button", class: "btn btn-primary", disabled: true }, ELM.ui.withIcon("play", "Nauka teraz"));
+      ? el("a", { class: "btn btn-primary", href: "#/powtorki/sesja?tylko=talia:" + deckId + "&poza=1" }, LM.ui.withIcon("play", "Nauka teraz"))
+      : el("button", { type: "button", class: "btn btn-primary", disabled: true }, LM.ui.withIcon("play", "Nauka teraz"));
     view.appendChild(el("div", { class: "fc-study-now" }, [
       study,
       el("span", { class: "tool-note", text: studyNow
@@ -120,7 +120,7 @@ window.ELM = window.ELM || {};
     view.appendChild(list);
 
     function paint() {
-      const fold = ELM.searchLogic ? ELM.searchLogic.fold : function (x) { return String(x).toLowerCase(); };
+      const fold = LM.searchLogic ? LM.searchLogic.fold : function (x) { return String(x).toLowerCase(); };
       const q = fold(filter.query.trim());
       const shown = cards.filter(function (c) {
         if (filter.status !== "all" && statusOf(st().cards[c.id]).id !== filter.status) return false;
@@ -129,7 +129,7 @@ window.ELM = window.ELM || {};
       });
       count.textContent = "Karty: " + shown.length + " z " + cards.length;
       list.replaceChildren();
-      if (!shown.length) { list.appendChild(ELM.ui.emptyState({ tag: "li", art: "brak-wynikow", title: cards.length ? "Brak kart pasujących do filtrów." : "Ta talia nie ma jeszcze kart." })); return; }
+      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "brak-wynikow", title: cards.length ? "Brak kart pasujących do filtrów." : "Ta talia nie ma jeszcze kart." })); return; }
       shown.forEach(function (c) {
         const x = st().cards[c.id];
         const sts = statusOf(x);
@@ -141,7 +141,7 @@ window.ELM = window.ELM || {};
             F().examChips(c)
           ]),
           el("div", { class: "fc-row-meta" }, [
-            el("span", { class: "fc-status is-" + sts.id }, [ELM.icon(sts.icon, { size: 14 }), " " + sts.label]),
+            el("span", { class: "fc-status is-" + sts.id }, [LM.icon(sts.icon, { size: 14 }), " " + sts.label]),
             el("span", { class: "tool-note", text: x && x.state !== "new" ? "Termin: " + F().fmtWhen(Math.max(x.due, x.buriedUntil || 0)) : "Termin: —" })
           ]),
           el("div", { class: "fc-row-actions" }, [
@@ -162,33 +162,33 @@ window.ELM = window.ELM || {};
       delete cur.suspended;
       if (cur.state === "new" && !cur.reps) delete st().cards[id]; // nowa karta bez historii — znów „nieruszona”
     } else {
-      st().cards[id] = Object.assign(ELM.fiszkiHarmonogram.newCard(), cur || {}, { suspended: true });
+      st().cards[id] = Object.assign(LM.cardsSchedule.newCard(), cur || {}, { suspended: true });
     }
     F().saveState();
   }
 
   function deleteCard(c, after) {
-    ELM.dialogs.confirm({ title: "Usunąć kartę?", message: "„" + L().frontText(c) + "” zostanie usunięta razem z historią powtórek.", confirmLabel: "Usuń kartę" }).then(function (ok) {
+    LM.dialogs.confirm({ title: "Usunąć kartę?", message: "„" + L().frontText(c) + "” zostanie usunięta razem z historią powtórek.", confirmLabel: "Usuń kartę" }).then(function (ok) {
       if (!ok) return;
       const list = st().userCards, i = list.findIndex(function (x) { return x.id === c.id; });
       if (i !== -1) list.splice(i, 1);
       delete st().cards[c.id];
       F().saveState();
-      if (after) after(); else ELM.fiszki.render();
+      if (after) after(); else LM.cards.render();
     });
   }
 
   function renameDeck(d) {
-    ELM.dialogs.prompt({ title: "Zmień nazwę talii", label: "Nazwa talii", value: d.title, confirmLabel: "Zapisz" }).then(function (name) {
+    LM.dialogs.prompt({ title: "Zmień nazwę talii", label: "Nazwa talii", value: d.title, confirmLabel: "Zapisz" }).then(function (name) {
       if (!name) return;
       const x = st().userDecks.find(function (u) { return u.id === d.id; });
-      if (x) { x.title = name.trim().slice(0, 80); F().saveState(); ELM.fiszki.render(); }
+      if (x) { x.title = name.trim().slice(0, 80); F().saveState(); LM.cards.render(); }
     });
   }
 
   function deleteDeck(d) {
     const n = F().cardsOf(d.id).length;
-    ELM.dialogs.confirm({ title: "Usunąć talię?", message: "Talia „" + d.title + "” i jej karty (" + n + ") zostaną usunięte razem z historią powtórek. Tej operacji nie można cofnąć.", confirmLabel: "Usuń talię" }).then(function (ok) {
+    LM.dialogs.confirm({ title: "Usunąć talię?", message: "Talia „" + d.title + "” i jej karty (" + n + ") zostaną usunięte razem z historią powtórek. Tej operacji nie można cofnąć.", confirmLabel: "Usuń talię" }).then(function (ok) {
       if (!ok) return;
       const s = st();
       s.userCards = s.userCards.filter(function (c) { if (c.deck === d.id) { delete s.cards[c.id]; return false; } return true; });
@@ -309,17 +309,17 @@ window.ELM = window.ELM || {};
           st().userCards[i] = Object.assign(keep, res.card);
           if (!keep.sourceItemId) delete st().userCards[i].sourceItemId;
           F().saveState();
-          ELM.ui.toast({ text: "Zapisano kartę.", icon: "check" });
+          LM.ui.toast({ text: "Zapisano kartę.", icon: "check" });
           location.hash = HASH + "/talia/" + deckId;
         } else {
           const c = addCard(deckId, res.card);
-          ELM.ui.toast({ text: "Dodano kartę do fiszek.", icon: "check", action: { label: "Cofnij", onClick: function () { removeCard(c.id); } } });
+          LM.ui.toast({ text: "Dodano kartę do fiszek.", icon: "check", action: { label: "Cofnij", onClick: function () { removeCard(c.id); } } });
           front.input.value = ""; back.input.value = ""; hint.input.value = ""; example.input.value = ""; note.input.value = "";
           update(); front.input.focus();
         }
       };
       if (deckSel.value === "__new") {
-        ELM.dialogs.prompt({ title: "Nowa talia", label: "Nazwa talii", confirmLabel: "Utwórz" }).then(function (name) {
+        LM.dialogs.prompt({ title: "Nowa talia", label: "Nazwa talii", confirmLabel: "Utwórz" }).then(function (name) {
           if (!name) return;
           const d = ensureDeck(newDeckId(), name.trim().slice(0, 80));
           F().saveState();
@@ -339,7 +339,7 @@ window.ELM = window.ELM || {};
     if (i !== -1) s.userCards.splice(i, 1);
     delete s.cards[id];
     F().saveState();
-    if (ELM.state && ELM.state.view === "fiszki") ELM.fiszki.render();
+    if (LM.state && LM.state.view === "fiszki") LM.cards.render();
   }
 
   // =====================================================================
@@ -385,13 +385,13 @@ window.ELM = window.ELM || {};
         const added = result.cards.map(function (c) { return Object.assign({ id: newId(), deck: deckId, createdAt: new Date().toISOString() }, c); });
         st().userCards = st().userCards.concat(added);
         F().saveState();
-        ELM.ui.toast({ text: "Zaimportowano " + added.length + " " + F().plural(added.length, "kartę", "karty", "kart") + ".", icon: "check",
+        LM.ui.toast({ text: "Zaimportowano " + added.length + " " + F().plural(added.length, "kartę", "karty", "kart") + ".", icon: "check",
           action: { label: "Cofnij", onClick: function () { const ids = {}; added.forEach(function (c) { ids[c.id] = true; }); st().userCards = st().userCards.filter(function (c) { return !ids[c.id]; }); F().saveState(); } } });
         importTarget = null;
         location.hash = HASH + "/talia/" + deckId;
       };
       if (target.value === "__new") {
-        ELM.dialogs.prompt({ title: "Nowa talia", label: "Nazwa talii", value: "Import " + new Date().toLocaleDateString("pl-PL"), confirmLabel: "Utwórz" }).then(function (name) {
+        LM.dialogs.prompt({ title: "Nowa talia", label: "Nazwa talii", value: "Import " + new Date().toLocaleDateString("pl-PL"), confirmLabel: "Utwórz" }).then(function (name) {
           if (!name) return;
           const d = ensureDeck(newDeckId(), name.trim().slice(0, 80));
           F().saveState();
@@ -414,9 +414,9 @@ window.ELM = window.ELM || {};
     else if (route.kind === "import") renderImport(view);
   }
 
-  ELM.fiszkiBrowse = {
+  LM.cardsBrowse = {
     render: render,
     prefill: function (fields) { pending = fields; },
     addCard: addCard, ensureDeck: ensureDeck, removeCard: removeCard, newId: newId
   };
-})(window.ELM);
+})(window.LM);

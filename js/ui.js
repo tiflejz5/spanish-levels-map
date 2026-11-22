@@ -1,16 +1,16 @@
 /*
  * ui.js — elementy wizualne wspólne dla całej aplikacji (patrz DESIGN.md):
- *   ELM.icon(name, opts)          ikona Lucide (dane: assets/ikony.js)
- *   ELM.ui.withIcon(name, text)   [ikona, tekst] do przycisków i linków
- *   ELM.logo(opts)                znak logo (kompas ze szlakiem) + napis
- *   ELM.ui.progressRing(…)        pierścień postępu (SVG)
- *   ELM.loadGsap()                GSAP ładowany tylko na żądanie
+ *   LM.icon(name, opts)          ikona Lucide (dane: assets/icons.js)
+ *   LM.ui.withIcon(name, text)   [ikona, tekst] do przycisków i linków
+ *   LM.logo(opts)                znak logo (kompas ze szlakiem) + napis
+ *   LM.ui.progressRing(…)        pierścień postępu (SVG)
+ *   LM.loadGsap()                GSAP ładowany tylko na żądanie
  *
  * Wszystko budujemy przez createElementNS — bez innerHTML.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -33,7 +33,7 @@ window.ELM = window.ELM || {};
    */
   function icon(name, opts) {
     opts = opts || {};
-    const nodes = ((opts.set === "land" ? ELM.LAND_NODES : ELM.ICON_NODES) || {})[name];
+    const nodes = ((opts.set === "land" ? LM.LAND_NODES : LM.ICON_NODES) || {})[name];
     const size = opts.size || 20;
     const svg = svgEl("svg", {
       class: "icon icon-" + name + (opts.class ? " " + opts.class : ""),
@@ -45,14 +45,14 @@ window.ELM = window.ELM || {};
     if (opts.label) { svg.setAttribute("role", "img"); svg.setAttribute("aria-label", opts.label); }
     else svg.setAttribute("aria-hidden", "true");
     if (!nodes) {
-      if (window.console) console.warn("Brak ikony „" + name + "” (dopisz ją w tools/zbuduj-zasoby.js)");
+      if (window.console) console.warn("Brak ikony „" + name + "” (dopisz ją w tools/build-assets.js)");
       return svg;
     }
     nodes.forEach(function (n) { svg.appendChild(svgEl(n[0], n[1])); });
     return svg;
   }
 
-  /** Krainy poziomów (paczka v7, C1): nazwa i klucz symbolu w assets/krainy.js. */
+  /** Krainy poziomów (paczka v7, C1): nazwa i klucz symbolu w assets/lands.js. */
   const LANDS = {
     A1: { name: "Polana", key: "kraina-a1" }, A2: { name: "Las", key: "kraina-a2" }, B1: { name: "Wzgórza", key: "kraina-b1" },
     B2: { name: "Jezioro", key: "kraina-b2" }, C1: { name: "Góry", key: "kraina-c1" }, C2: { name: "Szczyt", key: "kraina-c2" }
@@ -86,16 +86,16 @@ window.ELM = window.ELM || {};
   }
 
   /**
-   * Stan pusty z ilustracją (paczka v7, C6): ELM.ui.emptyState({ art, title, hint, action, level, tag }).
-   *   art    — klucz z ELM.EMPTY_ART (assets/stany-puste.js), 96×96, kreska currentColor
+   * Stan pusty z ilustracją (paczka v7, C6): LM.ui.emptyState({ art, title, hint, action, level, tag }).
+   *   art    — klucz z LM.EMPTY_ART (assets/empty-states.js), 96×96, kreska currentColor
    *   action — element (przycisk, link) albo null; level — poziom koloru akcentu (domyślnie bieżący poziom profilu)
    *   tag    — "li", gdy stan pusty jest elementem listy (domyślnie div)
    */
   function emptyState(o) {
-    const level = o.level || (ELM.state && ELM.state.ui && ELM.state.ui.levelId) || "A1";
+    const level = o.level || (LM.state && LM.state.ui && LM.state.ui.levelId) || "A1";
     const box = document.createElement(o.tag || "div");
     box.className = "empty-state has-art lvl-" + level + (o.class ? " " + o.class : "");
-    const nodes = (ELM.EMPTY_ART || {})[o.art];
+    const nodes = (LM.EMPTY_ART || {})[o.art];
     if (nodes) {
       const svg = svgEl("svg", { class: "es-art", viewBox: "0 0 96 96", fill: "none", stroke: "currentColor", "stroke-width": 1.5, "stroke-linecap": "round", "stroke-linejoin": "round", "aria-hidden": "true", focusable: "false" });
       nodes.forEach(function (n) { svg.appendChild(svgEl(n[0], n[1])); });
@@ -115,7 +115,7 @@ window.ELM = window.ELM || {};
     return box;
   }
 
-  /** [ikona, tekst] — np. el("button", …, ELM.ui.withIcon("plus", "Dodaj błąd")). */
+  /** [ikona, tekst] — np. el("button", …, LM.ui.withIcon("plus", "Dodaj błąd")). */
   function withIcon(name, text, opts) {
     return [icon(name, Object.assign({ size: 18 }, opts || {})), document.createTextNode(text)];
   }
@@ -148,7 +148,7 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   /**
-   * ELM.ui.breadcrumbs([{ label, href?, onclick? }, …]) → <nav class="breadcrumbs">: „Poziom A1 › Czasy › Present Simple”.
+   * LM.ui.breadcrumbs([{ label, href?, onclick? }, …]) → <nav class="breadcrumbs">: „Poziom A1 › Czasy › Present Simple”.
    * Ostatni element bez href to bieżąca strona (aria-current="page"). Poniżej 640 px (CSS) widać tylko „‹ rodzic”
    * (przedostatni element; przy jednym elemencie — on sam). onclick (np. powrót do listy z przewinięciem) dostaje zdarzenie
    * po preventDefault; href zostaje dla kliknięcia środkowym przyciskiem i dla czytników ekranu.
@@ -299,7 +299,7 @@ window.ELM = window.ELM || {};
 
   // =====================================================================
   // GSAP NA ŻĄDANIE (assets/vendor/gsap.min.js)
-  //   ELM.loadGsap().then(function (gsap) { const mm = gsap.matchMedia(); … });
+  //   LM.loadGsap().then(function (gsap) { const mm = gsap.matchMedia(); … });
   //   Zwykły <script> zamiast import(), bo moduły nie działają z file://.
   // =====================================================================
 
@@ -325,7 +325,7 @@ window.ELM = window.ELM || {};
   }
 
   /**
-   * GSAP + opcjonalne wtyczki, np. ELM.loadGsap(["DrawSVGPlugin", "MotionPathPlugin"]).
+   * GSAP + opcjonalne wtyczki, np. LM.loadGsap(["DrawSVGPlugin", "MotionPathPlugin"]).
    * Wtyczki są rejestrowane raz. Zwraca Promise<gsap>.
    */
   function loadGsap(plugins) {
@@ -358,7 +358,7 @@ window.ELM = window.ELM || {};
 
   // =====================================================================
   // TOAST — nienachalny komunikat u dołu ekranu (role="status"), opcjonalnie z przyciskiem
-  //   ELM.ui.toast({ text, action: { label, onClick }, duration: 5000 })  albo  actions: [{ label, onClick }, …]
+  //   LM.ui.toast({ text, action: { label, onClick }, duration: 5000 })  albo  actions: [{ label, onClick }, …]
   // Jeden naraz; najechanie myszą albo fokus wstrzymują znikanie.
   // =====================================================================
 
@@ -373,7 +373,7 @@ window.ELM = window.ELM || {};
       document.body.appendChild(toastBox);
     }
     clearTimeout(toastTimer);
-    const el = ELM.utils.el;
+    const el = LM.utils.el;
     const card = el("div", { class: "toast" }, [
       opts.icon ? el("span", { class: "toast-icon", "aria-hidden": "true" }, icon(opts.icon, { size: 18 })) : null,
       el("span", { class: "toast-text", text: opts.text }),
@@ -401,24 +401,24 @@ window.ELM = window.ELM || {};
     if (toastBox) toastBox.replaceChildren();
   }
 
-  ELM.icon = icon;
-  ELM.logo = logo;
-  ELM.loadGsap = loadGsap;
-  ELM.loadModule = loadModule;
-  ELM.loadScript = loadScript; // dane ładowane na żądanie (np. ćwiczenia, Laboratorium czasów)
-  ELM.reducedMotion = reducedMotion;
+  LM.icon = icon;
+  LM.logo = logo;
+  LM.loadGsap = loadGsap;
+  LM.loadModule = loadModule;
+  LM.loadScript = loadScript; // dane ładowane na żądanie (np. ćwiczenia, Laboratorium czasów)
+  LM.reducedMotion = reducedMotion;
   /**
    * Tryb gościa: uwaga „oglądasz bez profilu” z przyciskiem „Utwórz profil”. Zwraca null, gdy profil jest.
    * what — co się nie zapisuje (np. „wyniki zadań”).
    */
   function guestNote(what) {
-    if (!ELM.app || !ELM.app.getActiveProfile || ELM.app.getActiveProfile()) return null;
-    const el = ELM.utils.el;
+    if (!LM.app || !LM.app.getActiveProfile || LM.app.getActiveProfile()) return null;
+    const el = LM.utils.el;
     return el("p", { class: "tool-note guest-note", role: "note" }, [
       "Oglądasz bez profilu, więc " + what + " się nie zapisują. ",
-      el("button", { type: "button", class: "btn btn-link btn-small", onclick: function () { ELM.app.withProfile("", function () { ELM.app.renderAll(); }); } }, "Utwórz profil")
+      el("button", { type: "button", class: "btn btn-link btn-small", onclick: function () { LM.app.withProfile("", function () { LM.app.renderAll(); }); } }, "Utwórz profil")
     ]);
   }
 
-  ELM.ui = { guestNote: guestNote, breadcrumbs: breadcrumbs, icon: icon, withIcon: withIcon, emptyState: emptyState, landIcon: landIcon, stamp: stamp, landLabel: landLabel, LANDS: LANDS, pageHead: pageHead, logo: logo, logoMark: logoMark, progressRing: progressRing, setRing: setRing, toast: toast, hideToast: hideToast };
-})(window.ELM);
+  LM.ui = { guestNote: guestNote, breadcrumbs: breadcrumbs, icon: icon, withIcon: withIcon, emptyState: emptyState, landIcon: landIcon, stamp: stamp, landLabel: landLabel, LANDS: LANDS, pageHead: pageHead, logo: logo, logoMark: logoMark, progressRing: progressRing, setRing: setRing, toast: toast, hideToast: hideToast };
+})(window.LM);

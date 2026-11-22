@@ -1,22 +1,22 @@
 /*
- * pisanie.js — sekcja „Pisanie” (paczka v6, spec 17, sekcja 1): wzorcowe wypracowania z komentarzami.
+ * writing.js — sekcja „Pisanie” (paczka v6, spec 17, sekcja 1): wzorcowe wypracowania z komentarzami.
  *
  *   #/pisanie                              lista wzorców pogrupowana po egzaminie i gatunku
- *   #/pisanie/wzorce/<egzamin>/<id>        wzorzec z komentarzami (widok: js/pisanie-wzorzec.js)
+ *   #/pisanie/wzorce/<egzamin>/<id>        wzorzec z komentarzami (widok: js/writing-model.js)
  *
- * Dane: zadania z polem modelNotes w niezbednik/<egzamin>/trening/pisanie.json (ELM.EXAMS[id].trainers
- * dla egzaminów z rejestru, ELM.C1.trainers dla Certyfikatu C1). Tekstów `model` nie zmieniamy — komentarze
+ * Dane: zadania z polem modelNotes w niezbednik/<egzamin>/trening/pisanie.json (LM.EXAMS[id].trainers
+ * dla egzaminów z rejestru, LM.C1.trainers dla Certyfikatu C1). Tekstów `model` nie zmieniamy — komentarze
  * wskazują dokładne fragmenty (kotwice).
  *
- *   ELM.pisanie.parseRoute(hash), render(), examList() → Promise z [{ exam, T, tasks }]
- *   ELM.pisanie.hrefModel(examId, taskId), ELM.pisanie.pageSection(examId) — sekcja z linkami na stronach „Writing”
+ *   LM.writing.parseRoute(hash), render(), examList() → Promise z [{ exam, T, tasks }]
+ *   LM.writing.hrefModel(examId, taskId), LM.writing.pageSection(examId) — sekcja z linkami na stronach „Writing”
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const HASH = "#/pisanie";
 
@@ -33,15 +33,15 @@ window.ELM = window.ELM || {};
   };
   const TYPE_ORDER = ["punkty", "lacznik", "rejestr", "struktura", "zakres", "uwaga"];
 
-  function reg() { return ELM.EXAM_REGISTRY || { exams: [] }; }
-  function plural(n, one, few, many) { return ELM.c1 ? ELM.c1.plural(n, one, few, many) : many; }
+  function reg() { return LM.EXAM_REGISTRY || { exams: [] }; }
+  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
   function genreLabel(g) { return GENRES[g] || g; }
   function hrefModel(examId, taskId) { return HASH + "/wzorce/" + examId + "/" + taskId; }
 
   /** Liczba słów wzorca tak, jak liczy trener danego egzaminu (E8 i matury: bez podanego początku). */
   function wordCount(examId, task) {
     const text = String(task.model || "");
-    if (!/^certyfikat-/.test(examId) && ELM.examLogic && ELM.examLogic.countWordsE8) return ELM.examLogic.countWordsE8(text, task.opening);
+    if (!/^certyfikat-/.test(examId) && LM.examLogic && LM.examLogic.countWordsE8) return LM.examLogic.countWordsE8(text, task.opening);
     const t = text.trim();
     return t ? t.split(/\s+/).length : 0;
   }
@@ -58,8 +58,8 @@ window.ELM = window.ELM || {};
     const list = reg().exams.filter(function (e) { return e.status === "active"; });
     return Promise.all(list.map(function (e) {
       const load = e.existing
-        ? Promise.resolve(ELM.C1 && ELM.C1.trainers && ELM.C1.trainers["trening-pisanie"])
-        : (ELM.exams ? ELM.exams.load(e).then(function (d) { return d && d.trainers && d.trainers["trening-pisanie"]; }) : Promise.resolve(null));
+        ? Promise.resolve(LM.C1 && LM.C1.trainers && LM.C1.trainers["trening-pisanie"])
+        : (LM.exams ? LM.exams.load(e).then(function (d) { return d && d.trainers && d.trainers["trening-pisanie"]; }) : Promise.resolve(null));
       return load.then(function (T) {
         const tasks = T && T.tasks ? T.tasks.filter(function (t) { return t.model && t.modelNotes; }) : [];
         return tasks.length ? { exam: e, T: T, tasks: tasks } : null;
@@ -97,7 +97,7 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   function head(title, lead) {
-    return ELM.ui.pageHead({ eyebrow: "Nauka · Pisanie", title: title, lead: lead });
+    return LM.ui.pageHead({ eyebrow: "Nauka · Pisanie", title: title, lead: lead });
   }
 
   function noteCount(task) { return ((task.modelNotes && task.modelNotes.annotations) || []).length; }
@@ -178,14 +178,14 @@ window.ELM = window.ELM || {};
     view.className = "view tool-view pisanie-view";
     view.dataset.file = HASH;
     view.replaceChildren();
-    const lazy = route.kind === "model" ? ["pisanieWzorzec", "js/pisanie-wzorzec.js"] : route.kind === "phrases" ? ["pisanieZwroty", "js/pisanie-zwroty.js"] : null;
+    const lazy = route.kind === "model" ? ["writingModel", "js/writing-model.js"] : route.kind === "phrases" ? ["writingPhrases", "js/writing-phrases.js"] : null;
     if (lazy) {
       // Moduły widoków wczytują się dopiero po wejściu (mniej skryptów na starcie)
-      const draw = function () { ELM[lazy[0]].render(view, route); };
-      if (ELM[lazy[0]]) { draw(); return; }
+      const draw = function () { LM[lazy[0]].render(view, route); };
+      if (LM[lazy[0]]) { draw(); return; }
       view.appendChild(el("p", { class: "tool-note", role: "status", text: "Wczytuję…" }));
-      ELM.loadModule(lazy[1]).then(function () {
-        if (view.isConnected && ELM.state.view === "pisanie" && !view.querySelector(".tool-head")) { view.replaceChildren(); draw(); }
+      LM.loadModule(lazy[1]).then(function () {
+        if (view.isConnected && LM.state.view === "pisanie" && !view.querySelector(".tool-head")) { view.replaceChildren(); draw(); }
       }, function (err) { console.warn(err.message); view.replaceChildren(el("p", { class: "tool-note", text: "Nie udało się wczytać widoku. Odśwież stronę." })); });
       return;
     }
@@ -193,9 +193,9 @@ window.ELM = window.ELM || {};
     renderList(view);
   }
 
-  ELM.pisanie = {
+  LM.writing = {
     HASH: HASH, TYPES: TYPES, TYPE_ORDER: TYPE_ORDER, GENRES: GENRES,
     parseRoute: parseRoute, render: render, examList: examList, examChip: examChip, head: head,
     hrefModel: hrefModel, pageSection: pageSection, wordCount: wordCount, genreLabel: genreLabel, plural: plural
   };
-})(window.ELM);
+})(window.LM);

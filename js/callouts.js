@@ -4,13 +4,13 @@
  * po TEKŚCIE nagłówka (## H2 albo pogrubiony podtytuł „**Kluczowe myśli**”).
  *
  * Nowy callout = nowy wpis w CALLOUT_RULES (wyrażenie dla tekstu nagłówka,
- * typ → klasa .callout-<typ> w css/style.css, ikona Lucide z assets/ikony.js).
+ * typ → klasa .callout-<typ> w css/style.css, ikona Lucide z assets/icons.js).
  *
  * Dodatkowo: tabele w przewijanym kontenerze z cieniami „jest więcej”.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   // Kolejność ma znaczenie: pierwsza pasująca reguła wygrywa.
@@ -32,11 +32,11 @@ window.ELM = window.ELM || {};
     box.classList.add("callout", "callout-" + rule.type);
     if (heading && !heading.querySelector(".callout-icon")) {
       heading.classList.add("callout-title");
-      heading.insertBefore(ELM.utils.el("span", { class: "callout-icon", "aria-hidden": "true" }, ELM.icon(rule.icon, { size: 20 })), heading.firstChild);
+      heading.insertBefore(LM.utils.el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon(rule.icon, { size: 20 })), heading.firstChild);
     }
   }
 
-  /** Callouty w drzewie z ELM.markdown.render (sekcje ## i podtytuły **…**). */
+  /** Callouty w drzewie z LM.markdown.render (sekcje ## i podtytuły **…**). */
   function apply(root) {
     if (!root) return;
     // 1. Sekcje ## (cała sekcja to callout)
@@ -50,7 +50,7 @@ window.ELM = window.ELM || {};
     root.querySelectorAll("p.md-subhead").forEach(function (sub) {
       const rule = ruleFor(sub.textContent);
       if (!rule || sub.closest(".callout")) return;
-      const box = ELM.utils.el("div");
+      const box = LM.utils.el("div");
       sub.parentNode.insertBefore(box, sub);
       let n = sub;
       while (n && !(n !== sub && (n.matches && (n.matches("p.md-subhead") || /^H[1-3]$/.test(n.nodeName))))) {
@@ -75,7 +75,7 @@ window.ELM = window.ELM || {};
 
   /** Kolor egzaminu z rejestru (dane/egzaminy-rejestr.js); C1 i brak rejestru → złoto Certyfikatu. */
   function examAccent(info) {
-    const reg = ELM.EXAM_REGISTRY && ELM.EXAM_REGISTRY.exams && ELM.EXAM_REGISTRY.exams.find(function (e) { return e.id === info.id; });
+    const reg = LM.EXAM_REGISTRY && LM.EXAM_REGISTRY.exams && LM.EXAM_REGISTRY.exams.find(function (e) { return e.id === info.id; });
     return reg && reg.accent ? reg.accent : "var(--c1-gold)";
   }
 
@@ -97,9 +97,9 @@ window.ELM = window.ELM || {};
       last.classList.add("exam-chips");
       last.replaceChildren.apply(last, codes.map(function (code) {
         const info = EXAM_LINKS[code];
-        const chip = ELM.utils.el("a", { class: "exam-chip", href: info.route, style: "--exam: " + examAccent(info), title: "Przydatne na: " + info.name }, [
-          ELM.utils.el("span", { "aria-hidden": "true", text: code }),
-          ELM.utils.el("span", { class: "visually-hidden", text: info.name })
+        const chip = LM.utils.el("a", { class: "exam-chip", href: info.route, style: "--exam: " + examAccent(info), title: "Przydatne na: " + info.name }, [
+          LM.utils.el("span", { "aria-hidden": "true", text: code }),
+          LM.utils.el("span", { class: "visually-hidden", text: info.name })
         ]);
         return chip;
       }));
@@ -115,7 +115,7 @@ window.ELM = window.ELM || {};
   function enhanceTables(root) {
     root.querySelectorAll(".md-table-wrap").forEach(function (wrap) {
       if (wrap.parentNode.classList.contains("md-table")) return;
-      const frame = ELM.utils.el("div", { class: "md-table" });
+      const frame = LM.utils.el("div", { class: "md-table" });
       wrap.parentNode.insertBefore(frame, wrap);
       frame.appendChild(wrap);
       wrap.setAttribute("tabindex", "0"); // przewijanie z klawiatury
@@ -134,5 +134,5 @@ window.ELM = window.ELM || {};
     });
   }
 
-  ELM.callouts = { RULES: CALLOUT_RULES, apply: apply, ruleFor: ruleFor };
-})(window.ELM);
+  LM.callouts = { RULES: CALLOUT_RULES, apply: apply, ruleFor: ruleFor };
+})(window.LM);

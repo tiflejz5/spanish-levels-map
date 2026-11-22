@@ -1,5 +1,5 @@
 /*
- * pisanie-wzorzec.js — widok wzorca z komentarzami (paczka v6, spec 17, sekcja 1.3):
+ * writing-model.js — widok wzorca z komentarzami (paczka v6, spec 17, sekcja 1.3):
  * #/pisanie/wzorce/<egzamin>/<id zadania>.
  *
  *   - komputer (≥ 1024 px): tekst w kolumnie ~65 znaków, komentarze w prawym marginesie na wysokości kotwic
@@ -12,16 +12,16 @@
  *   - zaznaczanie tekstu: menu Słowniczka (data-fc-selectable).
  * Tekstu `model` nie zmieniamy: kotwice to dokładne fragmenty (występują w nim raz, nie nakładają się).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const WIDE = "(min-width: 1024px)";
 
-  function P() { return ELM.pisanie; }
+  function P() { return LM.writing; }
 
   /** Kotwice w kolejności występowania: [{ start, end, type, note, criterion, element }]; błędne pomijamy z ostrzeżeniem. */
   function placeAnnotations(model, list) {
@@ -40,7 +40,7 @@ window.ELM = window.ELM || {};
 
   function render(view, route) {
     document.title = "Pisanie · English Levels Map";
-    const back = ELM.ui.breadcrumbs([{ label: "Pisanie", href: P().HASH }, { label: "Wzorzec" }]);
+    const back = LM.ui.breadcrumbs([{ label: "Pisanie", href: P().HASH }, { label: "Wzorzec" }]);
     view.appendChild(back);
     const status = el("p", { class: "tool-note", role: "status", text: "Wczytuję wzorzec…" });
     view.appendChild(status);
@@ -64,7 +64,7 @@ window.ELM = window.ELM || {};
     const words = P().wordCount(row.exam.id, task);
     const T = row.T;
     document.title = (task.title || task.id) + " · Pisanie · English Levels Map";
-    if (ELM.profileData && ELM.profileData.setLastPage) ELM.profileData.setLastPage(location.hash, "Wzorzec: " + (task.title || task.id));
+    if (LM.profileData && LM.profileData.setLastPage) LM.profileData.setLastPage(location.hash, "Wzorzec: " + (task.title || task.id));
 
     // ----- nagłówek
     view.appendChild(P().head(task.title || task.id, null));
@@ -115,7 +115,7 @@ window.ELM = window.ELM || {};
       a.noteEl = el("div", { class: "wz-note wz-t-" + a.type, id: "wz-n-" + a.n, role: "note" }, [
         el("p", { class: "wz-note-head" }, [
           el("span", { class: "wz-badge", "aria-hidden": "true", text: String(a.n) }),
-          el("span", { class: "wz-note-icon", "aria-hidden": "true" }, ELM.icon(t.icon, { size: 16 })),
+          el("span", { class: "wz-note-icon", "aria-hidden": "true" }, LM.icon(t.icon, { size: 16 })),
           el("strong", { class: "wz-note-type", text: t.label }),
           a.criterion && rubric[a.criterion] ? el("span", { class: "wz-note-crit", text: rubric[a.criterion].label }) : null,
           a.element ? el("span", { class: "wz-note-crit", text: "Element " + a.element }) : null
@@ -139,7 +139,7 @@ window.ELM = window.ELM || {};
         state.off[t] = !state.off[t];
         b.setAttribute("aria-pressed", state.off[t] ? "false" : "true");
         apply();
-      } }, [el("span", { class: "wz-note-icon", "aria-hidden": "true" }, ELM.icon(def.icon, { size: 16 })), " " + def.label + " ", el("span", { class: "wz-count num", text: String(counts[t]) })]);
+      } }, [el("span", { class: "wz-note-icon", "aria-hidden": "true" }, LM.icon(def.icon, { size: 16 })), " " + def.label + " ", el("span", { class: "wz-count num", text: String(counts[t]) })]);
       return b;
     });
     const hideBtn = el("button", { type: "button", class: "btn btn-secondary btn-small wz-hide", "aria-pressed": "false", onclick: function () {
@@ -153,7 +153,7 @@ window.ELM = window.ELM || {};
       el("summary", { text: "Legenda" }),
       el("dl", null, P().TYPE_ORDER.filter(function (t) { return counts[t]; }).map(function (t) {
         const def = P().TYPES[t];
-        return el("div", { class: "wz-legend-row" }, [el("dt", null, [el("span", { class: "wz-note-icon", "aria-hidden": "true" }, ELM.icon(def.icon, { size: 16 })), " " + def.label]), el("dd", { text: def.help })]);
+        return el("div", { class: "wz-legend-row" }, [el("dt", null, [el("span", { class: "wz-note-icon", "aria-hidden": "true" }, LM.icon(def.icon, { size: 16 })), " " + def.label]), el("dd", { text: def.help })]);
       })),
       el("p", { class: "tool-note", text: "Numer przy fragmencie tekstu odpowiada numerowi komentarza. Kolor to tylko dodatek – typ komentarza podaje też ikona i nazwa." })
     ]));
@@ -292,5 +292,5 @@ window.ELM = window.ELM || {};
     window.addEventListener("beforeprint", function () { /* przypisy są w DOM; css/print.css ukrywa margines */ });
   }
 
-  ELM.pisanieWzorzec = { render: render, placeAnnotations: placeAnnotations };
-})(window.ELM);
+  LM.writingModel = { render: render, placeAnnotations: placeAnnotations };
+})(window.LM);

@@ -1,6 +1,6 @@
 /*
- * fiszki-logic.js — czysta logika fiszek (spec 10): bez DOM i localStorage, testy w tools/testy.js.
- * Harmonogram jest osobno: js/fiszki-harmonogram.js.
+ * cards-logic.js — czysta logika fiszek (spec 10): bez DOM i localStorage, testy w tools/tests.js.
+ * Harmonogram jest osobno: js/cards-schedule.js.
  *
  *   normalize(s)                       porównanie odpowiedzi (2.1): małe litery, spacje, ’ → ', bez interpunkcji na brzegach
  *   levenshtein(a, b)
@@ -24,9 +24,9 @@
  *   emptyState(), pruneDaily(daily, keep?)
  *   daily: { <dzień>: { new, reviews (powtórki kart w stanie review), again, good (Dobrze+Łatwe), answers (wszystkie oceny), minutes } }
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const VERSION = 1;
@@ -817,7 +817,7 @@ window.ELM = window.ELM || {};
     return changed;
   }
 
-  ELM.fiszkiLogic = {
+  LM.cardsLogic = {
     mergeStates: mergeStates,
     MISTAKES_DECK: MISTAKES_DECK, journalSource: journalSource, journalCardId: journalCardId, journalCard: journalCard,
     newJournalState: newJournalState, journalCardState: journalCardState, ensureMistakesDeck: ensureMistakesDeck,
@@ -836,4 +836,4 @@ window.ELM = window.ELM || {};
     makeWordCard: makeWordCard, exportWordsCsv: exportWordsCsv,
     emptyState: emptyState, sanitizeState: sanitizeState, pruneDaily: pruneDaily
   };
-})(window.ELM);
+})(window.LM);

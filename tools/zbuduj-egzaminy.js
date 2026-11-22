@@ -8,10 +8,10 @@
  *   (Certyfikat C1 ma własny, istniejący generator: tools/zbuduj-niezbednik.js — bez zmian.)
  *
  * Wyjście (GENEROWANE):
- *   dane/egzaminy-rejestr.js                 ELM.EXAM_REGISTRY — wczytywany przy starcie (mały):
+ *   dane/egzaminy-rejestr.js                 LM.EXAM_REGISTRY — wczytywany przy starcie (mały):
  *                                            egzaminy z rejestru + powiązania (ramki „Na egzaminie …”)
  *                                            + opisy zestawów do ramek
- *   niezbednik/<idEgzaminu>-dane.js          ELM.EXAMS[id] = { manifest, pages, trainers, exercises } — ładowany
+ *   niezbednik/<idEgzaminu>-dane.js          LM.EXAMS[id] = { manifest, pages, trainers, exercises } — ładowany
  *                                            dopiero po wejściu do zakładki egzaminu
  * Zestawy ćwiczeń egzaminów w nowym formacie (items) buduje tools/zbuduj-cwiczenia.js (silnik zadań,
  * spec 01); zestawy w formacie C1 (multiple-choice-cloze, word-formation…, spec 06 sekcja 3) trafiają
@@ -83,7 +83,7 @@ exams.forEach(function (exam) {
   }
   fs.writeFileSync(path.join(N, exam.id + "-dane.js"),
     "/* Egzamin " + exam.id + " — GENEROWANY przez tools/zbuduj-egzaminy.js, nie edytuj ręcznie. */\n" +
-    "window.ELM = window.ELM || {};\n(ELM.EXAMS = ELM.EXAMS || {})[" + JSON.stringify(exam.id) + "] = " +
+    "window.LM = window.LM || {};\n(LM.EXAMS = LM.EXAMS || {})[" + JSON.stringify(exam.id) + "] = " +
     JSON.stringify({ manifest: manifest, pages: pages, trainers: trainers, exercises: exercises }) + ";\n", "utf8");
   summary.push(exam.id + ": strony " + Object.keys(pages).length + ", zestawy C1 " + Object.keys(exercises).length + ", trenery " + Object.keys(trainers).length + ", powiązania " + (links[exam.id] || []).length);
 });
@@ -101,6 +101,6 @@ exams.forEach(function (exam) {
 
 fs.writeFileSync(path.join(ROOT, "dane", "egzaminy-rejestr.js"),
   "/* Rejestr egzaminów — GENEROWANY przez tools/zbuduj-egzaminy.js z dane/egzaminy-manifest.json, nie edytuj ręcznie. */\n" +
-  "window.ELM = window.ELM || {};\nELM.EXAM_REGISTRY = " + JSON.stringify({ version: 1, exams: exams, links: links, boxTitles: boxTitles, sets: sets }) + ";\n", "utf8");
+  "window.LM = window.LM || {};\nELM.EXAM_REGISTRY = " + JSON.stringify({ version: 1, exams: exams, links: links, boxTitles: boxTitles, sets: sets }) + ";\n", "utf8");
 console.log("Egzaminy: " + exams.map(function (e) { return e.code + (e.status === "active" ? "" : " (" + e.status + ")"); }).join(", ") +
   (summary.length ? " | " + summary.join(" | ") : ""));

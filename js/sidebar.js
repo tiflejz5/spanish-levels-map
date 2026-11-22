@@ -15,9 +15,9 @@
  *   elm_sidebar_v1 = { version: 1, pinned: true|false }
  * Stan odczytuje już skrypt w <head> (index.html), żeby treść nie przeskakiwała.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const KEY = "elm_sidebar_v1";
@@ -58,13 +58,13 @@ window.ELM = window.ELM || {};
     const label = isOpen() ? "Zwiń panel" : "Rozwiń panel";
     toggleBtn.setAttribute("aria-label", label);
     toggleBtn.setAttribute("data-tooltip", label);
-    toggleBtn.replaceChildren(ELM.icon(isOpen() ? "panel-left-close" : "panel-left-open", { size: 20 }));
+    toggleBtn.replaceChildren(LM.icon(isOpen() ? "panel-left-close" : "panel-left-open", { size: 20 }));
   }
 
   function paintPin() {
     document.documentElement.setAttribute("data-sidebar", pinned ? "pinned" : "rail");
     pinBtn.setAttribute("aria-pressed", pinned ? "true" : "false");
-    pinBtn.querySelector(".sb-icon").replaceChildren(ELM.icon(pinned ? "pin" : "pin-off", { size: 20 }));
+    pinBtn.querySelector(".sb-icon").replaceChildren(LM.icon(pinned ? "pin" : "pin-off", { size: 20 }));
     pinBtn.querySelector(".sb-label").textContent = pinned ? "Odepnij panel" : "Przypnij panel";
     pinBtn.setAttribute("aria-label", pinned ? "Odepnij panel" : "Przypnij panel");
     toggleBtn.hidden = pinned; // przypięty panel jest zawsze rozwinięty
@@ -163,8 +163,8 @@ window.ELM = window.ELM || {};
     if (!held && sidebar && !pinned && expanded && !hovering && !panel.contains(document.activeElement)) setExpanded(false);
   }
 
-  ELM.sidebar = { hold: hold, init: init, afterNavigate: afterNavigate, isPinned: function () { return pinned; } };
+  LM.sidebar = { hold: hold, init: init, afterNavigate: afterNavigate, isPinned: function () { return pinned; } };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
-})(window.ELM);
+})(window.LM);

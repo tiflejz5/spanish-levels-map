@@ -63,7 +63,7 @@
 
 /* =====================================================================
    ŚCIĄGA (paczka v6, spec 16, sekcja 1.3): jedna kartka A4, dwie kolumny, nagłówek na całą szerokość.
-   Krój nie mniejszy niż 9,5 pt (kontroluje to tools/sciagi-pdf.js: 1 strona A4).
+   Krój nie mniejszy niż 9,5 pt (kontroluje to tools/cheatsheets-pdf.js: 1 strona A4).
    ===================================================================== */
 @media print {
   .sciaga-view .sciaga-tools { display: none !important; }

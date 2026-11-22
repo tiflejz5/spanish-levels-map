@@ -1,5 +1,5 @@
 /*
- * exam-logic.js — czysta logika egzaminów (bez DOM; testy w tools/testy.js).
+ * exam-logic.js — czysta logika egzaminów (bez DOM; testy w tools/tests.js).
  * Specyfikacja: docs/rozbudowa-v2/spec/05-egzaminy-i-egzamin-osmoklasisty.md, 5.1–5.2.
  *
  *   countWordsE8(text, opening)   liczba wyrazów wg reguł egzaminu ósmoklasisty:
@@ -8,9 +8,9 @@
  *       (opening) też nie, jeśli użytkownik go przepisał
  *   writingZone(n, T)             strefa licznika: low (< warnBelow), warn (< min), ok, over (> max)
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const HAS_WORD_CHAR = /[\p{L}\p{N}]/u;
@@ -146,9 +146,9 @@ window.ELM = window.ELM || {};
     return { shown: shown, hidden: all.filter(function (id) { return shown.indexOf(id) === -1; }) };
   }
 
-  ELM.examLogic = {
+  LM.examLogic = {
     navSplit: navSplit,
     countWordsE8: countWordsE8, writingZone: writingZone, examBoxAnchorIndex: examBoxAnchorIndex,
     daysBetween: daysBetween, formatDatePl: formatDatePl, localToday: localToday, examMyState: examMyState, myExams: myExams
   };
-})(window.ELM);
+})(window.LM);

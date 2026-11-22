@@ -1,9 +1,9 @@
 /*
- * kontrast.js — sprawdza kontrast WCAG par tokenów w obu motywach
+ * contrast.js — sprawdza kontrast WCAG par tokenów w obu motywach
  * (css/style.css). Tekst: min. 4.5:1, komponenty, obramowania pól i paski: 3:1.
  *
  * Użycie (z folderu projektu):
- *   node tools/kontrast.js
+ *   node tools/contrast.js
  * Kod wyjścia 1, gdy któraś para nie spełnia minimum.
  */
 "use strict";

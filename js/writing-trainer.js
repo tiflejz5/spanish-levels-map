@@ -3,7 +3,7 @@
  * Wcześniej był częścią js/c1-writing.js; teraz C1 i Egzamin ósmoklasisty
  * tworzą trenera z własną konfiguracją:
  *
- *   ELM.writingTrainer.create(cfg) → { render(view, taskId) → tytuł | null }
+ *   LM.writingTrainer.create(cfg) → { render(view, taskId) → tytuł | null }
  *
  * cfg (C1 → js/c1-writing.js, E8 → js/exam-core.js):
  *   trainer()               dane trening/pisanie.json
@@ -17,7 +17,7 @@
  *   listTitle, listLead(T)  nagłówek i wstęp listy zadań
  *   chips(task, T)          etykiety zadania (Part, gatunek, zakres słów)
  *   genrePage(task)         { href, label } strony o gatunku albo null
- *   timerKey(task)          klucz timera (ELM.c1.timer — wspólny dla trenerów)
+ *   timerKey(task)          klucz timera (LM.c1.timer — wspólny dla trenerów)
  *   timerNote               opcjonalna wskazówka przy timerze
  *   examExtras              true → egzaminy z rejestru: podany początek, podpunkty do odhaczenia,
  *                           samoocena wg kryteriów (rubric), wzorcowa odpowiedź obok tekstu
@@ -31,12 +31,12 @@
  *                           (zadania z choiceGroup, opis grupy w T.choiceGroups; spec 06, 4.1)
  * Szkic zapisuje się automatycznie; pole tekstowe bez sprawdzania pisowni (jak na egzaminie).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   /** Kopiowanie do schowka (z zapasową metodą dla starszych przeglądarek / file://). */
@@ -106,7 +106,7 @@ window.ELM = window.ELM || {};
           const isCur = cur && cur.id === task.id;
           let action;
           if (isCur) {
-            action = el("a", { class: "btn btn-primary", href: cfg.href(task.id) }, [words ? "Pisz dalej" : "Zacznij pisać", ELM.icon("chevron-right", { size: 18 })]);
+            action = el("a", { class: "btn btn-primary", href: cfg.href(task.id) }, [words ? "Pisz dalej" : "Zacznij pisać", LM.icon("chevron-right", { size: 18 })]);
           } else if (change) {
             action = el("button", {
               type: "button", class: "btn btn-secondary",
@@ -192,7 +192,7 @@ window.ELM = window.ELM || {};
       if (group) {
         const cur = chosenIn(T, group);
         if (cur && cur.id !== task.id) { renderOtherChoice(view, T, task, group, cur); return; }
-        view.appendChild(el("p", { class: "tool-note wt-note" }, [ELM.icon("info", { size: 16 }),
+        view.appendChild(el("p", { class: "tool-note wt-note" }, [LM.icon("info", { size: 16 }),
           cur ? " To Twój wybór w tej grupie. Zmienisz go na liście zadań, gdy szkic będzie pusty."
               : " Na egzaminie wybierasz jedno z dwóch zadań. Zaczęcie pisania wybiera to zadanie."]));
       }
@@ -241,13 +241,13 @@ window.ELM = window.ELM || {};
       paintCounter(area.value);
 
       const phrasesBtn = task.genre ? el("button", { type: "button", class: "btn btn-secondary btn-small zw-open", "aria-expanded": "false", "aria-controls": "zw-panel",
-        onclick: function () { togglePhrases(); } }, ELM.ui.withIcon("notebook-text", "Zwroty")) : null;
+        onclick: function () { togglePhrases(); } }, LM.ui.withIcon("notebook-text", "Zwroty")) : null;
       view.appendChild(el("div", { class: "c1-writing-bar" }, [
-        ELM.c1.timer({ key: cfg.timerKey(task), seconds: T.timeMinutes * 60, label: "Czas", exam: true }),
+        LM.c1.timer({ key: cfg.timerKey(task), seconds: T.timeMinutes * 60, label: "Czas", exam: true }),
         counter,
         phrasesBtn
       ]));
-      if (cfg.timerNote) view.appendChild(el("p", { class: "tool-note wt-note" }, [ELM.icon("info", { size: 16 }), " " + cfg.timerNote]));
+      if (cfg.timerNote) view.appendChild(el("p", { class: "tool-note wt-note" }, [LM.icon("info", { size: 16 }), " " + cfg.timerNote]));
       // E8: podany początek (nie liczy się do limitu)
       if (cfg.examExtras && task.opening) {
         view.appendChild(el("p", { class: "wt-opening" }, [el("span", { class: "review-label", text: "Podany początek (nie liczy się do limitu): " }), el("strong", { text: task.opening })]));
@@ -257,7 +257,7 @@ window.ELM = window.ELM || {};
       // Panel „Zwroty”: zwroty z banku dla gatunku zadania i poziomu egzaminu; „Wstaw” w miejscu kursora
       let panel = null;
       function insertPhrase(raw) {
-        const text = ELM.pisanieZwroty.plain(raw);
+        const text = LM.writingPhrases.plain(raw);
         const start = area.selectionStart, end = area.selectionEnd, v = area.value;
         const before = start > 0 ? v.charAt(start - 1) : "";
         const after = end < v.length ? v.charAt(end) : "";
@@ -277,7 +277,7 @@ window.ELM = window.ELM || {};
         area.focus();
       }
       function fillPhrases(body) {
-        const rows = ELM.pisanieZwroty.forTrainer(task.genre, cfg.examId);
+        const rows = LM.writingPhrases.forTrainer(task.genre, cfg.examId);
         body.replaceChildren();
         if (!rows.length) { body.appendChild(el("p", { class: "tool-note", text: "Brak zwrotów dla tego gatunku." })); return; }
         rows.forEach(function (r) {
@@ -288,7 +288,7 @@ window.ELM = window.ELM || {};
                 el("p", { class: "zw-panel-en", lang: "en", text: p.en }),
                 el("p", { class: "zw-panel-pl", lang: "pl", text: p.pl + " · " + p.level })
               ]),
-              el("button", { type: "button", class: "btn btn-secondary btn-small", "aria-label": "Wstaw: " + ELM.pisanieZwroty.plain(p.en), onclick: function () { insertPhrase(p.en); } }, "Wstaw")
+              el("button", { type: "button", class: "btn btn-secondary btn-small", "aria-label": "Wstaw: " + LM.writingPhrases.plain(p.en), onclick: function () { insertPhrase(p.en); } }, "Wstaw")
             ]);
           })));
         });
@@ -300,13 +300,13 @@ window.ELM = window.ELM || {};
             onkeydown: function (ev) { if (ev.key === "Escape") { ev.stopPropagation(); closePhrases(); } } }, [
             el("div", { class: "zw-panel-head" }, [
               el("h2", { class: "zw-panel-title", text: "Zwroty" }),
-              el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": "Zamknij panel zwrotów", onclick: closePhrases }, ELM.ui.withIcon("x", "Zamknij"))
+              el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": "Zamknij panel zwrotów", onclick: closePhrases }, LM.ui.withIcon("x", "Zamknij"))
             ]),
             body,
-            el("p", { class: "tool-note zw-panel-foot" }, el("a", { href: ELM.pisanie.HASH + "/zwroty", text: "Cały bank zwrotów" }))
+            el("p", { class: "tool-note zw-panel-foot" }, el("a", { href: LM.writing.HASH + "/zwroty", text: "Cały bank zwrotów" }))
           ]);
           view.appendChild(panel);
-          ELM.loadModule("js/pisanie-zwroty.js").then(function () { return ELM.pisanieZwroty.load(); }).then(function () { fillPhrases(body); }, function () {
+          LM.loadModule("js/writing-phrases.js").then(function () { return LM.writingPhrases.load(); }).then(function () { fillPhrases(body); }, function () {
             body.replaceChildren(el("p", { class: "tool-note", text: "Nie udało się wczytać zwrotów. Odśwież stronę." }));
           });
         }
@@ -326,7 +326,7 @@ window.ELM = window.ELM || {};
             drafts[task.id] = area.value;
             if (group && !chosenIn(T, group) && area.value.trim()) cfg.choices()[group] = task.id;
             cfg.save();
-            if (ELM.markActivity) ELM.markActivity(); // ukończona sesja trenera = dzień nauki
+            if (LM.markActivity) LM.markActivity(); // ukończona sesja trenera = dzień nauki
             fillChecklist();
             checklist.hidden = false;
             checklist.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -336,7 +336,7 @@ window.ELM = window.ELM || {};
           type: "button",
           class: "btn btn-danger",
           onclick: function () {
-            ELM.dialogs.confirm({
+            LM.dialogs.confirm({
               title: "Wyczyścić szkic?",
               message: "Tekst tego zadania zostanie usunięty z tej przeglądarki.",
               confirmLabel: "Wyczyść"
@@ -370,8 +370,8 @@ window.ELM = window.ELM || {};
           cfg.examExtras && T.rubric ? rubric(T, n) : null,
           cfg.examExtras && task.model ? compare(area.value, task) : null,
           el("div", { class: "c1-writing-actions" }, [
-            cfg.modelHref && task.modelNotes ? el("a", { class: "btn btn-primary", href: cfg.modelHref(task) }, ELM.ui.withIcon("pencil", "Wzorzec z komentarzami")) : null,
-            page ? el("a", { class: "btn btn-secondary", href: page.href }, ["Więcej o gatunku: " + page.label, ELM.icon("chevron-right", { size: 18 })]) : null,
+            cfg.modelHref && task.modelNotes ? el("a", { class: "btn btn-primary", href: cfg.modelHref(task) }, LM.ui.withIcon("pencil", "Wzorzec z komentarzami")) : null,
+            page ? el("a", { class: "btn btn-secondary", href: page.href }, ["Więcej o gatunku: " + page.label, LM.icon("chevron-right", { size: 18 })]) : null,
             el("button", { type: "button", class: "btn btn-secondary", onclick: function () { copyText(area.value, copyStatus); } }, "Kopiuj tekst"),
             copyStatus
           ])
@@ -433,5 +433,5 @@ window.ELM = window.ELM || {};
     return { render: render };
   }
 
-  ELM.writingTrainer = { create: create, copyText: copyText };
-})(window.ELM);
+  LM.writingTrainer = { create: create, copyText: copyText };
+})(window.LM);

@@ -1,21 +1,21 @@
 /*
- * powtorki.js — widok „Fiszki i błędy” (#/powtorki, paczka v8, spec 20 R3).
+ * review.js — widok „Fiszki i błędy” (#/powtorki, paczka v8, spec 20 R3).
  *
  *   #/powtorki[/na-dzis]        zakładka „Na dziś”: karta z liczbą, rozbiciem i „Powtarzaj teraz” (ten plik)
- *   #/powtorki/talie[/…]        zakładka „Talie” (js/fiszki.js, js/fiszki-browse.js)
- *   #/powtorki/moje-bledy       zakładka „Moje błędy” (js/journal.js)
- *   #/powtorki/moje-slowa       zakładka „Moje słowa” (js/fiszki-words.js)
- *   #/powtorki/sesja[?tylko=…]  sesja zunifikowana (js/fiszki.js)
+ *   #/powtorki/talie[/…]        zakładka „Talie” (js/cards.js, js/cards-browse.js)
+ *   #/powtorki/moje-bledy       zakładka „Moje błędy” (js/mistakes.js)
+ *   #/powtorki/moje-slowa       zakładka „Moje słowa” (js/words.js)
+ *   #/powtorki/sesja[?tylko=…]  sesja zunifikowana (js/cards.js)
  *
- * Liczby i kolejka: js/reviews.js. Tu: wspólny nagłówek z zakładkami (role="tablist"), karta „Na dziś”
+ * Liczby i kolejka: js/review-queue.js. Tu: wspólny nagłówek z zakładkami (role="tablist"), karta „Na dziś”
  * (ta sama na stronie Dziś) i widok pierwszej zakładki.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   const HOME = "#/powtorki";
@@ -31,8 +31,8 @@ window.ELM = window.ELM || {};
     { kind: "exercise", label: "Słabe punkty z ćwiczeń", only: "slabe" }
   ];
 
-  function hasProfile() { return !!(ELM.app && ELM.app.getActiveProfile()); }
-  function plural(n, one, few, many) { return ELM.c1 ? ELM.c1.plural(n, one, few, many) : many; }
+  function hasProfile() { return !!(LM.app && LM.app.getActiveProfile()); }
+  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
 
   function parseRoute(hash) {
     return /^#\/powtorki(?:\/na-dzis)?\/?$/.test(hash || "") ? { kind: "today" } : null;
@@ -69,9 +69,9 @@ window.ELM = window.ELM || {};
 
   /** Nagłówek strony „Fiszki i błędy” (etykieta „Nauka”, liczba na dziś) z zakładkami; tab: dzis | talie | bledy | slowa. */
   function header(tab, lead) {
-    const count = hasProfile() && ELM.reviews ? ELM.reviews.dueCount() : 0;     // do powtórki
-    const fresh = hasProfile() && ELM.reviews ? ELM.reviews.freshCount() : 0;   // nowe dziś (osobno, spec v7 14, P3)
-    const head = ELM.ui.pageHead({ eyebrow: "Nauka", title: "Fiszki i błędy", lead: lead });
+    const count = hasProfile() && LM.reviewQueue ? LM.reviewQueue.dueCount() : 0;     // do powtórki
+    const fresh = hasProfile() && LM.reviewQueue ? LM.reviewQueue.freshCount() : 0;   // nowe dziś (osobno, spec v7 14, P3)
+    const head = LM.ui.pageHead({ eyebrow: "Nauka", title: "Fiszki i błędy", lead: lead });
     const h1 = head.querySelector("h1");
     if (h1 && count) h1.appendChild(el("span", { class: "pw-count num", text: count + " do powtórki", "aria-label": count + " " + plural(count, "pozycja", "pozycje", "pozycji") + " do powtórki dziś" }));
     if (h1 && fresh) h1.appendChild(el("span", { class: "pw-count pw-count-new num", text: "Nowe dziś: " + fresh, "aria-label": "Nowe dziś: " + fresh }));
@@ -81,8 +81,8 @@ window.ELM = window.ELM || {};
   // ---------- karta „Na dziś” ----------
 
   function openAddMistake(after) {
-    if (!ELM.journal) return;
-    ELM.journal.openForm().then(function (r) { if (r && after) after(); });
+    if (!LM.mistakes) return;
+    LM.mistakes.openForm().then(function (r) { if (r && after) after(); });
   }
 
   /**
@@ -92,20 +92,20 @@ window.ELM = window.ELM || {};
    */
   function card(opts) {
     opts = opts || {};
-    const all = ELM.reviews.breakdown();
+    const all = LM.reviewQueue.breakdown();
     const due = all.due, fresh = all.fresh;
     const b = all.total ? Object.assign({}, due.total ? due : fresh, { total: all.total }) : all; // główna liczba i rozbicie: do powtórki, a gdy nic nie zalega, nowe
-    const minutes = ELM.reviews.estimateMinutes(all);
+    const minutes = LM.reviewQueue.estimateMinutes(all);
     const titleId = "pw-card-title" + (opts.today ? "-today" : "");
     const section = el("section", { class: "card pw-card" + (opts.today ? " is-today" : ""), "aria-labelledby": titleId });
 
     if (!b.total && opts.today) return zeroCard();
     if (!b.total) {
-      const next = ELM.reviews.nextDue(Date.now());
+      const next = LM.reviewQueue.nextDue(Date.now());
       section.appendChild(el("h2", { class: "tile-title", id: titleId, text: "Fiszki i błędy" }));
-      section.appendChild(ELM.ui.emptyState({
+      section.appendChild(LM.ui.emptyState({
         art: "brak-powtorek", title: "Na dziś koniec",
-        hint: next ? "Najbliższa powtórka: " + ELM.fiszki.internal.fmtWhen(next) + "." : "Włącz talię, zapisz błąd albo zrób kilka ćwiczeń – wrócą tu w rosnących odstępach.",
+        hint: next ? "Najbliższa powtórka: " + LM.cards.internal.fmtWhen(next) + "." : "Włącz talię, zapisz błąd albo zrób kilka ćwiczeń – wrócą tu w rosnących odstępach.",
         class: "es-tile"
       }));
       section.appendChild(links());
@@ -135,10 +135,10 @@ window.ELM = window.ELM || {};
 
   /** Dziś, gdy wszystko zrobione: niska karta z jedną linijką („Na dziś zrobione. Następne: jutro (6).”) i linkiem „Talie”. */
   function zeroCard() {
-    const u = ELM.reviews.upcoming();
+    const u = LM.reviewQueue.upcoming();
     let text = "Na dziś zrobione.";
     if (u.tomorrow) text += " Następne: jutro (" + u.tomorrow + ").";
-    else if (u.next) text += " Następne: " + ELM.fiszki.internal.fmtWhen(u.next) + ".";
+    else if (u.next) text += " Następne: " + LM.cards.internal.fmtWhen(u.next) + ".";
     else text += " Włącz talię albo zapisz błąd – wrócą tu w rosnących odstępach.";
     return el("section", { class: "card pw-card is-today is-zero", "aria-label": "Fiszki i błędy" }, [
       el("p", { class: "pw-zero-text" }, [el("strong", { text: "Fiszki i błędy" }), " · ", text]),
@@ -150,13 +150,13 @@ window.ELM = window.ELM || {};
     return el("p", { class: "pw-links" }, [
       el("a", { href: "#/powtorki/talie", text: "Talie" }),
       el("a", { href: "#/powtorki/moje-bledy", text: "Moje błędy" }),
-      el("button", { type: "button", class: "btn btn-link", onclick: function () { openAddMistake(function () { if (ELM.app.refreshLearning) ELM.app.refreshLearning(); render(); }); } }, "+ Dodaj błąd")
+      el("button", { type: "button", class: "btn btn-link", onclick: function () { openAddMistake(function () { if (LM.app.refreshLearning) LM.app.refreshLearning(); render(); }); } }, "+ Dodaj błąd")
     ]);
   }
 
   /** Karta na stronie Dziś (ta sama liczba co w pasku): stan z liczbą albo niska karta zerowa. */
   function todayCard() {
-    if (!hasProfile() || !ELM.reviews) return null;
+    if (!hasProfile() || !LM.reviewQueue) return null;
     const n = card({ today: true });
     n.classList.add("bento-tile", "pw-today");
     return n;
@@ -178,10 +178,10 @@ window.ELM = window.ELM || {};
       ]));
       return;
     }
-    ELM.reviews.ensureMigrated();
+    LM.reviewQueue.ensureMigrated();
     view.appendChild(header("dzis", "Fiszki z talii, błędy z dziennika i słabe punkty z ćwiczeń w jednej kolejce – najpierw to, co zaległe."));
     view.appendChild(card());
   }
 
-  ELM.powtorki = { HOME: HOME, parseRoute: parseRoute, render: render, header: header, tabs: tabs, card: card, todayCard: todayCard };
-})(window.ELM);
+  LM.review = { HOME: HOME, parseRoute: parseRoute, render: render, header: header, tabs: tabs, card: card, todayCard: todayCard };
+})(window.LM);

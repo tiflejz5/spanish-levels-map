@@ -12,12 +12,12 @@
  *                     raz, przy migracji do pierwszego profilu
  * Dodatkowo elm_ui_v1 pamięta tylko wybrany poziom i kategorię.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
 
   const CONTENT_KEY = "elm_content_v1";
   const PROGRESS_KEY = "elm_progress_v1";
@@ -120,7 +120,7 @@ window.ELM = window.ELM || {};
     });
 
     const foundLevels = raw.levels.filter(function (l) {
-      return U.isPlainObject(l) && ELM.LEVEL_IDS.indexOf(l.id) !== -1;
+      return U.isPlainObject(l) && LM.LEVEL_IDS.indexOf(l.id) !== -1;
     });
     if (!foundLevels.length) throw new Error("Nie znaleziono żadnego poziomu A1–C2.");
 
@@ -152,7 +152,7 @@ window.ELM = window.ELM || {};
     }
 
     // Zawsze komplet sześciu poziomów w stałej kolejności
-    const levels = ELM.LEVEL_IDS.map(function (levelId) {
+    const levels = LM.LEVEL_IDS.map(function (levelId) {
       const src = foundLevels.find(function (l) { return l.id === levelId; }) || {};
       const srcContent = U.isPlainObject(src.content) ? src.content : {};
       const level = { id: levelId, description: str(src.description), content: {} };
@@ -204,7 +204,7 @@ window.ELM = window.ELM || {};
    */
   function loadContent() {
     const raw = readRaw(CONTENT_KEY);
-    if (raw === null) return { status: "new", data: ELM.createDefaultData() };
+    if (raw === null) return { status: "new", data: LM.createDefaultData() };
     try {
       const data = normalizeContent(migrate(parseJSON(raw)));
       return { status: "ok", data: data };
@@ -285,7 +285,7 @@ window.ELM = window.ELM || {};
   function loadProfiles() {
     const raw = readRaw(PROFILES_KEY);
     if (raw === null) {
-      const data = ELM.createEmptyProfiles();
+      const data = LM.createEmptyProfiles();
       let migrated = 0;
       const old = readRaw(PROGRESS_KEY);
       if (old !== null) {
@@ -308,7 +308,7 @@ window.ELM = window.ELM || {};
       return { status: "ok", data: data, migrated: 0, removedSeeds: removedSeeds };
     } catch (e) {
       writeRaw(PROFILES_KEY + "_corrupt_backup", raw);
-      return { status: "corrupt", data: ELM.createEmptyProfiles(), migrated: 0, removedSeeds: 0 };
+      return { status: "corrupt", data: LM.createEmptyProfiles(), migrated: 0, removedSeeds: 0 };
     }
   }
 
@@ -318,7 +318,7 @@ window.ELM = window.ELM || {};
 
   /** Stan interfejsu (wybrany poziom itd.). Błędy ignorujemy — to tylko wygoda. */
   function loadUI() {
-    const fallback = { levelId: ELM.LEVEL_IDS[0], categoryId: null };
+    const fallback = { levelId: LM.LEVEL_IDS[0], categoryId: null };
     try {
       const ui = JSON.parse(readRaw(UI_KEY) || "null");
       if (!U.isPlainObject(ui)) return fallback;
@@ -411,7 +411,7 @@ window.ELM = window.ELM || {};
     return { type: "single", progress: normalizeProgress(data) };
   }
 
-  ELM.store = {
+  LM.store = {
     CURRENT_VERSION: CURRENT_VERSION,
     isStorageAvailable: isStorageAvailable,
     migrate: migrate,
@@ -430,4 +430,4 @@ window.ELM = window.ELM || {};
     parseContentImport: parseContentImport,
     parseProgressImport: parseProgressImport
   };
-})(window.ELM);
+})(window.LM);

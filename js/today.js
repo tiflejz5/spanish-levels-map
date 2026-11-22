@@ -10,14 +10,14 @@
  * (MotionPath). Przy kolejnych wejściach tylko krótkie odświeżenie. Przy
  * prefers-reduced-motion — od razu stan końcowy.
  *
- * Seria liczona jest z listy dni aktywności profilu (ELM.learn.streak).
+ * Seria liczona jest z listy dni aktywności profilu (LM.learn.streak).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const SVG_NS = "http://www.w3.org/2000/svg";
 
@@ -29,9 +29,9 @@ window.ELM = window.ELM || {};
   let visitedThisSession = false; // pełna animacja tylko przy pierwszym wejściu
   let trailObserver = null;
 
-  function pd() { return ELM.profileData; }
-  function learn() { return ELM.learn; }
-  function plural(n, one, few, many) { return ELM.c1 ? ELM.c1.plural(n, one, few, many) : many; }
+  function pd() { return LM.profileData; }
+  function learn() { return LM.learn; }
+  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
 
   function parseRoute(hash) {
     return /^#\/dzis\/?$/.test(hash || "") ? { kind: "today" } : null;
@@ -65,39 +65,39 @@ window.ELM = window.ELM || {};
    * na stronie poziomu checklista „Umiem”). Bez danych Szlaku: jak dotąd punkty „Umiem”. skipped: kraina przed punktem startu.
    */
   function levelStats() {
-    return ELM.LEVEL_IDS.map(function (id) {
-      const s = Object.assign({ id: id }, ELM.app.getLevelStats(id));
-      const li = ELM.szlak && ELM.szlak.ready() ? ELM.szlak.levelInfo(id) : null;
+    return LM.LEVEL_IDS.map(function (id) {
+      const s = Object.assign({ id: id }, LM.app.getLevelStats(id));
+      const li = LM.trail && LM.trail.ready() ? LM.trail.levelInfo(id) : null;
       return li ? Object.assign(s, { done: li.done, total: li.total, percent: li.percent, skipped: li.skipped, szlak: true }) : s;
     });
   }
 
   /** Pierwsza stacja z postępem poniżej 100% (gdy wszystko zrobione — ostatnia). */
   function currentIndex(stats) {
-    const sz = ELM.szlak && ELM.szlak.ready() ? ELM.szlak.current() : null; // Szlak: kraina bieżącego przystanku (po teście C1 = C1)
+    const sz = LM.trail && LM.trail.ready() ? LM.trail.current() : null; // Szlak: kraina bieżącego przystanku (po teście C1 = C1)
     if (sz) { const k = stats.findIndex(function (s) { return s.id === sz.level; }); if (k !== -1) return k; }
     const i = stats.findIndex(function (s) { return s.total && s.percent < 100; });
     return i === -1 ? stats.length - 1 : i;
   }
 
   function levelName(id) {
-    const level = ELM.state.content.levels.find(function (l) { return l.id === id; });
+    const level = LM.state.content.levels.find(function (l) { return l.id === id; });
     const m = level && /^\*\*(.+?)\*\*\s*$/.exec(String(level.description || "").split("\n")[0]);
     return m ? m[1] : "";
   }
 
   /** Następny nieodhaczony punkt na poziomie (z podstroną, jeśli istnieje). */
   function nextItem(levelId) {
-    const level = ELM.state.content.levels.find(function (l) { return l.id === levelId; });
+    const level = LM.state.content.levels.find(function (l) { return l.id === levelId; });
     if (!level) return null;
-    ELM.niezbednik.computeLinks();
-    for (const cat of ELM.state.content.categories) {
+    LM.handbook.computeLinks();
+    for (const cat of LM.state.content.categories) {
       const bucket = level.content[cat.id];
       if (!bucket) continue;
       for (const e of bucket.essentials) {
-        if (U.isBlank(e.text) || ELM.state.progress[e.id] === true) continue;
-        const info = ELM.niezbednik.linkForEssential(e.id);
-        return { text: e.text.replace(/\s*\(.*\)\s*$/, ""), href: info ? ELM.niezbednik.routeOf(info.item) : ELM.app.levelHash(levelId) };
+        if (U.isBlank(e.text) || LM.state.progress[e.id] === true) continue;
+        const info = LM.handbook.linkForEssential(e.id);
+        return { text: e.text.replace(/\s*\(.*\)\s*$/, ""), href: info ? LM.handbook.routeOf(info.item) : LM.app.levelHash(levelId) };
       }
     }
     return null;
@@ -126,9 +126,9 @@ window.ELM = window.ELM || {};
     const idx = currentIndex(stats);
     const cur = stats[idx];
     const remaining = cur.total - cur.done;
-    const sz = ELM.szlak && ELM.szlak.ready() ? ELM.szlak.current() : null;
-    const next = sz ? { text: sz.node.stop.title, href: ELM.szlak.HASH + "/" + sz.node.id } : (cur.percent < 100 ? nextItem(cur.id) : null);
-    const ready = ELM.levelFinal ? ELM.levelFinal.readyLevel(stats) : null;
+    const sz = LM.trail && LM.trail.ready() ? LM.trail.current() : null;
+    const next = sz ? { text: sz.node.stop.title, href: LM.trail.HASH + "/" + sz.node.id } : (cur.percent < 100 ? nextItem(cur.id) : null);
+    const ready = LM.final ? LM.final.readyLevel(stats) : null;
     let text, cta = null, extra = null;
     if (next) {
       text = ["Następny przystanek " + LOCATIVE[cur.id] + ": ", el("strong", { text: next.text }), " · do końca krainy " + remaining + " " + (sz ? plural(remaining, "przystanek", "przystanki", "przystanków") : plural(remaining, "punkt", "punkty", "punktów"))];
@@ -136,13 +136,13 @@ window.ELM = window.ELM || {};
       if (ready) extra = ready;
     } else {
       const passed = pd().passedLevels()[cur.id];
-      const following = ELM.LEVEL_IDS[idx + 1];
-      if (!passed && ELM.levelFinal) {
+      const following = LM.LEVEL_IDS[idx + 1];
+      if (!passed && LM.final) {
         text = ["Cała kraina " + cur.id + " ma „Umiem”. Czas na test końcowy poziomu."];
-        cta = { href: ELM.levelFinal.testHash(cur.id), label: "Zrób test końcowy " + cur.id };
+        cta = { href: LM.final.testHash(cur.id), label: "Zrób test końcowy " + cur.id };
       } else if (following) {
-        text = ["Kraina " + cur.id + " przebyta. Dalej: ", el("strong", { text: ELM.ui.landLabel(following) }), "."];
-        cta = { href: ELM.app.levelHash(following), label: "Zacznij krainę " + following };
+        text = ["Kraina " + cur.id + " przebyta. Dalej: ", el("strong", { text: LM.ui.landLabel(following) }), "."];
+        cta = { href: LM.app.levelHash(following), label: "Zacznij krainę " + following };
       } else {
         text = ["Cała mapa przebyta. Powtórki i ćwiczenia pomogą utrzymać formę."];
       }
@@ -151,9 +151,9 @@ window.ELM = window.ELM || {};
       el("div", { class: "map-foot-text" }, [
         el("p", { class: "map-next" }, text),
         sz ? el("p", { class: "map-unit num" }, "Odcinek " + sz.unit.index + " · " + sz.unit.title + " · " + sz.unit.done + "/" + sz.unit.total) : null,
-        extra ? el("a", { class: "btn-link map-ready", href: ELM.levelFinal.testHash(extra.id) }, "Gotowy na test końcowy " + extra.id + "? Zrób test") : null
+        extra ? el("a", { class: "btn-link map-ready", href: LM.final.testHash(extra.id) }, "Gotowy na test końcowy " + extra.id + "? Zrób test") : null
       ]),
-      cta ? el("a", { class: "btn btn-secondary map-cta", href: cta.href }, [cta.label, ELM.icon("chevron-right", { size: 18 })]) : null
+      cta ? el("a", { class: "btn btn-secondary map-cta", href: cta.href }, [cta.label, LM.icon("chevron-right", { size: 18 })]) : null
     ]);
   }
 
@@ -162,7 +162,7 @@ window.ELM = window.ELM || {};
    * Szlak topograficzny w środku karty, stopka z następnym przystankiem. Zwraca element; ._stage to kontener Szlaku.
    */
   function mapCard(stats) {
-    const p = ELM.app.getActiveProfile();
+    const p = LM.app.getActiveProfile();
     const d = dateOf(learn().today());
     const cur = stats[currentIndex(stats)];
     const mp = learn().mapProgress(stats);
@@ -170,7 +170,7 @@ window.ELM = window.ELM || {};
     const card = el("section", { class: "card bento-tile map-card", "aria-labelledby": "today-title" }, [
       el("div", { class: "map-top" }, [
         el("div", { class: "map-hello" }, [
-          el("p", { class: "today-date" }, [DAY_NAMES[d.getDay()] + ", " + d.getDate() + " " + MONTHS[d.getMonth()] + " · kraina ", el("strong", { class: "map-land lvl-" + cur.id, text: ELM.ui.landLabel(cur.id) })]),
+          el("p", { class: "today-date" }, [DAY_NAMES[d.getDay()] + ", " + d.getDate() + " " + MONTHS[d.getMonth()] + " · kraina ", el("strong", { class: "map-land lvl-" + cur.id, text: LM.ui.landLabel(cur.id) })]),
           el("h1", { class: "hero-title", id: "today-title", text: greetingWord() + (p ? ", " + p.name : "") })
         ]),
         el("div", { class: "map-progress" }, [
@@ -212,7 +212,7 @@ window.ELM = window.ELM || {};
         const js = dateOf(d.day);
         const isToday = d.day === today;
         return el("li", { class: "week-day" + (d.active ? " is-active" : "") + (isToday ? " is-today" : "") }, [
-          el("span", { class: "week-dot", "aria-hidden": "true" }, d.active ? ELM.icon("check", { size: 12 }) : null),
+          el("span", { class: "week-dot", "aria-hidden": "true" }, d.active ? LM.icon("check", { size: 12 }) : null),
           el("span", { class: "visually-hidden", text: (isToday ? "dziś, " : "") + DAY_NAMES[js.getDay()] + " " + d.day.slice(8, 10) + "." + d.day.slice(5, 7) + ": " + (d.active ? "dzień nauki" : "bez aktywności") })
         ]);
       }))
@@ -222,19 +222,19 @@ window.ELM = window.ELM || {};
   /** Wiersz listy „Na skróty”: ikona, tytuł, opis, chevron. Element to <a> albo <button>. */
   function shortcutRow(tag, attrs, icon, title, desc) {
     return el("li", null, el(tag, Object.assign({ class: "row" }, attrs), [
-      el("span", { class: "row-icon", "aria-hidden": "true" }, ELM.icon(icon, { size: 20 })),
+      el("span", { class: "row-icon", "aria-hidden": "true" }, LM.icon(icon, { size: 20 })),
       el("span", { class: "row-body" }, [
         el("span", { class: "row-title", text: title }),
         desc ? el("span", { class: "row-desc", text: desc }) : null
       ]),
-      el("span", { class: "row-chev", "aria-hidden": "true" }, ELM.icon("chevron-right", { size: 20 }))
+      el("span", { class: "row-chev", "aria-hidden": "true" }, LM.icon("chevron-right", { size: 20 }))
     ]));
   }
 
   /** „Na skróty” (gdy nie ma moich egzaminów): Test poziomu i Statystyki. */
   function shortcutsTile() {
     const rows = [];
-    if (ELM.levelTest) rows.push(shortcutRow("a", { href: ELM.levelTest.HASH }, "target", "Test poziomu", "12 pytań, ok. 6 minut – sprawdź, od czego zacząć."));
+    if (LM.placement) rows.push(shortcutRow("a", { href: LM.placement.HASH }, "target", "Test poziomu", "12 pytań, ok. 6 minut – sprawdź, od czego zacząć."));
     rows.push(shortcutRow("a", { href: "#/statystyki" }, "chart-column", "Statystyki", "Trafność, najsłabsze tematy i aktywność."));
     return tile("bento-shortcuts", "Na skróty", [
       el("h2", { class: "tile-title" }, ["Na skróty"]),
@@ -280,7 +280,7 @@ window.ELM = window.ELM || {};
   function terrainGroup(g, vertical) {
     const group = svgEl("g", { class: "trail-terrain" });
     const rx = vertical ? 58 : 80, ry = vertical ? 46 : 64;
-    ELM.LEVEL_IDS.forEach(function (id, i) {
+    LM.LEVEL_IDS.forEach(function (id, i) {
       const l = id.toLowerCase();
       const x = g.pts[i][0], y = g.pts[i][1];
       const land = svgEl("g", { class: "trail-land", style: "--land:var(--lvl-" + l + ");--land-soft:var(--lvl-" + l + "-soft)" });
@@ -396,24 +396,24 @@ window.ELM = window.ELM || {};
       const pt = g.pts[i];
       const name = levelName(s.id);
       const here = i === cur;
-      const passed = ELM.levelFinal ? ELM.levelFinal.passedText(s.id) : null; // „A1 zaliczony 12.11.2026” (test końcowy)
+      const passed = LM.final ? LM.final.passedText(s.id) : null; // „A1 zaliczony 12.11.2026” (test końcowy)
       list.appendChild(el("li", {
         class: "trail-station lvl-" + s.id + (here ? " is-current" : "") + (s.percent >= 100 ? " is-done" : "") + (s.skipped ? " is-skipped" : ""),
         style: vertical ? "left:" + pt[0] + "px;top:" + pt[1] + "px" : "left:" + (pt[0] / g.w * 100) + "%;top:" + (pt[1] / g.h * 100) + "%"
       }, el("a", {
         class: "trail-link",
-        href: ELM.app.levelHash(s.id),
+        href: LM.app.levelHash(s.id),
         "aria-label": "Poziom " + s.id + (name ? ", " + name : "") + ": " + (s.skipped ? "pominięte testem poziomu" : s.percent + (s.szlak ? "% przystanków szlaku" : "% punktów „Umiem”")) + (here ? " – tu jesteś" : "") + (passed ? ". " + passed : "")
       }, [
         el("span", { class: "trail-ring" }, [
-          ELM.ui.progressRing(s.skipped ? 100 : s.percent, { size: 56, stroke: 5, node: ELM.ui.landIcon(s.id, { size: 26 }) }),
-          s.skipped ? el("span", { class: "trail-skip-badge", "aria-hidden": "true" }, ELM.icon("arrow-right", { size: 14 })) : null, // pominięte: strzałka zamiast znaczka
-          passed && !s.skipped ? ELM.ui.stamp(s.id, { size: 20 }) : null // pieczątka ✓ w kolorze krainy (tekst „Zaliczony …” obok)
+          LM.ui.progressRing(s.skipped ? 100 : s.percent, { size: 56, stroke: 5, node: LM.ui.landIcon(s.id, { size: 26 }) }),
+          s.skipped ? el("span", { class: "trail-skip-badge", "aria-hidden": "true" }, LM.icon("arrow-right", { size: 14 })) : null, // pominięte: strzałka zamiast znaczka
+          passed && !s.skipped ? LM.ui.stamp(s.id, { size: 20 }) : null // pieczątka ✓ w kolorze krainy (tekst „Zaliczony …” obok)
         ]),
         el("span", { class: "trail-label", "aria-hidden": "true" }, [
-          el("span", { class: "trail-name", text: ELM.ui.landLabel(s.id) }),
+          el("span", { class: "trail-name", text: LM.ui.landLabel(s.id) }),
           el("span", { class: "trail-pct num", text: s.skipped ? "pominięte" : s.percent + "%" }),
-          passed ? el("span", { class: "trail-passed", text: "Zaliczony " + ELM.levelFinal.fmtDate(ELM.levelFinal.passedAt(s.id)) }) : null,
+          passed ? el("span", { class: "trail-passed", text: "Zaliczony " + LM.final.fmtDate(LM.final.passedAt(s.id)) }) : null,
           here ? el("span", { class: "trail-here", text: "Tu jesteś" }) : null
         ])
       ])));
@@ -440,13 +440,13 @@ window.ELM = window.ELM || {};
     const keepScroll = view.dataset.file === HASH ? U.getScroll() : 0;
     const stats = levelStats();
     const map = mapCard(stats);
-    const exam = ELM.examCover ? ELM.examCover.todayTiles()[0] : null; // mój egzamin z najbliższą datą (mini okładka)
+    const exam = LM.examCover ? LM.examCover.todayTiles()[0] : null; // mój egzamin z najbliższą datą (mini okładka)
 
     view.className = "view tool-view today-view";
     view.dataset.file = HASH;
     view.replaceChildren(el("div", { class: "today-stack" }, [
       map,
-      ELM.powtorki ? ELM.powtorki.todayCard() : null, // „Fiszki i błędy”: stan z liczbą albo niska karta zerowa
+      LM.review ? LM.review.todayCard() : null, // „Fiszki i błędy”: stan z liczbą albo niska karta zerowa
       el("div", { class: "today-row" }, [streakTile(), exam || shortcutsTile()])
     ]));
     document.title = "Dziś · English Levels Map";
@@ -471,7 +471,7 @@ window.ELM = window.ELM || {};
   function animate(view, parts) {
     const first = !visitedThisSession;
     visitedThisSession = true;
-    ELM.motion.run(["DrawSVGPlugin", "MotionPathPlugin"], function (gsap, reduce) {
+    LM.motion.run(["DrawSVGPlugin", "MotionPathPlugin"], function (gsap, reduce) {
       if (!gsap || reduce) return;
       const tiles = view.querySelectorAll(".bento-tile");
       if (!first) {
@@ -481,7 +481,7 @@ window.ELM = window.ELM || {};
       }
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.from(tiles, { autoAlpha: 0, y: 16, duration: 0.45, stagger: 0.06, clearProps: "transform,opacity,visibility" });
-      view.querySelectorAll("[data-count]").forEach(function (n) { tl.add(ELM.motion.countUp(gsap, n, Number(n.getAttribute("data-count"))), 0.15); });
+      view.querySelectorAll("[data-count]").forEach(function (n) { tl.add(LM.motion.countUp(gsap, n, Number(n.getAttribute("data-count"))), 0.15); });
       // Ścieżka przebyta „rysuje się”, potem znacznik dojeżdża do stacji
       parts.done.style.removeProperty("stroke-dasharray");
       tl.fromTo(parts.done, { drawSVG: "0% 0%" }, { drawSVG: "0% " + (parts.frac * 100).toFixed(2) + "%", duration: 1.1, ease: "power2.inOut" }, 0.3);
@@ -493,5 +493,5 @@ window.ELM = window.ELM || {};
     });
   }
 
-  ELM.today = { currentLevelId: function () { const st = levelStats(); return st[currentIndex(st)].id; }, HASH: HASH, parseRoute: parseRoute, render: render, compactTrail: compactTrail };
-})(window.ELM);
+  LM.today = { currentLevelId: function () { const st = levelStats(); return st[currentIndex(st)].id; }, HASH: HASH, parseRoute: parseRoute, render: render, compactTrail: compactTrail };
+})(window.LM);

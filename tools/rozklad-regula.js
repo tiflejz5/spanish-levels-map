@@ -51,9 +51,9 @@ function walk(dir, out) {
 }
 
 /** Błędy wszystkich zestawów z literowymi opcjami w folderach cwiczenia egzaminów (niezbednik). → [{ file, id, error }] */
-function checkAll() {
+function checkAll(root) {
   const errors = [];
-  walk(ROOT, []).sort().forEach(function (file) {
+  walk(root || ROOT, []).sort().forEach(function (file) {
     let json;
     try { json = JSON.parse(fs.readFileSync(file, "utf8").replace(/^﻿/, "")); } catch (e) { return; }
     (function find(x) {

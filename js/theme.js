@@ -10,9 +10,9 @@
  * (index.html), zanim strona się narysuje — dzięki temu nie ma błysku
  * złego motywu. Ten plik obsługuje przycisk i zmiany „na żywo”.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const KEY = "elm_theme_v1";
@@ -63,7 +63,7 @@ window.ELM = window.ELM || {};
   const ICON = { light: "sun", dark: "moon", auto: "sun-moon" };
 
   function icon(kind) {
-    return ELM.icon ? ELM.icon(ICON[kind], { size: 20 }) : document.createTextNode("");
+    return LM.icon ? LM.icon(ICON[kind], { size: 20 }) : document.createTextNode("");
   }
 
   function nextPref() {
@@ -103,8 +103,8 @@ window.ELM = window.ELM || {};
     apply(false);
   }
 
-  ELM.theme = { init: init, get: function () { return { pref: pref, resolved: resolved() }; } };
+  LM.theme = { init: init, get: function () { return { pref: pref, resolved: resolved() }; } };
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
-})(window.ELM);
+})(window.LM);

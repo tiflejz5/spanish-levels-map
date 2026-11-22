@@ -9,9 +9,9 @@
  * albo wklej tu dane z eksportu (pole data.content.data z pliku .json).
  * Usunięcie tego pliku z index.html = start od pustego szkieletu.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-window.ELM.BASE_CONTENT = {
+window.LM.BASE_CONTENT = {
   "version": 1,
   "categories": [
     {

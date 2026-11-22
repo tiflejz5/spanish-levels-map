@@ -5,16 +5,16 @@
  * Treść listy jest tylko do odczytu (dawny „Tryb edycji” został usunięty).
  * Każdy tekst trafia do DOM jako tekst (textContent), nigdy jako HTML.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   // Skróty do innych części aplikacji (ładowane później, używane w trakcie działania)
-  function app() { return ELM.app; }
+  function app() { return LM.app; }
 
   // =====================================================================
   // ELEMENTY WSPÓLNE
@@ -47,7 +47,7 @@ window.ELM = window.ELM || {};
       "data-tooltip": label,
       disabled: !!opts.disabled,
       onclick: onClick
-    }, ELM.ICON_NODES && ELM.ICON_NODES[symbol] ? ELM.icon(symbol, { size: 18 }) : el("span", { "aria-hidden": "true", text: symbol }));
+    }, LM.ICON_NODES && LM.ICON_NODES[symbol] ? LM.icon(symbol, { size: 18 }) : el("span", { "aria-hidden": "true", text: symbol }));
   }
 
   /** Pusty stan z komunikatem. */
@@ -88,9 +88,9 @@ window.ELM = window.ELM || {};
   function renderToolsNav() {
     const box = document.getElementById("tools-nav");
     if (!box) return;
-    const st = ELM.state;
+    const st = LM.state;
     const hasProfile = app().hasProfiles();
-    const reviews = hasProfile && ELM.reviews ? ELM.reviews.dueCount() : 0; // jedna liczba: DO POWTÓRKI (fiszki + Moje błędy + słabe punkty); nowe karty osobno (spec v7 14, P3)
+    const reviews = hasProfile && LM.reviewQueue ? LM.reviewQueue.dueCount() : 0; // jedna liczba: DO POWTÓRKI (fiszki + Moje błędy + słabe punkty); nowe karty osobno (spec v7 14, P3)
     const items = [
       { href: "#/szlak", label: "Szlak", icon: "route", active: st.view === "szlak" },
       { href: "#/dzis", label: "Dziś", icon: "sunrise", active: st.view === "today" },
@@ -105,7 +105,7 @@ window.ELM = window.ELM || {};
         href: it.href,
         active: it.active,
         cls: "is-tool",
-        icon: ELM.icon(it.icon, { size: 22 }),
+        icon: LM.icon(it.icon, { size: 22 }),
         label: el("span", { class: "sb-label-title", text: it.label }),
         badge: it.badge,
         ariaLabel: it.badgeLabel ? it.label + ", " + it.badgeLabel : null
@@ -125,9 +125,9 @@ window.ELM = window.ELM || {};
 
   function renderSidebar() {
     renderToolsNav();
-    const st = ELM.state;
+    const st = LM.state;
     const list = document.getElementById("level-list");
-    const currentId = ELM.today && ELM.today.currentLevelId ? ELM.today.currentLevelId() : null;
+    const currentId = LM.today && LM.today.currentLevelId ? LM.today.currentLevelId() : null;
 
     // Napis pod logo (stały; postęp w panelu dotyczy całych poziomów)
     document.getElementById("sidebar-category-name").textContent = "Mapa angielskiego A1–C2";
@@ -142,7 +142,7 @@ window.ELM = window.ELM || {};
       const name = levelName(level);
       let n = levelNodes[level.id];
       if (!n || !ul.contains(n.a)) {
-        const ring = ELM.ui.progressRing(s.percent, { size: 36, stroke: 4, node: ELM.ui.landIcon(level.id, { size: 20 }), label: "Postęp poziomu " + level.id });
+        const ring = LM.ui.progressRing(s.percent, { size: 36, stroke: 4, node: LM.ui.landIcon(level.id, { size: 20 }), label: "Postęp poziomu " + level.id });
         const fill = el("div", { class: "progress-fill", style: "transform:scaleX(" + s.percent / 100 + ")" });
         const count = el("span", { class: "sb-label-sub num" });
         const title = el("span", { class: "sb-label-title" });
@@ -164,16 +164,16 @@ window.ELM = window.ELM || {};
       n.title.textContent = level.id + (name ? " · " + name : "");
       n.count.textContent = s.done + " / " + s.total + " umiem";
       n.fill.style.transform = "scaleX(" + s.percent / 100 + ")";
-      ELM.ui.setRing(n.ring, s.percent);
+      LM.ui.setRing(n.ring, s.percent);
       n.ring.removeAttribute("role"); // nazwę i wartość ogłasza link (aria-label), pierścień jest ozdobą
       n.ring.setAttribute("aria-hidden", "true");
       n.a.classList.toggle("is-active", active);
       if (active) n.a.setAttribute("aria-current", "page"); else n.a.removeAttribute("aria-current");
       // Znaczek zaliczonego testu końcowego: ikona nagrody na kółku + tekst „A1 zaliczony 12.11.2026” w etykiecie linku
-      const passedText = ELM.levelFinal ? ELM.levelFinal.passedText(level.id) : null;
+      const passedText = LM.final ? LM.final.passedText(level.id) : null;
       const oldStamp = n.ringWrap.querySelector(".stamp");
       if (oldStamp) oldStamp.remove();
-      if (passedText) n.ringWrap.appendChild(ELM.ui.stamp(level.id, { size: 16 })); // pieczątka ✓ w rogu kółka
+      if (passedText) n.ringWrap.appendChild(LM.ui.stamp(level.id, { size: 16 })); // pieczątka ✓ w rogu kółka
       n.a.classList.toggle("is-passed", !!passedText);
       n.a.classList.toggle("is-current", level.id === currentId);
       n.a.setAttribute("aria-label", "Poziom " + level.id + (name ? ", " + name : "") + ": umiem " + s.done + " z " + s.total +
@@ -181,8 +181,8 @@ window.ELM = window.ELM || {};
     });
 
     // Pod poziomami: grupa „Egzaminy” z rejestru (E8, matury, B2…), na końcu Certyfikat C1 (własny moduł)
-    if (ELM.exams) ELM.exams.renderNav();
-    if (ELM.c1) ELM.c1.renderNav();
+    if (LM.exams) LM.exams.renderNav();
+    if (LM.c1) LM.c1.renderNav();
   }
 
   // =====================================================================
@@ -195,25 +195,25 @@ window.ELM = window.ELM || {};
   function renderMain(opts) {
     opts = opts || {};
     // Tryb gościa (spec v7 14, P1): treści publiczne działają bez profilu, a akcje zapisujące proszą o profil
-    // (ELM.profiles.requireProfile). Strony osobiste bez profilu pokazują kartę powitalną pod tym samym adresem.
-    if (!app().hasProfiles() && PERSONAL_VIEWS.indexOf(ELM.state.view) !== -1) return ELM.profiles.renderWelcome({ personal: true });
+    // (LM.profiles.requireProfile). Strony osobiste bez profilu pokazują kartę powitalną pod tym samym adresem.
+    if (!app().hasProfiles() && PERSONAL_VIEWS.indexOf(LM.state.view) !== -1) return LM.profiles.renderWelcome({ personal: true });
     // Strona główna, zakładka „Certyfikat C1” albo podstrona zamiast listy
-    if (ELM.state.view === "home") return ELM.niezbednik.renderHome();
-    if (ELM.state.view === "c1") return ELM.c1.render(ELM.state.c1Route);
-    if (ELM.state.view === "exam") return ELM.exams.render(ELM.state.toolRoute);
-    if (ELM.state.view === "powtorki") return ELM.powtorki.render();
-    if (ELM.state.view === "journal") return ELM.journal.render(ELM.state.toolRoute);
-    if (ELM.state.view === "today") return ELM.today.render();
-    if (ELM.state.view === "leveltest") return ELM.levelTest.render();
-    if (ELM.state.view === "exercises") return ELM.exercises.render(ELM.state.toolRoute);
-    if (ELM.state.view === "lab") return ELM.tenseLab.render(ELM.state.toolRoute);
-    if (ELM.state.view === "stats") return ELM.statsPage.render();
-    if (ELM.state.view === "notes") return ELM.notes.render();
-    if (ELM.state.view === "fiszki") return ELM.fiszki.render();
-    if (ELM.state.view === "pisanie") return ELM.pisanie.render();
-    if (ELM.state.view === "szlak") return ELM.szlak.render(ELM.state.toolRoute);
-    if (ELM.state.route) return ELM.niezbednik.renderPage(ELM.state.route);
-    ELM.niezbednik.computeLinks();
+    if (LM.state.view === "home") return LM.handbook.renderHome();
+    if (LM.state.view === "c1") return LM.c1.render(LM.state.c1Route);
+    if (LM.state.view === "exam") return LM.exams.render(LM.state.toolRoute);
+    if (LM.state.view === "powtorki") return LM.review.render();
+    if (LM.state.view === "journal") return LM.mistakes.render(LM.state.toolRoute);
+    if (LM.state.view === "today") return LM.today.render();
+    if (LM.state.view === "leveltest") return LM.placement.render();
+    if (LM.state.view === "exercises") return LM.exercises.render(LM.state.toolRoute);
+    if (LM.state.view === "lab") return LM.lab.render(LM.state.toolRoute);
+    if (LM.state.view === "stats") return LM.statsPage.render();
+    if (LM.state.view === "notes") return LM.notes.render();
+    if (LM.state.view === "fiszki") return LM.cards.render();
+    if (LM.state.view === "pisanie") return LM.writing.render();
+    if (LM.state.view === "szlak") return LM.trail.render(LM.state.toolRoute);
+    if (LM.state.route) return LM.handbook.renderPage(LM.state.route);
+    LM.handbook.computeLinks();
     const view = document.getElementById("view");
     const scroll = opts.resetScroll ? 0 : U.getScroll();
     const level = app().getActiveLevel();
@@ -226,19 +226,19 @@ window.ELM = window.ELM || {};
     view.appendChild(renderLevelHeader(level));
     view.appendChild(renderCategoryBar(cat));
 
-    const all = ELM.state.ui.categoryId === app().ALL_CATEGORIES;
+    const all = LM.state.ui.categoryId === app().ALL_CATEGORIES;
     if (!cat && !all) {
       view.appendChild(emptyState("Brak kategorii na tym poziomie."));
     } else {
       view.appendChild(renderEssentials(level, cat, cat ? app().getBucket(level.id, cat.id) : null));
       // Pod listą: podsumowanie poziomu (niezbednik/podsumowania/<poziom>.md)
-      const summary = ELM.niezbednik.renderSummary(level.id);
+      const summary = LM.handbook.renderSummary(level.id);
       if (summary) view.appendChild(summary);
     }
     // Pod podsumowaniem: karta „Test końcowy A1” (paczka v6, spec 13 sekcja 2)
-    if (ELM.levelFinal) view.appendChild(ELM.levelFinal.card(level.id));
+    if (LM.final) view.appendChild(LM.final.card(level.id));
     // Obok podsumowania: karta „Ściąga A2 – jedna strona do druku” (spec v6 16, sekcja 1.2)
-    const sciaga = ELM.niezbednik.sciagaCard(level.id);
+    const sciaga = LM.handbook.sciagaCard(level.id);
     if (sciaga) view.insertBefore(sciaga, view.querySelector(".lf-level-card"));
 
     U.setScroll(typeof opts.scrollTop === "number" ? opts.scrollTop : scroll);
@@ -254,23 +254,23 @@ window.ELM = window.ELM || {};
     const name = levelName(level);
     const rest = String(level.description || "").split("\n").slice(name ? 1 : 0).join("\n").trim();
     const s = app().getLevelStats(level.id);
-    const ring = ELM.ui.progressRing(s.percent, { size: 104, stroke: 8, label: "Postęp poziomu " + level.id + " we wszystkich kategoriach", text: s.percent + "%" });
+    const ring = LM.ui.progressRing(s.percent, { size: 104, stroke: 8, label: "Postęp poziomu " + level.id + " we wszystkich kategoriach", text: s.percent + "%" });
     ring.id = "level-ring";
     return el("header", { class: "card level-hero" }, [
       el("div", { class: "level-hero-text" }, [
-        el("p", { class: "level-kicker" }, [ELM.ui.landIcon(level.id, { size: 16 }), ELM.ui.landLabel(level.id)]),
+        el("p", { class: "level-kicker" }, [LM.ui.landIcon(level.id, { size: 16 }), LM.ui.landLabel(level.id)]),
         el("h1", { class: "level-title" }, [
           el("span", { class: "level-code-big", text: level.id }),
           name ? el("span", { class: "level-name", text: name }) : null
         ]),
         rest ? el("p", { class: "level-desc" }, U.formatText(rest)) : null,
-        ELM.szlak ? ELM.szlak.levelLink(level.id) : null // „Zobacz Polanę na szlaku”
+        LM.trail ? LM.trail.levelLink(level.id) : null // „Zobacz Polanę na szlaku”
       ]),
       el("div", { class: "level-hero-ring" }, [
         ring,
         el("p", { class: "level-ring-label num", id: "level-ring-label", text: s.done + " z " + s.total + " umiem" }),
         el("p", { class: "level-ring-scope", text: "wszystkie kategorie" }),
-        ELM.levelFinal ? ELM.levelFinal.headerLabel(level.id) : null // „Zaliczony · 12.11.2026” (test końcowy)
+        LM.final ? LM.final.headerLabel(level.id) : null // „Zaliczony · 12.11.2026” (test końcowy)
       ])
     ]);
   }
@@ -278,7 +278,7 @@ window.ELM = window.ELM || {};
   // ---------- Kategorie ----------
 
   function renderCategoryBar(activeCat) {
-    const cats = ELM.state.content.categories;
+    const cats = LM.state.content.categories;
     const bar = el("div", { class: "category-bar" });
     if (cats.length) {
       // Filtr kategorii jako chipy (jeden wybrany naraz, aria-pressed)
@@ -286,13 +286,13 @@ window.ELM = window.ELM || {};
       const options = [{ id: allId, name: "Wszystkie" }].concat(cats);
       bar.appendChild(el("div", { class: "chip-filter", role: "group", "aria-label": "Kategoria" },
         options.map(function (c) {
-          const active = c.id === allId ? ELM.state.ui.categoryId === allId : !!(activeCat && c.id === activeCat.id);
+          const active = c.id === allId ? LM.state.ui.categoryId === allId : !!(activeCat && c.id === activeCat.id);
           return el("button", {
             type: "button",
             class: "chip-btn" + (active ? " is-active" : ""),
             "aria-pressed": active ? "true" : "false",
             onclick: function () { app().selectCategory(c.id); }
-          }, [active ? ELM.icon("check", { size: 16 }) : null, c.name || "Bez nazwy"]);
+          }, [active ? LM.icon("check", { size: 16 }) : null, c.name || "Bez nazwy"]);
         })
       ));
     }
@@ -303,10 +303,10 @@ window.ELM = window.ELM || {};
 
   /** Wiersz punktu poziomu: „Umiem” po lewej, tekst (link do podstrony) z chevronem po prawej. */
   function essRow(item) {
-    const progress = ELM.state.progress;
+    const progress = LM.state.progress;
     const done = progress[item.id] === true;
     const textId = "ess-text-" + item.id;
-    const pageLink = ELM.niezbednik.linkForEssential(item.id);
+    const pageLink = LM.handbook.linkForEssential(item.id);
     let li = null;
     const checkbox = el("label", { class: "umiem" }, [
       el("input", {
@@ -331,9 +331,9 @@ window.ELM = window.ELM || {};
       checkbox,
       el("div", { class: "ess-text", id: textId }, pageLink
         // Punkt z podstroną: tekst jest linkiem
-        ? el("a", { class: "ess-link", href: ELM.niezbednik.routeOf(pageLink.item), onclick: rememberScroll }, [
+        ? el("a", { class: "ess-link", href: LM.handbook.routeOf(pageLink.item), onclick: rememberScroll }, [
             el("span", null, U.formatText(item.text)),
-            el("span", { class: "ess-link-arrow", "aria-hidden": "true" }, ELM.icon("chevron-right", { size: 18 }))
+            el("span", { class: "ess-link-arrow", "aria-hidden": "true" }, LM.icon("chevron-right", { size: 18 }))
           ])
         : U.formatText(item.text))
     ]);
@@ -362,7 +362,7 @@ window.ELM = window.ELM || {};
 
     const groups = cat
       ? [{ cat: cat, items: visibleEssentials(bucket) }]
-      : ELM.state.content.categories.map(function (c) { return { cat: c, items: visibleEssentials(app().getBucket(level.id, c.id)) }; });
+      : LM.state.content.categories.map(function (c) { return { cat: c, items: visibleEssentials(app().getBucket(level.id, c.id)) }; });
     let any = false;
     groups.forEach(function (g) {
       if (!g.items.length) return;
@@ -377,10 +377,10 @@ window.ELM = window.ELM || {};
       return section;
     }
     // Etykiety „zestaw 8/10” przed strzałką (najlepszy wynik zestawu tematu), dopisywane po wczytaniu indeksu ćwiczeń (S4)
-    if (ELM.exercises && ELM.exercises.setLabels) {
+    if (LM.exercises && LM.exercises.setLabels) {
       const rows = section.querySelectorAll("li[data-topic]");
       const topics = Array.prototype.map.call(rows, function (r) { return r.getAttribute("data-topic"); });
-      ELM.exercises.setLabels(topics).then(function (labels) {
+      LM.exercises.setLabels(topics).then(function (labels) {
         Array.prototype.forEach.call(rows, function (row) {
           const lab = labels[row.getAttribute("data-topic")];
           const arrow = row.querySelector(".ess-link-arrow");
@@ -392,16 +392,16 @@ window.ELM = window.ELM || {};
       });
     }
     // Pod słownictwem A1–B1: link do talii tematycznych fiszek (lista przefiltrowana po poziomie)
-    if ((!cat || cat.id === "cat_vocabulary") && /^(A1|A2|B1)$/.test(level.id) && ELM.fiszki) {
+    if ((!cat || cat.id === "cat_vocabulary") && /^(A1|A2|B1)$/.test(level.id) && LM.cards) {
       section.appendChild(el("p", { class: "fc-themes-link" }, el("a", { class: "btn btn-secondary", href: "#/powtorki/talie/tematy/" + level.id.toLowerCase() },
-        ELM.ui.withIcon("layers", "Fiszki tematyczne: Dom, Jedzenie, Praca, Podróże, Zdrowie, Emocje, Technologia"))));
+        LM.ui.withIcon("layers", "Fiszki tematyczne: Dom, Jedzenie, Praca, Podróże, Zdrowie, Emocje, Technologia"))));
     }
     return section;
   }
 
   /** Zapamiętuje przewinięcie listy przed przejściem na podstronę. */
   function rememberScroll() {
-    ELM.state.listScroll = U.getScroll();
+    LM.state.listScroll = U.getScroll();
   }
 
   function progressLabel(stats, wholeLevel) {
@@ -413,28 +413,28 @@ window.ELM = window.ELM || {};
   function updateEssentialsProgress() {
     const box = document.getElementById("ess-progress");
     const cat = app().getActiveCategory();
-    const all = ELM.state.ui.categoryId === app().ALL_CATEGORIES;
+    const all = LM.state.ui.categoryId === app().ALL_CATEGORIES;
     if (!box || (!cat && !all)) return;
-    const stats = cat ? app().getStats(ELM.state.ui.levelId, cat.id) : app().getLevelStats(ELM.state.ui.levelId);
+    const stats = cat ? app().getStats(LM.state.ui.levelId, cat.id) : app().getLevelStats(LM.state.ui.levelId);
     const bar = box.querySelector(".progress");
     bar.setAttribute("aria-valuenow", String(stats.percent));
     bar.querySelector(".progress-fill").style.transform = fillStyle(stats.percent).slice("transform:".length);
     // Pierścień w nagłówku: cały poziom (wszystkie kategorie)
     const ring = document.getElementById("level-ring");
     if (ring) {
-      const ls = app().getLevelStats(ELM.state.ui.levelId);
-      ELM.ui.setRing(ring, ls.percent, ls.percent + "%");
+      const ls = app().getLevelStats(LM.state.ui.levelId);
+      LM.ui.setRing(ring, ls.percent, ls.percent + "%");
       const lbl = document.getElementById("level-ring-label");
       if (lbl) lbl.textContent = ls.done + " z " + ls.total + " umiem";
     }
     box.querySelector(".progress-text").textContent = progressLabel(stats, !cat);
   }
 
-  ELM.render = {
+  LM.render = {
     renderSidebar: renderSidebar,
     renderToolsNav: renderToolsNav,
     renderMain: renderMain,
     updateEssentialsProgress: updateEssentialsProgress,
     iconBtn: iconBtn
   };
-})(window.ELM);
+})(window.LM);

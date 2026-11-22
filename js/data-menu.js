@@ -11,33 +11,33 @@
  * (english-levels-progress-…).
  * Dane zakładki „Certyfikat C1” (elm_c1_v1) nie są eksportowane ani resetowane.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
-  function app() { return ELM.app; }
+  function app() { return LM.app; }
 
   // ---------- Eksport ----------
 
   function exportAll() {
     app().saveContentNow();
-    ELM.store.downloadJSON("english-levels-dane-" + U.dateStamp() + ".json", {
+    LM.store.downloadJSON("english-levels-dane-" + U.dateStamp() + ".json", {
       app: "english-levels-map",
       kind: "backup",
       version: 2,
       exportedAt: new Date().toISOString(),
       data: {
-        content: ELM.store.wrapExport("content", ELM.state.content),
-        progress: ELM.store.wrapExport("progress", ELM.state.profiles),
-        learning: ELM.profileData.exportData(),
-        // Fiszki (js/fiszki-store.js): { <profileId>: stan } — nowa część, starsze pliki jej nie mają
-        fiszki: ELM.fiszkiStore ? ELM.fiszkiStore.exportData() : undefined,
-        // Szlak (js/szlak-store.js): { <profileId>: stan } — nowa część, starsze pliki jej nie mają
-        szlak: ELM.szlakStore ? ELM.szlakStore.exportData() : undefined
+        content: LM.store.wrapExport("content", LM.state.content),
+        progress: LM.store.wrapExport("progress", LM.state.profiles),
+        learning: LM.profileData.exportData(),
+        // Fiszki (js/cards-store.js): { <profileId>: stan } — nowa część, starsze pliki jej nie mają
+        fiszki: LM.cardsStore ? LM.cardsStore.exportData() : undefined,
+        // Szlak (js/trail-store.js): { <profileId>: stan } — nowa część, starsze pliki jej nie mają
+        szlak: LM.trailStore ? LM.trailStore.exportData() : undefined
       }
     });
   }
@@ -52,7 +52,7 @@ window.ELM = window.ELM || {};
         const file = input.files && input.files[0];
         if (!file) return;
         file.text().then(resolve, function () {
-          ELM.dialogs.alert({ title: "Błąd odczytu", message: "Nie udało się odczytać pliku." });
+          LM.dialogs.alert({ title: "Błąd odczytu", message: "Nie udało się odczytać pliku." });
         });
       });
       input.click();
@@ -69,10 +69,10 @@ window.ELM = window.ELM || {};
     try {
       obj = JSON.parse(text);
     } catch (e) {
-      return ELM.dialogs.alert({ title: "Nie można zaimportować danych", message: "Plik nie jest poprawnym plikiem JSON." });
+      return LM.dialogs.alert({ title: "Nie można zaimportować danych", message: "Plik nie jest poprawnym plikiem JSON." });
     }
     if (!U.isPlainObject(obj)) {
-      return ELM.dialogs.alert({ title: "Nie można zaimportować danych", message: "Plik nie zawiera danych tej aplikacji." });
+      return LM.dialogs.alert({ title: "Nie można zaimportować danych", message: "Plik nie zawiera danych tej aplikacji." });
     }
     if (obj.kind === "backup") return importBackup(obj);
     const looksLikeProgress = obj.kind === "progress" || Array.isArray(obj.profiles) ||
@@ -86,19 +86,19 @@ window.ELM = window.ELM || {};
     try {
       if (!U.isPlainObject(obj.data) || !obj.data.content || !obj.data.progress) throw new Error("Plik kopii jest niekompletny.");
       if (typeof obj.version === "number" && obj.version > 2) throw new Error("Plik pochodzi z nowszej wersji aplikacji. Zaktualizuj pliki strony.");
-      learning = ELM.profileData.parseImport(obj.data.learning);
-      fiszki = ELM.fiszkiStore ? ELM.fiszkiStore.parseImport(obj.data.fiszki) : null; // brak w starym pliku → null
-      szlak = ELM.szlakStore ? ELM.szlakStore.parseImport(obj.data.szlak) : null;     // brak w starym pliku → null
-      content = ELM.store.parseContentImport(JSON.stringify(obj.data.content));
-      const parsed = ELM.store.parseProgressImport(JSON.stringify(obj.data.progress));
+      learning = LM.profileData.parseImport(obj.data.learning);
+      fiszki = LM.cardsStore ? LM.cardsStore.parseImport(obj.data.fiszki) : null; // brak w starym pliku → null
+      szlak = LM.trailStore ? LM.trailStore.parseImport(obj.data.szlak) : null;     // brak w starym pliku → null
+      content = LM.store.parseContentImport(JSON.stringify(obj.data.content));
+      const parsed = LM.store.parseProgressImport(JSON.stringify(obj.data.progress));
       if (parsed.type !== "profiles") throw new Error("Kopia nie zawiera listy profili.");
       profiles = parsed.data;
     } catch (e) {
-      return ELM.dialogs.alert({ title: "Nie można zaimportować danych", message: e.message });
+      return LM.dialogs.alert({ title: "Nie można zaimportować danych", message: e.message });
     }
     const s = summarize(content);
-    const ls = ELM.profileData.summarizeImport(learning);
-    return ELM.dialogs.confirm({
+    const ls = LM.profileData.summarizeImport(learning);
+    return LM.dialogs.confirm({
       title: "Zastąpić dane w tej przeglądarce?",
       message: "Plik zawiera: kategorie: " + s.categories + ", punkty essentials: " + s.essentials +
         ", profile (" + profiles.profiles.length + "): " + (profiles.profiles.map(function (p) { return p.name; }).join(", ") || "brak") +
@@ -110,7 +110,7 @@ window.ELM = window.ELM || {};
       if (!ok) return false;
       app().replaceContent(content);
       app().replaceProfiles(profiles, learning, fiszki, szlak);
-      ELM.dialogs.alert({ title: "Gotowe", message: "Dane zostały zaimportowane." });
+      LM.dialogs.alert({ title: "Gotowe", message: "Dane zostały zaimportowane." });
       return true;
     });
   }
@@ -119,12 +119,12 @@ window.ELM = window.ELM || {};
   function importContentText(text) {
     let data;
     try {
-      data = ELM.store.parseContentImport(text);
+      data = LM.store.parseContentImport(text);
     } catch (e) {
-      return ELM.dialogs.alert({ title: "Nie można zaimportować treści", message: e.message });
+      return LM.dialogs.alert({ title: "Nie można zaimportować treści", message: e.message });
     }
     const s = summarize(data);
-    return ELM.dialogs.confirm({
+    return LM.dialogs.confirm({
       title: "Zastąpić obecne treści?",
       message: "Plik zawiera: kategorie: " + s.categories + ", punkty essentials: " + s.essentials + ".\n\n" +
         "Obecne treści w tej przeglądarce zostaną nadpisane. Profile i ich postęp pozostaną bez zmian.",
@@ -132,7 +132,7 @@ window.ELM = window.ELM || {};
     }).then(function (ok) {
       if (!ok) return false;
       app().replaceContent(data);
-      ELM.dialogs.alert({ title: "Gotowe", message: "Treści zostały zaimportowane." });
+      LM.dialogs.alert({ title: "Gotowe", message: "Treści zostały zaimportowane." });
       return true;
     });
   }
@@ -144,14 +144,14 @@ window.ELM = window.ELM || {};
   function importProgressText(text) {
     let parsed;
     try {
-      parsed = ELM.store.parseProgressImport(text);
+      parsed = LM.store.parseProgressImport(text);
     } catch (e) {
-      return ELM.dialogs.alert({ title: "Nie można zaimportować postępu", message: e.message });
+      return LM.dialogs.alert({ title: "Nie można zaimportować postępu", message: e.message });
     }
     const active = app().getActiveProfile();
     const isProfiles = parsed.type === "profiles";
     if (!isProfiles && !active) {
-      return ELM.dialogs.alert({ title: "Najpierw dodaj profil", message: "Ten plik zawiera postęp jednej osoby (starszy format). Dodaj profil, a potem zaimportuj plik ponownie – postęp trafi do tego profilu." });
+      return LM.dialogs.alert({ title: "Najpierw dodaj profil", message: "Ten plik zawiera postęp jednej osoby (starszy format). Dodaj profil, a potem zaimportuj plik ponownie – postęp trafi do tego profilu." });
     }
     const message = isProfiles
       ? "Plik zawiera profile (" + parsed.data.profiles.length + "): " +
@@ -159,7 +159,7 @@ window.ELM = window.ELM || {};
         ".\n\nWszystkie obecne profile i ich postęp w tej przeglądarce zostaną zastąpione."
       : "Plik zawiera postęp jednej osoby (starszy format), zaznaczeń „Umiem”: " + Object.keys(parsed.progress).length +
         ".\n\nZostanie wczytany do profilu „" + active.name + "” i zastąpi jego obecny postęp.";
-    return ELM.dialogs.confirm({
+    return LM.dialogs.confirm({
       title: isProfiles ? "Zastąpić profile?" : "Zastąpić postęp profilu?",
       message: message,
       confirmLabel: "Importuj i nadpisz"
@@ -167,7 +167,7 @@ window.ELM = window.ELM || {};
       if (!ok) return false;
       if (isProfiles) app().replaceProfiles(parsed.data);
       else app().replaceProgress(parsed.progress);
-      ELM.dialogs.alert({ title: "Gotowe", message: "Postęp został zaimportowany." });
+      LM.dialogs.alert({ title: "Gotowe", message: "Postęp został zaimportowany." });
       return true;
     });
   }
@@ -186,7 +186,7 @@ window.ELM = window.ELM || {};
 
   /** Reset danych — podwójne potwierdzenie z zaleceniem eksportu. */
   function resetAll() {
-    ELM.dialogs.confirm({
+    LM.dialogs.confirm({
       title: "Zresetować dane?",
       message: "Zostaną usunięte wszystkie profile z ich postępem „Umiem”, dziennikiem błędów, serią nauki, wynikami testu poziomu i fiszkami oraz zmiany w treści listy. " +
         "Aplikacja wróci do stanu jak przy pierwszym otwarciu: bazowa lista umiejętności, bez żadnych profili.\n\n" +
@@ -195,24 +195,24 @@ window.ELM = window.ELM || {};
       confirmLabel: "Dalej"
     }).then(function (ok) {
       if (!ok) return false;
-      return ELM.dialogs.confirm({
+      return LM.dialogs.confirm({
         title: "Na pewno?",
         message: "To ostatnie ostrzeżenie. Tej operacji nie można cofnąć. Jeśli nie masz kopii, anuluj i najpierw zrób eksport.",
         confirmLabel: "Tak, usuń dane"
       });
     }).then(function (ok) {
       if (!ok) return;
-      ELM.store.clearAll();
-      ELM.profileData.clearAll();
-      if (ELM.fiszkiStore) ELM.fiszkiStore.clearAll(); // fiszki wszystkich profili (elm.<id>.fiszki)
-      if (ELM.szlakStore) ELM.szlakStore.clearAll(); // Szlak wszystkich profili (elm.<id>.szlak)
-      if (ELM.search) ELM.search.clearRecent(); // ostatnie wyszukiwania (na urządzeniu)
-      app().replaceProfiles(ELM.createEmptyProfiles());
-      app().replaceContent(ELM.createDefaultData());
+      LM.store.clearAll();
+      LM.profileData.clearAll();
+      if (LM.cardsStore) LM.cardsStore.clearAll(); // fiszki wszystkich profili (elm.<id>.fiszki)
+      if (LM.trailStore) LM.trailStore.clearAll(); // Szlak wszystkich profili (elm.<id>.szlak)
+      if (LM.search) LM.search.clearRecent(); // ostatnie wyszukiwania (na urządzeniu)
+      app().replaceProfiles(LM.createEmptyProfiles());
+      app().replaceContent(LM.createDefaultData());
     });
   }
 
-  ELM.dataMenu = {
+  LM.dataMenu = {
     exportAll: exportAll,
     importAll: importAll,
     importText: importText,
@@ -220,4 +220,4 @@ window.ELM = window.ELM || {};
     importProgressText: importProgressText,
     resetAll: resetAll
   };
-})(window.ELM);
+})(window.LM);

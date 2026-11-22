@@ -1,23 +1,23 @@
 /*
- * journal.js — zakładka „Moje błędy” (#/powtorki/moje-bledy); sesja powtórek jest wspólna (#/powtorki/sesja, js/fiszki.js).
+ * mistakes.js — zakładka „Moje błędy” (#/powtorki/moje-bledy); sesja powtórek jest wspólna (#/powtorki/sesja, js/cards.js).
  *
- * Dane: ELM.profileData (klucz elm_journal_v1, osobno dla każdego profilu).
- * Harmonogram: schedule() z js/fiszki-harmonogram.js — każdy wpis ma kartę w talii „Moje błędy” (paczka v8).
+ * Dane: LM.profileData (klucz elm_journal_v1, osobno dla każdego profilu).
+ * Harmonogram: schedule() z js/cards-schedule.js — każdy wpis ma kartę w talii „Moje błędy” (paczka v8).
  * Treść wpisana przez użytkownika trafia do strony wyłącznie jako tekst.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   const BASE = "#/powtorki/moje-bledy";                 // zakładka „Moje błędy” (wcześniej #/bledy)
   const REVIEW = "#/powtorki/sesja?tylko=bledy";         // sesja tylko z błędami (wcześniej #/bledy/powtorki)
 
-  function pd() { return ELM.profileData; }
-  function learn() { return ELM.learn; }
+  function pd() { return LM.profileData; }
+  function learn() { return LM.learn; }
 
   // Filtry listy (pamiętane do odświeżenia strony)
   const filters = { status: "due", category: "", query: "", auto: false };
@@ -39,19 +39,19 @@ window.ELM = window.ELM || {};
   /** Wszystkie punkty niezbędnika: [{ id, level, title, label, href }]. */
   function allItems() {
     if (itemCache) return itemCache;
-    const N = ELM.NIEZBEDNIK;
+    const N = LM.NIEZBEDNIK;
     itemCache = [];
     if (!N) return itemCache;
     N.index.levels.forEach(function (lvl) {
       lvl.items.forEach(function (item) {
         const md = N.pages[item.file];
-        const title = md ? ELM.markdown.parseFrontmatter(md).meta.title : null;
+        const title = md ? LM.markdown.parseFrontmatter(md).meta.title : null;
         itemCache.push({
           id: item.id,
           level: lvl.level,
           title: title || item.label,
           label: lvl.level + " · " + (title || item.label),
-          href: ELM.niezbednik.routeOf(item)
+          href: LM.handbook.routeOf(item)
         });
       });
     });
@@ -96,7 +96,7 @@ window.ELM = window.ELM || {};
     if (!editing && opts.prefill && opts.prefill.ref) {
       const dup = pd().findDuplicate(opts.prefill.ref, opts.prefill.myAnswer);
       if (dup) {
-        return ELM.dialogs.alert({
+        return LM.dialogs.alert({
           title: "Ten błąd jest już w dzienniku",
           message: "To zadanie z tą samą odpowiedzią zapisano " + dup.createdAt + ". Znajdziesz je w „Dzienniku błędów”."
         }).then(function () { return null; });
@@ -176,7 +176,7 @@ window.ELM = window.ELM || {};
     }
 
     let saved = null;
-    const dlg = ELM.dialogs.open({
+    const dlg = LM.dialogs.open({
       title: editing ? "Edytuj wpis" : "Dodaj błąd do dziennika",
       className: "dialog-wide",
       body: body,
@@ -212,7 +212,7 @@ window.ELM = window.ELM || {};
     });
     context.focus();
     return dlg.result.then(function () {
-      if (saved && ELM.app) ELM.app.refreshLearning();
+      if (saved && LM.app) LM.app.refreshLearning();
       return saved;
     });
   }
@@ -221,24 +221,24 @@ window.ELM = window.ELM || {};
   // LISTA
   // =====================================================================
 
-  function plural(n, one, few, many) { return ELM.c1 ? ELM.c1.plural(n, one, few, many) : many; }
+  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
 
   /** Stan karty wpisu (talia „Moje błędy”, harmonogram fiszek) zamiast etapu 1/3/7. */
   function reviewLabel(e) {
-    const info = ELM.fiszki ? ELM.fiszki.mistakeInfo(e) : null;
+    const info = LM.cards ? LM.cards.mistakeInfo(e) : null;
     if (!info) return { text: "Nowa karta", cls: "" };
     if (info.suspended) return { text: "Zawieszona", cls: "" };
     if (info.mastered) return { text: "Opanowane", cls: "is-mastered" };
     if (info.state === "learning" || info.state === "relearning") return { text: "W nauce", cls: "is-due" };
     const d = Math.ceil((info.due - Date.now()) / 86400000);
-    if (info.due < ELM.fiszkiLogic.dayEnd(Date.now())) return { text: "Do powtórki dziś", cls: "is-due" };
+    if (info.due < LM.cardsLogic.dayEnd(Date.now())) return { text: "Do powtórki dziś", cls: "is-due" };
     if (d <= 1) return { text: "Powtórka jutro", cls: "" };
     return { text: "Powtórka za " + d + " " + plural(d, "dzień", "dni", "dni"), cls: "" };
   }
 
   function matches(e) {
-    const info = ELM.fiszki ? ELM.fiszki.mistakeInfo(e) : null;
-    const dueNow = info ? (info.state !== "new" && !info.suspended && info.due < ELM.fiszkiLogic.dayEnd(Date.now())) : false;
+    const info = LM.cards ? LM.cards.mistakeInfo(e) : null;
+    const dueNow = info ? (info.state !== "new" && !info.suspended && info.due < LM.cardsLogic.dayEnd(Date.now())) : false;
     if (filters.status === "due" && !dueNow) return false;
     if (filters.status === "mastered" && !(info && info.mastered)) return false;
     if (filters.category && e.category !== filters.category) return false;
@@ -265,7 +265,7 @@ window.ELM = window.ELM || {};
       el("div", { class: "journal-entry-head" }, [
         el("span", { class: "c1-chip", text: e.category }),
         auto ? el("span", { class: "journal-auto", title: "Dodany automatycznie z zadania" }, [
-          ELM.icon("sparkles", { size: 14 }), "Automatyczny" + (auto.returned ? " · wrócił" : "") + (auto.wrongCount > 1 ? " · błędów: " + auto.wrongCount : "")
+          LM.icon("sparkles", { size: 14 }), "Automatyczny" + (auto.returned ? " · wrócił" : "") + (auto.wrongCount > 1 ? " · błędów: " + auto.wrongCount : "")
         ]) : null,
         el("span", { class: "journal-status " + status.cls, text: status.text }),
         e.source ? el("span", { class: "journal-source", text: e.source }) : null
@@ -289,14 +289,14 @@ window.ELM = window.ELM || {};
           class: "btn btn-danger btn-small",
           "aria-label": "Usuń wpis: " + e.context.slice(0, 60),
           onclick: function () {
-            ELM.dialogs.confirm({
+            LM.dialogs.confirm({
               title: "Usunąć wpis?",
               message: "Wpis „" + e.context.slice(0, 120) + (e.context.length > 120 ? "…" : "") + "” zostanie usunięty z dziennika. Tej operacji nie można cofnąć.",
               confirmLabel: "Usuń wpis"
             }).then(function (ok) {
               if (!ok) return;
               pd().removeEntry(e.id);
-              ELM.app.refreshLearning();
+              LM.app.refreshLearning();
               rerender();
             });
           }
@@ -306,7 +306,7 @@ window.ELM = window.ELM || {};
   }
 
   function emptyBox(text, withButton) {
-    return ELM.ui.emptyState({
+    return LM.ui.emptyState({
       art: "pusty-dziennik", title: text,
       action: withButton ? el("button", {
         type: "button",
@@ -318,9 +318,9 @@ window.ELM = window.ELM || {};
 
   function renderList(view) {
     const all = pd().entries();
-    const due = ELM.reviews ? ELM.reviews.breakdown().mistake : 0;
+    const due = LM.reviewQueue ? LM.reviewQueue.breakdown().mistake : 0;
 
-    view.appendChild(ELM.powtorki.header("bledy", "Zapisuj błędy z ćwiczeń i arkuszy – każdy ma kartę, która wraca w rosnących odstępach (harmonogram fiszek). Karta opanowana wraca raz na kilka tygodni."));
+    view.appendChild(LM.review.header("bledy", "Zapisuj błędy z ćwiczeń i arkuszy – każdy ma kartę, która wraca w rosnących odstępach (harmonogram fiszek). Karta opanowana wraca raz na kilka tygodni."));
 
     view.appendChild(el("div", { class: "tool-actions" }, [
       due
@@ -330,7 +330,7 @@ window.ELM = window.ELM || {};
         type: "button",
         class: "btn btn-secondary",
         onclick: function () { openForm().then(function (r) { if (r) render({ kind: "list" }); }); }
-      }, ELM.ui.withIcon("plus", "Dodaj błąd"))
+      }, LM.ui.withIcon("plus", "Dodaj błąd"))
     ]));
 
     if (!all.length) {
@@ -403,7 +403,7 @@ window.ELM = window.ELM || {};
         autoBtn.setAttribute("aria-pressed", filters.auto ? "true" : "false");
         paint();
       }
-    }, [ELM.icon("sparkles", { size: 16 }), "Automatyczne (" + autoCount + ")"]) : null;
+    }, [LM.icon("sparkles", { size: 16 }), "Automatyczne (" + autoCount + ")"]) : null;
     if (!autoCount) filters.auto = false;
 
     view.appendChild(el("div", { class: "journal-filters", role: "search" }, [
@@ -423,7 +423,7 @@ window.ELM = window.ELM || {};
         type: "button",
         class: "btn btn-danger btn-small",
         onclick: function () {
-          ELM.dialogs.confirm({
+          LM.dialogs.confirm({
             title: "Usunąć wszystkie automatyczne wpisy?",
             message: "Z dziennika zniknie " + autoCount + " " + plural(autoCount, "wpis dodany", "wpisy dodane", "wpisów dodanych") + " automatycznie z zadań. Wpisy dodane ręcznie zostaną. Tej operacji nie można cofnąć.",
             confirmLabel: "Usuń automatyczne"
@@ -431,11 +431,11 @@ window.ELM = window.ELM || {};
             if (!ok) return;
             pd().removeAllAuto();
             filters.auto = false;
-            ELM.app.refreshLearning();
+            LM.app.refreshLearning();
             render({ kind: "list" });
           });
         }
-      }, ELM.ui.withIcon("trash", "Usuń wszystkie automatyczne"))));
+      }, LM.ui.withIcon("trash", "Usuń wszystkie automatyczne"))));
     }
     paint();
   }
@@ -464,10 +464,10 @@ window.ELM = window.ELM || {};
     U.setScroll(keepScroll);
   }
 
-  /** Wejście na widok: nic do przygotowania (sesja jest w js/fiszki.js). */
+  /** Wejście na widok: nic do przygotowania (sesja jest w js/cards.js). */
   function onEnter() {}
 
-  ELM.journal = {
+  LM.mistakes = {
     BASE: BASE,
     REVIEW: REVIEW,
     parseRoute: parseRoute,
@@ -477,4 +477,4 @@ window.ELM = window.ELM || {};
     findItem: findItem,
     itemLink: itemLink
   };
-})(window.ELM);
+})(window.LM);

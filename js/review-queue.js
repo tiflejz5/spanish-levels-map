@@ -1,8 +1,8 @@
 /*
- * reviews.js — jedna kolejka powtórek: fiszki z talii, „Moje błędy” i słabe punkty z ćwiczeń
- * (paczka v8, spec 20, sekcja R). Wszystko planuje schedule() z js/fiszki-harmonogram.js.
+ * review-queue.js — jedna kolejka powtórek: fiszki z talii, „Moje błędy” i słabe punkty z ćwiczeń
+ * (paczka v8, spec 20, sekcja R). Wszystko planuje schedule() z js/cards-schedule.js.
  *
- *   Czysta logika (testy: node tools/testy.js), bez DOM i localStorage:
+ *   Czysta logika (testy: node tools/tests.js), bez DOM i localStorage:
  *     queueFrom(ctx, now)      → [{ kind: "card"|"mistake"|"exercise", id, due, topic }]
  *                                 zaległe najstarsze pierwsze, przeplatanie (≤ 2 tego samego rodzaju i
  *                                 nie dwa razy ten sam temat z rzędu, gdy da się tego uniknąć), nowe na końcu; limity i granica dnia 04:00 jak w fiszkach
@@ -13,12 +13,12 @@
  *     redirectFor(hash)        stare adresy → #/powtorki/…
  *   ctx = { state: stan fiszek, decks: [{ id, count }] (kolejność talii), cardsOf(deckId), deckOf(idStanu),
  *           weak: [{ id, topic }] (kandydaci), topicOfEx?(id), extraNew?: dodatkowe nowe karty ponad limit }
- *   Dane żywe: ELM.reviews.queue(now) / count() / breakdown() (poniżej, z ELM.fiszki i ELM.profileData).
+ *   Dane żywe: LM.reviewQueue.queue(now) / count() / breakdown() (poniżej, z LM.cards i LM.profileData).
  *   Stan zadania ze słabych punktów: klucz „ex:<idZadania>” w mapie cards fiszek (ocena automatyczna).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const EX_NEW_PER_DAY = 3;                 // maks. nowych zadań ze słabych punktów dziennie (w limicie nowych)
@@ -26,7 +26,7 @@ window.ELM = window.ELM || {};
   const MAX_SAME_KIND = 2;
   const WEAK_LIMIT = 60;                    // tylu kandydatów ze słabych punktów maksymalnie
 
-  function L() { return ELM.fiszkiLogic; }
+  function L() { return LM.cardsLogic; }
   function exKey(itemId) { return "ex:" + itemId; }
   function isEx(id) { return /^ex:/.test(id); }
 
@@ -40,13 +40,13 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   /**
-   * Zadania z tematów słabych punktów (ELM.stats.weakTopics), które w ostatnich 14 dniach nie zostały
+   * Zadania z tematów słabych punktów (LM.stats.weakTopics), które w ostatnich 14 dniach nie zostały
    * rozwiązane poprawnie (jak weakWeight = 2) i choć raz były błędne. Najświeższy błąd pierwszy.
    * opts.noVoice — bez dyktand (brak głosu angielskiego). → [{ id, topic, type }]
    */
   function weakTasks(rec, today, opts) {
     opts = opts || {};
-    const S = ELM.stats;
+    const S = LM.stats;
     const topics = {};
     S.weakTopics(rec).forEach(function (t) { topics[t.key] = true; });
     if (!Object.keys(topics).length) return [];
@@ -215,8 +215,8 @@ window.ELM = window.ELM || {};
   // DANE ŻYWE (profil aktywny)
   // =====================================================================
 
-  function F() { return ELM.fiszki && ELM.fiszki.internal; }
-  function active() { return !!(ELM.app && ELM.app.getActiveProfile() && F() && ELM.profileData); }
+  function F() { return LM.cards && LM.cards.internal; }
+  function active() { return !!(LM.app && LM.app.getActiveProfile() && F() && LM.profileData); }
   function now() { return Date.now(); }
 
   let migratedFor = null; // profil, dla którego migrację już sprawdziliśmy w tej karcie
@@ -229,26 +229,26 @@ window.ELM = window.ELM || {};
    */
   function ensureMigrated() {
     if (!active()) return 0;
-    const pid = ELM.app.getActiveProfile().id;
+    const pid = LM.app.getActiveProfile().id;
     const st = F().st();
     let changed = 0;
     if (!st.settings.migratedJournal && migratedFor !== pid) {
       migratedFor = pid;
-      changed += L().migrateJournal(st, ELM.profileData.entries(), now());
+      changed += L().migrateJournal(st, LM.profileData.entries(), now());
     } else if (st.settings.migratedJournal) migratedFor = pid;
     if (!st.settings.journalCardsV2 && repairedFor !== pid) {
       repairedFor = pid;
-      changed += L().repairJournalCards(st, ELM.profileData.entries());
+      changed += L().repairJournalCards(st, LM.profileData.entries());
       changed++; // zmieniony znacznik settings.journalCardsV2 trzeba zapisać
     } else if (st.settings.journalCardsV2) repairedFor = pid;
     if (changed) F().saveState();
     return changed;
   }
 
-  function noVoice() { return !!(ELM.exercises && ELM.exercises.noEnglishVoice && ELM.exercises.noEnglishVoice()); }
+  function noVoice() { return !!(LM.exercises && LM.exercises.noEnglishVoice && LM.exercises.noEnglishVoice()); }
 
   function weakNow() {
-    return ELM.stats && ELM.profileData ? weakTasks(ELM.profileData.attempts(), ELM.learn.today(), { noVoice: noVoice() }) : [];
+    return LM.stats && LM.profileData ? weakTasks(LM.profileData.attempts(), LM.learn.today(), { noVoice: noVoice() }) : [];
   }
 
   function ctxNow() {
@@ -281,7 +281,7 @@ window.ELM = window.ELM || {};
   /** Nowe karty i zadania na dziś (w limicie nowych). */
   function freshCount() { return breakdown().fresh.total; }
 
-  /** Pełna kolejka (talie wbudowane muszą być wczytane: ELM.fiszki.internal.loadDecks()). */
+  /** Pełna kolejka (talie wbudowane muszą być wczytane: LM.cards.internal.loadDecks()). */
   function queue(at) {
     if (!active()) return [];
     ensureMigrated();
@@ -315,11 +315,11 @@ window.ELM = window.ELM || {};
   /** Najbliższy termin (ms) po chwili t wśród kart i zadań z zapisanym stanem albo null. */
   function nextDue(t) { return upcoming(t).next; }
 
-  ELM.reviews = {
+  LM.reviewQueue = {
     EX_NEW_PER_DAY: EX_NEW_PER_DAY, MINUTES: MINUTES, exKey: exKey, isEx: isEx, kindOf: kindOf,
     weakTasks: weakTasks, interleave: interleave, queueFrom: queueFrom, summaryFrom: summaryFrom, upcomingFrom: upcomingFrom, upcoming: upcoming,
     estimateMinutes: estimateMinutes, redirectFor: redirectFor, dueCount: dueCount, freshCount: freshCount,
     ensureMigrated: ensureMigrated, queue: queue, count: count, breakdown: breakdown, nextDue: nextDue,
     ctx: ctxNow, resetMigrationMemo: function () { migratedFor = null; repairedFor = null; }
   };
-})(window.ELM);
+})(window.LM);

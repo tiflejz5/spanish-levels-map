@@ -22,7 +22,7 @@ Plan prac wizualnych:
 
 ## 2. Tokeny
 
-Wszystkie wartości są zmiennymi CSS na początku `css/style.css`. Motyw wybiera `data-theme="light" | "dark"` na `<html>` (skrypt inline w `<head>` i `js/theme.js`). Poza blokami tokenów **nie ma kolorów wpisanych na sztywno**. Kontrola: `node tools/kontrast.js` oraz audyt opisany w sekcji 8.
+Wszystkie wartości są zmiennymi CSS na początku `css/style.css`. Motyw wybiera `data-theme="light" | "dark"` na `<html>` (skrypt inline w `<head>` i `js/theme.js`). Poza blokami tokenów **nie ma kolorów wpisanych na sztywno**. Kontrola: `node tools/contrast.js` oraz audyt opisany w sekcji 8.
 
 ### 2.1 Powierzchnie, tekst, linie
 
@@ -78,7 +78,7 @@ Każdy poziom ma cztery tokeny, osobno dla obu motywów:
   Poprzednia paleta nie przechodziła: niebieski A2 i fiolet B1 miały ΔE 4.4 przy deuteranopii.
 - W ciemnym motywie `-soft` jest mieszany z tłem strony (`--bg`), a nie z kartą, bo tylko tak pasek B1 ma ≥ 3:1 na swoim torze.
 - **Poziom nigdy nie jest oznaczany samym kolorem.** Zawsze towarzyszy mu kod (A1…C2).
-- Zmiana koloru poziomu wymaga ponownego uruchomienia walidatora i `node tools/kontrast.js`.
+- Zmiana koloru poziomu wymaga ponownego uruchomienia walidatora i `node tools/contrast.js`.
 
 ### 2.4 Gradient marki
 
@@ -149,7 +149,7 @@ W zakładce C1 `js/app.js` ustawia `data-section="certyfikat"` na `<html>` (poza
 
 - Selektory: `:root:not([data-theme="dark"])[data-section="certyfikat"]` i `:root[data-theme="dark"][data-section="certyfikat"]`.
 - Stałe akcenty marki C1 (`--c1-navy`, `--c1-gold`, `--c1-soft`, `--c1-ink`, `--c1-edge`, `--c1-cream`, `--c1-cream-muted`) działają wszędzie, np. w chipie C1 w panelu, kaflu egzaminu na „Dziś” i calloucie „Na egzaminie C1”.
-- `tools/kontrast.js` sprawdza wszystkie pary w czterech zakresach: jasny, ciemny, C1 jasny, C1 ciemny.
+- `tools/contrast.js` sprawdza wszystkie pary w czterech zakresach: jasny, ciemny, C1 jasny, C1 ciemny.
 
 ## 3. Komponenty bazowe
 
@@ -161,21 +161,21 @@ W zakładce C1 `js/app.js` ustawia `data-section="certyfikat"` na `<html>` (poza
 | Chip | `.chip` (+ `.c1-chip`) | Mała pigułka `--surface-3` / `--ink-muted`. W kontekście poziomu: `--lvl-soft` / `--lvl-ink`. |
 | Podpowiedź | `[data-tooltip]` | Czysty CSS, pojawia się przy hover **i** focus-visible. Treść jest też w `aria-label`, bo podpowiedź jest tylko wizualna. |
 | Pasek postępu | `.progress` > `.progress-fill` (funkcja `progressBar` w `js/render.js`) | Wypełnianie przez `transform: scaleX` (`--dur-slow`). Kolor `--lvl` albo `--brand-gradient` (`.is-brand`). Tor `--lvl-soft`. |
-| Pierścień postępu | `ELM.ui.progressRing(percent, opts)` (`js/ui.js`) | SVG, łuk przez `stroke-dashoffset`, kolor poziomu albo gradient marki, liczba w środku (`tabular-nums`). Rola `progressbar` z `aria-valuenow`. |
-| Ikona | `ELM.icon(name, opts)` (`js/ui.js`), w HTML `<span data-icon="nazwa">` | Lucide, obrys 1.75 px, `currentColor`, domyślnie `aria-hidden`. Rysowana przez `createElementNS` (bez innerHTML). |
-| Logo | `ELM.logo()` (w HTML `[data-logo]`), `assets/favicon.svg`, `assets/favicon-180.png` | Znak: kompas w okręgu ze szlakiem kropek, okrąg i północ igły w gradiencie marki. Napis „English Levels Map” Fraunces w kolorze `--ink`. Gradient jest tylko w znaku, bo jasne krainy (zielony, pomarańcz, turkus) dają w tekście kontrast poniżej 4.5:1. |
+| Pierścień postępu | `LM.ui.progressRing(percent, opts)` (`js/ui.js`) | SVG, łuk przez `stroke-dashoffset`, kolor poziomu albo gradient marki, liczba w środku (`tabular-nums`). Rola `progressbar` z `aria-valuenow`. |
+| Ikona | `LM.icon(name, opts)` (`js/ui.js`), w HTML `<span data-icon="nazwa">` | Lucide, obrys 1.75 px, `currentColor`, domyślnie `aria-hidden`. Rysowana przez `createElementNS` (bez innerHTML). |
+| Logo | `LM.logo()` (w HTML `[data-logo]`), `assets/favicon.svg`, `assets/favicon-180.png` | Znak: kompas w okręgu ze szlakiem kropek, okrąg i północ igły w gradiencie marki. Napis „English Levels Map” Fraunces w kolorze `--ink`. Gradient jest tylko w znaku, bo jasne krainy (zielony, pomarańcz, turkus) dają w tekście kontrast poniżej 4.5:1. |
 | Focus | `:focus-visible` | Obrys 2 px `--focus-color`, odstęp 2 px, na każdym tle. |
-| Tło warstwicowe | `::before` nagłówków `.level-header`, `.tool-head`, pierwszego `h1` strony głównej i `.c1-title` | Statyczny wzór warstwic (`assets/warstwice.svg`, w CSS jako maska `data:`, bo maski z pliku są blokowane przy `file://`) w `--topo-color` przy `--topo-opacity`, wygaszany w lewo. `.view` ma `overflow-x: clip`, więc wzór nigdy nie wywołuje przewijania w poziomie. |
+| Tło warstwicowe | `::before` nagłówków `.level-header`, `.tool-head`, pierwszego `h1` strony głównej i `.c1-title` | Statyczny wzór warstwic (`assets/contours.svg`, w CSS jako maska `data:`, bo maski z pliku są blokowane przy `file://`) w `--topo-color` przy `--topo-opacity`, wygaszany w lewo. `.view` ma `overflow-x: clip`, więc wzór nigdy nie wywołuje przewijania w poziomie. |
 
 ### 3.1 Lewy panel (etap 2)
 
 - **v8 (pasek wg szkicu A):**
-  - Kolejność: Dziś, **Fiszki i błędy** (`#/powtorki`, ikona `layers`, jedna plakietka = `ELM.reviews.count()`: fiszki + Moje błędy + słabe punkty), Ćwiczenia, Lab czasów, Pisanie, linia, poziomy, linia, **Moje egzaminy**, „+N”, pinezka. Test poziomu, Statystyki i Moje notatki przeniesione do menu profilu, sekcja „Moje” nad „Dane”.
-  - Kółka krain 36 px bez kodu pod spodem (nazwę niesie `aria-label`). Zaliczony poziom (`is-passed`): pełne tło `--lvl-soft` i pieczątka ✓ (`ELM.ui.stamp`). Bieżąca kraina (`is-current`, `ELM.today.currentLevelId()`): obwódka 2 px w kolorze krainy, krycie 0.35, odstęp 4 px, w `aria-label` „Bieżąca kraina”. Uwaga: przy kryciu 0.35 obwódka ma kontrast ok. 1.4–1.8:1 (poniżej 3:1 dla elementów graficznych); stan niosą też `aria-label` i „Tu jesteś” na Dziś.
-  - Moje egzaminy: kafelek 44×44 z kodem i odliczaniem („15 d”, „dziś”), C1 granat i złoto; podział i kolejność w czystej `ELM.examLogic.navSplit` (brak moich = wszystkie jak dawniej, bez „+N”; otwarty egzamin zostaje w pasku). Chip C1 rysuje teraz `js/exam-core.js`, `js/c1-core.js` tylko sekcje.
-  - „+N” (`#exam-more`, `aria-haspopup="dialog"`, `aria-label="Pokaż pozostałe egzaminy (N)"`): popover `.exam-pop` w `body` (`position: fixed`, na telefonie arkusz od dołu) z listą egzaminów, linkiem i przełącznikiem „Przypnij” (`ELM.examMy.pin/unpin`). Fokus wchodzi do listy, Esc i klik poza zamykają, Esc oddaje fokus przyciskowi; otwarty popover trzyma panel rozwinięty (`ELM.sidebar.hold`).
+  - Kolejność: Dziś, **Fiszki i błędy** (`#/powtorki`, ikona `layers`, jedna plakietka = `LM.reviewQueue.count()`: fiszki + Moje błędy + słabe punkty), Ćwiczenia, Lab czasów, Pisanie, linia, poziomy, linia, **Moje egzaminy**, „+N”, pinezka. Test poziomu, Statystyki i Moje notatki przeniesione do menu profilu, sekcja „Moje” nad „Dane”.
+  - Kółka krain 36 px bez kodu pod spodem (nazwę niesie `aria-label`). Zaliczony poziom (`is-passed`): pełne tło `--lvl-soft` i pieczątka ✓ (`LM.ui.stamp`). Bieżąca kraina (`is-current`, `LM.today.currentLevelId()`): obwódka 2 px w kolorze krainy, krycie 0.35, odstęp 4 px, w `aria-label` „Bieżąca kraina”. Uwaga: przy kryciu 0.35 obwódka ma kontrast ok. 1.4–1.8:1 (poniżej 3:1 dla elementów graficznych); stan niosą też `aria-label` i „Tu jesteś” na Dziś.
+  - Moje egzaminy: kafelek 44×44 z kodem i odliczaniem („15 d”, „dziś”), C1 granat i złoto; podział i kolejność w czystej `LM.examLogic.navSplit` (brak moich = wszystkie jak dawniej, bez „+N”; otwarty egzamin zostaje w pasku). Chip C1 rysuje teraz `js/exam-core.js`, `js/c1-core.js` tylko sekcje.
+  - „+N” (`#exam-more`, `aria-haspopup="dialog"`, `aria-label="Pokaż pozostałe egzaminy (N)"`): popover `.exam-pop` w `body` (`position: fixed`, na telefonie arkusz od dołu) z listą egzaminów, linkiem i przełącznikiem „Przypnij” (`LM.examMy.pin/unpin`). Fokus wchodzi do listy, Esc i klik poza zamykają, Esc oddaje fokus przyciskowi; otwarty popover trzyma panel rozwinięty (`LM.sidebar.hold`).
   - Gęstszy pasek (`gap` 2 px, wiersze 44 px, pasek postępu poziomu pod podpisem): przy oknie 860 px zwinięty pasek z 2 moimi egzaminami i „+N” mieści się bez przewijania (zmierzone: 685 / 685 px), rozwinięty też (podpis pod logo znika poniżej 900 px wysokości).
-- **v7 (C1):** kółka poziomów mają symbol krainy (`assets/krainy.js`, kolor `--lvl-x`) zamiast tekstu „A1”; kod poziomu jest małą etykietą pod kółkiem w zwiniętym panelu, a w rozwiniętym stoi obok („A1 · Początkujący”). Pierścień postępu bez zmian.
+- **v7 (C1):** kółka poziomów mają symbol krainy (`assets/lands.js`, kolor `--lvl-x`) zamiast tekstu „A1”; kod poziomu jest małą etykietą pod kółkiem w zwiniętym panelu, a w rozwiniętym stoi obok („A1 · Początkujący”). Pierścień postępu bez zmian.
 
 Pliki: `index.html` (znaczniki), `js/sidebar.js` (zachowanie), `js/render.js` (narzędzia i poziomy), `js/c1-core.js` (chip i sekcje C1), sekcja „LEWY PANEL” w `css/style.css`.
 
@@ -205,7 +205,7 @@ Pliki: `index.html` (znaczniki), `js/sidebar.js` (zachowanie), `js/render.js` (n
 **Ruch:**
 - Szerokość warstwy rośnie w `--dur-base` z `--ease-out`. To warstwa poza przepływem, więc nie przelicza układu treści.
 - Etykiety pojawiają się przez `opacity` z opóźnieniem 60 ms.
-- Pierścienie i paski są aktualizowane w miejscu (`ELM.ui.setRing`) i płynnie przechodzą z poprzedniej wartości.
+- Pierścienie i paski są aktualizowane w miejscu (`LM.ui.setRing`) i płynnie przechodzą z poprzedniej wartości.
 - Przy `prefers-reduced-motion` zmiana jest natychmiastowa (bez przejść szerokości i marginesu).
 
 **Liczby postępu (spójność):**
@@ -217,7 +217,7 @@ Pliki: `index.html` (znaczniki), `js/sidebar.js` (zachowanie), `js/render.js` (n
 
 ### 3.2 Strona „Dziś” — kokpit (etap 3)
 
-**v7 (C2, C6):** Szlak jest mapą topograficzną: każda kraina to plama `--lvl-x-soft` z warstwicami `--lvl-x` (od 3 warstwic w A1 do 8 w C2), stacja to kółko z symbolem krainy, podpisem „A1 · Polana” i procentem; przebyta część szlaku ciągła, reszta kropkowana, róża wiatrów w rogu, pieczątka ✓ przy zaliczonym teście końcowym, układ pionowy poniżej 480 px. Ten sam komponent bez róży wiatrów jest na stronie głównej nad tabelą „Poziomy w skrócie” (`ELM.today.compactTrail`). Stany „Na dziś czysto” i „Pierwszy dzień serii” mają ilustracje z `ELM.ui.emptyState` (kompas z kafla zastąpiony).
+**v7 (C2, C6):** Szlak jest mapą topograficzną: każda kraina to plama `--lvl-x-soft` z warstwicami `--lvl-x` (od 3 warstwic w A1 do 8 w C2), stacja to kółko z symbolem krainy, podpisem „A1 · Polana” i procentem; przebyta część szlaku ciągła, reszta kropkowana, róża wiatrów w rogu, pieczątka ✓ przy zaliczonym teście końcowym, układ pionowy poniżej 480 px. Ten sam komponent bez róży wiatrów jest na stronie głównej nad tabelą „Poziomy w skrócie” (`LM.today.compactTrail`). Stany „Na dziś czysto” i „Pierwszy dzień serii” mają ilustracje z `LM.ui.emptyState` (kompas z kafla zastąpiony).
 
 **v7 (A4, A5):** hero bez warstwic. Kafle „Kontynuuj”, „Dodaj błąd” i podpowiedź testu zastąpiła jedna karta „Na skróty” (`.bento-shortcuts`, wiersze `.row` z ikoną, tytułem, opisem i chevronem). Kafle Fiszki i „Gotowy na test końcowy” zostały bez zmian.
 
@@ -274,7 +274,7 @@ Plik: `js/celebrate.js`.
 
 ### 3.4 Strony poziomów (etap 3)
 
-- **v7 (C1, C3):** nad nagłówkiem „A1 · Polana” (nazwa krainy z `ELM.ui.LANDS`). Zaznaczone „Umiem” to okrągła pieczątka w kolorze krainy; „odbicie” (scale 1.25 → 1, rotate −10° → −6°, 220 ms) tylko przy zaznaczeniu przez użytkownika.
+- **v7 (C1, C3):** nad nagłówkiem „A1 · Polana” (nazwa krainy z `LM.ui.LANDS`). Zaznaczone „Umiem” to okrągła pieczątka w kolorze krainy; „odbicie” (scale 1.25 → 1, rotate −10° → −6°, 220 ms) tylko przy zaznaczeniu przez użytkownika.
 
 - **v7 (A4–A6):** bez warstwic w nagłówkach i hero (warstwice tylko w Szlaku). Punkty to wiersze (`.ess-item`: „Umiem” 44 px po lewej, tekst, chevron po prawej; cienka linia, hover `--row-hover`). Filtr kategorii ma pierwszą opcję „Wszystkie” (`ui.categoryId = "all"`): grupy z podtytułami h3, bez chipów kategorii.
 
@@ -321,8 +321,8 @@ Pominięte. Aplikacja nie jest w React, a brief dopuszczał ten krok tylko dla R
   **Jak dodać nowy callout:**
   1. Dopisz wpis do `CALLOUT_RULES` w `js/callouts.js`: `{ match: /^początek nagłówka/i, type: "nazwa", icon: "ikona-lucide", label: "…" }`.
   2. Dodaj w `css/style.css` (sekcja „TREŚCI PODSTRON”) reguły `.callout-nazwa` i `.callout-nazwa .callout-icon`, używając tylko tokenów.
-  3. Jeśli ikony nie ma w `assets/ikony.js`, dopisz ją do listy w `tools/zbuduj-zasoby.js` i uruchom `npm run zasoby`.
-  4. Nowe pary kolorów dopisz do `tools/kontrast.js`.
+  3. Jeśli ikony nie ma w `assets/icons.js`, dopisz ją do listy w `tools/build-assets.js` i uruchom `npm run zasoby`.
+  4. Nowe pary kolorów dopisz do `tools/contrast.js`.
 - **Tabele.**
   - Ramka `.md-table` z zaokrągleniem `--radius` i zebrą (`--surface-2` zmieszany z `--surface`).
   - Nagłówek ma tło `--surface-2`, tekst `--ink` 650 i mocniejszą linię `--line-strong`.
@@ -369,7 +369,7 @@ Pominięte. Aplikacja nie jest w React, a brief dopuszczał ten krok tylko dla R
 
 ### 3.10 Laboratorium czasów (rozbudowa v2)
 
-- **Tokeny grup czasów** (oś i akcenty, ≥ 3:1 do karty i tła, sprawdzane w `tools/kontrast.js`):
+- **Tokeny grup czasów** (oś i akcenty, ≥ 3:1 do karty i tła, sprawdzane w `tools/contrast.js`):
 
   | Token | Jasny | Ciemny |
   |---|---|---|
@@ -412,7 +412,7 @@ Pominięte. Aplikacja nie jest w React, a brief dopuszczał ten krok tylko dla R
   - Wpisy z zadań mają chip z iskrą („Automatyczny · wrócił · błędów: N”) w `--accent-soft` i filtr chipem.
   - Podsumowanie sesji jest w ramce `--info-bg`.
   - Zaliczona powtórka to zielony znacznik ✓ w informacji zwrotnej.
-- **Toast** (`ELM.ui.toast`): ciemna karta `--inverse-bg` u dołu ekranu (na telefonie nad przyciskami sesji), `role="status"`, 5 s, wstrzymywany przy najechaniu i fokusie, przycisk akcji podkreślony.
+- **Toast** (`LM.ui.toast`): ciemna karta `--inverse-bg` u dołu ekranu (na telefonie nad przyciskami sesji), `role="status"`, 5 s, wstrzymywany przy najechaniu i fokusie, przycisk akcji podkreślony.
 - **Sugestia „Umiem”:** ramka `--success-soft` z iskrą, „Zaznacz „Umiem”” i „Nie teraz”.
 - **Przełącznik** w menu profilu: `role="switch"`, tor 40 × 24 px, włączony w `--success-fill`.
 
@@ -445,7 +445,7 @@ Pominięte. Aplikacja nie jest w React, a brief dopuszczał ten krok tylko dla R
   | `--e8-yellow` / `--e8-on-yellow` | `#f5b800` / `#1d2426` | `#f5c84a` / `#10201f` |
 
   - Żółty jest akcentem (pasek pod tytułem, dolna krawędź znaku E8, plakietki wyników) i zawsze dostaje ciemny tekst.
-  - `tools/kontrast.js` sprawdza wszystkie pary także w zakresach E8 jasny i E8 ciemny (razem 678 par).
+  - `tools/contrast.js` sprawdza wszystkie pary także w zakresach E8 jasny i E8 ciemny (razem 678 par).
 - **Ramki „Na egzaminie …”.**
   - Każdy egzamin ma osobną ramkę w swoim kolorze (tło 7% koloru egzaminu, lewy pasek), w kolejności z rejestru.
   - Kilka ramek stoi jedna pod drugą z odstępem 12 px.
@@ -459,15 +459,15 @@ Pominięte. Aplikacja nie jest w React, a brief dopuszczał ten krok tylko dla R
 
 ### 3.13a „Moje egzaminy” i okładki (paczka v7, etap 2)
 
-- **Moje egzaminy** (`ELM.examLogic.myExams`, czysta funkcja z testami): egzamin jest mój, gdy ma ustawioną datę albo ukończony zestaw i nie został odpięty ręcznie; ręczne przypięcie działa też bez daty i zestawów. Override w `elm_exams_v1 … profiles[id].my = { "<id>": "pinned" | "hidden" }` (dotyczy też C1, którego data i wyniki zostają w `elm_c1_v1`). Kolejność: najbliższa data, potem minione terminy, na końcu egzaminy bez daty.
+- **Moje egzaminy** (`LM.examLogic.myExams`, czysta funkcja z testami): egzamin jest mój, gdy ma ustawioną datę albo ukończony zestaw i nie został odpięty ręcznie; ręczne przypięcie działa też bez daty i zestawów. Override w `elm_exams_v1 … profiles[id].my = { "<id>": "pinned" | "hidden" }` (dotyczy też C1, którego data i wyniki zostają w `elm_c1_v1`). Kolejność: najbliższa data, potem minione terminy, na końcu egzaminy bez daty.
 - **Gdzie widać:** strona główna (sekcja „Twoje egzaminy”, kafle mini albo jedna linijka podpowiedzi), Dziś (maks. 2 kafle mini), podpis w panelu (odliczanie tylko przy moich), przycisk „Przypnij do Dziś” / „Odepnij…” na stronie startowej egzaminu. Kafel C1 z głównej i Dziś usunięty.
-- **Karta daty** `ELM.examDate.card`: duża liczba dni (Fraunces) albo tekst stanu, pole daty, zapis „czwartek, 6 maja 2027”, akcje `.btn-link` „Wstaw termin główny” (E8, MP, MR) i „Usuń datę”; B2 i C1: „Termin zależy od centrum egzaminacyjnego.”. Poniżej 640 px jedna kolumna.
-- **Okładki** (`ELM.examCover`): pełna (strona startowa: pasek 10 px w `accent2`, kod Fraunces 56–88 px, nazwa, `subtitle` z `dane/egzaminy-manifest.json`), kompaktowa (podstrony: pasek 6 px, kod 28 px) i mini (kafel: pasek 8 px, kod 32 px, odliczanie, „zestawy 4/12”). Mini poza sekcją egzaminu bierze kolory z `--exam-accent` (jasny) i `--exam-accent-2` (ciemny); `tools/kontrast.js` sprawdza te pary.
+- **Karta daty** `LM.examDate.card`: duża liczba dni (Fraunces) albo tekst stanu, pole daty, zapis „czwartek, 6 maja 2027”, akcje `.btn-link` „Wstaw termin główny” (E8, MP, MR) i „Usuń datę”; B2 i C1: „Termin zależy od centrum egzaminacyjnego.”. Poniżej 640 px jedna kolumna.
+- **Okładki** (`LM.examCover`): pełna (strona startowa: pasek 10 px w `accent2`, kod Fraunces 56–88 px, nazwa, `subtitle` z `dane/egzaminy-manifest.json`), kompaktowa (podstrony: pasek 6 px, kod 28 px) i mini (kafel: pasek 8 px, kod 32 px, odliczanie, „zestawy 4/12”). Mini poza sekcją egzaminu bierze kolory z `--exam-accent` (jasny) i `--exam-accent-2` (ciemny); `tools/contrast.js` sprawdza te pary.
 - Rejestr (`dane/egzaminy-rejestr.js`) ma dla każdego egzaminu `setIds` (postęp bez wczytywania danych egzaminu).
 
 ### 3.14 Komponenty paczki v6 (rozbudowa v6, etapy 1–11)
 
-Wszystkie na istniejących tokenach (bez nowych kolorów), z parami sprawdzanymi przez `node tools/kontrast.js`, celami ≥ 44 px i szanowaniem `prefers-reduced-motion`.
+Wszystkie na istniejących tokenach (bez nowych kolorów), z parami sprawdzanymi przez `node tools/contrast.js`, celami ≥ 44 px i szanowaniem `prefers-reduced-motion`.
 
 - **Callout „Życie i egzamin” (`.callout-real-exam`).**
   - Tło `--info-bg`, obwódka `--info-border`, lewy pasek 4 px w `--accent` (`inset box-shadow`), ikona na `--surface` z pierścieniem.
@@ -488,37 +488,37 @@ Wszystkie na istniejących tokenach (bez nowych kolorów), z parami sprawdzanymi
 ### 3.2a Dziś wg szkicu A (paczka v8, etap „Dziś”)
 
 - **Kolejność w kontenerze `--w-wide`** (`.today-stack`): karta mapy, karta „Fiszki i błędy”, rząd `.today-row` z dwiema kolumnami: Seria | mój egzamin z najbliższą datą (mini okładka v7) albo, bez moich egzaminów, „Na skróty” (Test poziomu, Statystyki). Poniżej 800 px jedna kolumna.
-- **Karta mapy** (`mapCard`, `js/today.js`; zastępuje hero i osobny Szlak): lewo data i „kraina **B1 · Wzgórza**” (kolor `--lvl-ink`) nad h1 z powitaniem; prawo (300 px) „Przebyta mapa” z procentem (Fraunces) i paskiem 6 odcinków (każdy w kolorze krainy, wypełniony proporcjonalnie, tor `--line`), `role="img"` z opisem „Przebyta mapa: 41%. A1 100%, …”. Procent to `ELM.learn.mapProgress(stats)`: średnia z procentów „Umiem” 6 poziomów (czysta funkcja z testami). Pod spodem Szlak topograficzny z v7 na pełną szerokość karty (poziomy ≥ 480 px, pionowy poniżej). Stopka z linią `--line`: „Następny przystanek na Wzgórzach: **…** · do końca krainy N punktów” i `.btn-secondary` „Idź dalej szlakiem ›” (pierwszy punkt bez „Umiem” bieżącego poziomu). Poziom ukończony: „Zrób test końcowy X” (niezaliczony) albo „Zacznij krainę Y”. Poziom ≥ 70% „Umiem” bez zaliczonego testu dostaje pod zdaniem link „Gotowy na test końcowy X? Zrób test” (`ELM.levelFinal.readyLevel`); osobny kafel `todayTip` zniknął z Dziś.
-- **Karta „Fiszki i błędy”** (`ELM.powtorki.todayCard`, wariant `.is-today` karty z 3.15): siatka 220 px / 1fr / 240 px, liczba z `ELM.reviews.count()`, trzy wiersze, „Powtarzaj teraz”, linki Talie · Moje błędy · + Dodaj błąd. Przy zerze niska karta z jedną linijką „Na dziś zrobione. Następne: jutro (6).” i linkiem „Talie” (`ELM.reviews.upcoming`: najbliższy termin i liczba pozycji na jutro). Poniżej 600 px jedna kolumna, przycisk na całą szerokość.
+- **Karta mapy** (`mapCard`, `js/today.js`; zastępuje hero i osobny Szlak): lewo data i „kraina **B1 · Wzgórza**” (kolor `--lvl-ink`) nad h1 z powitaniem; prawo (300 px) „Przebyta mapa” z procentem (Fraunces) i paskiem 6 odcinków (każdy w kolorze krainy, wypełniony proporcjonalnie, tor `--line`), `role="img"` z opisem „Przebyta mapa: 41%. A1 100%, …”. Procent to `LM.learn.mapProgress(stats)`: średnia z procentów „Umiem” 6 poziomów (czysta funkcja z testami). Pod spodem Szlak topograficzny z v7 na pełną szerokość karty (poziomy ≥ 480 px, pionowy poniżej). Stopka z linią `--line`: „Następny przystanek na Wzgórzach: **…** · do końca krainy N punktów” i `.btn-secondary` „Idź dalej szlakiem ›” (pierwszy punkt bez „Umiem” bieżącego poziomu). Poziom ukończony: „Zrób test końcowy X” (niezaliczony) albo „Zacznij krainę Y”. Poziom ≥ 70% „Umiem” bez zaliczonego testu dostaje pod zdaniem link „Gotowy na test końcowy X? Zrób test” (`LM.final.readyLevel`); osobny kafel `todayTip` zniknął z Dziś.
+- **Karta „Fiszki i błędy”** (`LM.review.todayCard`, wariant `.is-today` karty z 3.15): siatka 220 px / 1fr / 240 px, liczba z `LM.reviewQueue.count()`, trzy wiersze, „Powtarzaj teraz”, linki Talie · Moje błędy · + Dodaj błąd. Przy zerze niska karta z jedną linijką „Na dziś zrobione. Następne: jutro (6).” i linkiem „Talie” (`LM.reviewQueue.upcoming`: najbliższy termin i liczba pozycji na jutro). Poniżej 600 px jedna kolumna, przycisk na całą szerokość.
 - **Seria:** „Seria · 6 dni”, podpis „każdy dzień nauki to krok na szlaku”, 7 kropek ostatnich dni po prawej (18 px, dzisiejsza z obwódką; opisy dla czytnika ekranu).
 - Usunięte z Dziś: hero z pierścieniem i podpowiedzią, osobny kafel powtórek, osobny kafel Szlaku, podpowiedź testu poziomu, płomień w serii, wiersze „Kontynuuj” i „Dodaj błąd” (zostają w „Idź dalej” i w karcie powtórek).
-- Ruch: wejście kart (GSAP, `ELM.motion`) pomijane przy `prefers-reduced-motion` (sprawdzone: karty od razu `opacity: 1`). Kontrast: pary dla nazwy krainy i odcinków; wypełnienie odcinka ma ≥ 3:1 względem karty (tor `--line` jest tłem, postęp niesie też liczba).
+- Ruch: wejście kart (GSAP, `LM.motion`) pomijane przy `prefers-reduced-motion` (sprawdzone: karty od razu `opacity: 1`). Kontrast: pary dla nazwy krainy i odcinków; wypełnienie odcinka ma ≥ 3:1 względem karty (tor `--line` jest tłem, postęp niesie też liczba).
 
 ### 3.16 Strony treści i zadania (paczka v8, etap „treści”, S1–S5)
 
-- **S1 Okruszki** (`ELM.ui.breadcrumbs([{ label, href?, onclick? }, …])`, `js/ui.js`): jeden komponent nad h1 zamiast górnych „Wróć do …”: „Poziom A1 › Czasy › Present Simple” (poziom i kategoria wracają do listy z jej przewinięciem), „Fiszki i błędy › Talie › Kolokacje”, „Matura podstawowa › Środki językowe”, „Certyfikat C1 › …”, „Pisanie › …”, „Centrum ćwiczeń › …”. `<nav aria-label="Okruszki"><ol>`, ostatni element `aria-current="page"`, separator „›” z CSS. Poniżej 640 px widać tylko „‹ rodzic” (przedostatni element; przy jednym elemencie on sam). Cele ≥ 44 px. Zniknął też dolny przycisk „Wróć do listy”.
-- **S2 Poprzedni / następny temat** (`topicNav`, `js/niezbednik.js`; `ELM.learn.topicNeighbors` z testem): na końcu podstrony „‹ Poprzedni: …” i „Następny temat: … ›”, kolejność z `niezbednik/index.json` (tylko tematy z podstroną); po ostatnim temacie poziomu „Zacznij krainę A2 ›” (link do listy następnego poziomu). Skróty `[` i `]` (nie w polach tekstowych). Poniżej 640 px linki jeden pod drugim.
+- **S1 Okruszki** (`LM.ui.breadcrumbs([{ label, href?, onclick? }, …])`, `js/ui.js`): jeden komponent nad h1 zamiast górnych „Wróć do …”: „Poziom A1 › Czasy › Present Simple” (poziom i kategoria wracają do listy z jej przewinięciem), „Fiszki i błędy › Talie › Kolokacje”, „Matura podstawowa › Środki językowe”, „Certyfikat C1 › …”, „Pisanie › …”, „Centrum ćwiczeń › …”. `<nav aria-label="Okruszki"><ol>`, ostatni element `aria-current="page"`, separator „›” z CSS. Poniżej 640 px widać tylko „‹ rodzic” (przedostatni element; przy jednym elemencie on sam). Cele ≥ 44 px. Zniknął też dolny przycisk „Wróć do listy”.
+- **S2 Poprzedni / następny temat** (`topicNav`, `js/handbook.js`; `LM.learn.topicNeighbors` z testem): na końcu podstrony „‹ Poprzedni: …” i „Następny temat: … ›”, kolejność z `niezbednik/index.json` (tylko tematy z podstroną); po ostatnim temacie poziomu „Zacznij krainę A2 ›” (link do listy następnego poziomu). Skróty `[` i `]` (nie w polach tekstowych). Poniżej 640 px linki jeden pod drugim.
 - **S3 Spis treści** (`js/toc.js`): podstrony z ≥ 4 sekcjami `##` dostają spis. Od 1200 px jest przyklejony z prawej strony (kolumna 240 px między `--w-text` a `--w-wide`, `position: sticky`) ze scrollspy (`IntersectionObserver`, linia czytania 25% wysokości; `aria-current="location"`). Węższy ekran: `<details>` „Na tej stronie” nad treścią. Hash adresu zajmuje router, więc przejścia robi `scrollIntoView` (z focusem na nagłówku, bez animacji przy `prefers-reduced-motion`). W druku spis jest ukryty (`css/print.css`).
-- **S4 Stan zestawu na liście poziomu** (`ELM.exercises.setLabels`, `ELM.exLogic.bestSetLabel` z testem): etykieta „zestaw 8/10” (najlepszy wynik zestawów tematu; zestaw o najwyższym procencie) przed strzałką w wierszu z podstroną, kropka w kolorze krainy przy ≥ 80%. Dopisywana po wczytaniu indeksu ćwiczeń, więc lista rysuje się od razu.
-- **S5 Skróty** (`js/shortcuts.js`): w zadaniach 1–4 i A–D wybierają odpowiedź (przy opcjach będących samymi literami A–H: opcję o tej treści), Enter sprawdza, **S** czyta zdanie (`ELM.exLogic.speechText`: przed sprawdzeniem luka jest pauzą „…”, po sprawdzeniu wzorcowa odpowiedź; głos en-GB, potem en-US; bez głosu komunikat), **?** otwiera okienko skrótów dla bieżącego widoku (zadania, sesja powtórek, C1 i egzaminy, strona tematu). W sesji powtórek S czyta zdanie karty (cloze z luką jako pauzą), a dawne „zawieś” przeniesiono z S na **W**. W ćwiczeniach C1 Enter w polu odpowiedzi klika „Sprawdź”, a S czyta ostatnio wybrany wiersz. Skróty nie działają w polach tekstowych (poza Enter).
+- **S4 Stan zestawu na liście poziomu** (`LM.exercises.setLabels`, `LM.exLogic.bestSetLabel` z testem): etykieta „zestaw 8/10” (najlepszy wynik zestawów tematu; zestaw o najwyższym procencie) przed strzałką w wierszu z podstroną, kropka w kolorze krainy przy ≥ 80%. Dopisywana po wczytaniu indeksu ćwiczeń, więc lista rysuje się od razu.
+- **S5 Skróty** (`js/shortcuts.js`): w zadaniach 1–4 i A–D wybierają odpowiedź (przy opcjach będących samymi literami A–H: opcję o tej treści), Enter sprawdza, **S** czyta zdanie (`LM.exLogic.speechText`: przed sprawdzeniem luka jest pauzą „…”, po sprawdzeniu wzorcowa odpowiedź; głos en-GB, potem en-US; bez głosu komunikat), **?** otwiera okienko skrótów dla bieżącego widoku (zadania, sesja powtórek, C1 i egzaminy, strona tematu). W sesji powtórek S czyta zdanie karty (cloze z luką jako pauzą), a dawne „zawieś” przeniesiono z S na **W**. W ćwiczeniach C1 Enter w polu odpowiedzi klika „Sprawdź”, a S czyta ostatnio wybrany wiersz. Skróty nie działają w polach tekstowych (poza Enter).
 
 ### 3.15 Fiszki i błędy (paczka v8, etap „powtórki”)
 
-- **Widok `#/powtorki`:** nagłówek `pageHead` (etykieta „Nauka”, tytuł „Fiszki i błędy”, chip „N do powtórki” z `ELM.reviews.count()`), pod nim zakładki `role="tablist"` (`.pw-tabs`, linki `role="tab"` z `aria-selected`, tabindex 0 tylko na aktywnej; strzałki, Home i End przesuwają fokus, Enter i Spacja otwierają): Na dziś, Talie, Moje błędy, Moje słowa. Stan zakładki jest w adresie. Pliki: `js/powtorki.js` (nagłówek, zakładki, karta), `js/fiszki.js`, `js/journal.js`, `js/fiszki-words.js` (treść zakładek), `js/reviews.js` (liczby i kolejka).
-- **Karta „Na dziś”** (`ELM.powtorki.card`, ta sama jako kafelek `bento-reviews` na Dziś): liczba (Fraunces), „do powtórki · ok. N min”, trzy wiersze (fiszki z talii, błędy z dziennika, słabe punkty z ćwiczeń). Znacznik wiersza ma inny kształt (kwadrat, kółko, romb), więc nie opiera się na kolorze; niepusty wiersz jest linkiem do sesji `?tylko=…`. Dalej „Powtarzaj teraz”, „Krótka sesja (10)” (od 11 pozycji) i linki „Talie”, „Moje błędy”, „+ Dodaj błąd”. Po ukończeniu: `ELM.ui.emptyState({ art: "brak-powtorek" })` z najbliższym terminem. Układ: trzy kolumny od 900 px, dwie do 599 px, jedna poniżej; cele ≥ 44 px.
-- **Sesja `#/powtorki/sesja`:** jeden pasek postępu na całą sesję, pozycje w istniejących widokach: fiszka (oceny 1–4, skróty jak dotąd), błąd (karta z talii „Moje błędy”), zadanie (widok silnika ćwiczeń: `startSingle` z hookami `progress`, `nextLabel`, `renderDone`; wynik wraca do sesji, poprawnie = Dobrze, błędnie = Znowu). Filtry `?tylko=bledy|slabe|talie|talia:<id>`, `&max=10`. Podsumowanie: liczba pozycji, % Dobrze lub Łatwe, czas, ile jutro, rozbicie na rodzaje, najtrudniejsze; ≥ 5 pozycji = dzień nauki (`ELM.markActivity`).
+- **Widok `#/powtorki`:** nagłówek `pageHead` (etykieta „Nauka”, tytuł „Fiszki i błędy”, chip „N do powtórki” z `LM.reviewQueue.count()`), pod nim zakładki `role="tablist"` (`.pw-tabs`, linki `role="tab"` z `aria-selected`, tabindex 0 tylko na aktywnej; strzałki, Home i End przesuwają fokus, Enter i Spacja otwierają): Na dziś, Talie, Moje błędy, Moje słowa. Stan zakładki jest w adresie. Pliki: `js/review.js` (nagłówek, zakładki, karta), `js/cards.js`, `js/mistakes.js`, `js/words.js` (treść zakładek), `js/review-queue.js` (liczby i kolejka).
+- **Karta „Na dziś”** (`LM.review.card`, ta sama jako kafelek `bento-reviews` na Dziś): liczba (Fraunces), „do powtórki · ok. N min”, trzy wiersze (fiszki z talii, błędy z dziennika, słabe punkty z ćwiczeń). Znacznik wiersza ma inny kształt (kwadrat, kółko, romb), więc nie opiera się na kolorze; niepusty wiersz jest linkiem do sesji `?tylko=…`. Dalej „Powtarzaj teraz”, „Krótka sesja (10)” (od 11 pozycji) i linki „Talie”, „Moje błędy”, „+ Dodaj błąd”. Po ukończeniu: `LM.ui.emptyState({ art: "brak-powtorek" })` z najbliższym terminem. Układ: trzy kolumny od 900 px, dwie do 599 px, jedna poniżej; cele ≥ 44 px.
+- **Sesja `#/powtorki/sesja`:** jeden pasek postępu na całą sesję, pozycje w istniejących widokach: fiszka (oceny 1–4, skróty jak dotąd), błąd (karta z talii „Moje błędy”), zadanie (widok silnika ćwiczeń: `startSingle` z hookami `progress`, `nextLabel`, `renderDone`; wynik wraca do sesji, poprawnie = Dobrze, błędnie = Znowu). Filtry `?tylko=bledy|slabe|talie|talia:<id>`, `&max=10`. Podsumowanie: liczba pozycji, % Dobrze lub Łatwe, czas, ile jutro, rozbicie na rodzaje, najtrudniejsze; ≥ 5 pozycji = dzień nauki (`LM.markActivity`).
 - **Moje błędy:** etykieta stanu wpisu pochodzi z karty („Do powtórki dziś”, „W nauce”, „Powtórka za N dni”, „Opanowane” przy interwale ≥ 21 dni, „Zawieszona”), filtry „Do powtórki dziś” / „Wszystkie” / „Opanowane” liczone ze stanu karty; przycisk „Dodaj do fiszek” zniknął (każdy wpis ma kartę).
-- Kontrast: nowe pary w `tools/kontrast.js` (zakładki, licznik, linki karty, znaczniki wierszy).
+- Kontrast: nowe pary w `tools/contrast.js` (zakładki, licznik, linki karty, znaczniki wierszy).
 
 ## 4. Ruch
 
 - **Proste rzeczy tylko w CSS.** Hover, focus, pojawianie się i przejścia kolorów robi CSS. Animujemy `opacity` i `transform`. Wyjątek to krótkie przejście kolorów przy zmianie motywu (klasa `html.theme-anim`).
 - **Czasy.** `--dur-fast` dla mikrointerakcji, `--dur-base` dla wejść i menu, `--dur-slow` dla pasków i pierścieni. Nic dłuższego niż 400 ms poza celebracjami (etap 3).
 - **GSAP.** Plik `assets/vendor/gsap.min.js` (npm `gsap`, darmowy ze wszystkimi wtyczkami) skopiowany przez `npm run zasoby`.
-  - Ładujemy go **tylko na żądanie**: `ELM.loadGsap().then(gsap => …)` wstrzykuje `<script>`. Działa także przy `file://`, gdzie dynamiczny `import()` modułów jest zablokowany.
+  - Ładujemy go **tylko na żądanie**: `LM.loadGsap().then(gsap => …)` wstrzykuje `<script>`. Działa także przy `file://`, gdzie dynamiczny `import()` modułów jest zablokowany.
   - Każda animacja przez `gsap.matchMedia()` z gałęzią `(prefers-reduced-motion: reduce)` bez ruchu.
   - Przy opuszczeniu widoku: `mm.revert()` / `ctx.revert()`. Aplikacja nie używa Reacta, więc zamiast `useGSAP` sprzątamy przy zmianie trasy.
-  - Wszystkie animacje GSAP przechodzą przez `js/motion.js`: `ELM.motion.run(plugins, setup)` ładuje GSAP i wtyczki, wywołuje `setup(gsap, reduce)` w `gsap.matchMedia()` i sprząta (`mm.revert()`) przy następnej animacji i przy zmianie strony (`app.onRoute`). Gdy GSAP się nie wczyta albo ruch jest ograniczony, widok od razu pokazuje stan końcowy.
+  - Wszystkie animacje GSAP przechodzą przez `js/motion.js`: `LM.motion.run(plugins, setup)` ładuje GSAP i wtyczki, wywołuje `setup(gsap, reduce)` w `gsap.matchMedia()` i sprząta (`mm.revert()`) przy następnej animacji i przy zmianie strony (`app.onRoute`). Gdy GSAP się nie wczyta albo ruch jest ograniczony, widok od razu pokazuje stan końcowy.
   - Używane wtyczki: DrawSVG i MotionPath (tylko szlak na „Dziś”). Pliki `assets/vendor/*.min.js` kopiuje `npm run zasoby`.
   - Gdzie ładowany: „Dziś”, ekran wyniku testu, celebracje i oś czasu w Laboratorium czasów. Pozostałe ekrany GSAP nie ładują (animacje zadań są w CSS). Etap 4 nie dodał animacji GSAP (callouty, arkusz i tryb skupienia to CSS).
   - Szlak liczy długość do stacji jednym `getTotalLength()` na ścieżce przyciętej do kolejnych odcinków. Nie próbkujemy `getPointAtLength()`, bo przy CPU 4× kosztowało to ok. 650 ms na render.
@@ -528,7 +528,7 @@ Wszystkie na istniejących tokenach (bez nowych kolorów), z parami sprawdzanymi
 
 ## 5. Dostępność
 
-- **Kontrast WCAG AA.** Tekst ≥ 4.5:1, komponenty, obramowania pól, paski i znaczniki ≥ 3:1, w obu motywach. Sprawdza to `node tools/kontrast.js`: 98 par w 4 zakresach (jasny, ciemny, C1 jasny, C1 ciemny), razem 392 sprawdzenia. Palety poziomów sprawdza walidator CVD (sekcja 2.3).
+- **Kontrast WCAG AA.** Tekst ≥ 4.5:1, komponenty, obramowania pól, paski i znaczniki ≥ 3:1, w obu motywach. Sprawdza to `node tools/contrast.js`: 98 par w 4 zakresach (jasny, ciemny, C1 jasny, C1 ciemny), razem 392 sprawdzenia. Palety poziomów sprawdza walidator CVD (sekcja 2.3).
 - **Widoczny focus.** `:focus-visible`, obrys 2 px w kolorze akcentu, na każdym elemencie interaktywnym.
 - **Cele dotykowe.** Min. 44 × 44 px przy `pointer: coarse` oraz w menu, przełącznikach i przyciskach ikon.
 - **Kolor nigdy nie jest jedynym nośnikiem informacji.** Poziomy mają kody, stany ikonę lub słowo, wynik ćwiczenia ✓/✗ plus tekst.
@@ -558,7 +558,7 @@ Wszystkie na istniejących tokenach (bez nowych kolorów), z parami sprawdzanymi
 |---|---|---|---|
 | `@fontsource-variable/fraunces` | 5.3 | SIL OFL 1.1 | `npm run zasoby` → `assets/fonts/fraunces-latin*.woff2` (osie wght + opsz) |
 | `@fontsource-variable/inter` | 5.3 | SIL OFL 1.1 | `npm run zasoby` → `assets/fonts/inter-latin*.woff2` (oś wght) |
-| `lucide-static` | 1.59 | ISC | `npm run zasoby` → `assets/ikony.js` (tylko używane ikony, lista w `tools/zbuduj-zasoby.js`) |
+| `lucide-static` | 1.59 | ISC | `npm run zasoby` → `assets/icons.js` (tylko używane ikony, lista w `tools/build-assets.js`) |
 | `gsap` | 3.15 | GreenSock „no charge” (standardowa licencja, od 3.13 bezpłatna także z wtyczkami) | `npm run zasoby` → `assets/vendor/gsap.min.js`, `DrawSVGPlugin.min.js`, `MotionPathPlugin.min.js` (ładowane na żądanie) |
 
 - **Dlaczego kopiujemy do `assets/`.** Strona działa bez kroku budowania, z dysku (`file://`) i na GitHub Pages. `node_modules/` jest w `.gitignore`, a skopiowane pliki są w repozytorium. Po `npm install` lub aktualizacji paczek uruchom `npm run zasoby`.
@@ -568,7 +568,7 @@ Wszystkie na istniejących tokenach (bez nowych kolorów), z parami sprawdzanymi
 
 1. `npm run build`: zasoby i dane bez błędów.
 2. `npm test`: testy logiki.
-3. `node tools/kontrast.js`: 0 niezgodnych par.
+3. `node tools/contrast.js`: 0 niezgodnych par.
 4. Audyt twardych wartości: w `css/style.css` poza blokami tokenów nie ma literałów kolorów (`#…`, `rgb(…)`), rozmiarów fontów ani promieni w px, ani czasów poza tokenami (wyjątek: 0.01 ms w regule `prefers-reduced-motion`).
 
    Udokumentowane wyjątki z kolorami wpisanymi na stałe:
@@ -669,7 +669,7 @@ Ograniczenie: audyt automatyczny nie zastępuje testu z czytnikiem ekranu (NVDA 
   - Ikony Lucide zamiast znaków tekstowych.
   - Logo (kompas ze szlakiem) i favicony.
   - Komponenty bazowe: karta, przyciski, „Umiem”, chip, podpowiedź, pasek i pierścień postępu, focus, zaznaczenie, pasek przewijania, tło warstwicowe.
-  - `tools/kontrast.js` (152 pary), `tools/zbuduj-zasoby.js`.
+  - `tools/contrast.js` (152 pary), `tools/build-assets.js`.
   - Wszystkie rozmiary fontów, promienie i czasy animacji na tokenach.
 - **Etap 2 (lewy panel).**
   - Wąski pasek 72 px z pierścieniami krain, rozwijanie nad treścią, pinezka (`elm_sidebar_v1`), szuflada poniżej 768 px.
@@ -693,50 +693,50 @@ Ograniczenie: audyt automatyczny nie zastępuje testu z czytnikiem ekranu (NVDA 
 
 - **Paczka v7, etap „układ” (A1–A8).**
   - Tokeny `--w-text` / `--w-wide`, jedna lewa krawędź; przyciski o jednym kształcie, `.btn-link`, `.crumb`.
-  - `ELM.ui.pageHead` (etykieta `.eyebrow` zamiast ikony w kółku); warstwice usunięte z nagłówków i hero.
+  - `LM.ui.pageHead` (etykieta `.eyebrow` zamiast ikony w kółku); warstwice usunięte z nagłówków i hero.
   - Wiersze zamiast kart (lista poziomu, „Na skróty”), filtr „Wszystkie”, siatki `minmax(260px, 1fr)`.
   - Ramki „Na egzaminie …” przed „Życie i egzamin” (`examBoxAnchorIndex` + test). Bez zmian kluczy `localStorage`.
 
 - **Paczka v7, etap „egzaminy” (B1–B3).**
   - „Moje egzaminy”: `myExams` + pole `my` w `elm_exams_v1`; sekcja na stronie głównej, kafle na Dziś, przypinanie, wskaźnik w panelu tylko dla moich.
-  - Jedna karta daty (`ELM.examDate.card`) dla C1 i egzaminów z rejestru, polski zapis daty, „Wstaw termin główny”, „Usuń datę”.
-  - Okładki egzaminów (pełna, kompaktowa, mini), pole `subtitle` w manifeście, nowe pary w `tools/kontrast.js`.
+  - Jedna karta daty (`LM.examDate.card`) dla C1 i egzaminów z rejestru, polski zapis daty, „Wstaw termin główny”, „Usuń datę”.
+  - Okładki egzaminów (pełna, kompaktowa, mini), pole `subtitle` w manifeście, nowe pary w `tools/contrast.js`.
 
 - **Paczka v7, etap „mapa” (C1–C6).**
-  - Krainy A1–C2 (`assets/krainy.js`, `ELM.ui.landIcon`, `LANDS`), symbole w panelu i nagłówku poziomu.
+  - Krainy A1–C2 (`assets/lands.js`, `LM.ui.landIcon`, `LANDS`), symbole w panelu i nagłówku poziomu.
   - Szlak jako mapa topograficzna (generator kształtów przeniesiony do `js/today.js`: `blobPath`, `terrainGroup`), wariant kompaktowy na stronie głównej.
-  - „Umiem” jako pieczątka (`ELM.ui.stamp`), marker słowa-klucza w silniku zadań (`.ex-hl`), postęp krainy zamiast konfetti, `ELM.ui.emptyState` z 5 ilustracjami (`assets/stany-puste.js`).
+  - „Umiem” jako pieczątka (`LM.ui.stamp`), marker słowa-klucza w silniku zadań (`.ex-hl`), postęp krainy zamiast konfetti, `LM.ui.emptyState` z 5 ilustracjami (`assets/empty-states.js`).
 
 - **Paczka v8, etap „pasek” (szkic A).**
   - Nowa kolejność paska i jedna pozycja „Fiszki i błędy” (`#/powtorki` przekierowuje do `#/fiszki`, widok połączony w etapie 2), pieczątka ✓ i obwódka bieżącej krainy, tylko moje egzaminy z „+N” i popoverem, sekcja „Moje” w menu profilu, ta sama zawartość w szufladzie na telefonie.
-  - `ELM.examLogic.navSplit` (test w `tools/testy.js`), nowe pary w `tools/kontrast.js` (+N, popover, kafelki egzaminów), `?v=126`.
+  - `LM.examLogic.navSplit` (test w `tools/tests.js`), nowe pary w `tools/contrast.js` (+N, popover, kafelki egzaminów), `?v=126`.
 
 - **Paczka v8, etap „powtórki” (spec 20 R1–R3).**
   - Jeden harmonogram (`schedule()`), migracja Dziennika do kart „Moje błędy” (`settings.migratedJournal`, stałe id `u-mb-…`), nowe wpisy od razu z kartą, słabe punkty jako `ex:<id>` w mapie `cards` (+ opcjonalne `daily[…].exNew`).
-  - `js/reviews.js`: `queue` / `count` / `breakdown` / `estimateMinutes` / `weakTasks` / `redirectFor` z testami (kolejność, przeplatanie, limity, granica dnia 04:00, pusto, zgodność `count` z długością kolejki).
+  - `js/review-queue.js`: `queue` / `count` / `breakdown` / `estimateMinutes` / `weakTasks` / `redirectFor` z testami (kolejność, przeplatanie, limity, granica dnia 04:00, pusto, zgodność `count` z długością kolejki).
   - Widok `#/powtorki` (Na dziś / Talie / Moje błędy / Moje słowa), sesja `#/powtorki/sesja` z filtrami, kafelek Dziś, przekierowania `#/fiszki…` i `#/bledy…`, `?v=127`.
 
 - **Paczka v8, etap „Dziś” (spec 20 D).**
-  - `ELM.learn.mapProgress` (+ testy), `ELM.reviews.upcoming` (+ test), `ELM.levelFinal.readyLevel`; karta mapy ze Szlakiem w środku, karta „Fiszki i błędy” (stan i zero), rząd Seria | egzamin albo „Na skróty”.
-  - Usunięte stare kafle Dziś, pary w `tools/kontrast.js`, `?v=128`.
+  - `LM.learn.mapProgress` (+ testy), `LM.reviewQueue.upcoming` (+ test), `LM.final.readyLevel`; karta mapy ze Szlakiem w środku, karta „Fiszki i błędy” (stan i zero), rząd Seria | egzamin albo „Na skróty”.
+  - Usunięte stare kafle Dziś, pary w `tools/contrast.js`, `?v=128`.
 
 - **Paczka v8, etap „treści” (spec 20 S1–S5), jeden commit na punkt.**
-  - `ELM.ui.breadcrumbs`, `topicNav` + `ELM.learn.topicNeighbors`, `js/toc.js`, `ELM.exLogic.bestSetLabel` + `ELM.exercises.setLabels`, `js/shortcuts.js` + `ELM.exLogic.speechText` (testy w `tools/testy.js`).
+  - `LM.ui.breadcrumbs`, `topicNav` + `LM.learn.topicNeighbors`, `js/toc.js`, `LM.exLogic.bestSetLabel` + `LM.exercises.setLabels`, `js/shortcuts.js` + `LM.exLogic.speechText` (testy w `tools/tests.js`).
   - Skrót „zawieś” w sesji powtórek: S → W; `?v=129`.
 
 - **Paczka v8, kontrola końcowa (niezależna recenzja).**
-  - `interleave` w `js/reviews.js`: gdy nie da się spełnić obu reguł, spada do „sam temat”, potem „sam rodzaj”; przeplatana jest cała kolejka (nowe wchodzą wcześniej tylko wtedy, gdy trzeba), a temat zajmujący połowę reszty idzie od razu (bez bloku jednego tematu na końcu). Test losowy: przy wykonalnym rozdzieleniu nigdy ten sam temat z rzędu.
+  - `interleave` w `js/review-queue.js`: gdy nie da się spełnić obu reguł, spada do „sam temat”, potem „sam rodzaj”; przeplatana jest cała kolejka (nowe wchodzą wcześniej tylko wtedy, gdy trzeba), a temat zajmujący połowę reszty idzie od razu (bez bloku jednego tematu na końcu). Test losowy: przy wykonalnym rozdzieleniu nigdy ten sam temat z rzędu.
   - Popover „+N” zamyka się po wyjściu fokusu (Tab poza listę), Esc i klik poza jak dotąd.
   - Cele ≥ 44 px: etykieta „Umiem”, przyciski filtrów, linki punktów listy, „‹ Fiszki i błędy”, linki karty powtórek; zakładki Fiszek i błędów mieszczą się na 360 px bez przewijania.
   - Sprawdzone przez eksport → reset → import (prawdziwy kod menu danych): dziennik, karty (w tym własna talia), moje egzaminy, postęp, wyniki, stary plik bez fiszek.
 
 - **Poprawka „podpowiedź w kartach Moje błędy”.**
-  - `journalCard` (js/fiszki-logic.js) buduje kartę z całego kontekstu wpisu (cloze z luką w swojej linii, akceptowane odpowiedzi „A – make”, „make”, „A”; przy transformacji z silnika sama luka), `.fc-text` z `white-space: pre-line`.
-  - Pozycja „błąd” z ref do zadania pokazuje oryginalne zadanie (`js/mistake-task.js`: `parseRef`, `viewFor`, `singleExercise`; `ELM.c1Exercises.single`, `ELM.exercises.startSingle` z `noJournal`).
+  - `journalCard` (js/cards-logic.js) buduje kartę z całego kontekstu wpisu (cloze z luką w swojej linii, akceptowane odpowiedzi „A – make”, „make”, „A”; przy transformacji z silnika sama luka), `.fc-text` z `white-space: pre-line`.
+  - Pozycja „błąd” z ref do zadania pokazuje oryginalne zadanie (`js/mistake-task.js`: `parseRef`, `viewFor`, `singleExercise`; `LM.c1Exercises.single`, `LM.exercises.startSingle` z `noJournal`).
   - Naprawa istniejących kart: `repairJournalCards` + `settings.journalCardsV2`. Kontekst wpisów z silnika uzupełniony o wyrazy do ułożenia, podpowiedzi przy lukach i listę par; `?v=132`.
 - **Fiszki: harmonogram (fix/fiszki-harmonogram).**
   - `fuzzed()` bez minimum ±1 d (poniżej 20 d zapis = podgląd; wcześniej Łatwe na nowej karcie dawało 3 d zamiast 4 d).
-  - `mergeStates` + `mergeStored` w `fiszki-store.js`: zapis scala się z localStorage, zdarzenie `storage` synchronizuje karty przeglądarki; `force` dla cofnięcia i importu. Klucze bez zmian.
+  - `mergeStates` + `mergeStored` w `cards-store.js`: zapis scala się z localStorage, zdarzenie `storage` synchronizuje karty przeglądarki; `force` dla cofnięcia i importu. Klucze bez zmian.
   - Komunikat „Następna powtórka: za N dni” po ocenie, „Na dziś / Na później” w legendzie talii; `?v=134`.
 - **v9 (dopracowanie wyglądu, bez zmian treści).** Reguły w sekcji „v9 DOPRACOWANIE WYGLĄDU” na końcu `css/style.css`, pozostałe zmiany w miejscu.
   - Kafelki egzaminów w pasku: tło karty, kod w kolorze atramentu, kolor egzaminu tylko jako kropka 6 px; lista w pasku wygasa u dołu zamiast ucinać kafelek.

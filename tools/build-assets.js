@@ -1,16 +1,16 @@
 /*
- * zbuduj-zasoby.js — kopiuje zasoby z paczek npm do folderu assets/,
+ * build-assets.js — kopiuje zasoby z paczek npm do folderu assets/,
  * żeby strona działała BEZ node_modules (GitHub Pages, otwieranie z dysku).
  *
  * Użycie (z folderu projektu, po `npm install`):
- *   npm run zasoby        (albo: node tools/zbuduj-zasoby.js)
+ *   npm run zasoby        (albo: node tools/build-assets.js)
  *
  * Co trafia do assets/:
  *   fonts/   — Fraunces (display, osie wght + opsz) i Inter (tekst, oś wght),
  *              tylko podzbiory latin i latin-ext (polskie znaki), woff2
- *   ikony.js — dane używanych ikon Lucide (ELM.ICON_NODES), rysowane przez
+ *   icons.js — dane używanych ikon Lucide (LM.ICON_NODES), rysowane przez
  *              js/icons.js bez innerHTML; lista ikon: ICONS poniżej
- *   vendor/gsap.min.js — GSAP (ładowany na żądanie przez ELM.loadGsap)
+ *   vendor/gsap.min.js — GSAP (ładowany na żądanie przez LM.loadGsap)
  *   vendor/DrawSVGPlugin.min.js, MotionPathPlugin.min.js — wtyczki GSAP (też na żądanie)
  *
  * Dodanie ikony: dopisz jej nazwę (z lucide.dev) do ICONS i uruchom skrypt.
@@ -82,11 +82,11 @@ if (missing.length) {
   process.exit(1);
 }
 const lucideVersion = JSON.parse(fs.readFileSync(path.join(NM, "lucide-static", "package.json"), "utf8")).version;
-fs.writeFileSync(path.join(OUT, "ikony.js"),
+fs.writeFileSync(path.join(OUT, "icons.js"),
   "/*\n * PLIK GENEROWANY AUTOMATYCZNIE — nie edytuj ręcznie.\n" +
   " * Ikony Lucide " + lucideVersion + " (licencja ISC, https://lucide.dev), tylko używane.\n" +
   " * Odśwież poleceniem: npm run zasoby\n */\n" +
-  "window.ELM = window.ELM || {};\nwindow.ELM.ICON_NODES = " + JSON.stringify(icons) + ";\n", "utf8");
+  "window.LM = window.LM || {};\nwindow.LM.ICON_NODES = " + JSON.stringify(icons) + ";\n", "utf8");
 const lucideLicense = path.join(NM, "lucide-static", "LICENSE");
 if (fs.existsSync(lucideLicense)) fs.copyFileSync(lucideLicense, path.join(OUT, "Lucide-LICENSE.txt"));
 

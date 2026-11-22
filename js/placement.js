@@ -1,11 +1,11 @@
 /*
- * level-test.js — szybki test poziomu (#/test-poziomu).
+ * placement.js — szybki test poziomu (#/test-poziomu).
  *
- * Pytania: ELM.LEVEL_TEST z pliku niezbednik/test-poziomu-dane.js
+ * Pytania: LM.LEVEL_TEST z pliku niezbednik/test-poziomu-dane.js
  * (źródło: niezbednik/test-poziomu/pytania.json, generuje
  * node tools/zbuduj-niezbednik.js).
  *
- * Algorytm (ELM.learn): start na A2; poprawna odpowiedź → następne pytanie
+ * Algorytm (LM.learn): start na A2; poprawna odpowiedź → następne pytanie
  * o poziom wyżej (maks. C2), błędna albo „Nie wiem” → o poziom niżej
  * (min. A1); 12 pytań bez powtórzeń; gdy pula poziomu się skończy —
  * pytanie z sąsiedniego poziomu. Z puli poziomu najpierw pytania spoza poprzedniego
@@ -18,23 +18,23 @@
  * „odpływałby” na drugi koniec skali. Ostatni wynik zapisujemy w profilu
  * (elm_leveltest_v1). Test NIE zaznacza niczego jako „Umiem”.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   const HASH = "#/test-poziomu";
   const LETTERS = ["A", "B", "C", "D", "E", "F", "G", "H"];
 
-  function learn() { return ELM.learn; }
-  function pd() { return ELM.profileData; }
+  function learn() { return LM.learn; }
+  function pd() { return LM.profileData; }
 
   /** Pytania z pliku po sprawdzeniu (niepoprawne są pomijane). */
   function questions() {
-    const data = ELM.LEVEL_TEST;
+    const data = LM.LEVEL_TEST;
     if (!data || !Array.isArray(data.questions)) return [];
     return data.questions.filter(function (q) {
       return q && typeof q.id === "string" && learn().LEVELS.indexOf(q.level) !== -1 &&
@@ -57,7 +57,7 @@ window.ELM = window.ELM || {};
   function start() {
     const last = pd().lastTest();
     run = {
-      profileId: ELM.app.getActiveProfile().id,
+      profileId: LM.app.getActiveProfile().id,
       // Pytania z poprzedniego podejścia — omijane, gdy pula poziomu na to pozwala (spec v6 13, 1.3)
       avoidIds: last && Array.isArray(last.answers) ? last.answers.map(function (a) { return a.id; }) : [],
       levelIndex: learn().LEVELS.indexOf(learn().START_LEVEL),
@@ -106,9 +106,9 @@ window.ELM = window.ELM || {};
       level: learn().LEVELS[idx],
       answers: run.asked.map(function (a) { return { id: a.q.id, level: a.q.level, chosen: a.chosen, correct: a.correct }; })
     });
-    if (run.saved && ELM.szlakStore) ELM.szlakStore.setStart(run.saved.level, "test"); // wynik testu ustawia punkt startu Szlaku (spec v7 13, 3.2)
-    ELM.markActivity(); // ukończony test = dzień nauki
-    if (ELM.celebrate) ELM.celebrate.check({ event: "test", level: run.saved && run.saved.level });
+    if (run.saved && LM.trailStore) LM.trailStore.setStart(run.saved.level, "test"); // wynik testu ustawia punkt startu Szlaku (spec v7 13, 3.2)
+    LM.markActivity(); // ukończony test = dzień nauki
+    if (LM.celebrate) LM.celebrate.check({ event: "test", level: run.saved && run.saved.level });
   }
 
   function focusLater(selector) {
@@ -139,7 +139,7 @@ window.ELM = window.ELM || {};
       el("p", { class: "tool-note", text: DISCLAIMER }),
       el("div", { class: "tool-actions" }, [
         count ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { start(); render(); focusLater(".lt-option"); } }, last ? "Zrób test ponownie" : "Rozpocznij test") : null,
-        last ? el("button", { type: "button", class: "btn btn-secondary", onclick: function () { run = { finished: true, fromSaved: true, saved: last, profileId: ELM.app.getActiveProfile().id }; render(); } }, "Zobacz ostatni wynik") : null
+        last ? el("button", { type: "button", class: "btn btn-secondary", onclick: function () { run = { finished: true, fromSaved: true, saved: last, profileId: LM.app.getActiveProfile().id }; render(); } }, "Zobacz ostatni wynik") : null
       ])
     ]));
     if (last) {
@@ -165,7 +165,7 @@ window.ELM = window.ELM || {};
       const a = run.asked[i];
       const isCurrent = !run.answered ? i === run.asked.length : i === run.asked.length - 1;
       const cls = "lt-dot" + (a ? (a.correct ? " is-ok" : " is-bad") : "") + (isCurrent ? " is-current" : "");
-      dots.push(el("li", { class: cls }, a ? ELM.icon(a.correct ? "check" : "x", { size: 12 }) : null));
+      dots.push(el("li", { class: cls }, a ? LM.icon(a.correct ? "check" : "x", { size: 12 }) : null));
     }
     view.appendChild(el("div", { class: "lt-progress" }, [
       el("ol", { class: "lt-dots", "aria-hidden": "true" }, dots),
@@ -186,7 +186,7 @@ window.ELM = window.ELM || {};
         "aria-label": LETTERS[i] + ": " + text + (last && i === q.correct ? " (poprawna odpowiedź)" : last && i === last.chosen ? " (Twoja odpowiedź)" : ""),
         onclick: function () { answer(i); }
       }, [
-        el("span", { class: "lt-letter", "aria-hidden": "true" }, last && (i === q.correct || i === last.chosen) ? ELM.icon(i === q.correct ? "check" : "x", { size: 16 }) : LETTERS[i]),
+        el("span", { class: "lt-letter", "aria-hidden": "true" }, last && (i === q.correct || i === last.chosen) ? LM.icon(i === q.correct ? "check" : "x", { size: 16 }) : LETTERS[i]),
         el("span", { class: "lt-option-text", text: text }),
         last && i === q.correct ? el("span", { class: "lt-tag is-ok", "aria-hidden": "true", text: "Poprawna" }) : null,
         last && i === last.chosen && i !== q.correct ? el("span", { class: "lt-tag is-bad", "aria-hidden": "true", text: "Twoja odpowiedź" }) : null
@@ -207,7 +207,7 @@ window.ELM = window.ELM || {};
     } else {
       body.push(el("div", { class: "lt-feedback " + (last.correct ? "is-ok" : "is-bad"), role: "status" }, [
         el("p", { class: "lt-verdict" }, [
-          el("span", { class: "c1-mark " + (last.correct ? "is-ok" : "is-bad"), "aria-hidden": "true" }, ELM.icon(last.correct ? "check" : "x", { size: 14 })),
+          el("span", { class: "c1-mark " + (last.correct ? "is-ok" : "is-bad"), "aria-hidden": "true" }, LM.icon(last.correct ? "check" : "x", { size: 14 })),
           el("strong", { text: last.correct ? "Dobrze!" : last.chosen === -1 ? "Nie szkodzi – poprawna odpowiedź to " + LETTERS[q.correct] + "." : "Niestety nie. Poprawna odpowiedź to " + LETTERS[q.correct] + "." })
         ]),
         q.explanation ? el("p", { text: q.explanation }) : null
@@ -226,7 +226,7 @@ window.ELM = window.ELM || {};
     const saved = run.saved;
     if (!saved) { run = null; return renderIntro(view); }
     const level = saved.level;
-    const levelData = ELM.state.content.levels.find(function (l) { return l.id === level; });
+    const levelData = LM.state.content.levels.find(function (l) { return l.id === level; });
     const desc = levelData && levelData.description ? levelData.description.split("\n")[0] : "";
 
     // Błędne pytania (z wyniku zapisanego w profilu, więc działa także po odświeżeniu)
@@ -245,16 +245,16 @@ window.ELM = window.ELM || {};
       el("p", { class: "lt-result-level" }, [el("strong", { class: "lt-result-code", text: level }), el("span", { class: "lt-result-note", text: "orientacyjnie" })]),
       desc ? el("p", { class: "tool-lead" }, U.formatText(desc)) : null,
       skillBreakdown(saved.answers),
-      el("p", null, el("a", { class: "wiki-link", href: ELM.app.levelHash(level) + "" }, "Co umiesz na " + level)),
+      el("p", null, el("a", { class: "wiki-link", href: LM.app.levelHash(level) + "" }, "Co umiesz na " + level)),
       el("div", { class: "tool-actions" }, [
-        el("a", { class: "btn btn-primary", href: ELM.szlak ? ELM.szlak.HASH : ELM.app.levelHash(level), onclick: function () { if (ELM.szlakStore) ELM.szlakStore.setStart(level, "test", true); } }, "Zacznij szlak od " + level),
+        el("a", { class: "btn btn-primary", href: LM.trail ? LM.trail.HASH : LM.app.levelHash(level), onclick: function () { if (LM.trailStore) LM.trailStore.setStart(level, "test", true); } }, "Zacznij szlak od " + level),
         el("button", { type: "button", class: "btn btn-secondary", onclick: function () { start(); render(); focusLater(".lt-option"); } }, "Powtórz test")
       ]),
       el("p", { class: "tool-note", text: DISCLAIMER + " Wynik z " + saved.date + "." })
     ]));
 
     // Krótka animacja znaku poziomu (GSAP; przy ograniczonym ruchu — bez)
-    ELM.motion.run([], function (gsap, reduce) {
+    LM.motion.run([], function (gsap, reduce) {
       if (!gsap || reduce) return;
       gsap.from(view.querySelector(".lt-result-code"), { scale: 0.6, autoAlpha: 0, duration: 0.6, ease: "back.out(1.8)", clearProps: "all" });
       gsap.from(view.querySelectorAll(".lt-result > :not(.lt-result-level)"), { autoAlpha: 0, y: 8, duration: 0.4, stagger: 0.05, delay: 0.2, clearProps: "all" });
@@ -263,7 +263,7 @@ window.ELM = window.ELM || {};
     view.appendChild(el("section", { class: "card lt-card" }, [
       el("h2", { class: "section-title", text: wrong.length ? "Pytania z błędem (" + wrong.length + ")" : "Bez błędów – brawo!" }),
       wrong.length ? el("ol", { class: "lt-wrong" }, wrong.map(function (x) {
-        const link = x.q.itemId && ELM.journal ? ELM.journal.itemLink(x.q.itemId) : null;
+        const link = x.q.itemId && LM.mistakes ? LM.mistakes.itemLink(x.q.itemId) : null;
         return el("li", null, [
           x.q.passage ? el("details", { class: "lt-wrong-passage" }, [el("summary", null, "Tekst do pytania"), el("p", { lang: "en", text: x.q.passage })]) : null,
           el("p", { class: "lt-wrong-q" }, [el("span", { class: "c1-chip", text: x.q.level }), " ", x.q.question]),
@@ -306,7 +306,7 @@ window.ELM = window.ELM || {};
 
   /** Kategoria wpisu w dzienniku na podstawie punktu niezbędnika pytania. */
   function categoryOf(q) {
-    const N = ELM.NIEZBEDNIK;
+    const N = LM.NIEZBEDNIK;
     if (!N || !q.itemId) return "Inne";
     for (const lvl of N.index.levels) {
       const item = lvl.items.find(function (it) { return it.id === q.itemId; });
@@ -334,23 +334,23 @@ window.ELM = window.ELM || {};
       });
       if (saved) added++;
     });
-    ELM.app.refreshLearning();
+    LM.app.refreshLearning();
     btn.disabled = true;
     btn.textContent = added ? "Dodano do dziennika: " + added + (skipped ? " (pominięte duplikaty: " + skipped + ")" : "") : "Te pytania są już w dzienniku";
   }
 
   function render() {
     const view = document.getElementById("view");
-    if (!ELM.LEVEL_TEST) {
+    if (!LM.LEVEL_TEST) {
       // 60 pytań ładuje się dopiero po wejściu na #/test-poziomu
       view.className = "view tool-view lt-view";
       view.replaceChildren(el("p", { class: "tool-note", role: "status", text: "Wczytuję pytania…" }));
-      ELM.loadModule("niezbednik/test-poziomu-dane.js").then(function () {
-        if (ELM.state.view === "leveltest") render();
-      }, function (err) { console.warn(err.message + " — uruchom: npm run build"); ELM.LEVEL_TEST = { version: 1, questions: [] }; if (ELM.state.view === "leveltest") render(); });
+      LM.loadModule("niezbednik/test-poziomu-dane.js").then(function () {
+        if (LM.state.view === "leveltest") render();
+      }, function (err) { console.warn(err.message + " — uruchom: npm run build"); LM.LEVEL_TEST = { version: 1, questions: [] }; if (LM.state.view === "leveltest") render(); });
       return;
     }
-    const profile = ELM.app.getActiveProfile();
+    const profile = LM.app.getActiveProfile();
     if (run && (!profile || run.profileId !== profile.id)) run = null; // zmiana profilu = nowe podejście
     view.className = "view tool-view lt-view";
     view.dataset.file = HASH;
@@ -367,5 +367,5 @@ window.ELM = window.ELM || {};
     if (run && run.finished) run = null;
   }
 
-  ELM.levelTest = { HASH: HASH, parseRoute: parseRoute, render: render, onEnter: onEnter };
-})(window.ELM);
+  LM.placement = { HASH: HASH, parseRoute: parseRoute, render: render, onEnter: onEnter };
+})(window.LM);

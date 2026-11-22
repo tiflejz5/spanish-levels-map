@@ -1,9 +1,9 @@
 /*
- * fiszki-harmonogram.js — harmonogram powtórek fiszek (spec 10, sekcja 3; wzorowany na SM-2).
- * Czysta logika: bez DOM i localStorage (testy: node tools/testy.js, wektory
+ * cards-schedule.js — harmonogram powtórek fiszek (spec 10, sekcja 3; wzorowany na SM-2).
+ * Czysta logika: bez DOM i localStorage (testy: node tools/tests.js, wektory
  * dane/fiszki/scheduler-vectors.json, referencja scripts/scheduler_ref.py).
  *
- *   ELM.fiszkiHarmonogram.schedule(card, grade, now, config?, opts?) → nowa karta (wejście bez zmian)
+ *   LM.cardsSchedule.schedule(card, grade, now, config?, opts?) → nowa karta (wejście bez zmian)
  *     card   { state: new|learning|review|relearning, step, ease, interval (d), pendingInterval (d),
  *              lapses, reps, due (ms) }
  *     grade  "again" | "hard" | "good" | "easy" albo 1–4
@@ -14,9 +14,9 @@
  *   preview(card, now, config?)            { again, hard, good, easy: { card, delay (ms) } } — podgląd ocen
  *   formatDelay(ms)                        „1 min”, „10 min”, „1 d”, „3 d”, „2 mies.”, „1,2 r.”
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const MIN = 60000;
@@ -127,8 +127,8 @@ window.ELM = window.ELM || {};
     return (Math.round(days / 365 * 10) / 10).toString().replace(".", ",") + " r.";
   }
 
-  ELM.fiszkiHarmonogram = {
+  LM.cardsSchedule = {
     MIN: MIN, DAY: DAY, DEFAULT_CONFIG: DEFAULT_CONFIG, GRADES: GRADE_NAMES,
     newCard: newCard, schedule: schedule, preview: preview, formatDelay: formatDelay
   };
-})(window.ELM);
+})(window.LM);

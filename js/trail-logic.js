@@ -1,5 +1,5 @@
 /*
- * szlak-logic.js — czysta logika Szlaku (spec v7 13): bez DOM i localStorage (testy: node tools/testy.js).
+ * trail-logic.js — czysta logika Szlaku (spec v7 13): bez DOM i localStorage (testy: node tools/tests.js).
  *
  *   emptyState(), sanitizeState(raw)     stan profilu elm.<id>.szlak { version, start, stops, reviews }; zły format → wyjątek
  *   statusOf(stop, state, env)           { status: "done" | "skipped" | "open", via }  (sekcja 3.1)
@@ -14,9 +14,9 @@
  *   env = { isUmiem(itemId) → bool, setPercent(setId) → liczba 0–100 albo null }
  *   src = { quizItems(stopId) → [zadanie], setItems(setId) → [zadanie], finalItems(level) → [zadanie], stops: {id: przystanek} }
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const VERSION = 1;
@@ -182,9 +182,9 @@ window.ELM = window.ELM || {};
     return Math.round(100 * vals.reduce(function (a, b) { return a + b; }, 0) / (vals.length * size));
   }
 
-  ELM.szlakLogic = {
+  LM.trailLogic = {
     VERSION: VERSION, LEVELS: LEVELS, PASS_QUIZ: PASS_QUIZ, PASS_SET_PERCENT: PASS_SET_PERCENT,
     emptyState: emptyState, sanitizeState: sanitizeState, statusOf: statusOf, buildTrail: buildTrail, currentStop: currentStop,
     levelProgress: levelProgress, unitProgress: unitProgress, pickReview: pickReview, effectiveStart: effectiveStart, quizAverage: quizAverage
   };
-})(window.ELM);
+})(window.LM);

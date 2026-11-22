@@ -11,7 +11,7 @@
  *
  * Rekord: { id, group, title, headings[], summary, text (bez Markdownu, maks. 4000 znaków),
  *           level, category, route }
- * Wyjście: dane/szukaj-indeks.js (ELM.SEARCH_INDEX), ładowany na żądanie przy pierwszym
+ * Wyjście: dane/szukaj-indeks.js (LM.SEARCH_INDEX), ładowany na żądanie przy pierwszym
  * otwarciu wyszukiwarki. Plik .js zamiast .json, bo fetch() nie działa przy file://.
  * Gdy indeks przekroczy ~1 MB, tekst jest skracany do nagłówków i pierwszych akapitów.
  *
@@ -244,7 +244,7 @@ if (json.length > SIZE_LIMIT) {
   json = JSON.stringify({ version: 1, records: records });
 }
 fs.writeFileSync(path.join(ROOT, "dane", "szukaj-indeks.js"),
-  "/* Indeks wyszukiwarki — GENEROWANY przez tools/zbuduj-szukaj.js, nie edytuj ręcznie. */\nwindow.ELM = window.ELM || {};\nELM.SEARCH_INDEX = " + json + ";\n", "utf8");
+  "/* Indeks wyszukiwarki — GENEROWANY przez tools/zbuduj-szukaj.js, nie edytuj ręcznie. */\nwindow.LM = window.LM || {};\nELM.SEARCH_INDEX = " + json + ";\n", "utf8");
 const groups = {};
 records.forEach(function (r) { groups[r.group] = (groups[r.group] || 0) + 1; });
 console.log("Wyszukiwarka: rekordy " + records.length + " (" + Object.keys(groups).map(function (g) { return g + " " + groups[g]; }).join(", ") + "), rozmiar " + Math.round(json.length / 1024) + " KB");

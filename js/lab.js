@@ -1,5 +1,5 @@
 /*
- * tense-lab.js — „Laboratorium czasów” (spec 02, część A).
+ * lab.js — „Laboratorium czasów” (spec 02, część A).
  *
  * Adresy (zakładki):
  *   #/laboratorium-czasow                     Mapa czasów
@@ -7,7 +7,7 @@
  *   #/laboratorium-czasow/dobierz             Dobierz czas (drzewo pytań, reguły — nie AI)
  *   #/laboratorium-czasow/porownaj[/<a>/<b>]  Porównaj dwa czasy
  *
- * Dane: dane/lab-dane.js (ELM.LAB = { tenses, tree }) — generowane z
+ * Dane: dane/lab-dane.js (LM.LAB = { tenses, tree }) — generowane z
  * dane/lab-czasow.json i dane/lab-wybor-czasu.json przez tools/zbuduj-cwiczenia.js,
  * wczytywane dopiero po wejściu do Labu.
  *
@@ -15,12 +15,12 @@
  * role="img" + aria-label = opis sceny, ten sam opis jako tekst pod osią.
  * Animacja GSAP (DrawSVG) przy wejściu i zmianie sceny, przy ograniczonym ruchu bez.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const BASE = "#/laboratorium-czasow";
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -45,16 +45,16 @@ window.ELM = window.ELM || {};
   /** Zastępuje dzieci węzła (null i false są pomijane — replaceChildren zamieniłby je na tekst „null”). */
   function fill(node, list) { node.replaceChildren(); U.appendChildren(node, list); }
 
-  function lab() { return ELM.LAB || { tenses: [], tree: null }; }
+  function lab() { return LM.LAB || { tenses: [], tree: null }; }
   function tense(id) { return lab().tenses.find(function (t) { return t.id === id; }) || null; }
 
   /** Formy przyszłe poza siatką: going to, Present Continuous / Simple o przyszłości. */
   function isForm(t) { return t.aspect === "form" || (t.group === "future" && !/^future-/.test(t.id)); }
 
   function load() {
-    if (ELM.LAB) return Promise.resolve(ELM.LAB);
-    const src = ELM.exercises ? ELM.exercises.asset("dane/lab-dane.js") : "dane/lab-dane.js";
-    return ELM.loadScript(src).then(function () { return ELM.LAB; }, function (e) { console.warn(e.message + " — uruchom: npm run build"); return null; });
+    if (LM.LAB) return Promise.resolve(LM.LAB);
+    const src = LM.exercises ? LM.exercises.asset("dane/lab-dane.js") : "dane/lab-dane.js";
+    return LM.loadScript(src).then(function () { return LM.LAB; }, function (e) { console.warn(e.message + " — uruchom: npm run build"); return null; });
   }
 
   // =====================================================================
@@ -95,7 +95,7 @@ window.ELM = window.ELM || {};
     return el("button", {
       type: "button", class: "btn btn-link lab-speak", "aria-label": "Posłuchaj: " + text, "data-tooltip": "Posłuchaj",
       onclick: function () { speak(text); }
-    }, ELM.icon("volume-2", { size: 18 }));
+    }, LM.icon("volume-2", { size: 18 }));
   }
 
   // =====================================================================
@@ -241,8 +241,8 @@ window.ELM = window.ELM || {};
   }
 
   function animate(parts) {
-    if (!ELM.motion) return;
-    ELM.motion.run(["DrawSVGPlugin"], function (gsap, reduce) {
+    if (!LM.motion) return;
+    LM.motion.run(["DrawSVGPlugin"], function (gsap, reduce) {
       if (!gsap || reduce) return;
       const tl = gsap.timeline();
       tl.fromTo(parts.axis, { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: 0.6, ease: "power2.out" });
@@ -269,7 +269,7 @@ window.ELM = window.ELM || {};
     return el("nav", { class: "lab-tabs", "aria-label": "Zakładki Laboratorium czasów" }, el("ul", null, items.map(function (it) {
       const on = it.id === active;
       return el("li", null, el("a", { class: "lab-tab" + (on ? " is-active" : ""), href: it.href, "aria-current": on ? "page" : null }, [
-        el("span", { "aria-hidden": "true" }, ELM.icon(it.icon, { size: 18 })),
+        el("span", { "aria-hidden": "true" }, LM.icon(it.icon, { size: 18 })),
         el("span", { text: it.label })
       ]));
     })));
@@ -277,7 +277,7 @@ window.ELM = window.ELM || {};
 
   function header(active, route) {
     return [
-      ELM.ui.pageHead({ eyebrow: "Nauka · Laboratorium czasów", title: "Laboratorium czasów", lead: "Zobacz czasy na osi, porównaj je i dobierz właściwy do sytuacji.", className: "lab-head" }),
+      LM.ui.pageHead({ eyebrow: "Nauka · Laboratorium czasów", title: "Laboratorium czasów", lead: "Zobacz czasy na osi, porównaj je i dobierz właściwy do sytuacji.", className: "lab-head" }),
       tabs(active, route)
     ];
   }
@@ -369,7 +369,7 @@ window.ELM = window.ELM || {};
     card.appendChild(el("header", { class: "card lab-card-head" }, [
       el("div", { class: "lab-card-top" }, [
         el("p", { class: "lab-card-eyebrow" }, [levelChip(t.level), el("span", { text: GROUPS.find(function (g) { return g.id === t.group; }).label + (isForm(t) ? " · forma przyszła" : " · " + (ASPECTS.find(function (a) { return a.id === t.aspect; }) || { label: t.aspect }).label) })]),
-        ELM.notes ? ELM.notes.button("lab:" + t.id, { title: "Lab czasów · " + t.name, route: BASE + "/" + t.id }) : null
+        LM.notes ? LM.notes.button("lab:" + t.id, { title: "Lab czasów · " + t.name, route: BASE + "/" + t.id }) : null
       ]),
       el("h2", { class: "lab-card-title", id: "lab-card-title", lang: "en", text: t.name }),
       el("p", { class: "lab-card-pl", text: t.namePl }),
@@ -392,7 +392,7 @@ window.ELM = window.ELM || {};
     }
     if (t.traps && t.traps.length) {
       card.appendChild(el("section", { class: "callout callout-trap lab-traps" }, [
-        el("h3", { class: "callout-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, ELM.icon("triangle-alert", { size: 20 })), "Pułapki Polaków"]),
+        el("h3", { class: "callout-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon("triangle-alert", { size: 20 })), "Pułapki Polaków"]),
         el("ul", null, t.traps.map(function (x) { return el("li", { text: x }); }))
       ]));
     }
@@ -403,7 +403,7 @@ window.ELM = window.ELM || {};
           el("p", { class: "lab-contrast-head" }, [el("strong", { lang: "en", text: t.name }), " vs ", el("strong", { lang: "en", text: other ? other.name : c.with })]),
           el("p", { text: c.rule }),
           c.examples && c.examples.length ? el("ul", { class: "lab-contrast-ex", lang: "en" }, c.examples.map(function (x) { return el("li", { text: x }); })) : null,
-          el("a", { class: "btn btn-secondary btn-small", href: BASE + "/porownaj/" + t.id + "/" + c.with }, ELM.ui.withIcon("arrow-left-right", "Porównaj obok siebie"))
+          el("a", { class: "btn btn-secondary btn-small", href: BASE + "/porownaj/" + t.id + "/" + c.with }, LM.ui.withIcon("arrow-left-right", "Porównaj obok siebie"))
         ]);
       }))));
     }
@@ -419,21 +419,21 @@ window.ELM = window.ELM || {};
 
   /** Zestawy powiązane z czasem (po niezbednikIds), mixy z tymi tematami i strony tematów. */
   function fillPractice(box, t) {
-    if (!ELM.exercises) { box.replaceChildren(); return; }
-    ELM.exercises.loadIndex().then(function (index) {
+    if (!LM.exercises) { box.replaceChildren(); return; }
+    LM.exercises.loadIndex().then(function (index) {
       const ids = t.niezbednikIds || [];
       const setIds = [];
       ids.forEach(function (n) { (index.topics[n] || []).forEach(function (s) { if (setIds.indexOf(s) === -1) setIds.push(s); }); });
       const mixes = index.mixes.filter(function (m) { return m.topics.some(function (x) { return ids.indexOf(x) !== -1; }); });
-      const pages = ids.map(ELM.exercises.topicInfo).filter(Boolean);
+      const pages = ids.map(LM.exercises.topicInfo).filter(Boolean);
       fill(box, [
-        setIds.length ? el("div", { class: "ex-set-grid" }, setIds.map(function (s) { return index.sets[s]; }).filter(Boolean).map(ELM.exercises.setCard))
+        setIds.length ? el("div", { class: "ex-set-grid" }, setIds.map(function (s) { return index.sets[s]; }).filter(Boolean).map(LM.exercises.setCard))
           : el("p", { class: "tool-note", text: "Zestawy zadań do tego czasu jeszcze powstają." }),
         mixes.length ? el("p", { class: "lab-practice-links" }, mixes.map(function (m) {
-          return el("a", { class: "btn btn-secondary", href: ELM.exercises.BASE + "/mix/" + m.id }, ELM.ui.withIcon("shuffle", "Zestaw mieszany: " + m.title));
+          return el("a", { class: "btn btn-secondary", href: LM.exercises.BASE + "/mix/" + m.id }, LM.ui.withIcon("shuffle", "Zestaw mieszany: " + m.title));
         })) : null,
         pages.length ? el("p", { class: "lab-practice-links" }, pages.map(function (p) {
-          return el("a", { class: "wiki-link wiki-chip lvl-" + p.level, href: p.href }, [ELM.icon("notebook-text", { size: 14 }), el("span", { class: "wiki-chip-level", text: p.level }), el("span", { class: "wiki-chip-text", text: p.title })]);
+          return el("a", { class: "wiki-link wiki-chip lvl-" + p.level, href: p.href }, [LM.icon("notebook-text", { size: 14 }), el("span", { class: "wiki-chip-level", text: p.level }), el("span", { class: "wiki-chip-text", text: p.title })]);
         })) : null
       ]);
     });
@@ -463,7 +463,7 @@ window.ELM = window.ELM || {};
         return el("li", null, el("button", {
           type: "button", class: "lab-answer",
           onclick: function () { pathStack.push({ node: nodeId, option: o }); renderAgain("#lab-q, .lab-result-title"); }
-        }, [el("span", { text: o.label }), el("span", { "aria-hidden": "true" }, ELM.icon("chevron-right", { size: 18 }))]));
+        }, [el("span", { text: o.label }), el("span", { "aria-hidden": "true" }, LM.icon("chevron-right", { size: 18 }))]));
       })));
     } else {
       const list = result.result.map(tense).filter(Boolean);
@@ -474,13 +474,13 @@ window.ELM = window.ELM || {};
           el("p", { class: "lab-result-name" }, [el("strong", { lang: "en", text: t.name }), " ", levelChip(t.level)]),
           el("p", { text: t.summary }),
           t.uses[0] ? el("p", { class: "lab-use-en" }, [el("span", { lang: "en", text: t.uses[0].en }), speakButton(t.uses[0].en)]) : null,
-          el("a", { class: "btn btn-primary btn-small", href: BASE + "/" + t.id }, ELM.ui.withIcon("arrow-right", "Zobacz kartę czasu"))
+          el("a", { class: "btn btn-primary btn-small", href: BASE + "/" + t.id }, LM.ui.withIcon("arrow-right", "Zobacz kartę czasu"))
         ]);
       })));
     }
     body.push(el("div", { class: "tool-actions" }, [
-      pathStack.length ? el("button", { type: "button", class: "btn btn-secondary", onclick: function () { pathStack.pop(); renderAgain("#lab-q"); } }, ELM.ui.withIcon("arrow-left", "Wstecz")) : null,
-      pathStack.length ? el("button", { type: "button", class: "btn btn-link", onclick: function () { pathStack = []; renderAgain("#lab-q"); } }, ELM.ui.withIcon("rotate-ccw", "Zacznij od nowa")) : null
+      pathStack.length ? el("button", { type: "button", class: "btn btn-secondary", onclick: function () { pathStack.pop(); renderAgain("#lab-q"); } }, LM.ui.withIcon("arrow-left", "Wstecz")) : null,
+      pathStack.length ? el("button", { type: "button", class: "btn btn-link", onclick: function () { pathStack = []; renderAgain("#lab-q"); } }, LM.ui.withIcon("rotate-ccw", "Zacznij od nowa")) : null
     ]));
     view.appendChild(el("section", { class: "card lab-pick", "aria-live": "polite" }, [crumbs].concat(body)));
     view.appendChild(el("p", { class: "tool-note", text: "To reguły zapisane w danych, nie sztuczna inteligencja – ta sama ścieżka zawsze daje ten sam wynik." }));
@@ -513,7 +513,7 @@ window.ELM = window.ELM || {};
 
     view.appendChild(el("div", { class: "card lab-compare-pick" }, [
       select("lab-a", a.id, "Pierwszy czas"),
-      el("span", { class: "lab-vs", "aria-hidden": "true" }, ELM.icon("arrow-left-right", { size: 20 })),
+      el("span", { class: "lab-vs", "aria-hidden": "true" }, LM.icon("arrow-left-right", { size: 20 })),
       select("lab-b", b.id, "Drugi czas")
     ]));
 
@@ -550,8 +550,8 @@ window.ELM = window.ELM || {};
 
   function animateAll(view) {
     const svgs = Array.prototype.slice.call(view.querySelectorAll(".tl-svg"));
-    if (!svgs.length || !ELM.motion) return;
-    ELM.motion.run(["DrawSVGPlugin"], function (gsap, reduce) {
+    if (!svgs.length || !LM.motion) return;
+    LM.motion.run(["DrawSVGPlugin"], function (gsap, reduce) {
       if (!gsap || reduce) return;
       svgs.forEach(function (s, i) {
         gsap.fromTo(s.querySelector(".tl-axis"), { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: 0.6, delay: i * 0.1, ease: "power2.out" });
@@ -595,7 +595,7 @@ window.ELM = window.ELM || {};
 
   /** Wczytuje dane Laboratorium z wyprzedzeniem (bezczynność przeglądarki, najechanie na link), bez rysowania. */
   function prefetch() {
-    if (ELM.LAB) return;
+    if (LM.LAB) return;
     load();
   }
 
@@ -618,7 +618,7 @@ window.ELM = window.ELM || {};
     view.replaceChildren();
     document.title = "Laboratorium czasów · English Levels Map";
     header(route.tab, route).forEach(function (n) { view.appendChild(n); });
-    if (!ELM.LAB) {
+    if (!LM.LAB) {
       view.appendChild(skeleton(route.tab)); // szkielet układu zamiast samego napisu (spec v7 14, P4)
       load().then(function (data) {
         if (!data) {
@@ -637,5 +637,5 @@ window.ELM = window.ELM || {};
     else renderCompare(view, route);
   }
 
-  ELM.tenseLab = { BASE: BASE, parseRoute: parseRoute, render: render, load: load };
-})(window.ELM);
+  LM.lab = { BASE: BASE, parseRoute: parseRoute, render: render, load: load };
+})(window.LM);

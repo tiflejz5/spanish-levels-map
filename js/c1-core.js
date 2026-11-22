@@ -1,7 +1,7 @@
 /*
  * c1-core.js — zakładka „Certyfikat C1” (przygotowanie do C1 Advanced).
  *
- * Dane: ELM.C1 z pliku niezbednik/certyfikat-c1-dane.js
+ * Dane: LM.C1 z pliku niezbednik/certyfikat-c1-dane.js
  * (generowanego przez: node tools/zbuduj-niezbednik.js z folderu
  * niezbednik/certyfikat-c1/). Menu budujemy wyłącznie z manifest.json.
  *
@@ -17,19 +17,19 @@
  * ramki „Na egzaminie C1”, kafelek na stronie głównej, linki [[id]],
  * zapis w localStorage (klucz elm_c1_v1) i wspólny timer.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   const BASE = "#/certyfikat-c1";
   const STORE_KEY = "elm_c1_v1";
   const HIDDEN_SECTIONS = ["Odpowiedzi", "Przykładowe odpowiedzi"];
 
-  function data() { return ELM.C1 || null; }
+  function data() { return LM.C1 || null; }
 
   // =====================================================================
   // PAMIĘĆ (localStorage w try/catch — bez dostępu działa w pamięci karty)
@@ -148,7 +148,7 @@ window.ELM = window.ELM || {};
       href: href,
       "aria-current": active ? "page" : null
     }, [
-      extraClass === "is-trainer" ? ELM.icon("timer", { size: 16, class: "c1-nav-icon" }) : null,
+      extraClass === "is-trainer" ? LM.icon("timer", { size: 16, class: "c1-nav-icon" }) : null,
       el("span", { class: "c1-nav-label", text: label }),
       badge ? el("span", { class: "c1-nav-badge", text: badge }) : null
     ]));
@@ -160,7 +160,7 @@ window.ELM = window.ELM || {};
     box.replaceChildren();
     if (!data()) return;
 
-    const route = ELM.state.view === "c1" ? ELM.state.c1Route : null;
+    const route = LM.state.view === "c1" ? LM.state.c1Route : null;
     const currentSection = sectionIdOf(route);
     const manifest = data().manifest;
 
@@ -202,7 +202,7 @@ window.ELM = window.ELM || {};
             const again = document.querySelector('[aria-controls="' + listId + '"]');
             if (again) again.focus();
           }
-        }, [el("span", { class: "c1-sec-caret", "aria-hidden": "true" }, ELM.icon("chevron-right", { size: 16 })), section.label]),
+        }, [el("span", { class: "c1-sec-caret", "aria-hidden": "true" }, LM.icon("chevron-right", { size: 16 })), section.label]),
         list
       ]));
     });
@@ -213,7 +213,7 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   function crumb(text) {
-    return ELM.ui.breadcrumbs(text ? [{ label: "Certyfikat C1", href: BASE }, { label: text }] : [{ label: "Certyfikat C1", href: BASE }]);
+    return LM.ui.breadcrumbs(text ? [{ label: "Certyfikat C1", href: BASE }, { label: text }] : [{ label: "Certyfikat C1", href: BASE }]);
   }
 
   function notFound(message) {
@@ -235,7 +235,7 @@ window.ELM = window.ELM || {};
   function examBoxAnchor(article) {
     const sections = Array.prototype.filter.call(article.children, function (n) { return n.classList && n.classList.contains("md-section"); });
     const titles = sections.map(function (s) { const h = s.querySelector("h2"); return h ? h.textContent : ""; });
-    const i = ELM.examLogic.examBoxAnchorIndex(titles);
+    const i = LM.examLogic.examBoxAnchorIndex(titles);
     return i < 0 ? null : sections[i];
   }
 
@@ -277,7 +277,7 @@ window.ELM = window.ELM || {};
   }
 
   /** Wpis C1 w rejestrze egzaminów (kolory, podtytuł, id zestawów). */
-  function examEntry() { return ELM.examMy.byId("certyfikat-c1"); }
+  function examEntry() { return LM.examMy.byId("certyfikat-c1"); }
 
   // =====================================================================
   // STRONY .md ZAKŁADKI
@@ -316,8 +316,8 @@ window.ELM = window.ELM || {};
     const prev = all[i - 1], next = all[i + 1];
     if (!prev && !next) return null;
     return el("nav", { class: "c1-pager", "aria-label": "Sąsiednie strony" }, [
-      prev ? el("a", { class: "btn btn-secondary", href: hrefPage(prev.id) }, ELM.ui.withIcon("arrow-left", prev.label)) : el("span"),
-      next ? el("a", { class: "btn btn-secondary", href: hrefPage(next.id) }, [next.label, ELM.icon("arrow-right", { size: 18 })]) : null
+      prev ? el("a", { class: "btn btn-secondary", href: hrefPage(prev.id) }, LM.ui.withIcon("arrow-left", prev.label)) : el("span"),
+      next ? el("a", { class: "btn btn-secondary", href: hrefPage(next.id) }, [next.label, LM.icon("arrow-right", { size: 18 })]) : null
     ]);
   }
 
@@ -325,21 +325,21 @@ window.ELM = window.ELM || {};
     const found = findPage(id);
     const text = found && data().pages[id];
     if (!text) { view.appendChild(notFound()); return null; }
-    const doc = ELM.markdown.parse(text);
+    const doc = LM.markdown.parse(text);
     view.appendChild(el("div", { class: "c1-page-tools" }, [
       crumb(found.section.label),
       el("div", { class: "c1-page-actions" }, [
-        id === "przeglad" ? ELM.examCover.pinButton(examEntry()) : null,
-        ELM.notes ? ELM.notes.button("c1:" + id, { title: "C1 · " + (doc.meta.title || found.page.label), route: location.hash }) : null
+        id === "przeglad" ? LM.examCover.pinButton(examEntry()) : null,
+        LM.notes ? LM.notes.button("c1:" + id, { title: "C1 · " + (doc.meta.title || found.page.label), route: location.hash }) : null
       ])
     ]));
-    const article = el("article", { class: "md c1-page" }, ELM.markdown.render(doc.blocks, { hiddenSections: HIDDEN_SECTIONS }));
-    if (id === "przeglad") insertAfterIntro(article, el("div", { class: "exam-overview-top" }, [ELM.examDate.cardFor(examEntry())]));
+    const article = el("article", { class: "md c1-page" }, LM.markdown.render(doc.blocks, { hiddenSections: HIDDEN_SECTIONS }));
+    if (id === "przeglad") insertAfterIntro(article, el("div", { class: "exam-overview-top" }, [LM.examDate.cardFor(examEntry())]));
     wireTasks(article, id);
-    if (ELM.callouts) ELM.callouts.apply(article);
+    if (LM.callouts) LM.callouts.apply(article);
     view.appendChild(article);
-    if (/^writing(-|$)/.test(id) && ELM.pisanie) view.appendChild(ELM.pisanie.pageSection("certyfikat-c1"));
-    if (id === "przeglad" && ELM.fiszki && ELM.fiszki.examTile) { const ft = ELM.fiszki.examTile("certyfikat-c1"); if (ft) view.appendChild(ft); }
+    if (/^writing(-|$)/.test(id) && LM.writing) view.appendChild(LM.writing.pageSection("certyfikat-c1"));
+    if (id === "przeglad" && LM.cards && LM.cards.examTile) { const ft = LM.cards.examTile("certyfikat-c1"); if (ft) view.appendChild(ft); }
     const nav = pageNav(id);
     if (nav) view.appendChild(nav);
     return doc.meta.title || found.page.label;
@@ -391,14 +391,14 @@ window.ELM = window.ELM || {};
     } else if (route.kind === "exercises") {
       title = renderExerciseList(view);
     } else if (route.kind === "exercise") {
-      title = ELM.c1Exercises.render(view, route.id);
+      title = LM.c1Exercises.render(view, route.id);
     } else if (route.kind === "writing") {
-      title = ELM.c1Writing.render(view, route.task);
+      title = LM.c1Writing.render(view, route.task);
     } else if (route.kind === "speaking") {
-      title = ELM.c1Speaking.render(view);
+      title = LM.c1Speaking.render(view);
     }
     document.title = (title ? title + " · " : "") + "Certyfikat C1 · English Levels Map";
-    if (title && ELM.profileData) ELM.profileData.setLastPage(location.hash, "Certyfikat C1 · " + title);
+    if (title && LM.profileData) LM.profileData.setLastPage(location.hash, "Certyfikat C1 · " + title);
     U.setScroll(keepScroll);
   }
 
@@ -407,7 +407,7 @@ window.ELM = window.ELM || {};
    * (bez logo i grafik Cambridge) i duża liczba dni do egzaminu.
    */
   function masthead(withCount) {
-    return ELM.examCover[withCount ? "compact" : "full"](examEntry());
+    return LM.examCover[withCount ? "compact" : "full"](examEntry());
   }
 
   // =====================================================================
@@ -424,7 +424,7 @@ window.ELM = window.ELM || {};
       if (!f) { console.warn("Ramka C1: nieznany zestaw " + id); return null; }
       const best = bestScore(id);
       return el("li", null, [
-        el("a", { href: hrefSet(id) }, [f.set.label, ELM.icon("chevron-right", { size: 16 })]),
+        el("a", { href: hrefSet(id) }, [f.set.label, LM.icon("chevron-right", { size: 16 })]),
         el("span", { class: "c1-exam-box-best", text: best === null ? "jeszcze nie rozwiązany" : "najlepszy wynik " + best + "/" + f.set.maxScore })
       ]);
     }).filter(Boolean);
@@ -437,7 +437,7 @@ window.ELM = window.ELM || {};
       (link.examParts || []).length ? el("div", { class: "c1-chips" }, link.examParts.map(function (p) {
         return el("span", { class: "c1-chip", text: p });
       })) : null,
-      link.note ? el("p", { class: "c1-exam-box-note" }, ELM.markdown.inline(link.note)) : null,
+      link.note ? el("p", { class: "c1-exam-box-note" }, LM.markdown.inline(link.note)) : null,
       exercises.length ? el("ul", { class: "c1-exam-box-links" }, exercises) : null
     ]);
   }
@@ -448,17 +448,17 @@ window.ELM = window.ELM || {};
   //   id zestawu z cwiczenia/ → strona zestawu (tytuł zestawu)
   // =====================================================================
 
-  ELM.markdown.resolveWiki = function (id) {
+  LM.markdown.resolveWiki = function (id) {
     const set = findSet(id);
     if (set) return { href: hrefSet(id), text: set.set.label, level: "C1", kind: "c1" };
-    const N = ELM.NIEZBEDNIK;
+    const N = LM.NIEZBEDNIK;
     if (N) {
       for (const level of N.index.levels) {
         const item = level.items.find(function (it) { return it.id === id; });
         if (item) {
           const md = N.pages[item.file];
-          const title = md ? ELM.markdown.parseFrontmatter(md).meta.title : null;
-          return { href: ELM.niezbednik.routeOf(item), text: title || item.label, level: level.level, kind: "page" };
+          const title = md ? LM.markdown.parseFrontmatter(md).meta.title : null;
+          return { href: LM.handbook.routeOf(item), text: title || item.label, level: level.level, kind: "page" };
         }
       }
     }
@@ -521,7 +521,7 @@ window.ELM = window.ELM || {};
       if (t.remaining <= 0) {
         t.running = false;
         // Timer odliczył do końca (trener Writing / Speaking) = ukończona sesja
-        if (ELM.markActivity) ELM.markActivity();
+        if (LM.markActivity) LM.markActivity();
       } else any = true;
       paint(t);
     });
@@ -563,7 +563,7 @@ window.ELM = window.ELM || {};
     return root;
   }
 
-  ELM.c1 = {
+  LM.c1 = {
     BASE: BASE,
     data: data,
     store: { data: storeData, save: saveStore, bestScore: bestScore, recordScore: recordScore },
@@ -587,4 +587,4 @@ window.ELM = window.ELM || {};
     examBoxAnchor: examBoxAnchor,
     timer: timer
   };
-})(window.ELM);
+})(window.LM);

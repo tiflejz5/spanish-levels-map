@@ -2,7 +2,7 @@
  * mistake-task.js — pozycja „błąd” w sesji Fiszki i błędy: gdy wpis dziennika ma ref do zadania, sesja pokazuje ORYGINALNE zadanie
  * (z jego podpowiedzią: słowo bazowe, opcje A–D, słowo kluczowe i części zdania, forma w nawiasie) zamiast karty zbudowanej z tekstu wpisu.
  *
- *   Czysta logika (testy: node tools/testy.js):
+ *   Czysta logika (testy: node tools/tests.js):
  *     parseRef(ref)            "ex:<idZadania>" | "<c1|e8|mp|mr|b2>:<idZestawu>:<nr>" → { kind, … } albo null
  *     viewFor(entry)           "task" (wpis z rozpoznanym ref) | "card" (ręczny, bez ref, ref nieznany)
  *     singleText(text, n)      zdanie z luką n z tekstu cloze (pozostałe luki jako „…”), z markerem {{n}}
@@ -10,14 +10,14 @@
  *   Z danymi i DOM:
  *     load(entry)              Promise → { kind: "engine", item } | { kind: "c1", ex, … } | null (nie znaleziono zadania → karta)
  *     mount(root, desc, entry, onDone)   widok zadania C1 w sesji; onDone({ correct })
- * Zadania silnika ćwiczeń (ref „ex:…”) rysuje ELM.exercises.startSingle (js/fiszki.js).
+ * Zadania silnika ćwiczeń (ref „ex:…”) rysuje LM.exercises.startSingle (js/cards.js).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  function el() { return ELM.utils.el.apply(null, arguments); }
+  function el() { return LM.utils.el.apply(null, arguments); }
 
   // =====================================================================
   // CZYSTA LOGIKA
@@ -77,14 +77,14 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   function examByCode(code) {
-    const reg = ELM.EXAM_REGISTRY && ELM.EXAM_REGISTRY.exams || [];
+    const reg = LM.EXAM_REGISTRY && LM.EXAM_REGISTRY.exams || [];
     return reg.find(function (e) { return !e.existing && String(e.code).toLowerCase() === code; }) || null;
   }
 
   function loadExamData(exam) {
-    if (ELM.EXAMS && ELM.EXAMS[exam.id]) return Promise.resolve(ELM.EXAMS[exam.id]);
-    const src = ELM.exercises ? ELM.exercises.asset("niezbednik/" + exam.id + "-dane.js") : "niezbednik/" + exam.id + "-dane.js";
-    return ELM.loadScript(src).then(function () { return (ELM.EXAMS && ELM.EXAMS[exam.id]) || null; }, function () { return null; });
+    if (LM.EXAMS && LM.EXAMS[exam.id]) return Promise.resolve(LM.EXAMS[exam.id]);
+    const src = LM.exercises ? LM.exercises.asset("niezbednik/" + exam.id + "-dane.js") : "niezbednik/" + exam.id + "-dane.js";
+    return LM.loadScript(src).then(function () { return (LM.EXAMS && LM.EXAMS[exam.id]) || null; }, function () { return null; });
   }
 
   /** Oryginalne zadanie wpisu albo null (wpis ręczny, usunięty zestaw, brak pliku — wtedy sesja pokazuje kartę). */
@@ -92,18 +92,18 @@ window.ELM = window.ELM || {};
     const ref = parseRef(entry && entry.ref);
     if (!ref) return Promise.resolve(null);
     if (ref.kind === "ex") {
-      if (!ELM.exercises) return Promise.resolve(null);
+      if (!LM.exercises) return Promise.resolve(null);
       const setId = ref.itemId.replace(/-\d{1,3}$/, "");
-      return ELM.exercises.loadSets([setId]).then(function (sets) {
+      return LM.exercises.loadSets([setId]).then(function (sets) {
         const item = sets[0] && sets[0].items.find(function (i) { return i.id === ref.itemId; });
         return item ? { kind: "engine", item: item } : null;
       }, function () { return null; });
     }
     const make = function (set) {
       const ex = singleExercise(set, ref.n);
-      return ex && ELM.c1Exercises && ELM.c1Exercises.single ? { kind: "c1", ex: ex, n: ref.n, prefix: ref.prefix, category: entry.category || "Use of English" } : null;
+      return ex && LM.c1Exercises && LM.c1Exercises.single ? { kind: "c1", ex: ex, n: ref.n, prefix: ref.prefix, category: entry.category || "Use of English" } : null;
     };
-    if (ref.prefix === "c1") return Promise.resolve(make(ELM.C1 && ELM.C1.exercises && ELM.C1.exercises[ref.setId]));
+    if (ref.prefix === "c1") return Promise.resolve(make(LM.C1 && LM.C1.exercises && LM.C1.exercises[ref.setId]));
     const exam = examByCode(ref.prefix);
     if (!exam) return Promise.resolve(null);
     return loadExamData(exam).then(function (d) { return make(d && d.exercises && d.exercises[ref.setId]); });
@@ -120,7 +120,7 @@ window.ELM = window.ELM || {};
    */
   function mount(root, desc, entry, onDone) {
     const ex = desc.ex;
-    const part = ELM.c1Exercises.single(ex, { category: desc.category, refPrefix: desc.prefix === "c1" ? "c1:" + ex.id : desc.prefix + ":" + ex.id });
+    const part = LM.c1Exercises.single(ex, { category: desc.category, refPrefix: desc.prefix === "c1" ? "c1:" + ex.id : desc.prefix + ":" + ex.id });
     let score = null;
     const result = el("p", { class: "c1-ex-result", "aria-live": "polite" });
     const rule = el("p", { class: "fc-extra", hidden: true }, [el("span", { class: "review-label", text: "Reguła: " }), document.createTextNode(String(entry.rule || ""))]);
@@ -136,7 +136,7 @@ window.ELM = window.ELM || {};
     } }, "Sprawdź");
     const section = el("section", { class: "card c1-ex c1-ex-" + ex.type + " mt-task" }, [
       el("p", { class: "tool-eyebrow", text: "Błąd z dziennika · " + (entry.source || ex.title) }),
-      el("p", { class: "c1-ex-instr" }, ELM.markdown.inline(ex.instructions || "")),
+      el("p", { class: "c1-ex-instr" }, LM.markdown.inline(ex.instructions || "")),
       part.node,
       el("div", { class: "c1-ex-actions" }, [check, result]),
       rule
@@ -155,5 +155,5 @@ window.ELM = window.ELM || {};
     setTimeout(function () { const f = root.querySelector("select, input"); if (f) f.focus({ preventScroll: true }); }, 0);
   }
 
-  ELM.mistakeTask = { sameText: sameText, explanationOf: explanationOf, parseRef: parseRef, viewFor: viewFor, singleText: singleText, singleExercise: singleExercise, load: load, mount: mount };
-})(window.ELM);
+  LM.mistakeTask = { sameText: sameText, explanationOf: explanationOf, parseRef: parseRef, viewFor: viewFor, singleText: singleText, singleExercise: singleExercise, load: load, mount: mount };
+})(window.LM);

@@ -8,23 +8,23 @@
  *   "open-cloze"            — Part 2: jedno słowo (skrót = dwa słowa), 1 pkt
  *   "multiple-choice-cloze" — Part 1: wybór A/B/C/D, 1 pkt
  *
- * Najlepszy wynik zestawu zapisuje ELM.c1.store (localStorage, klucz elm_c1_v1).
+ * Najlepszy wynik zestawu zapisuje LM.c1.store (localStorage, klucz elm_c1_v1).
  * Ten sam komponent rysuje zestawy w formacie C1 w innych egzaminach (np. Matura
- * podstawowa, spec 06 sekcja 3): ELM.c1Exercises.renderWith(view, ctx) — ctx podaje
+ * podstawowa, spec 06 sekcja 3): LM.c1Exercises.renderWith(view, ctx) — ctx podaje
  * dane zestawu, nawigację i zapis wyniku (dla egzaminów z rejestru: elm_exercises_v1).
  * Przy błędnej odpowiedzi przycisk „Dodaj do dziennika błędów” otwiera
- * wstępnie wypełniony formularz (js/journal.js) — nic nie zapisuje się
+ * wstępnie wypełniony formularz (js/mistakes.js) — nic nie zapisuje się
  * bez zatwierdzenia.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
-  function c1() { return ELM.c1; }
+  function c1() { return LM.c1; }
 
   // Kontekst rysowanego zestawu (klucz wpisu w dzienniku, kategoria) — ustawia renderWith
   let current = { refPrefix: null, category: "Use of English" };
@@ -45,7 +45,7 @@ window.ELM = window.ELM || {};
   }
 
   /** Słowa odpowiedzi (skrót = dwa słowa) — wspólna logika transformacji w js/exercise-logic.js. */
-  function tokens(text) { return ELM.exLogic.trTokens(text); }
+  function tokens(text) { return LM.exLogic.trTokens(text); }
 
   // =====================================================================
   // OCENA
@@ -62,9 +62,9 @@ window.ELM = window.ELM || {};
   /** Maksimum za zadanie: 2 pkt (Cambridge) — po 1 za część, a przy jednej części 2 za całość. */
   function itemMax(item) { return item.parts.length === 1 ? 2 : item.parts.length; }
 
-  /** Part 4 (jak Cambridge): ELM.exLogic.scoreTransformationParts — ta sama ocena co typ „transformation” silnika zadań. */
+  /** Part 4 (jak Cambridge): LM.exLogic.scoreTransformationParts — ta sama ocena co typ „transformation” silnika zadań. */
   function scoreTransformation(item, answer, limit) {
-    return ELM.exLogic.scoreTransformationParts(item, answer, Array.isArray(limit) ? limit : DEFAULT_WORD_LIMIT);
+    return LM.exLogic.scoreTransformationParts(item, answer, Array.isArray(limit) ? limit : DEFAULT_WORD_LIMIT);
   }
 
   function scoreWordFormation(gap, answer) {
@@ -86,7 +86,7 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   function mark(ok) {
-    return el("span", { class: "c1-mark " + (ok ? "is-ok" : "is-bad"), role: "img", "aria-label": ok ? "Dobrze" : "Źle" }, ELM.icon(ok ? "check" : "x", { size: 14 }));
+    return el("span", { class: "c1-mark " + (ok ? "is-ok" : "is-bad"), role: "img", "aria-label": ok ? "Dobrze" : "Źle" }, LM.icon(ok ? "check" : "x", { size: 14 }));
   }
 
   /**
@@ -94,15 +94,15 @@ window.ELM = window.ELM || {};
    * (z ref = klucz zadania, do wykrywania duplikatów).
    */
   function journalButton(getPrefill) {
-    if (!ELM.journal || current.noJournal) return null; // w sesji powtórek wpis już istnieje
+    if (!LM.mistakes || current.noJournal) return null; // w sesji powtórek wpis już istnieje
     const btn = el("button", {
       type: "button",
       class: "btn btn-secondary btn-small c1-journal-btn",
       onclick: function () {
-        ELM.app.withProfile("Dziennik błędów zapisuje się w profilu.", function () {
-          ELM.journal.openForm({ prefill: getPrefill() }).then(function (saved) {
+        LM.app.withProfile("Dziennik błędów zapisuje się w profilu.", function () {
+          LM.mistakes.openForm({ prefill: getPrefill() }).then(function (saved) {
             if (!saved) return;
-            btn.replaceChildren.apply(btn, ELM.ui.withIcon("check", "Dodano do dziennika"));
+            btn.replaceChildren.apply(btn, LM.ui.withIcon("check", "Dodano do dziennika"));
             btn.disabled = true;
           });
         });
@@ -162,7 +162,7 @@ window.ELM = window.ELM || {};
         ]));
         if (!r.result.msg) {
           parts.push(el("p", { class: "c1-parts" }, r.result.parts.map(function (ok, k) {
-            return el("span", { class: "c1-part " + (ok ? "is-ok" : "is-bad") }, [ELM.icon(ok ? "check" : "x", { size: 14 }), "Część " + (k + 1) + (ok ? " – dobrze" : " – źle")]);
+            return el("span", { class: "c1-part " + (ok ? "is-ok" : "is-bad") }, [LM.icon(ok ? "check" : "x", { size: 14 }), "Część " + (k + 1) + (ok ? " – dobrze" : " – źle")]);
           })));
         }
       }
@@ -334,7 +334,7 @@ window.ELM = window.ELM || {};
   /** Zestaw Certyfikatu C1 (#/certyfikat-c1/cwiczenia/<id>) — dane i wyniki w elm_c1_v1 (bez zmian). */
   function render(view, id) {
     return renderWith(view, {
-      ex: ELM.C1 && ELM.C1.exercises[id],
+      ex: LM.C1 && LM.C1.exercises[id],
       found: c1().findSet(id),
       crumb: function (label) { return c1().crumb(label); },
       notFound: function (msg) { return c1().notFound(msg); },
@@ -374,7 +374,7 @@ window.ELM = window.ELM || {};
       best
     ]));
     view.appendChild(el("section", { class: "card c1-ex c1-ex-" + ex.type }, [
-      el("p", { class: "c1-ex-instr" }, ELM.markdown.inline(ex.instructions)),
+      el("p", { class: "c1-ex-instr" }, LM.markdown.inline(ex.instructions)),
       control.node,
       el("div", { class: "c1-ex-actions" }, [
         el("button", {
@@ -383,7 +383,7 @@ window.ELM = window.ELM || {};
           onclick: function () {
             const score = control.check();
             const record = ctx.recordScore(score, max);
-            if (ELM.markActivity) ELM.markActivity(); // ukończone ćwiczenie = dzień nauki
+            if (LM.markActivity) LM.markActivity(); // ukończone ćwiczenie = dzień nauki
             // (null nie trafia do replaceChildren — inaczej na stronie pojawiał się tekst „null”)
             result.replaceChildren(el("strong", { text: "Wynik: " + score + " / " + max }));
             if (record) result.appendChild(el("span", { class: "c1-record", text: " · nowy najlepszy wynik!" }));
@@ -405,8 +405,8 @@ window.ELM = window.ELM || {};
     const sets = found.group.sets;
     const next = sets[sets.indexOf(found.set) + 1];
     view.appendChild(el("nav", { class: "c1-pager", "aria-label": "Zestawy" }, [
-      el("a", { class: "btn btn-secondary", href: ctx.listHref }, ELM.ui.withIcon("arrow-left", "Wszystkie zestawy")),
-      next ? el("a", { class: "btn btn-secondary", href: ctx.hrefSet(next.id) }, [next.label, ELM.icon("arrow-right", { size: 18 })]) : null
+      el("a", { class: "btn btn-secondary", href: ctx.listHref }, LM.ui.withIcon("arrow-left", "Wszystkie zestawy")),
+      next ? el("a", { class: "btn btn-secondary", href: ctx.hrefSet(next.id) }, [next.label, LM.icon("arrow-right", { size: 18 })]) : null
     ]));
     return ex.title;
   }
@@ -414,7 +414,7 @@ window.ELM = window.ELM || {};
   /**
    * Jedna luka / jedno zdanie zestawu w sesji „Fiszki i błędy” (js/mistake-task.js): ten sam widok luki albo transformacji co w zestawie
    * (opcje A–D, słowo bazowe, słowo kluczowe, część zdania przed i po luce), bez „Dodaj do dziennika”.
-   * ex — zestaw zawężony przez ELM.mistakeTask.singleExercise. → { node, check() → punkty, showAnswers(), max }
+   * ex — zestaw zawężony przez LM.mistakeTask.singleExercise. → { node, check() → punkty, showAnswers(), max }
    */
   function single(ex, opts) {
     opts = opts || {};
@@ -424,7 +424,7 @@ window.ELM = window.ELM || {};
     return { node: control.node, check: control.check, showAnswers: control.showAnswers, max: tr ? itemMax(ex.items[0]) : ex.gaps.length };
   }
 
-  ELM.c1Exercises = {
+  LM.c1Exercises = {
     single: single,
     render: render,
     renderWith: renderWith,
@@ -435,4 +435,4 @@ window.ELM = window.ELM || {};
     scoreOpenCloze: scoreOpenCloze,
     scoreWordFormation: scoreWordFormation
   };
-})(window.ELM);
+})(window.LM);

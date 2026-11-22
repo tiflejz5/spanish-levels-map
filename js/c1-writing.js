@@ -10,14 +10,14 @@
  * Silnik trenera jest wspólny z innymi egzaminami: js/writing-trainer.js.
  * Ten plik to konfiguracja C1 (zachowanie i dane bez zmian: szkice w elm_c1_v1).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const GENRE_LABELS = { essay: "Essay", letter: "Letter", email: "Email", proposal: "Proposal", report: "Report", review: "Review" };
 
-  function c1() { return ELM.c1; }
+  function c1() { return LM.c1; }
 
   /** Liczba słów jak w liczniku egzaminu: ciągi znaków rozdzielone spacjami. */
   function countWords(text) {
@@ -34,9 +34,9 @@ window.ELM = window.ELM || {};
     return genre === "letter" || genre === "email" ? "writing-email-letter" : "writing-" + genre;
   }
 
-  const trainer = ELM.writingTrainer.create({
+  const trainer = LM.writingTrainer.create({
     examId: "certyfikat-c1",
-    trainer: function () { return ELM.C1 && ELM.C1.trainers["trening-pisanie"]; },
+    trainer: function () { return LM.C1 && LM.C1.trainers["trening-pisanie"]; },
     section: function () { const f = c1().findTrainer("trening-pisanie"); return f ? f.section : null; },
     crumb: function (label) { return c1().crumb(label); },
     notFound: function (msg) { return c1().notFound(msg === "Brak danych trenera pisania." ? "Brak danych trenera Writing." : msg); },
@@ -73,5 +73,5 @@ window.ELM = window.ELM || {};
     timerKey: function (task) { return "writing:" + task.id; }
   });
 
-  ELM.c1Writing = { render: trainer.render, countWords: countWords };
-})(window.ELM);
+  LM.c1Writing = { render: trainer.render, countWords: countWords };
+})(window.LM);

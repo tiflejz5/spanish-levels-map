@@ -1,28 +1,28 @@
 /*
  * notes.js — własne notatki (spec 04, część B).
  *
- *   ELM.notes.button(key, { title, route })   przycisk „Notatki” (z kropką, gdy notatka istnieje);
+ *   LM.notes.button(key, { title, route })   przycisk „Notatki” (z kropką, gdy notatka istnieje);
  *                                              panel otwiera się dopiero po kliknięciu
  *   #/notatki                                 „Moje notatki”: lista, szukanie, usuwanie
  *
  * Klucze stron: id punktu niezbędnika („a2-czasy-past-simple”), „c1:<strona>”,
- * „lab:<czas>”, „set:<zestaw>”. Dane: ELM.profileData (elm_notes_v1, per profil):
+ * „lab:<czas>”, „set:<zestaw>”. Dane: LM.profileData (elm_notes_v1, per profil):
  * zwykły tekst, maks. 10 000 znaków, pusta treść = usunięcie.
  * Zapis automatyczny po 500 ms bezczynności, przy zamknięciu panelu i przy zmianie strony.
  * Panel: z boku na szerokim ekranie, dolna szuflada na wąskim. Esc zamyka (z zapisem).
  * Treść trafia do strony wyłącznie jako tekst (textarea.value / textContent).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const HASH = "#/notatki";
   const DEBOUNCE = 500;
 
-  function pd() { return ELM.profileData; }
+  function pd() { return LM.profileData; }
   function max() { return pd().NOTE_MAX; }
 
   let panel = null, area = null, statusEl = null, countEl = null, titleEl = null;
@@ -44,10 +44,10 @@ window.ELM = window.ELM || {};
       onclick: function () {
         if (current && current.key === key && panel && !panel.hidden) { close(true); return; }
         // tryb gościa: notatki są częścią profilu — najpierw profil, potem otwarcie panelu
-        ELM.app.withProfile("Notatki zapisują się w profilu.", function () { open(key, meta, document.querySelector('[data-note-key="' + key + '"]') || b); });
+        LM.app.withProfile("Notatki zapisują się w profilu.", function () { open(key, meta, document.querySelector('[data-note-key="' + key + '"]') || b); });
       }
     }, [
-      ELM.icon("notebook", { size: 16 }),
+      LM.icon("notebook", { size: 16 }),
       el("span", { text: "Notatki" }),
       el("span", { class: "notes-dot", "aria-hidden": "true" })
     ]);
@@ -76,8 +76,8 @@ window.ELM = window.ELM || {};
     countEl = el("span", { class: "notes-count", "aria-live": "polite" });
     panel = el("aside", { class: "notes-panel", id: "notes-panel", hidden: true, "aria-labelledby": "notes-title" }, [
       el("div", { class: "notes-head" }, [
-        el("div", null, [el("h2", { class: "notes-title", id: "notes-title" }, [ELM.icon("notebook", { size: 18 }), " Notatki"]), titleEl]),
-        el("button", { type: "button", class: "icon-btn notes-close", "aria-label": "Zamknij notatki", onclick: function () { close(true); } }, ELM.icon("x", { size: 18 }))
+        el("div", null, [el("h2", { class: "notes-title", id: "notes-title" }, [LM.icon("notebook", { size: 18 }), " Notatki"]), titleEl]),
+        el("button", { type: "button", class: "icon-btn notes-close", "aria-label": "Zamknij notatki", onclick: function () { close(true); } }, LM.icon("x", { size: 18 }))
       ]),
       area,
       el("div", { class: "notes-foot" }, [statusEl, countEl, el("a", { class: "notes-all", href: HASH, onclick: function () { close(false); } }, "Wszystkie notatki")])
@@ -156,10 +156,10 @@ window.ELM = window.ELM || {};
     view.dataset.file = HASH;
     view.replaceChildren();
     document.title = "Moje notatki · English Levels Map";
-    view.appendChild(ELM.ui.pageHead({ eyebrow: "Twoje postępy · Moje notatki", title: "Moje notatki", lead: "Notatki z podstron, egzaminów, Laboratorium czasów i zestawów ćwiczeń. Widzisz je tylko Ty, w tym profilu." }));
+    view.appendChild(LM.ui.pageHead({ eyebrow: "Twoje postępy · Moje notatki", title: "Moje notatki", lead: "Notatki z podstron, egzaminów, Laboratorium czasów i zestawów ćwiczeń. Widzisz je tylko Ty, w tym profilu." }));
     const all = pd().noteList();
     if (!all.length) {
-      view.appendChild(ELM.ui.emptyState({
+      view.appendChild(LM.ui.emptyState({
         art: "pusty-notes", title: "Nie masz jeszcze notatek.",
         hint: "Na każdej stronie z treścią jest przycisk „Notatki”. Kliknij go, wpisz swoje uwagi – zapiszą się same i pojawią tutaj."
       }));
@@ -169,11 +169,11 @@ window.ELM = window.ELM || {};
     const count = el("p", { class: "journal-count", "aria-live": "polite" });
     function paint() {
       const q = filter.query.trim();
-      const fold = ELM.searchLogic ? ELM.searchLogic.fold : function (s) { return String(s).toLocaleLowerCase("pl"); };
+      const fold = LM.searchLogic ? LM.searchLogic.fold : function (s) { return String(s).toLocaleLowerCase("pl"); };
       const shown = all.filter(function (n) { return !q || fold(n.title + " " + n.text).indexOf(fold(q)) !== -1; });
       count.textContent = "Notatki: " + shown.length + " z " + all.length;
       listBox.replaceChildren();
-      if (!shown.length) { listBox.appendChild(ELM.ui.emptyState({ tag: "li", art: "brak-wynikow", title: "Brak notatek pasujących do wyszukiwania." })); return; }
+      if (!shown.length) { listBox.appendChild(LM.ui.emptyState({ tag: "li", art: "brak-wynikow", title: "Brak notatek pasujących do wyszukiwania." })); return; }
       shown.forEach(function (n) {
         listBox.appendChild(el("li", { class: "card notes-item" }, [
           el("div", { class: "notes-item-head" }, [
@@ -186,7 +186,7 @@ window.ELM = window.ELM || {};
             el("button", {
               type: "button", class: "btn btn-danger btn-small", "aria-label": "Usuń notatkę: " + (n.title || "Notatka"),
               onclick: function () {
-                ELM.dialogs.confirm({
+                LM.dialogs.confirm({
                   title: "Usunąć notatkę?",
                   message: "Notatka do strony „" + (n.title || "Notatka") + "” zostanie usunięta. Tej operacji nie można cofnąć.",
                   confirmLabel: "Usuń notatkę"
@@ -204,5 +204,5 @@ window.ELM = window.ELM || {};
     paint();
   }
 
-  ELM.notes = { HASH: HASH, button: button, parseRoute: parseRoute, render: render, close: close, flush: flush };
-})(window.ELM);
+  LM.notes = { HASH: HASH, button: button, parseRoute: parseRoute, render: render, close: close, flush: flush };
+})(window.LM);

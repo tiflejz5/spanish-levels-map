@@ -5,32 +5,32 @@
  * transformation, translate, dictation i wynik w punktach: docs/rozbudowa-v6/spec/12-nowe-typy-zadan.md.
  *
  * Adresy:
- *   #/cwiczenia[/mieszane]           Centrum ćwiczeń (js/exercise-hub.js)
+ *   #/cwiczenia[/mieszane]           Centrum ćwiczeń (js/practice-hub.js)
  *   #/cwiczenia/zestaw/<idZestawu>   zestaw z cwiczenia/tematy/
  *   #/cwiczenia/mix/<idMixu>         gotowy zestaw mieszany (dane/mixes.json)
  *   #/cwiczenia/sesja                zestaw wylosowany w generatorze (Centrum ćwiczeń)
  *   #/cwiczenia/slabe[/<temat>]      trening słabych punktów (spec 03, pkt 5)
  *
  * Dane ładujemy NA ŻĄDANIE zwykłym <script> (działa z file://):
- *   cwiczenia/cwiczenia-indeks.js → ELM.CWICZENIA (mapa, opisy zestawów, mixy)
- *   cwiczenia/tematy/<id>.js      → ELM.EX_SETS[<id>]
+ *   cwiczenia/cwiczenia-indeks.js → LM.CWICZENIA (mapa, opisy zestawów, mixy)
+ *   cwiczenia/tematy/<id>.js      → LM.EX_SETS[<id>]
  * Pliki generuje: node tools/zbuduj-cwiczenia.js (część npm run build).
  *
- * Wyniki: ELM.profileData (klucz elm_exercises_v1, osobno dla profilu).
+ * Wyniki: LM.profileData (klucz elm_exercises_v1, osobno dla profilu).
  * Logika bez DOM (ocena, tasowanie, losowanie mixów): js/exercise-logic.js.
  * Odpowiedzi wpisane przez użytkownika trafiają do strony wyłącznie jako tekst.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const BASE = "#/cwiczenia";
 
-  function X() { return ELM.exLogic; }
-  function pd() { return ELM.profileData; }
+  function X() { return LM.exLogic; }
+  function pd() { return LM.profileData; }
 
   const TYPE_LABEL = {
     "multiple-choice": "Wybierz poprawną odpowiedź",
@@ -70,9 +70,9 @@ window.ELM = window.ELM || {};
 
   /** Indeks ćwiczeń (Promise). Brak pliku → pusty indeks, aplikacja działa dalej. */
   function loadIndex() {
-    if (ELM.CWICZENIA) return Promise.resolve(ELM.CWICZENIA);
-    return ELM.loadScript(asset("cwiczenia/cwiczenia-indeks.js")).then(function () {
-      return ELM.CWICZENIA || emptyIndex();
+    if (LM.CWICZENIA) return Promise.resolve(LM.CWICZENIA);
+    return LM.loadScript(asset("cwiczenia/cwiczenia-indeks.js")).then(function () {
+      return LM.CWICZENIA || emptyIndex();
     }, function (e) {
       console.warn(e.message + " — uruchom: npm run build");
       return emptyIndex();
@@ -87,9 +87,9 @@ window.ELM = window.ELM || {};
       return Promise.all(ids.map(function (id) {
         const meta = index.sets[id];
         if (!meta) { console.warn("Ćwiczenia: brak zestawu " + id); return null; }
-        if (ELM.EX_SETS && ELM.EX_SETS[id]) return ELM.EX_SETS[id];
-        return ELM.loadScript(asset(meta.file)).then(function () {
-          return (ELM.EX_SETS && ELM.EX_SETS[id]) || null;
+        if (LM.EX_SETS && LM.EX_SETS[id]) return LM.EX_SETS[id];
+        return LM.loadScript(asset(meta.file)).then(function () {
+          return (LM.EX_SETS && LM.EX_SETS[id]) || null;
         }, function (e) { console.warn(e.message); return null; });
       }));
     }).then(function (list) { return list.filter(Boolean); });
@@ -113,7 +113,7 @@ window.ELM = window.ELM || {};
 
   /** Punkt niezbędnika po id: { id, level, title, href } albo null. */
   function topicInfo(id) {
-    return id && ELM.journal ? ELM.journal.findItem(id) : null;
+    return id && LM.mistakes ? LM.mistakes.findItem(id) : null;
   }
 
   /** Krótki opis typów: „wybór odpowiedzi, układanie zdań”. */
@@ -129,11 +129,11 @@ window.ELM = window.ELM || {};
 
   function parseRoute(hash) {
     const fin = /^#\/([abcABC][12])\/test\/?$/.exec(hash || "");
-    if (fin) return { kind: "final", id: fin[1].toUpperCase() }; // test końcowy poziomu (js/level-final.js)
+    if (fin) return { kind: "final", id: fin[1].toUpperCase() }; // test końcowy poziomu (js/final.js)
     const weak =/^#\/cwiczenia\/slabe(?:\/([a-z0-9-]+))?\/?$/.exec(hash || "");
     if (weak) return { kind: "weak", id: weak[1] || "" }; // trening słabych punktów (cały albo jeden temat)
     const hub = /^#\/cwiczenia(\/mieszane)?\/?$/.exec(hash || "");
-    if (hub) return { kind: "hub", section: hub[1] ? "mieszane" : null }; // Centrum ćwiczeń (js/exercise-hub.js)
+    if (hub) return { kind: "hub", section: hub[1] ? "mieszane" : null }; // Centrum ćwiczeń (js/practice-hub.js)
     let m = /^#\/cwiczenia\/(zestaw|mix)\/([a-z0-9-]+)\/?$/.exec(hash || "");
     if (m) return { kind: m[1] === "zestaw" ? "set" : "mix", id: m[2] };
     if (/^#\/cwiczenia\/sesja\/?$/.test(hash || "")) return { kind: "custom" };
@@ -166,12 +166,12 @@ window.ELM = window.ELM || {};
    * key — co jest rozwiązywane (np. "set:a2-…"), saveId — pod jakim id zapisać wynik.
    */
   function newRun(cfg) {
-    const profile = ELM.app.getActiveProfile();
+    const profile = LM.app.getActiveProfile();
     run = {
       key: cfg.key, title: cfg.title, intro: cfg.intro || "", topic: cfg.topic || null,
       saveId: cfg.saveId || null, isMix: !!cfg.isMix, isWeak: !!cfg.isWeak, repick: cfg.repick || null,
       passage: cfg.passage || null, exam: cfg.exam || null,
-      // Test końcowy poziomu (js/level-final.js): własny zapis wyniku i ekran wyniku, powrót do poziomu
+      // Test końcowy poziomu (js/final.js): własny zapis wyniku i ekran wyniku, powrót do poziomu
       hooks: cfg.hooks || null, back: cfg.back || null, final: null,
       // Wspólne nagranie zestawu (B2 Listening Parts 2–4): jeden licznik odsłuchów dla wszystkich zadań
       script: cfg.script || null, listen: { plays: 0, readMode: false },
@@ -196,7 +196,7 @@ window.ELM = window.ELM || {};
     focusLater("[data-fk='first']");
   }
 
-  /** Odpowiedź w formacie ELM.exLogic.evaluate. */
+  /** Odpowiedź w formacie LM.exLogic.evaluate. */
   function answerOf(p) {
     const st = p.st;
     if (p.item.type === "multiple-choice") return { chosen: st.chosen === null ? null : p.choice.options[st.chosen].original };
@@ -271,7 +271,7 @@ window.ELM = window.ELM || {};
   const JOURNAL_CATEGORY = { czasy: "Gramatyka", gramatyka: "Gramatyka", slownictwo: "Słownictwo" };
 
   function journalCategory(topic) {
-    const N = ELM.NIEZBEDNIK;
+    const N = LM.NIEZBEDNIK;
     if (!N || !topic) return "Inne";
     for (const lvl of N.index.levels) {
       const it = lvl.items.find(function (x) { return x.id === topic; });
@@ -320,20 +320,20 @@ window.ELM = window.ELM || {};
     const rec = { undo: r.undo, action: r.action };
     run.journal.added.push(rec);
     p.journal = r.action;
-    if (ELM.fiszki && r.entry) ELM.fiszki.autoAddFromJournal(r.entry); // opcja „automatycznie dodawaj błędy do fiszek” (domyślnie wyłączona)
-    if (ELM.app.refreshLearning) ELM.app.refreshLearning();
+    if (LM.cards && r.entry) LM.cards.autoAddFromJournal(r.entry); // opcja „automatycznie dodawaj błędy do fiszek” (domyślnie wyłączona)
+    if (LM.app.refreshLearning) LM.app.refreshLearning();
     if (!withToast) return;
     const text = r.action === "create" ? "Dodano do dziennika błędów"
       : r.action === "reopen" ? "Opanowany błąd wrócił do dziennika – powtórka jutro"
         : "Ten błąd jest już w dzienniku – powtórka jutro";
-    ELM.ui.toast({
+    LM.ui.toast({
       text: text, icon: "notebook-pen",
       action: { label: "Cofnij", onClick: function () {
         pd().undoAuto(rec.undo);
         run.journal.added = run.journal.added.filter(function (x) { return x !== rec; });
         p.journal = null;
-        if (ELM.app.refreshLearning) ELM.app.refreshLearning();
-        ELM.ui.toast({ text: "Cofnięto – wpis nie trafił do dziennika.", duration: 3000 });
+        if (LM.app.refreshLearning) LM.app.refreshLearning();
+        LM.ui.toast({ text: "Cofnięto – wpis nie trafił do dziennika.", duration: 3000 });
       } }
     });
   }
@@ -345,7 +345,7 @@ window.ELM = window.ELM || {};
     if (!r) return;
     p.reviewed = true;
     run.journal.reviewed++;
-    if (ELM.app.refreshLearning) ELM.app.refreshLearning();
+    if (LM.app.refreshLearning) LM.app.refreshLearning();
   }
 
   function next() {
@@ -373,8 +373,8 @@ window.ELM = window.ELM || {};
     else if (!run.retry && run.saveId) run.saved = pd().saveSetScore(run.saveId, s.score, s.total);
     run.suggest = umiemSuggestion();
     if (run.isMix) pd().setLastMix(run.items.map(function (p) { return p.item.id; }));
-    ELM.markActivity(); // ukończona sesja = dzień nauki
-    if (ELM.app.refreshLearning) ELM.app.refreshLearning();
+    LM.markActivity(); // ukończona sesja = dzień nauki
+    if (LM.app.refreshLearning) LM.app.refreshLearning();
     if (run.hooks && run.hooks.afterFinish) run.hooks.afterFinish(run); // np. gratulacje za zaliczony poziom
     render();
     U.setScroll(0);
@@ -514,11 +514,11 @@ window.ELM = window.ELM || {};
     const nodes = [];
     if (noVoice && !st.readMode) {
       nodes.push(el("p", { class: "ex-listen-warn", role: "status", text: "Ta przeglądarka nie ma głosu angielskiego." }));
-      nodes.push(el("button", { type: "button", class: "btn btn-secondary btn-small", onclick: function () { st.readMode = true; repaint("first"); } }, ELM.ui.withIcon("file-text", "Pokaż transkrypt do przeczytania")));
+      nodes.push(el("button", { type: "button", class: "btn btn-secondary btn-small", onclick: function () { st.readMode = true; repaint("first"); } }, LM.ui.withIcon("file-text", "Pokaż transkrypt do przeczytania")));
     } else if (!st.readMode) {
       nodes.push(el("div", { class: "ex-listen-controls" }, [
         playing
-          ? el("button", { type: "button", class: "btn btn-secondary", "data-fk": "listen", onclick: function () { stopSpeaking(); repaint("listen"); } }, ELM.ui.withIcon("pause", "Zatrzymaj"))
+          ? el("button", { type: "button", class: "btn btn-secondary", "data-fk": "listen", onclick: function () { stopSpeaking(); repaint("listen"); } }, LM.ui.withIcon("pause", "Zatrzymaj"))
           : el("button", {
             type: "button", class: "btn btn-primary", "data-fk": "listen", disabled: !done && st.plays >= max,
             onclick: function () {
@@ -526,7 +526,7 @@ window.ELM = window.ELM || {};
               speakScript(owner, script, function () { repaint(null); });
               repaint("listen");
             }
-          }, ELM.ui.withIcon("play", st.plays ? "Odtwórz ponownie" : "Odtwórz")),
+          }, LM.ui.withIcon("play", st.plays ? "Odtwórz ponownie" : "Odtwórz")),
         el("span", { class: "ex-listen-count", "aria-live": "polite", text: "Odsłuchy: " + Math.min(st.plays, max) + "/" + max })
       ]));
       nodes.push(el("p", { class: "tool-note ex-listen-note", text: (shared ? "Jedno nagranie do wszystkich zadań zestawu. " : "") + "Głos syntezowany w przeglądarce. To trening rozumienia – nagranie z egzaminu brzmi inaczej." }));
@@ -550,7 +550,7 @@ window.ELM = window.ELM || {};
       if (!done) return el("span", { class: "ex-gap" + (chosenText ? " is-filled" : "") }, chosenText || el("span", { class: "visually-hidden", text: "luka" }));
       const ok = p.res.correct;
       return el("span", { class: "ex-gap is-filled " + (ok ? "is-ok" : "is-bad") }, [
-        el("span", { class: "ex-gap-mark", "aria-hidden": "true" }, ELM.icon(ok ? "check" : "x", { size: 14 })),
+        el("span", { class: "ex-gap-mark", "aria-hidden": "true" }, LM.icon(ok ? "check" : "x", { size: 14 })),
         el("span", { class: "ex-gap-text" + (ok && keyOn(p) ? " ex-hl" : ""), text: chosenText || "—" }),
         ok ? null : el("span", { class: "visually-hidden", text: " (błędnie)" })
       ]);
@@ -568,7 +568,7 @@ window.ELM = window.ELM || {};
           "data-fk": i === 0 ? "first" : "opt-" + i,
           onchange: function () { st.chosen = i; repaint(i === 0 ? "first" : "opt-" + i); }
         }),
-        el("span", { class: "ex-key", "aria-hidden": "true" }, done && (isCorrect || isChosen) ? ELM.icon(isCorrect ? "check" : "x", { size: 16 }) : String(i + 1)),
+        el("span", { class: "ex-key", "aria-hidden": "true" }, done && (isCorrect || isChosen) ? LM.icon(isCorrect ? "check" : "x", { size: 16 }) : String(i + 1)),
         el("span", { class: "ex-option-body" }, [
           el("span", { class: "ex-option-text", text: o.text }),
           done && isCorrect ? el("span", { class: "lt-tag is-ok", text: "Poprawna" }) : null,
@@ -605,7 +605,7 @@ window.ELM = window.ELM || {};
           st.line.splice(i, 1);
           repaint(st.line.length ? "line-" + Math.min(i, st.line.length - 1) : "first");
         }
-      }, [bad ? el("span", { class: "ex-gap-mark", "aria-hidden": "true" }, ELM.icon("x", { size: 12 })) : null, t.text]));
+      }, [bad ? el("span", { class: "ex-gap-mark", "aria-hidden": "true" }, LM.icon("x", { size: 12 })) : null, t.text]));
     });
 
     const line = el("ol", { class: "ex-line" + (st.line.length ? "" : " is-empty"), "aria-label": "Twoje zdanie" },
@@ -639,7 +639,7 @@ window.ELM = window.ELM || {};
         el("button", {
           type: "button", class: "btn btn-link btn-small", disabled: !st.line.length,
           onclick: function () { st.line = []; repaint("first"); }
-        }, ELM.ui.withIcon("rotate-ccw", "Wyczyść")),
+        }, LM.ui.withIcon("rotate-ccw", "Wyczyść")),
         el("span", { class: "tool-note", text: "Backspace cofa ostatni wyraz." })
       ])
     ];
@@ -790,7 +790,7 @@ window.ELM = window.ELM || {};
       if (!r) return input;
       return el("span", { class: "ex-gap-result" }, [
         input,
-        el("span", { class: "ex-gap-mark " + (r.correct ? "is-ok" : "is-bad"), "aria-hidden": "true" }, ELM.icon(r.correct ? "check" : "x", { size: 16 })),
+        el("span", { class: "ex-gap-mark " + (r.correct ? "is-ok" : "is-bad"), "aria-hidden": "true" }, LM.icon(r.correct ? "check" : "x", { size: 16 })),
         r.correct ? null : el("span", { class: "ex-gap-model" }, [el("span", { class: "visually-hidden", text: "poprawnie: " }), gap.accepted[0]])
       ]);
     });
@@ -861,7 +861,7 @@ window.ELM = window.ELM || {};
           const chosen = st.pairs[i] !== undefined ? rightById(p, st.pairs[i]).text : "";
           return el("li", { class: ok ? "is-ok" : "is-bad" }, [
             el("span", { class: "ex-match-letter", "aria-hidden": "true", text: LETTERS[i] }),
-            el("span", { class: "ex-gap-mark", "aria-hidden": "true" }, ELM.icon(ok ? "check" : "x", { size: 16 })),
+            el("span", { class: "ex-gap-mark", "aria-hidden": "true" }, LM.icon(ok ? "check" : "x", { size: 16 })),
             el("span", { class: "ex-match-left", lang: langL, text: pair[0] }),
             el("span", { class: "ex-match-arrow", "aria-hidden": "true", text: "–" }),
             ok ? el("span", { class: "ex-match-right", lang: "en", text: pair[1] }) : el("span", { class: "ex-match-right" }, [
@@ -958,7 +958,7 @@ window.ELM = window.ELM || {};
       area,
       done ? null : el("div", { class: "ex-tools" }, [
         item.hint ? el("button", { type: "button", class: "btn btn-link btn-small", "aria-expanded": st.hint ? "true" : "false", "aria-controls": "ex-hint",
-          onclick: function () { st.hint = !st.hint; repaint("hint"); }, "data-fk": "hint" }, ELM.ui.withIcon("circle-question-mark", st.hint ? "Ukryj podpowiedź" : "Podpowiedź")) : null,
+          onclick: function () { st.hint = !st.hint; repaint("hint"); }, "data-fk": "hint" }, LM.ui.withIcon("circle-question-mark", st.hint ? "Ukryj podpowiedź" : "Podpowiedź")) : null,
         el("span", { class: "tool-note", text: "Enter sprawdza, Shift+Enter – nowa linia." })
       ]),
       item.hint && (st.hint || done) ? el("p", { class: "ex-hint", id: "ex-hint" }, [el("span", { class: "review-label", text: "Podpowiedź: " }), el("span", { lang: "en", text: item.hint })]) : null
@@ -990,7 +990,7 @@ window.ELM = window.ELM || {};
         el("div", { class: "ex-listen" }, [
           el("p", { class: "ex-listen-warn", role: "status", text: "Ta przeglądarka nie ma głosu angielskiego." }),
           el("p", { class: "tool-note ex-listen-note", text: "Dyktando wymaga syntezatora mowy. Pominięte zadanie nie liczy się do wyniku ani do statystyk." }),
-          done ? null : el("button", { type: "button", class: "btn btn-secondary", "data-fk": "first", onclick: check }, ELM.ui.withIcon("arrow-right", "Pomiń"))
+          done ? null : el("button", { type: "button", class: "btn btn-secondary", "data-fk": "first", onclick: check }, LM.ui.withIcon("arrow-right", "Pomiń"))
         ])
       ];
     }
@@ -1002,12 +1002,12 @@ window.ELM = window.ELM || {};
     };
     const used = !done && st.plays >= max;
     const controls = playing
-      ? [el("button", { type: "button", class: "btn btn-secondary", "data-fk": "listen", onclick: function () { stopSpeaking(); repaint("listen"); } }, ELM.ui.withIcon("pause", "Zatrzymaj"))]
+      ? [el("button", { type: "button", class: "btn btn-secondary", "data-fk": "listen", onclick: function () { stopSpeaking(); repaint("listen"); } }, LM.ui.withIcon("pause", "Zatrzymaj"))]
       : done
-        ? [el("button", { type: "button", class: "btn btn-secondary", "data-fk": "listen", onclick: function () { play(0.9, "listen"); } }, ELM.ui.withIcon("rotate-ccw", "Odtwórz jeszcze raz"))]
+        ? [el("button", { type: "button", class: "btn btn-secondary", "data-fk": "listen", onclick: function () { play(0.9, "listen"); } }, LM.ui.withIcon("rotate-ccw", "Odtwórz jeszcze raz"))]
         : [
-          el("button", { type: "button", class: "btn btn-primary", "data-fk": "listen", disabled: used, onclick: function () { play(0.9, "listen"); } }, ELM.ui.withIcon("play", st.plays ? "Odtwórz ponownie" : "Odtwórz")),
-          el("button", { type: "button", class: "btn btn-secondary", "data-fk": "slow", disabled: used, onclick: function () { play(0.7, "slow"); } }, ELM.ui.withIcon("timer", "Wolniej"))
+          el("button", { type: "button", class: "btn btn-primary", "data-fk": "listen", disabled: used, onclick: function () { play(0.9, "listen"); } }, LM.ui.withIcon("play", st.plays ? "Odtwórz ponownie" : "Odtwórz")),
+          el("button", { type: "button", class: "btn btn-secondary", "data-fk": "slow", disabled: used, onclick: function () { play(0.7, "slow"); } }, LM.ui.withIcon("timer", "Wolniej"))
         ];
     if (!done) controls.push(el("span", { class: "ex-listen-count", "aria-live": "polite", text: "Odsłuchy: " + Math.min(st.plays, max) + "/" + max }));
     const area = textField("textarea", {
@@ -1138,7 +1138,7 @@ window.ELM = window.ELM || {};
     if (!res.correct && res.spelling && (item.type === "translate" || item.type === "dictation")) verdict = "Prawie – uwaga na pisownię.";
     if (res.skipped) verdict = "Pominięte – bez głosu angielskiego to zadanie nie liczy się do wyniku.";
     lines.push(el("p", { class: "lt-verdict" }, [
-      el("span", { class: "c1-mark " + (res.correct ? "is-ok" : "is-bad"), "aria-hidden": "true" }, ELM.icon(res.correct ? "check" : res.skipped ? "arrow-right" : "x", { size: 14 })),
+      el("span", { class: "c1-mark " + (res.correct ? "is-ok" : "is-bad"), "aria-hidden": "true" }, LM.icon(res.correct ? "check" : res.skipped ? "arrow-right" : "x", { size: 14 })),
       el("strong", { text: verdict }),
       res.max > 1 ? el("span", { class: "ex-points num", text: " " + res.points + " / " + res.max + " pkt" }) : null
     ]));
@@ -1151,7 +1151,7 @@ window.ELM = window.ELM || {};
       if (keyOn(p)) lines.push(keywordLine(item, p.st.text));
       if (item.parts && !res.msg && !res.correct) {
         lines.push(el("p", { class: "c1-parts" }, res.parts.map(function (ok, k) {
-          return el("span", { class: "c1-part " + (ok ? "is-ok" : "is-bad") }, [ELM.icon(ok ? "check" : "x", { size: 14 }), " Część " + (k + 1) + ": " + (ok ? "dobrze" : "źle")]);
+          return el("span", { class: "c1-part " + (ok ? "is-ok" : "is-bad") }, [LM.icon(ok ? "check" : "x", { size: 14 }), " Część " + (k + 1) + ": " + (ok ? "dobrze" : "źle")]);
         })));
       }
     }
@@ -1162,12 +1162,12 @@ window.ELM = window.ELM || {};
       const model = sentence && !res.skipped ? (item.type === "translate" ? item.accepted : [item.text].concat(item.accepted || []))[res.closest || 0] : modelAnswer(item);
       lines.push(el("p", { class: "journal-row is-right" }, [el("span", { class: "review-label", text: res.skipped ? "Tekst: " : "Poprawnie: " }), el("strong", { lang: sentence ? "en" : null, text: model })]));
     }
-    if (p.reviewed) lines.push(el("p", { class: "ex-journal-note is-ok" }, [ELM.icon("check", { size: 14 }), " Zaliczona powtórka z dziennika"]));
+    if (p.reviewed) lines.push(el("p", { class: "ex-journal-note is-ok" }, [LM.icon("check", { size: 14 }), " Zaliczona powtórka z dziennika"]));
     if (p.journalLimit) lines.push(el("p", { class: "ex-journal-note", text: "Dziennik jest pełny na dziś – ten błąd zapisałem tylko w statystykach." }));
     if (item.explanation) lines.push(el("p", { text: item.explanation }));
     if (item.trap) {
       lines.push(el("div", { class: "ex-trap" }, [
-        el("span", { class: "ex-trap-icon", "aria-hidden": "true" }, ELM.icon("triangle-alert", { size: 16 })),
+        el("span", { class: "ex-trap-icon", "aria-hidden": "true" }, LM.icon("triangle-alert", { size: 16 })),
         el("p", null, [el("strong", { text: "Pułapka: " }), item.trap])
       ]));
     }
@@ -1180,7 +1180,7 @@ window.ELM = window.ELM || {};
 
   function head(title, lead) {
     return el("header", { class: "tool-head" }, [
-      ELM.ui.breadcrumbs([{ label: "Centrum ćwiczeń", href: BASE }, { label: title }]),
+      LM.ui.breadcrumbs([{ label: "Centrum ćwiczeń", href: BASE }, { label: title }]),
       el("h1", { class: "tool-title", text: title }),
       lead ? el("p", { class: "tool-lead", text: lead }) : null
     ]);
@@ -1188,7 +1188,7 @@ window.ELM = window.ELM || {};
 
   function backLink() {
     if (run.back) return run.back;
-    if (run.exam && ELM.exams) { const b = ELM.exams.setBack(run.exam); if (b) return b; }
+    if (run.exam && LM.exams) { const b = LM.exams.setBack(run.exam); if (b) return b; }
     const t = topicInfo(run.topic);
     return t ? { href: t.href, label: "Wróć do tematu" } : { href: BASE, label: "Wróć do Centrum ćwiczeń" };
   }
@@ -1214,10 +1214,10 @@ window.ELM = window.ELM || {};
         modeRadio("exam", "Egzamin", "Wszystkie wyjaśnienia na końcu.")
       ]),
       el("div", { class: "tool-actions" }, [
-        el("button", { type: "button", class: "btn btn-primary", onclick: begin, "data-fk": "start" }, ELM.ui.withIcon("play", "Zacznij")),
+        el("button", { type: "button", class: "btn btn-primary", onclick: begin, "data-fk": "start" }, LM.ui.withIcon("play", "Zacznij")),
         t ? el("a", { class: "btn btn-link", href: t.href }, "Wróć do tematu") : null,
         !t && run.exam ? el("a", { class: "btn btn-link", href: backLink().href }, backLink().label) : null,
-        ELM.notes && run.saveId ? ELM.notes.button("set:" + run.saveId, { title: "Ćwiczenia · " + run.title, route: location.hash }) : null
+        LM.notes && run.saveId ? LM.notes.button("set:" + run.saveId, { title: "Ćwiczenia · " + run.title, route: location.hash }) : null
       ])
     ]));
   }
@@ -1229,7 +1229,7 @@ window.ELM = window.ELM || {};
       if (p.res && run.mode === "learn") cls += p.res.correct ? " is-ok" : " is-bad";
       else if (p.res) cls += " is-done";
       if (i === run.i) cls += " is-current";
-      return el("li", { class: cls }, p.res && run.mode === "learn" ? ELM.icon(p.res.correct ? "check" : "x", { size: 12 }) : null);
+      return el("li", { class: cls }, p.res && run.mode === "learn" ? LM.icon(p.res.correct ? "check" : "x", { size: 12 }) : null);
     });
     return el("div", { class: "lt-progress ex-progress" }, [
       el("ol", { class: "lt-dots", "aria-hidden": "true" }, dots),
@@ -1242,7 +1242,7 @@ window.ELM = window.ELM || {};
     const done = !!p.res;
     view.appendChild(el("header", { class: "tool-head ex-head" }, [
       el("p", { class: "tool-eyebrow" }, el("a", { href: backLink().href }, run.title)),
-      run.hooks && run.hooks.progress ? run.hooks.progress() : progressDots() // powtórki (js/fiszki.js): jeden pasek postępu całej sesji
+      run.hooks && run.hooks.progress ? run.hooks.progress() : progressDots() // powtórki (js/cards.js): jeden pasek postępu całej sesji
     ]));
     let body;
     if (p.item.type === "multiple-choice") body = bodyChoice(p);
@@ -1257,16 +1257,16 @@ window.ELM = window.ELM || {};
 
     const last = run.i === run.items.length - 1;
     const primary = done
-      ? el("button", { type: "button", class: "btn btn-primary ex-next", onclick: next }, last ? ((run.hooks && run.hooks.nextLabel) || "Zobacz wynik") : ELM.ui.withIcon("arrow-right", "Dalej"))
+      ? el("button", { type: "button", class: "btn btn-primary ex-next", onclick: next }, last ? ((run.hooks && run.hooks.nextLabel) || "Zobacz wynik") : LM.ui.withIcon("arrow-right", "Dalej"))
       : el("button", { type: "button", class: "btn btn-primary ex-check", "data-fk": "check", onclick: check },
-        run.mode === "exam" ? (last ? "Zakończ i zobacz wynik" : ELM.ui.withIcon("arrow-right", "Dalej")) : "Sprawdź");
+        run.mode === "exam" ? (last ? "Zakończ i zobacz wynik" : LM.ui.withIcon("arrow-right", "Dalej")) : "Sprawdź");
 
     // Tekst do czytania (passage): na szerokim ekranie obok zadań, na wąskim zwijany
     if (run.passage) {
       view.classList.add("has-passage");
       view.appendChild(el("details", { class: "card ex-passage", open: true }, [
-        el("summary", { class: "ex-passage-title" }, [ELM.icon("file-text", { size: 18 }), " Tekst do zadań"]),
-        el("div", { class: "md ex-passage-text", lang: "en" }, ELM.markdown.render(ELM.markdown.parse(run.passage).blocks))
+        el("summary", { class: "ex-passage-title" }, [LM.icon("file-text", { size: 18 }), " Tekst do zadań"]),
+        el("div", { class: "md ex-passage-text", lang: "en" }, LM.markdown.render(LM.markdown.parse(run.passage).blocks))
       ]));
     }
     view.appendChild(el("section", {
@@ -1303,10 +1303,10 @@ window.ELM = window.ELM || {};
     const t = topicInfo(run.topic);
     const mix = mixFor(run.topic);
     const actions = [
-      wrong.length ? el("button", { type: "button", class: "btn btn-primary", onclick: retryWrong }, ELM.ui.withIcon("rotate-ccw", "Powtórz tylko błędne (" + wrong.length + ")")) : null,
+      wrong.length ? el("button", { type: "button", class: "btn btn-primary", onclick: retryWrong }, LM.ui.withIcon("rotate-ccw", "Powtórz tylko błędne (" + wrong.length + ")")) : null,
       el("button", { type: "button", class: "btn " + (wrong.length ? "btn-secondary" : "btn-primary"), onclick: redo }, run.isMix ? "Wylosuj nowy zestaw" : "Zrób jeszcze raz (inna kolejność)"),
       t ? el("a", { class: "btn btn-secondary", href: t.href }, "Wróć do tematu") : null,
-      !run.isMix ? el("a", { class: "btn btn-link", href: mix ? BASE + "/mix/" + mix.id : BASE + "/mieszane" }, ELM.ui.withIcon("arrow-right", "Dalej: zestaw mieszany")) : el("a", { class: "btn btn-link", href: BASE }, "Centrum ćwiczeń")
+      !run.isMix ? el("a", { class: "btn btn-link", href: mix ? BASE + "/mix/" + mix.id : BASE + "/mieszane" }, LM.ui.withIcon("arrow-right", "Dalej: zestaw mieszany")) : el("a", { class: "btn btn-link", href: BASE }, "Centrum ćwiczeń")
     ];
 
     const saved = run.saved;
@@ -1345,33 +1345,33 @@ window.ELM = window.ELM || {};
     ]));
   }
 
-  function plural(n, one, few, many) { return ELM.c1 ? ELM.c1.plural(n, one, few, many) : many; }
+  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
 
   /** Sugestia „Umiem” (spec 03, pkt 4): dwa ostatnie podejścia do zestawu ≥ 80%; nigdy nie zaznaczamy sami. */
   function umiemSuggestion() {
-    if (run.retry || run.isMix || !run.topic || !run.saved || !ELM.niezbednik) return null;
-    const es = ELM.niezbednik.essentialForTopic(run.topic);
+    if (run.retry || run.isMix || !run.topic || !run.saved || !LM.handbook) return null;
+    const es = LM.handbook.essentialForTopic(run.topic);
     if (!es) return null;
-    const ok = ELM.stats.suggestUmiem(run.saved.recent, { isUmiem: es.done, dismissedDay: pd().umiemDismissed(run.saveId), today: ELM.learn.today() });
+    const ok = LM.stats.suggestUmiem(run.saved.recent, { isUmiem: es.done, dismissedDay: pd().umiemDismissed(run.saveId), today: LM.learn.today() });
     return ok ? { essential: es, state: "ask" } : null;
   }
 
   function umiemBanner() {
     const s = run.suggest;
     if (!s) return null;
-    if (s.state === "done") return el("div", { class: "ex-umiem is-done", role: "status" }, [ELM.icon("check", { size: 18 }), el("p", { text: "Zaznaczono „Umiem”. Brawo!" })]);
+    if (s.state === "done") return el("div", { class: "ex-umiem is-done", role: "status" }, [LM.icon("check", { size: 18 }), el("p", { text: "Zaznaczono „Umiem”. Brawo!" })]);
     if (s.state === "later") return el("div", { class: "ex-umiem", role: "status" }, el("p", { class: "tool-note", text: "W porządku – nie zapytam o ten punkt przez 14 dni." }));
     return el("div", { class: "ex-umiem", role: "status" }, [
-      el("span", { class: "ex-umiem-icon", "aria-hidden": "true" }, ELM.icon("sparkles", { size: 20 })),
+      el("span", { class: "ex-umiem-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
       el("div", { class: "ex-umiem-body" }, [
         el("p", null, [el("strong", { text: "Dobry wynik! " }), "Dwa ostatnie podejścia to co najmniej 80%. Chcesz zaznaczyć ten punkt jako „Umiem”?"]),
         el("p", { class: "ex-umiem-item", text: s.essential.text }),
         el("p", { class: "ex-journal-actions" }, [
           el("button", { type: "button", class: "btn btn-primary btn-small ex-umiem-yes", onclick: function () {
-            ELM.app.setProgress(s.essential.id, true);
+            LM.app.setProgress(s.essential.id, true);
             s.state = "done";
             repaint(null);
-          } }, ELM.ui.withIcon("check", "Zaznacz „Umiem”")),
+          } }, LM.ui.withIcon("check", "Zaznacz „Umiem”")),
           el("button", { type: "button", class: "btn btn-link btn-small", onclick: function () {
             pd().dismissUmiem(run.saveId);
             s.state = "later";
@@ -1395,7 +1395,7 @@ window.ELM = window.ELM || {};
     const off = !pd().prefs().autoJournal && run.items.some(function (p) { return p.res && isWrong(p); });
     if (!lines.length && !off) return null;
     const box = el("div", { class: "ex-journal" }, [
-      el("span", { class: "ex-journal-icon", "aria-hidden": "true" }, ELM.icon("notebook-pen", { size: 18 })),
+      el("span", { class: "ex-journal-icon", "aria-hidden": "true" }, LM.icon("notebook-pen", { size: 18 })),
       el("div", { class: "ex-journal-body" }, [
         lines.length ? el("p", { text: lines.join(" ") }) : null,
         off ? el("p", { class: "tool-note", text: "Automatyczne dodawanie błędów do dziennika jest wyłączone (menu profilu → Ustawienia nauki)." }) : null,
@@ -1405,10 +1405,10 @@ window.ELM = window.ELM || {};
             j.added.slice().reverse().forEach(function (x) { pd().undoAuto(x.undo); });
             j.added = [];
             run.items.forEach(function (p) { p.journal = null; });
-            if (ELM.app.refreshLearning) ELM.app.refreshLearning();
+            if (LM.app.refreshLearning) LM.app.refreshLearning();
             repaint(null);
-            ELM.ui.toast({ text: "Cofnięto – błędy z tej sesji nie trafiły do dziennika.", duration: 3000 });
-          } }, ELM.ui.withIcon("rotate-ccw", "Cofnij wszystkie"))
+            LM.ui.toast({ text: "Cofnięto – błędy z tej sesji nie trafiły do dziennika.", duration: 3000 });
+          } }, LM.ui.withIcon("rotate-ccw", "Cofnij wszystkie"))
         ]) : null
       ])
     ]);
@@ -1443,7 +1443,7 @@ window.ELM = window.ELM || {};
 
   /** Pierwszy gotowy mix zawierający temat (link „Dalej: zestaw mieszany”). */
   function mixFor(topic) {
-    const index = ELM.CWICZENIA;
+    const index = LM.CWICZENIA;
     if (!index || !topic) return null;
     return index.mixes.find(function (m) { return m.topics.indexOf(topic) !== -1; }) || null;
   }
@@ -1480,7 +1480,7 @@ window.ELM = window.ELM || {};
   /** Przygotowuje sesję dla adresu (po wczytaniu danych rysuje ponownie). */
   function ensureRun(route) {
     const key = route.kind + ":" + (route.id || "");
-    const profile = ELM.app.getActiveProfile();
+    const profile = LM.app.getActiveProfile();
     if (run && run.key === key && run.profileId === (profile && profile.id)) return true;
     if (route.kind === "custom") return false;
     if (route.kind === "weak") { buildWeak(route, key, hrefOf(route)); return null; }
@@ -1490,7 +1490,7 @@ window.ELM = window.ELM || {};
         if (location.hash !== hash) return;
         if (!sets.length) { run = { key: key, missing: true, profileId: profile && profile.id }; return render(); }
         const s = sets[0];
-        const meta = (ELM.CWICZENIA && ELM.CWICZENIA.sets[s.id]) || {};
+        const meta = (LM.CWICZENIA && LM.CWICZENIA.sets[s.id]) || {};
         newRun({ key: key, title: s.title, intro: s.intro, items: s.items, mode: s.defaultMode, topic: s.topic, saveId: s.id, passage: s.passage || null, script: s.script || null, exam: meta.exam || null });
         render();
       });
@@ -1502,7 +1502,7 @@ window.ELM = window.ELM || {};
       if (!mix) { run = { key: key, missing: true, profileId: profile && profile.id }; return render(); }
       const pick = function () {
         return loadTopicItems(mix.topics).then(function (pool) {
-          const res = X().pickMix(playablePool(pool), { count: mix.count || 10, types: mix.types, exclude: pd().lastMix(), weight: ELM.stats.mixWeight(pd().attempts()) });
+          const res = X().pickMix(playablePool(pool), { count: mix.count || 10, types: mix.types, exclude: pd().lastMix(), weight: LM.stats.mixWeight(pd().attempts()) });
           newRun({
             key: key, title: mix.title, intro: mix.description + (res.items.length < (mix.count || 10) ? " W banku jest na razie " + res.items.length + " pasujących zadań." : ""),
             items: res.items, mode: mix.mode, saveId: mix.id, isMix: true
@@ -1520,14 +1520,14 @@ window.ELM = window.ELM || {};
    * 12 zadań, wagi: bez poprawnej odpowiedzi w ostatnich 14 dniach × 2.
    */
   function buildWeak(route, key, hash) {
-    const profile = ELM.app.getActiveProfile();
+    const profile = LM.app.getActiveProfile();
     const rec = pd().attempts();
-    const topics = route.id ? [route.id] : ELM.stats.weakTopics(rec).map(function (x) { return x.key; });
+    const topics = route.id ? [route.id] : LM.stats.weakTopics(rec).map(function (x) { return x.key; });
     const none = function (text) { run = { key: key, missing: true, missingText: text, profileId: profile && profile.id }; if (location.hash === hash) render(); };
     if (!topics.length) return none("Na razie nie widzę słabych punktów. Zrób kilka zestawów, a podpowiem, nad czym popracować.");
     const pick = function () {
       return loadTopicItems(topics).then(function (pool) {
-        return X().pickMix(playablePool(pool), { count: 12, weight: ELM.stats.weakWeight(pd().attempts(), ELM.learn.today()) });
+        return X().pickMix(playablePool(pool), { count: 12, weight: LM.stats.weakWeight(pd().attempts(), LM.learn.today()) });
       });
     };
     pick().then(function (res) {
@@ -1557,7 +1557,7 @@ window.ELM = window.ELM || {};
   }
 
   /**
-   * Jedno zadanie w sesji „Fiszki i błędy” (js/fiszki.js, paczka v8): zadanie ze słabych punktów w widoku silnika
+   * Jedno zadanie w sesji „Fiszki i błędy” (js/cards.js, paczka v8): zadanie ze słabych punktów w widoku silnika
    * (sprawdzenie, wyjaśnienie, dziennik podejść). cfg: { item, back: { href, label }, progress(), onDone({ correct, skipped }) }.
    * Po „Dalej” silnik oddaje wynik przez onDone i nie rysuje własnego ekranu wyniku.
    */
@@ -1608,7 +1608,7 @@ window.ELM = window.ELM || {};
   /** Zadanie na ekranie w bieżącej sesji (albo null) — dla testów automatycznych. */
   function currentItem() { return run && run.phase === "item" && run.items[run.i] ? run.items[run.i].item : null; }
 
-  /** Funkcje silnika dla ekranu wyniku testu końcowego (js/level-final.js). */
+  /** Funkcje silnika dla ekranu wyniku testu końcowego (js/final.js). */
   function api() {
     return {
       head: head, journalSummary: journalSummary, userAnswer: userAnswer, modelAnswer: modelAnswer,
@@ -1620,16 +1620,16 @@ window.ELM = window.ELM || {};
     const view = document.getElementById("view");
     route = route || parseRoute(location.hash) || (run && run.fixedRoute); // sesja powtórek (startSingle) działa pod adresem #/powtorki/sesja
     if (!route) return;
-    if (route.kind === "hub") return ELM.exerciseHub.render(route);
-    const profile = ELM.app.getActiveProfile();
+    if (route.kind === "hub") return LM.practiceHub.render(route);
+    const profile = LM.app.getActiveProfile();
     if (run && profile && run.profileId !== profile.id) run = null; // zmiana profilu = nowa sesja
     view.className = "view tool-view ex-view";
     view.dataset.file = hrefOf(route);
     view.replaceChildren();
     document.title = "Ćwiczenia · English Levels Map";
 
-    // Test końcowy poziomu: bez rozpoczętej sesji — ekran startowy (js/level-final.js)
-    if (route.kind === "final" && (!run || run.key !== "final:" + route.id)) return ELM.levelFinal.renderStart(view, route.id);
+    // Test końcowy poziomu: bez rozpoczętej sesji — ekran startowy (js/final.js)
+    if (route.kind === "final" && (!run || run.key !== "final:" + route.id)) return LM.final.renderStart(view, route.id);
 
     const ready = ensureRun(route);
     if (ready === false) {
@@ -1642,7 +1642,7 @@ window.ELM = window.ELM || {};
     if (run.phase === "intro") renderIntro(view);
     else if (run.phase === "item") renderItem(view);
     else renderDone(view);
-    const guest = ELM.ui.guestNote("wyniki, dziennik błędów i statystyki"); // tryb gościa (spec v7 14, P1)
+    const guest = LM.ui.guestNote("wyniki, dziennik błędów i statystyki"); // tryb gościa (spec v7 14, P1)
     if (guest) view.insertBefore(guest, view.firstChild);
   }
 
@@ -1682,7 +1682,7 @@ window.ELM = window.ELM || {};
     // S: odsłuch zdania (przed sprawdzeniem luka jest pauzą), działa też po sprawdzeniu; nie w polach tekstowych
     if (!typing && (e.key === "s" || e.key === "S")) {
       const text = X().speechText(p.item, !!p.res);
-      if (text && (p.item.kind !== "listening")) { e.preventDefault(); if (ELM.shortcuts) ELM.shortcuts.speak(text); }
+      if (text && (p.item.kind !== "listening")) { e.preventDefault(); if (LM.shortcuts) LM.shortcuts.speak(text); }
       return;
     }
     if (p.res || typing) return;
@@ -1727,7 +1727,7 @@ window.ELM = window.ELM || {};
       el("p", { class: "ex-set-score" + (score ? "" : " is-empty") }, score
         ? [el("span", null, ["Najlepszy: ", el("strong", { class: "num", text: scoreText(score.best) })]), el("span", null, ["Ostatni: ", el("span", { class: "num", text: scoreText(score.last) })])]
         : "Jeszcze nie rozwiązany"),
-      el("a", { class: "btn btn-primary btn-small", href: BASE + "/zestaw/" + meta.id, "aria-label": (score ? "Zacznij ponownie: " : "Zacznij: ") + meta.title }, ELM.ui.withIcon("play", score ? "Zacznij ponownie" : "Zacznij"))
+      el("a", { class: "btn btn-primary btn-small", href: BASE + "/zestaw/" + meta.id, "aria-label": (score ? "Zacznij ponownie: " : "Zacznij: ") + meta.title }, LM.ui.withIcon("play", score ? "Zacznij ponownie" : "Zacznij"))
     ]);
   }
 
@@ -1760,18 +1760,18 @@ window.ELM = window.ELM || {};
       box.replaceChildren();
       U.appendChildren(box, [
         el("h2", { class: "ex-topic-title", id: "ex-topic-title" }, [
-          el("span", { class: "callout-icon", "aria-hidden": "true" }, ELM.icon("list-checks", { size: 20 })),
+          el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon("list-checks", { size: 20 })),
           "Sprawdź się"
         ]),
         sets.length ? el("div", { class: "ex-set-grid" }, sets.map(setCard)) : null,
-        tense ? el("p", { class: "ex-topic-lab" }, el("a", { class: "btn btn-secondary", href: "#/laboratorium-czasow/" + tense.id }, ELM.ui.withIcon("flask-conical", "Zobacz na osi czasu: " + tense.name))) : null
+        tense ? el("p", { class: "ex-topic-lab" }, el("a", { class: "btn btn-secondary", href: "#/laboratorium-czasow/" + tense.id }, LM.ui.withIcon("flask-conical", "Zobacz na osi czasu: " + tense.name))) : null
       ]);
       box.hidden = false;
     });
     return box;
   }
 
-  ELM.exercises = {
+  LM.exercises = {
     BASE: BASE,
     asset: asset,
     TYPE_SHORT: TYPE_SHORT,
@@ -1795,4 +1795,4 @@ window.ELM = window.ELM || {};
     typesText: typesText,
     topicInfo: topicInfo
   };
-})(window.ELM);
+})(window.LM);

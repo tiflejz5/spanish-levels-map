@@ -1,5 +1,5 @@
 /*
- * fiszki-store.js — dane fiszek w localStorage (spec 10, sekcja 4).
+ * cards-store.js — dane fiszek w localStorage (spec 10, sekcja 4).
  *
  *   Klucz per profil: elm.<profileId>.fiszki
  *   { version: 1, cards: { <id>: stan }, userDecks: [...], userCards: [...], settings: {...}, daily: { <dzień>: {...} } }
@@ -8,11 +8,11 @@
  * zmianie, w try/catch; przy błędzie (np. brak miejsca) komunikat i praca dalej w pamięci.
  * Uszkodzony zapis jest odkładany jako elm.<id>.fiszki_corrupt_backup i zaczynamy od pustego.
  * Dane trafiają do eksportu (data.fiszki: { <profileId>: stan }), importu i resetu; stary plik
- * eksportu (bez data.fiszki) nie zmienia fiszek. Walidacja: ELM.fiszkiLogic.sanitizeState.
+ * eksportu (bez data.fiszki) nie zmienia fiszek. Walidacja: LM.cardsLogic.sanitizeState.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const PREFIX = "elm.";
@@ -21,8 +21,8 @@ window.ELM = window.ELM || {};
   const memory = {}; // { profileId: stan }
   let saveFailed = false;
 
-  function L() { return ELM.fiszkiLogic; }
-  function app() { return ELM.app; }
+  function L() { return LM.cardsLogic; }
+  function app() { return LM.app; }
   function keyOf(pid) { return PREFIX + pid + SUFFIX; }
   function activeId() { const p = app() && app().getActiveProfile(); return p ? p.id : null; }
 
@@ -69,7 +69,7 @@ window.ELM = window.ELM || {};
   function save(pid, force) {
     pid = pid || activeId();
     if (!pid || !memory[pid]) return true;
-    if (ELM.state && ELM.state.storageOk === false) return false;
+    if (LM.state && LM.state.storageOk === false) return false;
     if (!force) mergeStored(pid);
     try {
       memory[pid].daily = L().pruneDaily(memory[pid].daily, 400);
@@ -149,10 +149,10 @@ window.ELM = window.ELM || {};
     if (memory[pid] && mergeStored(pid) && app() && app().refreshLearning) app().refreshLearning();
   });
 
-  ELM.fiszkiStore = {
+  LM.cardsStore = {
     mergeStored: mergeStored,
     keyOf: keyOf, data: data, load: load, save: save,
     exportData: exportData, parseImport: parseImport, applyImport: applyImport,
     removeProfile: removeProfile, clearAll: clearAll, clearMigrationFlags: clearMigrationFlags
   };
-})(window.ELM);
+})(window.LM);

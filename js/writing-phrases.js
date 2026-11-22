@@ -1,7 +1,7 @@
 /*
- * pisanie-zwroty.js — bank zwrotów do pisania (paczka v6, spec 17, sekcja 2): #/pisanie/zwroty[/<grupa>].
+ * writing-phrases.js — bank zwrotów do pisania (paczka v6, spec 17, sekcja 2): #/pisanie/zwroty[/<grupa>].
  *
- * Dane: ELM.ZWROTY z dane/pisanie/zwroty-dane.js (generowany z dane/pisanie/zwroty.json przez tools/zbuduj-zwroty.js,
+ * Dane: LM.ZWROTY z dane/pisanie/zwroty-dane.js (generowany z dane/pisanie/zwroty.json przez tools/zbuduj-zwroty.js,
  * ładowany dopiero po wejściu do banku). Zwroty są pogrupowane według funkcji (opinia, kontrargument, …).
  *
  *   - filtry: poziom (B1 / B2 / C1) z przełącznikiem „do tego poziomu włącznie”, rejestr, gatunek, tylko ulubione,
@@ -10,15 +10,15 @@
  *   - zwrot: EN pogrubione, PL pod spodem, poziom i rejestr jako tekst, rozwijany przykład i uwaga,
  *   - akcje: Kopiuj, „Do Moich słów” (karta basic PL → EN w talii „Moje słowa”), gwiazdka (ulubione per profil, elm_phrases_v1).
  *
- *   ELM.pisanieZwroty.render(view, route)   ELM.pisanieZwroty.load() → Promise z { groups }
- *   ELM.pisanieZwroty.forTrainer(genre, examId) → [{ group, phrases }] do panelu w trenerze pisania
+ *   LM.writingPhrases.render(view, route)   LM.writingPhrases.load() → Promise z { groups }
+ *   LM.writingPhrases.forTrainer(genre, examId) → [{ group, phrases }] do panelu w trenerze pisania
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const HASH = "#/pisanie/zwroty";
 
@@ -31,17 +31,17 @@ window.ELM = window.ELM || {};
   const state = { level: "all", upTo: true, register: "all", genre: "all", query: "", starred: false };
   let loading = null;
 
-  function pd() { return ELM.profileData; }
-  function hasProfile() { return !!(ELM.app && ELM.app.getActiveProfile && ELM.app.getActiveProfile()); }
-  function fold(s) { return ELM.searchLogic && ELM.searchLogic.fold ? ELM.searchLogic.fold(String(s)) : String(s).toLowerCase(); }
-  function plural(n, a, b, c) { return ELM.pisanie ? ELM.pisanie.plural(n, a, b, c) : c; }
+  function pd() { return LM.profileData; }
+  function hasProfile() { return !!(LM.app && LM.app.getActiveProfile && LM.app.getActiveProfile()); }
+  function fold(s) { return LM.searchLogic && LM.searchLogic.fold ? LM.searchLogic.fold(String(s)) : String(s).toLowerCase(); }
+  function plural(n, a, b, c) { return LM.writing ? LM.writing.plural(n, a, b, c) : c; }
 
   /** Wczytuje bank (jednorazowo). */
   function load() {
-    if (ELM.ZWROTY) return Promise.resolve(ELM.ZWROTY);
+    if (LM.ZWROTY) return Promise.resolve(LM.ZWROTY);
     if (loading) return loading;
     const src = "dane/pisanie/zwroty-dane.js";
-    loading = ELM.loadScript(ELM.exercises && ELM.exercises.asset ? ELM.exercises.asset(src) : src).then(function () { return ELM.ZWROTY || null; }, function (err) {
+    loading = LM.loadScript(LM.exercises && LM.exercises.asset ? LM.exercises.asset(src) : src).then(function () { return LM.ZWROTY || null; }, function (err) {
       console.warn((err && err.message) + " — uruchom: npm run build");
       loading = null;
       return null;
@@ -56,7 +56,7 @@ window.ELM = window.ELM || {};
 
   /** Zwroty pasujące do gatunku i poziomu egzaminu, pogrupowane (panel w trenerze pisania). */
   function forTrainer(genre, examId) {
-    const data = ELM.ZWROTY;
+    const data = LM.ZWROTY;
     if (!data) return [];
     const max = LEVELS.indexOf(EXAM_LEVEL[examId] || "C1");
     const out = [];
@@ -84,7 +84,7 @@ window.ELM = window.ELM || {};
 
   // ---------- akcje ----------
 
-  function say(text) { ELM.ui.toast({ text: text, icon: "check" }); }
+  function say(text) { LM.ui.toast({ text: text, icon: "check" }); }
 
   function copyText(text) {
     function fallback() {
@@ -106,8 +106,8 @@ window.ELM = window.ELM || {};
 
   function render(view, route) {
     document.title = "Bank zwrotów · Pisanie · English Levels Map";
-    view.appendChild(ELM.ui.breadcrumbs([{ label: "Pisanie", href: ELM.pisanie.HASH }, { label: "Bank zwrotów" }]));
-    view.appendChild(ELM.pisanie.head("Bank zwrotów do pisania", "Zwroty według funkcji: od prostych do formalnych. Wybierz poziom, rejestr i gatunek, skopiuj frazę albo zapisz ją do powtórek."));
+    view.appendChild(LM.ui.breadcrumbs([{ label: "Pisanie", href: LM.writing.HASH }, { label: "Bank zwrotów" }]));
+    view.appendChild(LM.writing.head("Bank zwrotów do pisania", "Zwroty według funkcji: od prostych do formalnych. Wybierz poziom, rejestr i gatunek, skopiuj frazę albo zapisz ją do powtórek."));
     const body = el("div", { class: "zw-root" }, el("p", { class: "tool-note", role: "status", text: "Wczytuję zwroty…" }));
     view.appendChild(body);
     load().then(function (data) {
@@ -155,12 +155,12 @@ window.ELM = window.ELM || {};
       const starBtn = el("button", { type: "button", class: "btn btn-link btn-small zw-star" + (isStar ? " is-on" : ""), "aria-pressed": isStar ? "true" : "false",
         "aria-label": (isStar ? "Usuń z ulubionych: " : "Dodaj do ulubionych: ") + label,
         onclick: function () {
-          if (!hasProfile()) { ELM.app.withProfile("Ulubione zwroty zapisują się w profilu.", function () { starBtn.click(); }); return; }
+          if (!hasProfile()) { LM.app.withProfile("Ulubione zwroty zapisują się w profilu.", function () { starBtn.click(); }); return; }
           pd().togglePhraseStar(p.id);
           paint(true);
           const again = root.querySelector('[data-pid="' + p.id + '"] .zw-star');
           if (again) again.focus();
-        } }, [ELM.icon("star", { size: 16 }), isStar ? " Ulubiony" : " Ulubione"]);
+        } }, [LM.icon("star", { size: 16 }), isStar ? " Ulubiony" : " Ulubione"]);
       const details = p.example || p.note ? el("details", { class: "zw-more" }, [
         el("summary", { text: "Przykład i uwaga" }),
         p.example ? el("p", { class: "zw-example", lang: "en" }, [el("span", { class: "review-label", text: "Przykład: " }), p.example]) : null,
@@ -177,9 +177,9 @@ window.ELM = window.ELM || {};
           details
         ]),
         el("div", { class: "zw-actions" }, [
-          el("button", { type: "button", class: "btn btn-secondary btn-small", "aria-label": "Kopiuj: " + label, onclick: function () { copyText(label); } }, ELM.ui.withIcon("copy", "Kopiuj")),
-          ELM.fiszkiWords && ELM.fiszkiWords.addPhrase ? el("button", { type: "button", class: "btn btn-secondary btn-small", "aria-label": "Do Moich słów: " + label,
-            onclick: function () { ELM.fiszkiWords.addPhrase({ en: p.en, pl: p.pl, example: p.example, route: HASH, title: "Bank zwrotów" }); } }, ELM.ui.withIcon("layers", "Do Moich słów")) : null,
+          el("button", { type: "button", class: "btn btn-secondary btn-small", "aria-label": "Kopiuj: " + label, onclick: function () { copyText(label); } }, LM.ui.withIcon("copy", "Kopiuj")),
+          LM.words && LM.words.addPhrase ? el("button", { type: "button", class: "btn btn-secondary btn-small", "aria-label": "Do Moich słów: " + label,
+            onclick: function () { LM.words.addPhrase({ en: p.en, pl: p.pl, example: p.example, route: HASH, title: "Bank zwrotów" }); } }, LM.ui.withIcon("layers", "Do Moich słów")) : null,
           starBtn
         ])
       ]);
@@ -204,7 +204,7 @@ window.ELM = window.ELM || {};
         ]));
       });
       count.textContent = "Zwroty: " + shown + " z " + total + (state.starred && !hasProfile() ? " (ulubione wymagają profilu)" : "");
-      if (!shown) groupsBox.appendChild(ELM.ui.emptyState({ art: "brak-wynikow", title: state.starred ? "Nie masz jeszcze ulubionych zwrotów pasujących do filtrów. Kliknij „Ulubione” przy zwrocie." : "Brak zwrotów pasujących do filtrów." }));
+      if (!shown) groupsBox.appendChild(LM.ui.emptyState({ art: "brak-wynikow", title: state.starred ? "Nie masz jeszcze ulubionych zwrotów pasujących do filtrów. Kliknij „Ulubione” przy zwrocie." : "Brak zwrotów pasujących do filtrów." }));
       nav.appendChild(el("ul", { class: "zw-nav-list" }, navItems));
       if (keepScroll) window.scrollTo(0, y);
     }
@@ -212,5 +212,5 @@ window.ELM = window.ELM || {};
     if (focusGroup) { const t = document.getElementById("zw-" + focusGroup); if (t) setTimeout(function () { t.scrollIntoView({ block: "start" }); }, 0); }
   }
 
-  ELM.pisanieZwroty = { render: render, load: load, forTrainer: forTrainer, plain: plain, LEVELS: LEVELS, REGISTERS: REGISTERS, GENRES: GENRES, EXAM_LEVEL: EXAM_LEVEL };
-})(window.ELM);
+  LM.writingPhrases = { render: render, load: load, forTrainer: forTrainer, plain: plain, LEVELS: LEVELS, REGISTERS: REGISTERS, GENRES: GENRES, EXAM_LEVEL: EXAM_LEVEL };
+})(window.LM);

@@ -1,5 +1,5 @@
 /*
- * szlak-store.js — stan Szlaku w localStorage (spec v7 13, sekcja 3).
+ * trail-store.js — stan Szlaku w localStorage (spec v7 13, sekcja 3).
  *
  *   Klucz per profil: elm.<profileId>.szlak
  *   { version: 1, start: { level, source: "test"|"manual"|"default", at } | null,
@@ -7,20 +7,20 @@
  *     reviews: { <idPowtórki>: { best, of, at } } }
  *
  * Nowy klucz: istniejące klucze (elm_profiles_v1, elm_leveltest_v1, elm.<id>.fiszki…) bez zmian. Eksport / import / reset
- * i usuwanie profilu działają jak w js/fiszki-store.js (część „szlak” kopii; stary plik jej nie ma → dane zostają).
- * Walidacja: ELM.szlakLogic.sanitizeState. Bez profilu: stan tymczasowy, niezapisywany.
+ * i usuwanie profilu działają jak w js/cards-store.js (część „szlak” kopii; stary plik jej nie ma → dane zostają).
+ * Walidacja: LM.trailLogic.sanitizeState. Bez profilu: stan tymczasowy, niezapisywany.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   const PREFIX = "elm.";
   const SUFFIX = ".szlak";
   const memory = {}; // { profileId: stan }
 
-  function L() { return ELM.szlakLogic; }
-  function app() { return ELM.app; }
+  function L() { return LM.trailLogic; }
+  function app() { return LM.app; }
   function keyOf(pid) { return PREFIX + pid + SUFFIX; }
   function activeId() { const p = app() && app().getActiveProfile(); return p ? p.id : null; }
   function stamp() { return new Date().toISOString(); }
@@ -44,7 +44,7 @@ window.ELM = window.ELM || {};
   function save(pid) {
     pid = pid || activeId();
     if (!pid || !memory[pid]) return true;
-    if (ELM.state && ELM.state.storageOk === false) return false;
+    if (LM.state && LM.state.storageOk === false) return false;
     try { window.localStorage.setItem(keyOf(pid), JSON.stringify(memory[pid])); return true; } catch (e) {
       if (app() && app().reportSaveError) app().reportSaveError("Nie zapisano postępu na Szlaku! Brak miejsca albo dostępu do pamięci przeglądarki.");
       return false;
@@ -151,9 +151,9 @@ window.ELM = window.ELM || {};
 
   function clearAll() { storedIds().forEach(removeProfile); }
 
-  ELM.szlakStore = {
+  LM.trailStore = {
     keyOf: keyOf, load: load, data: data, save: save,
     setStart: setStart, recordQuiz: recordQuiz, skipStop: skipStop, unskipStop: unskipStop, recordReview: recordReview,
     exportData: exportData, parseImport: parseImport, applyImport: applyImport, removeProfile: removeProfile, clearAll: clearAll
   };
-})(window.ELM);
+})(window.LM);

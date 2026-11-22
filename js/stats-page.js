@@ -2,7 +2,7 @@
  * stats-page.js — „Statystyki” (#/statystyki, spec 03, sekcja 3).
  *
  * Dane: dziennik podejść (elm_attempts_v1), wyniki zestawów, Dziennik błędów
- * i dni aktywności — wszystko z ELM.profileData; liczenie w js/learning-stats.js.
+ * i dni aktywności — wszystko z LM.profileData; liczenie w js/learning-stats.js.
  *
  * Zasady (DESIGN.md 3.11 i skill dataviz):
  *   - przy < 5 próbach nie pokazujemy procentu jako oceny, tylko „za mało danych”;
@@ -11,12 +11,12 @@
  *     tekst zawsze w kolorach tekstu, nie w kolorze danych;
  *   - wykresy mają opis tekstowy / tabelę (role="img" + <details> z tabelą).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const HASH = "#/statystyki";
   const SVG_NS = "http://www.w3.org/2000/svg";
@@ -26,16 +26,16 @@ window.ELM = window.ELM || {};
   };
   const WEEKDAYS = ["Pn", "Wt", "Śr", "Cz", "Pt", "Sb", "Nd"];
 
-  function pd() { return ELM.profileData; }
-  function learn() { return ELM.learn; }
-  function S() { return ELM.stats; }
+  function pd() { return LM.profileData; }
+  function learn() { return LM.learn; }
+  function S() { return LM.stats; }
 
   function parseRoute(hash) { return /^#\/statystyki\/?$/.test(hash || "") ? { kind: "stats" } : null; }
 
-  function plural(n, one, few, many) { return ELM.c1 ? ELM.c1.plural(n, one, few, many) : many; }
+  function plural(n, one, few, many) { return LM.c1 ? LM.c1.plural(n, one, few, many) : many; }
   function tries(n) { return n + " " + plural(n, "próba", "próby", "prób"); }
   function pct(x) { return Math.round(x * 100) + "%"; }
-  function topic(id) { return (ELM.exercises && ELM.exercises.topicInfo(id)) || null; }
+  function topic(id) { return (LM.exercises && LM.exercises.topicInfo(id)) || null; }
 
   function svg(tag, attrs, children) {
     const n = document.createElementNS(SVG_NS, tag);
@@ -135,10 +135,10 @@ window.ELM = window.ELM || {};
             t ? el("a", { href: t.href, text: t.title }) : el("span", { text: r.key }),
             el("span", { class: "st-weak-meta" }, [el("strong", { class: "num", text: pct(r.acc) }), " · " + tries(r.n)])
           ]),
-          el("a", { class: "btn btn-secondary btn-small", href: "#/cwiczenia/slabe/" + r.key, "aria-label": "Ćwicz: " + (t ? t.title : r.key) }, ELM.ui.withIcon("dumbbell", "Ćwicz"))
+          el("a", { class: "btn btn-secondary btn-small", href: "#/cwiczenia/slabe/" + r.key, "aria-label": "Ćwicz: " + (t ? t.title : r.key) }, LM.ui.withIcon("dumbbell", "Ćwicz"))
         ]);
       })) : emptyNote("Na razie nie widzę słabych punktów. Zrób kilka zestawów, a podpowiem, nad czym popracować."),
-      weak.length ? el("p", { class: "st-weak-cta" }, el("a", { class: "btn btn-primary", href: "#/cwiczenia/slabe" }, ELM.ui.withIcon("target", "Trening słabych punktów"))) : null
+      weak.length ? el("p", { class: "st-weak-cta" }, el("a", { class: "btn btn-primary", href: "#/cwiczenia/slabe" }, LM.ui.withIcon("target", "Trening słabych punktów"))) : null
     ]);
   }
 
@@ -232,9 +232,9 @@ window.ELM = window.ELM || {};
   function journalTile(today) {
     const all = pd().entries();
     // Stan z kart „Moje błędy” (harmonogram fiszek), nie ze starego pola review
-    const isMastered = function (e) { const i = ELM.fiszki ? ELM.fiszki.mistakeInfo(e) : null; return !!(i && i.mastered); };
+    const isMastered = function (e) { const i = LM.cards ? LM.cards.mistakeInfo(e) : null; return !!(i && i.mastered); };
     const active = all.filter(function (e) { return !isMastered(e); });
-    const due = ELM.reviews ? ELM.reviews.breakdown().due.mistake : 0;
+    const due = LM.reviewQueue ? LM.reviewQueue.breakdown().due.mistake : 0;
     const mastered = all.length - active.length;
     const count = function (key) {
       const m = {};
@@ -267,11 +267,11 @@ window.ELM = window.ELM || {};
     view.replaceChildren();
     document.title = "Statystyki · English Levels Map";
     const hasData = rec.items.length || Object.keys(rec.aggregates).length;
-    view.appendChild(ELM.ui.pageHead({ eyebrow: "Twoje postępy · Statystyki", title: "Statystyki", lead: "Twoje odpowiedzi w zadaniach, trafność i aktywność. Liczymy tylko Twoje dane – bez porównań z innymi." }));
+    view.appendChild(LM.ui.pageHead({ eyebrow: "Twoje postępy · Statystyki", title: "Statystyki", lead: "Twoje odpowiedzi w zadaniach, trafność i aktywność. Liczymy tylko Twoje dane – bez porównań z innymi." }));
     if (!hasData) {
-      view.appendChild(ELM.ui.emptyState({
+      view.appendChild(LM.ui.emptyState({
         art: "pusty-dziennik", title: "Tu pojawią się Twoje statystyki", hint: "Rozwiąż pierwszy zestaw zadań – każda odpowiedź się liczy. Po kilku zestawach zobaczysz, które tematy idą Ci najlepiej, a które warto powtórzyć.",
-        action: el("a", { class: "btn btn-primary", href: "#/cwiczenia" }, ELM.ui.withIcon("dumbbell", "Przejdź do ćwiczeń"))
+        action: el("a", { class: "btn btn-primary", href: "#/cwiczenia" }, LM.ui.withIcon("dumbbell", "Przejdź do ćwiczeń"))
       }));
     }
     const grid = el("div", { class: "st-grid-layout" });
@@ -284,11 +284,11 @@ window.ELM = window.ELM || {};
     }
     grid.appendChild(activityTile(today));
     grid.appendChild(journalTile(today));
-    if (ELM.fiszki) { const f = ELM.fiszki.statsTile(); if (f) grid.appendChild(f); } // sekcja „Fiszki” (spec 10, 5.5)
-    if (ELM.szlak) { const z = ELM.szlak.statsTile(); if (z) grid.appendChild(z); } // sekcja „Szlak” (spec v7 13, 4.2)
+    if (LM.cards) { const f = LM.cards.statsTile(); if (f) grid.appendChild(f); } // sekcja „Fiszki” (spec 10, 5.5)
+    if (LM.trail) { const z = LM.trail.statsTile(); if (z) grid.appendChild(z); } // sekcja „Szlak” (spec v7 13, 4.2)
     view.appendChild(grid);
     U.setScroll(0);
   }
 
-  ELM.statsPage = { HASH: HASH, parseRoute: parseRoute, render: render };
-})(window.ELM);
+  LM.statsPage = { HASH: HASH, parseRoute: parseRoute, render: render };
+})(window.LM);

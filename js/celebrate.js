@@ -4,7 +4,7 @@
  * Kamienie milowe (id):
  *   first-umiem, total-10/25/50/100      — liczba „Umiem” w sumie
  *   lvl-a1-25 … lvl-c2-100               — postęp poziomu 25/50/75/100% (wszystkie kategorie)
- *   lvl-a1-passed … lvl-c2-passed        — zaliczony test końcowy poziomu (js/level-final.js, stan z elm_leveltests_v1)
+ *   lvl-a1-passed … lvl-c2-passed        — zaliczony test końcowy poziomu (js/final.js, stan z elm_leveltests_v1)
  *   streak-3/7/14/30                     — seria dni nauki
  *   first-review                         — pierwsza ukończona sesja powtórek (zdarzenie)
  *   level-test                           — ukończony test poziomu (zdarzenie)
@@ -18,12 +18,12 @@
  * (przejście CSS ≤ 600 ms), a przy zaliczonym teście końcowym — pieczątkę. Przy
  * prefers-reduced-motion od razu stan końcowy (paczka v7, C5; konfetti usunięte).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   const SHOW_MS = 2800;
@@ -35,10 +35,10 @@ window.ELM = window.ELM || {};
   let showing = null;
   let hideTimer = null;
 
-  function pd() { return ELM.profileData; }
+  function pd() { return LM.profileData; }
 
   function levelName(id) {
-    const level = ELM.state.content.levels.find(function (l) { return l.id === id; });
+    const level = LM.state.content.levels.find(function (l) { return l.id === id; });
     const m = level && /^\*\*(.+?)\*\*\s*$/.exec(String(level.description || "").split("\n")[0]);
     return m ? m[1] : "";
   }
@@ -61,7 +61,7 @@ window.ELM = window.ELM || {};
       const lvl = id.slice(4, 6).toUpperCase(), step = Number(id.slice(7));
       const name = levelName(lvl);
       if (step === 100) {
-        const next = ELM.LEVEL_IDS[ELM.LEVEL_IDS.indexOf(lvl) + 1];
+        const next = LM.LEVEL_IDS[LM.LEVEL_IDS.indexOf(lvl) + 1];
         return { title: lvl + " ukończony", text: "Cały poziom " + (name ? name + " " : "") + "ma „Umiem”." + (next ? " Następny przystanek: " + next + "." : " To koniec szlaku."), icon: "flag", level: lvl };
       }
       const label = { 25: "ćwierć drogi", 50: "połowa drogi", 75: "trzy czwarte drogi" }[step];
@@ -85,14 +85,14 @@ window.ELM = window.ELM || {};
   /** Kamienie wynikające ze stanu (bez zdarzeń). */
   function fromState() {
     const ids = [];
-    if (!ELM.state.content || !ELM.app.getActiveProfile()) return ids;
-    const total = ELM.app.countDone(ELM.state.progress);
+    if (!LM.state.content || !LM.app.getActiveProfile()) return ids;
+    const total = LM.app.countDone(LM.state.progress);
     TOTALS.forEach(function (n) { if (total >= n) ids.push(n === 1 ? "first-umiem" : "total-" + n); });
-    ELM.LEVEL_IDS.forEach(function (lvl) {
-      const s = ELM.app.getLevelStats(lvl);
+    LM.LEVEL_IDS.forEach(function (lvl) {
+      const s = LM.app.getLevelStats(lvl);
       LEVEL_STEPS.forEach(function (step) { if (s.total && s.percent >= step) ids.push("lvl-" + lvl.toLowerCase() + "-" + step); });
     });
-    const streak = ELM.learn.streak(pd().activityDays(), ELM.learn.today()).current;
+    const streak = LM.learn.streak(pd().activityDays(), LM.learn.today()).current;
     STREAKS.forEach(function (n) { if (streak >= n) ids.push("streak-" + n); });
     // Zaliczone testy końcowe poziomów (paczka v6): lvl-<poziom>-passed
     Object.keys(pd().passedLevels()).forEach(function (lvl) { ids.push("lvl-" + lvl.toLowerCase() + "-passed"); });
@@ -104,7 +104,7 @@ window.ELM = window.ELM || {};
    * { event: "test", level: "B1" }. Nowe kamienie trafiają do kolejki.
    */
   function check(evt) {
-    if (!ELM.app || !ELM.app.getActiveProfile() || !pd()) return;
+    if (!LM.app || !LM.app.getActiveProfile() || !pd()) return;
     const known = pd().celebrated();
     const now = fromState();
     if (known === null) {
@@ -160,7 +160,7 @@ window.ELM = window.ELM || {};
     showing = null;
     document.removeEventListener("keydown", onKey);
     card.classList.add("is-leaving");
-    setTimeout(function () { card.remove(); next(); }, ELM.reducedMotion() ? 0 : 220);
+    setTimeout(function () { card.remove(); next(); }, LM.reducedMotion() ? 0 : 220);
   }
 
   function onKey(e) { if (e.key === "Escape") hide(); }
@@ -170,22 +170,22 @@ window.ELM = window.ELM || {};
     const passed = /^lvl-..-passed$/.test(item.id);
     const m = /^lvl-..-(\d+)$/.exec(item.id);
     if (!passed && !m) return null;
-    const now = ELM.app.getLevelStats(level).percent;
+    const now = LM.app.getLevelStats(level).percent;
     let from = now, to = now;
     if (m) {
       const step = Number(m[1]), at = LEVEL_STEPS.indexOf(step);
       from = at > 0 ? LEVEL_STEPS[at - 1] : 0;
       to = step;
     }
-    const reduce = ELM.reducedMotion();
-    const ring = ELM.ui.progressRing(reduce ? to : from, {
-      size: 56, stroke: 5, node: ELM.ui.landIcon(level, { size: 26 }), label: "Postęp poziomu " + level + ": " + to + "%"
+    const reduce = LM.reducedMotion();
+    const ring = LM.ui.progressRing(reduce ? to : from, {
+      size: 56, stroke: 5, node: LM.ui.landIcon(level, { size: 26 }), label: "Postęp poziomu " + level + ": " + to + "%"
     });
     ring.removeAttribute("role");
     ring.setAttribute("aria-hidden", "true");
     // Przejście od poprzedniej do nowej wartości (CSS na stroke-dashoffset, ≤ 600 ms)
-    if (!reduce && to !== from) setTimeout(function () { ELM.ui.setRing(ring, to); }, 250);
-    return el("span", { class: "celebration-trail" }, [ring, passed ? ELM.ui.stamp(level, { size: 22, fresh: !reduce }) : null]);
+    if (!reduce && to !== from) setTimeout(function () { LM.ui.setRing(ring, to); }, 250);
+    return el("span", { class: "celebration-trail" }, [ring, passed ? LM.ui.stamp(level, { size: 22, fresh: !reduce }) : null]);
   }
 
   function show(item) {
@@ -193,12 +193,12 @@ window.ELM = window.ELM || {};
     const lvlClass = c.level ? " lvl-" + c.level : "";
     const lead = c.level ? trailLead(item, c.level) : null;
     const card = el("div", { class: "celebration" + lvlClass + (c.level ? " has-level" : "") }, [
-      lead || el("span", { class: "celebration-icon", "aria-hidden": "true" }, ELM.icon(c.icon, { size: 22 })),
+      lead || el("span", { class: "celebration-icon", "aria-hidden": "true" }, LM.icon(c.icon, { size: 22 })),
       el("div", { class: "celebration-body" }, [
         el("p", { class: "celebration-title", text: c.title }),
         el("p", { class: "celebration-text", text: c.text })
       ]),
-      el("button", { type: "button", class: "icon-btn celebration-close", "aria-label": "Zamknij gratulacje", onclick: hide }, ELM.icon("x", { size: 18 }))
+      el("button", { type: "button", class: "icon-btn celebration-close", "aria-label": "Zamknij gratulacje", onclick: hide }, LM.icon("x", { size: 18 }))
     ]);
     card.addEventListener("click", function (e) { if (!e.target.closest(".celebration-close")) hide(); });
     // Pauza, gdy kursor albo fokus jest na karcie
@@ -215,9 +215,9 @@ window.ELM = window.ELM || {};
    * dostaje zapis tego, co już osiągnął (bez pokazywania). Nowy profil — pusty zbiór.
    */
   function baseline() {
-    if (!ELM.app || !ELM.app.getActiveProfile() || !pd() || !ELM.state.content) return;
+    if (!LM.app || !LM.app.getActiveProfile() || !pd() || !LM.state.content) return;
     if (pd().celebrated() === null) pd().addCelebrated(fromState());
   }
 
-  ELM.celebrate = { check: check, hide: hide, baseline: baseline };
-})(window.ELM);
+  LM.celebrate = { check: check, hide: hide, baseline: baseline };
+})(window.LM);

@@ -1,6 +1,6 @@
 /*
  * learning.js — czysta logika nauki (bez DOM i bez localStorage), więc da się
- * ją testować w Node: node tools/testy.js
+ * ją testować w Node: node tools/tests.js
  *
  *   today()            — dzisiejszy LOKALNY dzień "RRRR-MM-DD" (podmienialna w testach)
  *   REVIEW_STEPS       — odstępy powtórek w dniach, np. [1, 3, 7]
@@ -13,7 +13,7 @@
 (function (root) {
   "use strict";
 
-  const ELM = root.ELM = root.ELM || {};
+  const LM = root.LM = root.LM || {};
 
   // Odstępy kolejnych powtórek (w dniach). Zmień tablicę, żeby zmienić harmonogram.
   const REVIEW_STEPS = [1, 3, 7];
@@ -56,7 +56,7 @@
     addDays: addDays,
     diffDays: diffDays,
 
-    /** Dzisiejszy dzień użytkownika. W testach: ELM.learn.today = () => "2026-01-01". */
+    /** Dzisiejszy dzień użytkownika. W testach: LM.learn.today = () => "2026-01-01". */
     today: function () { return fromDate(new Date()); },
 
     // ---------- Powtórki ----------
@@ -214,5 +214,5 @@
     }
   };
 
-  ELM.learn = learn;
+  LM.learn = learn;
 })(typeof window !== "undefined" ? window : globalThis);

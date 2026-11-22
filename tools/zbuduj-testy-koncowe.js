@@ -4,7 +4,7 @@
  *
  * Wejście:  niezbednik/testy-poziomow/<a1|a2|b1|b2|c1|c2>.json   (zwykły zestaw silnika zadań + kind: "level-test")
  * Wyjście (GENEROWANE, nie edytuj ręcznie):
- *           niezbednik/testy-poziomow/<poziom>.js   ELM.LEVEL_TESTS["A1"] = pełny zestaw
+ *           niezbednik/testy-poziomow/<poziom>.js   LM.LEVEL_TESTS["A1"] = pełny zestaw
  *
  * Zadania dostają pola dziedziczone (level, tags, setId) oraz category — kategorię podstrony z
  * niezbednik/index.json (czasy, gramatyka, funkcje, slownictwo), po której losowanie dba o proporcje
@@ -41,8 +41,8 @@ LEVELS.forEach(function (l) {
   });
   fs.writeFileSync(path.join(DIR, l + ".js"),
     "/* Pula testu końcowego " + set.level + " — GENEROWANY przez tools/zbuduj-testy-koncowe.js, nie edytuj ręcznie. */\n" +
-    "window.ELM = window.ELM || {};\n" +
-    "(ELM.LEVEL_TESTS = ELM.LEVEL_TESTS || {})[" + JSON.stringify(set.level) + "] = " + JSON.stringify(set) + ";\n", "utf8");
+    "window.LM = window.LM || {};\n" +
+    "(LM.LEVEL_TESTS = LM.LEVEL_TESTS || {})[" + JSON.stringify(set.level) + "] = " + JSON.stringify(set) + ";\n", "utf8");
   pools++;
   items += set.items.length;
 });

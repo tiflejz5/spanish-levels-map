@@ -31,11 +31,11 @@
  *                    seen: { "<egzamin>:<część>": [ "<id karty>", … ] } — karty już wylosowane w bieżącym cyklu (losowanie bez powtórek).
  *                    Stary zapis bez tych pól jest poprawny.
  *   elm_leveltests_v1 { version: 1, profiles: { <id>: { levels: { "A1": { passedAt: "RRRR-MM-DD" | null, best: { score, total, date }, last: { score, total, date } } } } } }
- *                    — testy końcowe poziomów A1–C2 i znaczki „poziom zaliczony” (js/level-final.js, paczka v6);
+ *                    — testy końcowe poziomów A1–C2 i znaczki „poziom zaliczony” (js/final.js, paczka v6);
  *                      passedAt = dzień pierwszego zaliczenia (znaczek zostaje po późniejszej porażce);
  *                      to NIE jest elm_leveltest_v1 (szybki test poziomu)
  *   elm_phrases_v1   { version: 1, profiles: { <id>: { starred: [ "opinia-05", … ] } } }
- *                    — ulubione zwroty z banku zwrotów do pisania (js/pisanie-zwroty.js, paczka v6); id zwrotu z dane/pisanie/zwroty.json
+ *                    — ulubione zwroty z banku zwrotów do pisania (js/writing-phrases.js, paczka v6); id zwrotu z dane/pisanie/zwroty.json
  *
  * Wpis dziennika błędów:
  *   { id, createdAt: "RRRR-MM-DD", context, myAnswer, correct, rule, source,
@@ -44,15 +44,15 @@
  *         służy do wykrywania duplikatów.
  *
  * Seria nauki: zapisujemy WYŁĄCZNIE listę dni aktywności; serię liczy
- * ELM.learn.streak. Wszystkie dane trafiają do eksportu i są czyszczone
+ * LM.learn.streak. Wszystkie dane trafiają do eksportu i są czyszczone
  * przez „Resetuj dane”. Każdy dostęp do localStorage jest w try/catch.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
 
   const KEYS = { journal: "elm_journal_v1", activity: "elm_activity_v1", levelTest: "elm_leveltest_v1", celebrated: "elm_celebrated_v1", exercises: "elm_exercises_v1",
     attempts: "elm_attempts_v1", autojournal: "elm_autojournal_v1", prefs: "elm_learnprefs_v1", notes: "elm_notes_v1",
@@ -67,8 +67,8 @@ window.ELM = window.ELM || {};
     ref: 300, itemId: 120, id: 80, entries: 5000, days: 4000, title: 200, hash: 300, answers: 60
   };
 
-  function learn() { return ELM.learn; }
-  function app() { return ELM.app; }
+  function learn() { return LM.learn; }
+  function app() { return LM.app; }
 
   // ---------- localStorage ----------
 
@@ -89,7 +89,7 @@ window.ELM = window.ELM || {};
   }
 
   function save(kind) {
-    if (ELM.state && ELM.state.storageOk === false) return;
+    if (LM.state && LM.state.storageOk === false) return;
     try {
       window.localStorage.setItem(KEYS[kind], JSON.stringify(load(kind)));
     } catch (e) {
@@ -230,7 +230,7 @@ window.ELM = window.ELM || {};
       return { sets: sets, lastMix: lastMix, dismissed: dismissed };
     }
     if (kind === "attempts") {
-      const items = (Array.isArray(raw.items) ? raw.items : []).map(normalizeAttempt).filter(Boolean).slice(-ELM.stats.MAX_ATTEMPTS);
+      const items = (Array.isArray(raw.items) ? raw.items : []).map(normalizeAttempt).filter(Boolean).slice(-LM.stats.MAX_ATTEMPTS);
       const aggregates = {};
       if (U.isPlainObject(raw.aggregates)) Object.keys(raw.aggregates).slice(0, 20000).forEach(function (id) {
         const g = raw.aggregates[id];
@@ -439,7 +439,7 @@ window.ELM = window.ELM || {};
     entries().unshift(entry);
     save("journal");
     markActivity();
-    if (ELM.fiszki) ELM.fiszki.autoAddFromJournal(entry); // każdy wpis ma kartę „Moje błędy” od razu (paczka v8)
+    if (LM.cards) LM.cards.autoAddFromJournal(entry); // każdy wpis ma kartę „Moje błędy” od razu (paczka v8)
     return entry;
   }
 
@@ -451,7 +451,7 @@ window.ELM = window.ELM || {};
     if (!merged) return null;
     list[i] = merged;
     save("journal");
-    if (ELM.fiszki) ELM.fiszki.journalUpdated(merged);
+    if (LM.cards) LM.cards.journalUpdated(merged);
     return merged;
   }
 
@@ -461,7 +461,7 @@ window.ELM = window.ELM || {};
     if (i === -1) return;
     const gone = list.splice(i, 1)[0];
     save("journal");
-    if (ELM.fiszki) ELM.fiszki.journalRemoved(gone);
+    if (LM.cards) LM.cards.journalRemoved(gone);
   }
 
   /** Wynik powtórki: known = true („Wiedziałem(am)”) / false („Znowu błąd”). */
@@ -508,7 +508,7 @@ window.ELM = window.ELM || {};
     rec.days.push(today);
     if (rec.days.length > LIMITS.days) rec.days.splice(0, rec.days.length - LIMITS.days);
     save("activity");
-    if (ELM.celebrate) ELM.celebrate.check(); // nowy dzień nauki może zamknąć kamień milowy serii
+    if (LM.celebrate) LM.celebrate.check(); // nowy dzień nauki może zamknąć kamień milowy serii
   }
 
   function activityDays() { return record("activity", activeId()).days.slice(); }
@@ -683,7 +683,7 @@ window.ELM = window.ELM || {};
     const now = new Date();
     const a = normalizeAttempt(Object.assign({ t: now.toISOString(), day: learn().today() }, fields));
     if (!a) return null;
-    ELM.stats.pushAttempt(record("attempts", pid), a);
+    LM.stats.pushAttempt(record("attempts", pid), a);
     save("attempts");
     return a;
   }
@@ -736,7 +736,7 @@ window.ELM = window.ELM || {};
     if (!pid || !EX_ID.test(itemId) || !prefs().autoJournal) return null;
     const today = learn().today();
     const existing = entryForItem(itemId);
-    const plan = ELM.stats.planWrong(existing, { today: today, autoToday: autoCountToday() });
+    const plan = LM.stats.planWrong(existing, { today: today, autoToday: autoCountToday() });
     const meta = autoMeta();
     if (plan.action === "limit") return { action: "limit" };
     if (plan.action === "create") {
@@ -756,14 +756,14 @@ window.ELM = window.ELM || {};
     meta[itemId] = m;
     save("journal");
     save("autojournal");
-    if (ELM.fiszki) ELM.fiszki.journalWrong(existing); // karta wraca na jutro
+    if (LM.cards) LM.cards.journalWrong(existing); // karta wraca na jutro
     return { action: plan.action, entry: existing, undo: { kind: "update", itemId: itemId, entryId: existing.id, before: before } };
   }
 
   /** Poprawna odpowiedź: karta wpisu tego zadania, jeśli jest na dziś lub zaległa, dostaje „Dobrze” (harmonogram fiszek). */
   function recordCorrect(itemId) {
     const entry = activeId() ? entryForItem(itemId) : null;
-    if (!entry || !ELM.fiszki || !ELM.fiszki.journalCorrect(entry)) return null;
+    if (!entry || !LM.cards || !LM.cards.journalCorrect(entry)) return null;
     return { action: "review", entry: entry };
   }
 
@@ -794,7 +794,7 @@ window.ELM = window.ELM || {};
     record("autojournal", activeId()).items = {};
     save("journal");
     save("autojournal");
-    if (ELM.fiszki) removed.forEach(function (e) { ELM.fiszki.journalRemoved(e); });
+    if (LM.cards) removed.forEach(function (e) { LM.cards.journalRemoved(e); });
     return before - list.length;
   }
 
@@ -1008,7 +1008,7 @@ window.ELM = window.ELM || {};
     });
   }
 
-  ELM.profileData = {
+  LM.profileData = {
     KEYS: KEYS,
     CATEGORIES: CATEGORIES,
     LIMITS: LIMITS,
@@ -1077,5 +1077,5 @@ window.ELM = window.ELM || {};
   };
 
   // Jedna funkcja do zaznaczania dnia nauki, dostępna w całej aplikacji
-  ELM.markActivity = markActivity;
-})(window.ELM);
+  LM.markActivity = markActivity;
+})(window.LM);

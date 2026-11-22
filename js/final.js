@@ -1,22 +1,22 @@
 /*
- * level-final.js — testy końcowe poziomów A1–C2 (paczka v6, spec 13 sekcja 2).
+ * final.js — testy końcowe poziomów A1–C2 (paczka v6, spec 13 sekcja 2).
  *
  *   #/a1/test … #/c2/test   ekran startowy → sesja w trybie Egzamin w silniku zadań
- *                           (js/exercise-engine.js, ELM.exercises.startFinal) → wynik
+ *                           (js/exercise-engine.js, LM.exercises.startFinal) → wynik
  *
  * Pula 30 zadań poziomu: niezbednik/testy-poziomow/<poziom>.json → <poziom>.js (tools/zbuduj-testy-koncowe.js),
  * ładowana na żądanie. Losowanie 20 zadań z proporcjonalną reprezentacją kategorii i próg w punktach:
- * js/final-logic.js. Wynik i znaczek poziomu: ELM.profileData (elm_leveltests_v1).
+ * js/final-logic.js. Wynik i znaczek poziomu: LM.profileData (elm_leveltests_v1).
  *
  * Tu też: znaczek „poziom zaliczony” (Szlak, panel, nagłówek poziomu), karta „Test końcowy” na stronie poziomu
  * i podpowiedź na stronie „Dziś” (≥ 70% „Umiem” na poziomie).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
 
   const DRAW = 20;
@@ -25,14 +25,14 @@ window.ELM = window.ELM || {};
   const READY_PERCENT = 70; // od tylu % „Umiem” na poziomie podpowiadamy test końcowy
 
   const VERSION = (function () {
-    const s = document.querySelector('script[src*="js/level-final.js"]');
+    const s = document.querySelector('script[src*="js/final.js"]');
     const m = s && /[?&]v=(\d+)/.exec(s.getAttribute("src"));
     return m ? m[1] : "1";
   })();
 
-  function pd() { return ELM.profileData; }
-  function F() { return ELM.finalLogic; }
-  function levelHash(level) { return ELM.app.levelHash(level); }
+  function pd() { return LM.profileData; }
+  function F() { return LM.finalLogic; }
+  function levelHash(level) { return LM.app.levelHash(level); }
   function testHash(level) { return "#/" + String(level).toLowerCase() + "/test"; }
 
   /** „2026-11-12” → „12.11.2026”. */
@@ -47,7 +47,7 @@ window.ELM = window.ELM || {};
     return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
   }
 
-  function categories() { return (ELM.NIEZBEDNIK && ELM.NIEZBEDNIK.index.categories) || {}; }
+  function categories() { return (LM.NIEZBEDNIK && LM.NIEZBEDNIK.index.categories) || {}; }
   function categoryLabel(key) { return categories()[key] || key; }
   function categoryOf(item) { return item.category || "gramatyka"; }
 
@@ -57,7 +57,7 @@ window.ELM = window.ELM || {};
 
   /** Dzień zaliczenia poziomu aktywnego profilu („RRRR-MM-DD”) albo null. */
   function passedAt(level) {
-    const r = ELM.app.getActiveProfile() ? pd().finalResult(level) : null;
+    const r = LM.app.getActiveProfile() ? pd().finalResult(level) : null;
     return r && r.passedAt ? r.passedAt : null;
   }
 
@@ -76,7 +76,7 @@ window.ELM = window.ELM || {};
     if (!text) return null;
     opts = opts || {};
     return el("span", { class: "lvl-stamp lvl-" + level + (opts.cls ? " " + opts.cls : ""), "data-level": level }, [
-      el("span", { class: "lvl-stamp-icon", "aria-hidden": "true" }, ELM.icon("award", { size: opts.size || 14 })),
+      el("span", { class: "lvl-stamp-icon", "aria-hidden": "true" }, LM.icon("award", { size: opts.size || 14 })),
       opts.hideText ? null : el("span", { class: "visually-hidden", text: text })
     ]);
   }
@@ -86,7 +86,7 @@ window.ELM = window.ELM || {};
     const d = passedAt(level);
     if (!d) return null;
     return el("p", { class: "lvl-passed-label lvl-" + level }, [
-      el("span", { class: "lvl-stamp-icon", "aria-hidden": "true" }, ELM.icon("award", { size: 16 })),
+      el("span", { class: "lvl-stamp-icon", "aria-hidden": "true" }, LM.icon("award", { size: 16 })),
       el("span", { text: "Zaliczony · " + fmtDate(d) }),
       el("span", { class: "visually-hidden", text: " (test końcowy " + level + ")" })
     ]);
@@ -98,10 +98,10 @@ window.ELM = window.ELM || {};
 
   /** Pula poziomu (Promise → zestaw albo null, gdy pliku nie ma). */
   function load(level) {
-    if (ELM.LEVEL_TESTS && ELM.LEVEL_TESTS[level]) return Promise.resolve(ELM.LEVEL_TESTS[level]);
+    if (LM.LEVEL_TESTS && LM.LEVEL_TESTS[level]) return Promise.resolve(LM.LEVEL_TESTS[level]);
     const src = "niezbednik/testy-poziomow/" + level.toLowerCase() + ".js?v=" + VERSION;
-    return ELM.loadScript(src).then(function () {
-      return (ELM.LEVEL_TESTS && ELM.LEVEL_TESTS[level]) || null;
+    return LM.loadScript(src).then(function () {
+      return (LM.LEVEL_TESTS && LM.LEVEL_TESTS[level]) || null;
     }, function () { return null; });
   }
 
@@ -122,7 +122,7 @@ window.ELM = window.ELM || {};
     const info = pd().finalResult(level);
     const msg = el("p", { class: "tool-note lf-msg", role: "status", "aria-live": "polite" });
     const startBtn = el("button", { type: "button", class: "btn btn-primary", "data-fk": "start", onclick: function () { begin(level, startBtn, msg); } },
-      ELM.ui.withIcon("play", info ? "Zrób test ponownie" : "Rozpocznij test"));
+      LM.ui.withIcon("play", info ? "Zrób test ponownie" : "Rozpocznij test"));
     const when = passedText(level);
     view.appendChild(el("header", { class: "tool-head" }, [
       el("p", { class: "tool-eyebrow" }, el("a", { href: levelHash(level) }, "Poziom " + level)),
@@ -162,7 +162,7 @@ window.ELM = window.ELM || {};
   /** Nowe podejście: losowanie + sesja Egzamin pod #/<poziom>/test. */
   function start(level, set) {
     const items = F().drawItems(set.items, set.draw || DRAW, categoryOf);
-    ELM.exercises.startFinal({
+    LM.exercises.startFinal({
       level: level, title: set.title || "Test końcowy " + level, items: items, back: backTo(level),
       hooks: {
         finish: function (run, s) { return finish(level, set, run, s); },
@@ -190,11 +190,11 @@ window.ELM = window.ELM || {};
   /** Po zaliczeniu: odświeżenie panelu (znaczek) i gratulacje (kamień milowy lvl-<poziom>-passed). */
   function afterFinish(level, run) {
     if (!run.final || !run.final.passed) return;
-    if (ELM.render && ELM.render.renderSidebar) ELM.render.renderSidebar();
-    if (run.final.saved && run.final.saved.firstPass && ELM.celebrate) ELM.celebrate.check({ event: "final", level: level });
+    if (LM.render && LM.render.renderSidebar) LM.render.renderSidebar();
+    if (run.final.saved && run.final.saved.firstPass && LM.celebrate) LM.celebrate.check({ event: "final", level: level });
   }
 
-  function topicInfo(id) { return ELM.exercises.topicInfo(id); }
+  function topicInfo(id) { return LM.exercises.topicInfo(id); }
 
   function renderResult(view, run, api, level, set) {
     const fin = run.final;
@@ -222,9 +222,9 @@ window.ELM = window.ELM || {};
     const names = weak.slice(0, 3).map(function (t) { const i = topicInfo(t.topic); return i ? i.title : t.topic; });
     const sets = el("p", { class: "tool-note lf-sets", hidden: true });
     const actions = el("div", { class: "tool-actions" }, [
-      el("button", { type: "button", class: "btn " + (passed ? "btn-secondary" : "btn-primary"), "data-fk": "again", onclick: function () { start(level, set); } }, ELM.ui.withIcon("rotate-ccw", "Zrób test jeszcze raz")),
+      el("button", { type: "button", class: "btn " + (passed ? "btn-secondary" : "btn-primary"), "data-fk": "again", onclick: function () { start(level, set); } }, LM.ui.withIcon("rotate-ccw", "Zrób test jeszcze raz")),
       el("a", { class: "btn btn-secondary", href: levelHash(level) }, "Wróć do poziomu " + level),
-      passed ? el("a", { class: "btn btn-link", href: "#/dzis" }, ELM.ui.withIcon("arrow-right", "Zobacz Szlak")) : null
+      passed ? el("a", { class: "btn btn-link", href: "#/dzis" }, LM.ui.withIcon("arrow-right", "Zobacz Szlak")) : null
     ]);
 
     view.appendChild(el("section", { class: "card ex-result lf-result " + (passed ? "is-passed" : "is-failed"), "aria-live": "polite" }, [
@@ -233,7 +233,7 @@ window.ELM = window.ELM || {};
         el("span", { class: "ex-result-pct num", text: pct + "%" })
       ]),
       el("p", { class: "lf-verdict" }, [
-        el("span", { class: "c1-mark " + (passed ? "is-ok" : "is-bad"), "aria-hidden": "true" }, ELM.icon(passed ? "check" : "x", { size: 16 })),
+        el("span", { class: "c1-mark " + (passed ? "is-ok" : "is-bad"), "aria-hidden": "true" }, LM.icon(passed ? "check" : "x", { size: 16 })),
         el("strong", { text: passed ? "Zaliczony" : "Jeszcze nie" }),
         el("span", { class: "lf-need", text: " – próg " + fin.percent + "% (" + fin.needed + " z " + total + " pkt)" })
       ]),
@@ -260,7 +260,7 @@ window.ELM = window.ELM || {};
       actions
     ]));
     // „Zestawy do tych tematów” (tylko gdy te tematy mają zestawy ćwiczeń)
-    if (!passed && weak.length) ELM.exercises.loadIndex().then(function (index) {
+    if (!passed && weak.length) LM.exercises.loadIndex().then(function (index) {
       const found = [];
       weak.forEach(function (t) { (index.topics[t.topic] || []).forEach(function (id) { if (index.sets[id] && found.indexOf(id) === -1) found.push(id); }); });
       if (!found.length || !sets.isConnected) return;
@@ -295,34 +295,34 @@ window.ELM = window.ELM || {};
 
   /** Karta „Test końcowy A1” pod podsumowaniem poziomu. */
   function card(level) {
-    const info = ELM.app.getActiveProfile() ? pd().finalResult(level) : null;
+    const info = LM.app.getActiveProfile() ? pd().finalResult(level) : null;
     const when = passedText(level);
     return el("section", { class: "card lf-level-card lvl-" + level, "aria-labelledby": "lf-card-title" }, [
       el("div", { class: "lf-level-card-body" }, [
-        el("h2", { class: "section-title", id: "lf-card-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, ELM.icon("award", { size: 20 })), "Test końcowy " + level]),
+        el("h2", { class: "section-title", id: "lf-card-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon("award", { size: 20 })), "Test końcowy " + level]),
         el("p", { text: DRAW + " pytań z całego poziomu, ok. " + MINUTES + " minut. Zaliczenie od " + PASS + "% (" + pointsNeeded(DRAW, PASS) + " z " + DRAW + ") daje znaczek poziomu na Szlaku." }),
         when ? el("p", { class: "lf-passed" }, [stamp(level, { hideText: true }), el("strong", { text: when })]) : null,
         info ? el("p", { class: "tool-note", text: "Najlepszy wynik: " + info.best.score + "/" + info.best.total + " pkt (" + percentOf(info.best) + "%), ostatni: " + info.last.score + "/" + info.last.total + " (" + fmtDate(info.last.date) + ")." })
           : el("p", { class: "tool-note", text: "Test jest zawsze dostępny – możesz go zrobić bez zaznaczania „Umiem”." })
       ]),
-      el("a", { class: "btn btn-primary", href: testHash(level), "aria-label": (info ? "Zrób test końcowy ponownie: " : "Zacznij test końcowy: ") + level }, ELM.ui.withIcon("play", info ? "Zrób ponownie" : "Zacznij test"))
+      el("a", { class: "btn btn-primary", href: testHash(level), "aria-label": (info ? "Zrób test końcowy ponownie: " : "Zacznij test końcowy: ") + level }, LM.ui.withIcon("play", info ? "Zrób ponownie" : "Zacznij test"))
     ]);
   }
 
   /**
    * Podpowiedź na „Dziś”: najniższy poziom z ≥ 70% „Umiem” bez zaliczonego testu końcowego.
-   * stats = [{ id, percent, … }] jak w ELM.today. Zwraca kafelek albo null.
+   * stats = [{ id, percent, … }] jak w LM.today. Zwraca kafelek albo null.
    */
   /** Poziom gotowy na test końcowy (≥ 70% „Umiem”, jeszcze niezaliczony) z listy statystyk poziomów albo null (karta mapy na Dziś). */
   function readyLevel(stats) {
-    if (!ELM.app.getActiveProfile()) return null;
+    if (!LM.app.getActiveProfile()) return null;
     const passed = pd().passedLevels();
     return stats.find(function (x) { return x.total !== 0 && x.percent >= READY_PERCENT && !passed[x.id]; }) || null;
   }
 
 
   function todayTip(stats) {
-    if (!ELM.app.getActiveProfile()) return null;
+    if (!LM.app.getActiveProfile()) return null;
     const passed = pd().passedLevels();
     const s = stats.find(function (x) { return x.total !== 0 && x.percent >= READY_PERCENT && !passed[x.id]; });
     if (!s) return null;
@@ -331,14 +331,14 @@ window.ELM = window.ELM || {};
         el("h2", { class: "tile-title", text: "Gotowy na test końcowy " + s.id + "?" }),
         el("p", { class: "tool-note", text: "Masz już " + s.percent + "% punktów „Umiem” na poziomie " + s.id + ". " + DRAW + " pytań, ok. " + MINUTES + " minut, zaliczenie od " + PASS + "%." })
       ]),
-      el("a", { class: "btn btn-primary", href: testHash(s.id) }, ELM.ui.withIcon("award", "Zrób test końcowy " + s.id))
+      el("a", { class: "btn btn-primary", href: testHash(s.id) }, LM.ui.withIcon("award", "Zrób test końcowy " + s.id))
     ]);
   }
 
-  ELM.levelFinal = {
+  LM.final = {
     DRAW: DRAW, PASS: PASS, MINUTES: MINUTES,
     renderStart: renderStart, load: load, fmtDate: fmtDate,
     passedAt: passedAt, passedText: passedText, stamp: stamp, headerLabel: headerLabel,
     card: card, todayTip: todayTip, readyLevel: readyLevel, testHash: testHash
   };
-})(window.ELM);
+})(window.LM);

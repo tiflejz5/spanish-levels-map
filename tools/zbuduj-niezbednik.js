@@ -79,7 +79,7 @@ const header =
   " * Odśwież poleceniem: node tools/zbuduj-niezbednik.js\n" +
   " */\n";
 
-const body = "window.ELM = window.ELM || {};\nwindow.ELM.NIEZBEDNIK = " +
+const body = "window.LM = window.LM || {};\nwindow.LM.NIEZBEDNIK = " +
   JSON.stringify({ index: index, pages: pages, summaries: summaries, sciagi: sciagi, home: home }, null, 1) + ";\n";
 
 fs.writeFileSync(OUT, header + body, "utf8");
@@ -95,7 +95,7 @@ warnings.forEach(function (w) { console.log("UWAGA: " + w); });
 //   manifest.json   — sekcje, strony, zestawy ćwiczeń i trenery
 //   strony/*.md     — strony zakładki
 //   cwiczenia/*.json, trening/*.json, powiazania.json
-// Wynik: niezbednik/certyfikat-c1-dane.js (ELM.C1)
+// Wynik: niezbednik/certyfikat-c1-dane.js (LM.C1)
 // =====================================================================
 
 const C1_ROOT = path.join(ROOT, "certyfikat-c1");
@@ -134,7 +134,7 @@ if (fs.existsSync(path.join(C1_ROOT, "manifest.json"))) {
     "/*\n * PLIK GENEROWANY AUTOMATYCZNIE — nie edytuj ręcznie.\n" +
     " * Źródło: niezbednik/certyfikat-c1/\n" +
     " * Odśwież poleceniem: node tools/zbuduj-niezbednik.js\n */\n" +
-    "window.ELM = window.ELM || {};\nwindow.ELM.C1 = " + JSON.stringify(c1, null, 1) + ";\n", "utf8");
+    "window.LM = window.LM || {};\nwindow.LM.C1 = " + JSON.stringify(c1, null, 1) + ";\n", "utf8");
 
   console.log("Zapisano: " + path.relative(process.cwd(), C1_OUT));
   console.log("Certyfikat C1: strony " + Object.keys(c1.pages).length + ", zestawy " + Object.keys(c1.exercises).length +
@@ -150,7 +150,7 @@ if (fs.existsSync(path.join(C1_ROOT, "manifest.json"))) {
 // Sprawdza skill, passage przy reading (długość: A1–B1 30–80, B2–C2 60–130 słów),
 // ostrzega „UWAGA”, gdy poziom ma < 8 pytań albo brak w nim umiejętności;
 // w konsoli podsumowanie poziom × umiejętność (spec v6 13, 1.5).
-// Wynik: niezbednik/test-poziomu-dane.js (ELM.LEVEL_TEST). Pytania z błędami
+// Wynik: niezbednik/test-poziomu-dane.js (LM.LEVEL_TEST). Pytania z błędami
 // są pomijane (z ostrzeżeniem), reszta trafia do pliku.
 // =====================================================================
 
@@ -205,7 +205,7 @@ if (fs.existsSync(TEST_FILE)) {
     "/*\n * PLIK GENEROWANY AUTOMATYCZNIE — nie edytuj ręcznie.\n" +
     " * Źródło: niezbednik/test-poziomu/pytania.json\n" +
     " * Odśwież poleceniem: node tools/zbuduj-niezbednik.js\n */\n" +
-    "window.ELM = window.ELM || {};\nwindow.ELM.LEVEL_TEST = " + JSON.stringify({ version: 1, questions: questions }, null, 1) + ";\n", "utf8");
+    "window.LM = window.LM || {};\nwindow.LM.LEVEL_TEST = " + JSON.stringify({ version: 1, questions: questions }, null, 1) + ";\n", "utf8");
   const perLevel = LEVELS.map(function (l) { return l + ": " + questions.filter(function (q) { return q.level === l; }).length; }).join(", ");
   // Pula poziomu: co najmniej 8 pytań i każda umiejętność (inaczej test powtarza pytania albo pomija umiejętność)
   const skillOf = function (q) { return q.skill || "grammar"; };

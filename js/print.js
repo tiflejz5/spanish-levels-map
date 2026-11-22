@@ -4,11 +4,11 @@
  * Na czas druku wymusza jasny motyw i neutralny zakres kolorów (papier i atrament), a po wydruku przywraca
  * poprzednie ustawienia. Reszta (ukrywanie interfejsu, układ A4, odpowiedzi na końcu) jest w css/print.css.
  *
- *   ELM.print.now()   window.print() po wymuszeniu jasnego motywu (też dla przycisków „Drukuj”)
+ *   LM.print.now()   window.print() po wymuszeniu jasnego motywu (też dla przycisków „Drukuj”)
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
   let saved = null;
@@ -32,9 +32,9 @@ window.ELM = window.ELM || {};
   window.addEventListener("beforeprint", before);
   window.addEventListener("afterprint", after);
 
-  ELM.print = {
+  LM.print = {
     before: before,
     after: after,
     now: function () { window.print(); }
   };
-})(window.ELM);
+})(window.LM);

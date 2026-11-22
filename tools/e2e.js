@@ -1,7 +1,7 @@
 /*
- * e2e-start.js — testy przeglądarkowe poprawek przed startem (spec v7 14, P1, P3, P4, P5, P6).
+ * e2e.js — testy przeglądarkowe poprawek przed startem (spec v7 14, P1, P3, P4, P5, P6).
  *
- *   node tools/e2e-start.js            (albo: npm run e2e)
+ *   node tools/e2e.js            (albo: npm run e2e)
  *
  * Wymaga pakietu playwright-core (np. `npm i --no-save playwright-core`) i przeglądarki Chromium / Chrome / Edge.
  * Ścieżkę przeglądarki można podać w CHROME_PATH. Bez pakietu albo przeglądarki skrypt kończy się komunikatem
@@ -205,7 +205,7 @@ async function main() {
     for (let i = 0; i < 4; i++) {
       await s.page.waitForSelector(".ex-card .ex-option");
       const idx = await s.page.evaluate(function () {
-        const it = ELM.exercises.currentItem();
+        const it = LM.exercises.currentItem();
         const opts = [].slice.call(document.querySelectorAll(".ex-card .ex-option")).map(function (b) { return b.innerText.replace(/\s+/g, " ").trim().replace(/^\d /, ""); });
         return opts.indexOf(it.options[it.correct].trim());
       });
@@ -226,7 +226,7 @@ async function main() {
   await test("P2: po teście poziomu C1 Dziś i Szlak wskazują pierwszy przystanek C1, wcześniejsze krainy są „pominięte”", async function () {
     const s = await session(1280, 900, true);
     await visit(s.page, "#/dzis", 1200);
-    await s.page.evaluate(function () { ELM.profileData.saveTest({ date: ELM.learn.today(), level: "C1", answers: [{ id: "x", level: "C1", chosen: 0, correct: true }] }); });
+    await s.page.evaluate(function () { LM.profileData.saveTest({ date: LM.learn.today(), level: "C1", answers: [{ id: "x", level: "C1", chosen: 0, correct: true }] }); });
     await visit(s.page, "#/dzis", 1500);
     const t = await viewText(s.page);
     ok(/kraina C1/.test(t), "Dziś nie pokazuje krainy C1: " + t.slice(0, 120));
@@ -267,11 +267,11 @@ async function main() {
   await test("stary eksport (bez części „szlak”) importuje się bez błędów i nie kasuje Szlaku; nowy eksport zawiera część „szlak”", async function () {
     const s = await session(1280, 900, true);
     await visit(s.page, "#/szlak", 1500);
-    await s.page.evaluate(function () { ELM.szlakStore.recordQuiz("a1-01", 4); });
-    const exported = await s.page.evaluate(function () { return ELM.szlakStore.exportData(); });
+    await s.page.evaluate(function () { LM.trailStore.recordQuiz("a1-01", 4); });
+    const exported = await s.page.evaluate(function () { return LM.trailStore.exportData(); });
     ok(exported.p_e2e && exported.p_e2e.stops["a1-01"].best === 4, "eksport szlaku");
     const res = await s.page.evaluate(function () {
-      try { const parsed = ELM.szlakStore.parseImport(undefined); ELM.szlakStore.applyImport(parsed, ["p_e2e"]); return { parsed: parsed, kept: !!localStorage.getItem("elm.p_e2e.szlak") }; } catch (e) { return { error: e.message }; }
+      try { const parsed = LM.trailStore.parseImport(undefined); LM.trailStore.applyImport(parsed, ["p_e2e"]); return { parsed: parsed, kept: !!localStorage.getItem("elm.p_e2e.szlak") }; } catch (e) { return { error: e.message }; }
     });
     ok(!res.error && res.parsed === null && res.kept, "stary plik: " + JSON.stringify(res));
     await s.ctx.close();

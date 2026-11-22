@@ -1,38 +1,38 @@
 /*
- * exercise-hub.js — „Centrum ćwiczeń” (#/cwiczenia, spec 02, część B):
+ * practice-hub.js — „Centrum ćwiczeń” (#/cwiczenia, spec 02, część B):
  *   1. Zestawy tematów (z dane/cwiczenia-tematy.json) według poziomu i kategorii, filtr poziomu,
  *   2. Zestawy mieszane: gotowe (dane/mixes.json) i generator,
  *   3. Trening słabych punktów (spec 03, pkt 5): tematy z ≥ 5 próbami i trafnością < 70%.
  *
  * Generator: poziom (zakres), tematy (chipy wg kategorii, skrót „Wszystkie czasy”),
- * typy zadań (bez dyktanda, gdy przeglądarka nie ma głosu angielskiego), liczba (10/15/20), tryb. Losowanie: ELM.exLogic.pickMix (równo po
+ * typy zadań (bez dyktanda, gdy przeglądarka nie ma głosu angielskiego), liczba (10/15/20), tryb. Losowanie: LM.exLogic.pickMix (równo po
  * tematach, bez zadań z ostatniej sesji mieszanej, gdy starcza puli; ≤ 2 tego samego
  * typu pod rząd) z wagami z dziennika podejść: trafność < 60% × 2, nigdy niewidziane × 1,5.
- * Sesję uruchamia ELM.exercises.startCustom (adres #/cwiczenia/sesja).
+ * Sesję uruchamia LM.exercises.startCustom (adres #/cwiczenia/sesja).
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const LEVELS = ["A1", "A2", "B1", "B2", "C1", "C2"];
   const COUNTS = [10, 15, 20];
 
-  function ex() { return ELM.exercises; }
-  function pd() { return ELM.profileData; }
+  function ex() { return LM.exercises; }
+  function pd() { return LM.profileData; }
 
   // Stan strony (w pamięci karty)
   const filter = { level: "" };
   const gen = { from: "A1", to: "C2", topics: null, types: null, count: 10, mode: "learn", message: "" };
 
   /** Kategorie z niezbednik/index.json ({ czasy: "Czasy", … }). */
-  function categories() { return (ELM.NIEZBEDNIK && ELM.NIEZBEDNIK.index.categories) || {}; }
+  function categories() { return (LM.NIEZBEDNIK && LM.NIEZBEDNIK.index.categories) || {}; }
 
   /** Punkt niezbędnika po id: { id, level, category, title, href }. */
   function topicMeta(id) {
-    const N = ELM.NIEZBEDNIK;
+    const N = LM.NIEZBEDNIK;
     if (!N) return null;
     for (const lvl of N.index.levels) {
       const item = lvl.items.find(function (it) { return it.id === id; });
@@ -52,7 +52,7 @@ window.ELM = window.ELM || {};
   function chip(label, on, onclick, extra) {
     return el("button", Object.assign({
       type: "button", class: "chip-btn" + (on ? " is-active" : ""), "aria-pressed": on ? "true" : "false", onclick: onclick
-    }, extra || {}), [on ? ELM.icon("check", { size: 16 }) : null, label]);
+    }, extra || {}), [on ? LM.icon("check", { size: 16 }) : null, label]);
   }
 
   function rerender(focusSel) {
@@ -105,7 +105,7 @@ window.ELM = window.ELM || {};
   }
 
   function levelName(id) {
-    const level = ELM.state.content.levels.find(function (l) { return l.id === id; });
+    const level = LM.state.content.levels.find(function (l) { return l.id === id; });
     const m = level && /^\*\*(.+?)\*\*/.exec(String(level.description || ""));
     return m ? m[1] : "";
   }
@@ -120,14 +120,14 @@ window.ELM = window.ELM || {};
     const topics = m.topics.map(topicMeta).filter(Boolean);
     const withSets = m.topics.filter(function (t) { return index.topics[t]; }).length;
     return el("article", { class: "card ex-set-card hub-mix" }, [
-      el("p", { class: "hub-mix-level" }, [ELM.icon("shuffle", { size: 16 }), el("span", { text: m.level })]),
+      el("p", { class: "hub-mix-level" }, [LM.icon("shuffle", { size: 16 }), el("span", { text: m.level })]),
       el("h3", { class: "ex-set-title", text: m.title }),
       el("p", { class: "ex-set-meta", text: m.description }),
       el("p", { class: "ex-set-meta", text: (m.count || 10) + " zadań · " + types + " · tematy: " + topics.length + (withSets < m.topics.length ? " (z zadaniami: " + withSets + ")" : "") }),
       el("p", { class: "ex-set-score" + (score ? "" : " is-empty") }, score
         ? [el("span", null, ["Najlepszy: ", el("strong", { class: "num", text: score.best.score + "/" + score.best.total })]), el("span", null, ["Ostatni: ", el("span", { class: "num", text: score.last.score + "/" + score.last.total })])]
         : "Jeszcze nie rozwiązany"),
-      el("a", { class: "btn btn-primary btn-small", href: ex().BASE + "/mix/" + m.id, "aria-label": "Zacznij: " + m.title }, ELM.ui.withIcon("play", "Zacznij"))
+      el("a", { class: "btn btn-primary btn-small", href: ex().BASE + "/mix/" + m.id, "aria-label": "Zacznij: " + m.title }, LM.ui.withIcon("play", "Zacznij"))
     ]);
   }
 
@@ -141,7 +141,7 @@ window.ELM = window.ELM || {};
     Object.keys(index.sets).forEach(function (id) { Object.keys(index.sets[id].types).forEach(function (t) { types[t] = true; }); });
     // Dyktando tylko z głosem angielskim w przeglądarce
     if (ex().noEnglishVoice()) delete types.dictation;
-    return ELM.exLogic.TYPES.filter(function (t) { return types[t]; });
+    return LM.exLogic.TYPES.filter(function (t) { return types[t]; });
   }
 
   function generator(index) {
@@ -174,7 +174,7 @@ window.ELM = window.ELM || {};
     const czasy = topics.filter(function (t) { return t.category === "czasy"; }).map(function (t) { return t.id; });
 
     return el("form", { class: "card hub-gen", "aria-labelledby": "hub-gen-title", onsubmit: function (e) { e.preventDefault(); generate(index); } }, [
-      el("h3", { class: "hub-gen-title", id: "hub-gen-title" }, [el("span", { "aria-hidden": "true" }, ELM.icon("shuffle", { size: 20 })), "Wylosuj własny zestaw"]),
+      el("h3", { class: "hub-gen-title", id: "hub-gen-title" }, [el("span", { "aria-hidden": "true" }, LM.icon("shuffle", { size: 20 })), "Wylosuj własny zestaw"]),
       el("fieldset", { class: "hub-gen-row" }, [
         el("legend", { class: "field-label", text: "Poziom" }),
         el("div", { class: "hub-gen-levels" }, [levelSelect("from", "od"), levelSelect("to", "do")])
@@ -224,7 +224,7 @@ window.ELM = window.ELM || {};
         ])
       ]),
       el("p", { class: "hub-gen-msg", role: "status", "aria-live": "polite", text: gen.message }),
-      el("div", { class: "tool-actions" }, el("button", { type: "submit", class: "btn btn-primary" }, ELM.ui.withIcon("shuffle", "Losuj zestaw")))
+      el("div", { class: "tool-actions" }, el("button", { type: "submit", class: "btn btn-primary" }, LM.ui.withIcon("shuffle", "Losuj zestaw")))
     ]);
   }
 
@@ -239,7 +239,7 @@ window.ELM = window.ELM || {};
     function pick() {
       return ex().loadTopicItems(topics).then(function (pool) {
         pool = ex().playablePool(pool).filter(function (it) { return !it.level || levelIn(it.level, from, to); });
-        const res = ELM.exLogic.pickMix(pool, { count: count, types: types, exclude: pd().lastMix(), weight: ELM.stats.mixWeight(pd().attempts()) });
+        const res = LM.exLogic.pickMix(pool, { count: count, types: types, exclude: pd().lastMix(), weight: LM.stats.mixWeight(pd().attempts()) });
         return res;
       });
     }
@@ -268,9 +268,9 @@ window.ELM = window.ELM || {};
   // =====================================================================
 
   function weakCard() {
-    const weak = ELM.stats.weakTopics(pd().attempts());
+    const weak = LM.stats.weakTopics(pd().attempts());
     return el("div", { class: "card hub-soon hub-weak" }, [
-      el("span", { class: "hub-soon-icon", "aria-hidden": "true" }, ELM.icon("target", { size: 22 })),
+      el("span", { class: "hub-soon-icon", "aria-hidden": "true" }, LM.icon("target", { size: 22 })),
       el("div", null, weak.length ? [
         el("p", { class: "hub-soon-title" }, [el("strong", { text: "Najwięcej trudności sprawiają Ci:" })]),
         el("ul", { class: "hub-weak-list" }, weak.map(function (w) {
@@ -278,7 +278,7 @@ window.ELM = window.ELM || {};
           return el("li", null, [t ? el("a", { href: t.href, text: t.title }) : w.key, el("span", { class: "tool-note", text: " – " + Math.round(w.acc * 100) + "% z " + w.n + " prób" })]);
         })),
         el("p", { class: "tool-note", text: "12 zadań z tych tematów; częściej trafiają te, których ostatnio nie udało się rozwiązać." }),
-        el("a", { class: "btn btn-primary", href: ex().BASE + "/slabe" }, ELM.ui.withIcon("target", "Zacznij trening"))
+        el("a", { class: "btn btn-primary", href: ex().BASE + "/slabe" }, LM.ui.withIcon("target", "Zacznij trening"))
       ] : [
         el("p", { class: "hub-soon-title" }, [el("strong", { text: "Na razie nie widzę słabych punktów" })]),
         el("p", { class: "tool-note", text: "Zrób kilka zestawów, a podpowiem, nad czym popracować. Trening pojawi się, gdy temat będzie miał co najmniej 5 prób i trafność poniżej 70%." })
@@ -294,7 +294,7 @@ window.ELM = window.ELM || {};
     const view = document.getElementById("view");
     view.className = "view tool-view hub-view";
     view.dataset.file = ex().BASE;
-    view.replaceChildren(ELM.ui.pageHead({ eyebrow: "Nauka · Ćwiczenia", title: "Centrum ćwiczeń", lead: "Zestawy zadań do tematów, gotowe zestawy mieszane i losowanie własnego zestawu. Wybór formy, układanie zdań, szukanie błędów, luki do wpisania, dopasowanie par, transformacje, tłumaczenie i dyktando – w trybie Nauki albo Egzaminu. Wyniki liczą się w punktach." }));
+    view.replaceChildren(LM.ui.pageHead({ eyebrow: "Nauka · Ćwiczenia", title: "Centrum ćwiczeń", lead: "Zestawy zadań do tematów, gotowe zestawy mieszane i losowanie własnego zestawu. Wybór formy, układanie zdań, szukanie błędów, luki do wpisania, dopasowanie par, transformacje, tłumaczenie i dyktando – w trybie Nauki albo Egzaminu. Wyniki liczą się w punktach." }));
     document.title = "Centrum ćwiczeń · English Levels Map";
     ex().loadIndex().then(function (index) {
       const now = ex().parseRoute(location.hash);
@@ -319,5 +319,5 @@ window.ELM = window.ELM || {};
     });
   }
 
-  ELM.exerciseHub = { render: render };
-})(window.ELM);
+  LM.practiceHub = { render: render };
+})(window.LM);

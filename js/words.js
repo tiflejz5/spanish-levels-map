@@ -1,33 +1,33 @@
 /*
- * fiszki-words.js — „Moje słowa” (paczka v6, spec 14): słowo albo wyrażenie zaznaczone w tekście aplikacji
+ * words.js — „Moje słowa” (paczka v6, spec 14): słowo albo wyrażenie zaznaczone w tekście aplikacji
  * trafia jednym kliknięciem do talii fiszek „Moje słowa” razem ze zdaniem, z którego pochodzi.
  *
  *   Menu przy zaznaczeniu   „Do Moich słów” (skrót M) i „Utwórz fiszkę…” (skrót Ctrl/Cmd+Shift+F)
  *   Zasięg zaznaczania      podstrony i podsumowania poziomów, strony egzaminów i Certyfikatu C1 (.md),
  *                           karty Laboratorium czasów, teksty i transkrypty zadań PO sprawdzeniu odpowiedzi,
  *                           elementy z atrybutem data-fc-selectable (wzorce wypracowań, bank zwrotów, ściągi)
- *   Karta                   cloze ze zdaniem kontekstu (ELM.fiszkiLogic.makeWordCard), talia u-moje-slowa
+ *   Karta                   cloze ze zdaniem kontekstu (LM.cardsLogic.makeWordCard), talia u-moje-slowa
  *
- * Logika bez DOM (zdanie, luka, polskie znaki, deduplikacja, normalizacja pól): js/fiszki-logic.js.
+ * Logika bez DOM (zdanie, luka, polskie znaki, deduplikacja, normalizacja pól): js/cards-logic.js.
  * Dodanie słowa NIE jest aktywnością dnia (za łatwo nabić serię). Treści użytkownika tylko jako tekst.
  */
-window.ELM = window.ELM || {};
+window.LM = window.LM || {};
 
-(function (ELM) {
+(function (LM) {
   "use strict";
 
-  const U = ELM.utils;
+  const U = LM.utils;
   const el = U.el;
   const HASH = "#/powtorki/talie";
   const WORDS_HASH = "#/powtorki/moje-slowa";
   const WORDS_ID = "u-moje-slowa";
   const WORDS_TITLE = "Moje słowa";
 
-  function L() { return ELM.fiszkiLogic; }
-  function F() { return ELM.fiszki.internal; }
+  function L() { return LM.cardsLogic; }
+  function F() { return LM.cards.internal; }
   function st() { return F().st(); }
-  function hasProfile() { return !!(ELM.app && ELM.app.getActiveProfile()); }
-  function prefs() { return hasProfile() && ELM.profileData ? ELM.profileData.prefs() : { selectionMenu: true, highlightWords: false }; }
+  function hasProfile() { return !!(LM.app && LM.app.getActiveProfile()); }
+  function prefs() { return hasProfile() && LM.profileData ? LM.profileData.prefs() : { selectionMenu: true, highlightWords: false }; }
 
   // =====================================================================
   // ZASIĘG ZAZNACZANIA
@@ -70,7 +70,7 @@ window.ELM = window.ELM || {};
     const area = anchor.closest(AREAS);
     if (!area || !area.contains(focus)) return null;
     // Teksty i transkrypty w zadaniach — dopiero po sprawdzeniu odpowiedzi (nie rozpraszamy)
-    if (anchor.closest(".ex-passage-text, .ex-transcript, .ex-set-transcript") && !(ELM.exercises && ELM.exercises.textSelectable && ELM.exercises.textSelectable())) return null;
+    if (anchor.closest(".ex-passage-text, .ex-transcript, .ex-set-transcript") && !(LM.exercises && LM.exercises.textSelectable && LM.exercises.textSelectable())) return null;
     const text = s.toString().replace(/\s+/g, " ").trim().slice(0, 300);
     if (!text) return null;
     const block = anchor.closest(BLOCKS) || area;
@@ -109,17 +109,17 @@ window.ELM = window.ELM || {};
 
   function sameSentence(a, b) { return L().normalize(a) === L().normalize(b); }
 
-  function say(text, extra) { ELM.ui.toast(Object.assign({ text: text, icon: "layers" }, extra || {})); }
+  function say(text, extra) { LM.ui.toast(Object.assign({ text: text, icon: "layers" }, extra || {})); }
 
   // =====================================================================
   // DODAWANIE
   // =====================================================================
 
-  function refreshOpenView() { if (ELM.state && ELM.state.view === "fiszki" && ELM.fiszki.render) ELM.fiszki.render(); }
+  function refreshOpenView() { if (LM.state && LM.state.view === "fiszki" && LM.cards.render) LM.cards.render(); }
 
   /** „Dodaj znaczenie”: małe okno z jednym polem, Enter zapisuje (wypełnia hint karty). */
   function addMeaning(id, word) {
-    ELM.dialogs.prompt({ title: "Znaczenie słowa „" + word + "”", label: "Znaczenie po polsku", confirmLabel: "Zapisz" }).then(function (value) {
+    LM.dialogs.prompt({ title: "Znaczenie słowa „" + word + "”", label: "Znaczenie po polsku", confirmLabel: "Zapisz" }).then(function (value) {
       if (!value) return;
       const c = st().userCards.find(function (x) { return x.id === id; });
       if (!c) return;
@@ -154,13 +154,13 @@ window.ELM = window.ELM || {};
   }
 
   function showWord(word) {
-    if (ELM.fiszkiWords && ELM.fiszkiWords.focusWord) ELM.fiszkiWords.focusWord(word);
+    if (LM.words && LM.words.focusWord) LM.words.focusWord(word);
     location.hash = WORDS_HASH;
   }
 
   /** „Do Moich słów”: karta z luką jednym kliknięciem; duplikat (to samo słowo) → „Pokaż” / „Dodaj drugi przykład”. */
   function addWord(i) {
-    if (!hasProfile()) { ELM.app.withProfile("Słowa zapisują się w profilu.", function () { addWord(i); }); return null; }
+    if (!hasProfile()) { LM.app.withProfile("Słowa zapisują się w profilu.", function () { addWord(i); }); return null; }
     if (!i || !i.canWord) return null;
     const sentence = L().extractSentence(i.blockText, i.word);
     const dup = findByWord(i.word);
@@ -172,13 +172,13 @@ window.ELM = window.ELM || {};
       say("Masz już „" + wordOf(dup) + "” w Moich słowach.", { actions: actions });
       return dup;
     }
-    const res = L().makeWordCard({ selection: i.word, sentence: sentence, source: i.source, day: ELM.learn.today() });
+    const res = L().makeWordCard({ selection: i.word, sentence: sentence, source: i.source, day: LM.learn.today() });
     if (res.error) { say(res.error); return null; }
-    ELM.fiszkiBrowse.ensureDeck(WORDS_ID, WORDS_TITLE, "words");
-    const added = ELM.fiszkiBrowse.addCard(WORDS_ID, res.card);
+    LM.cardsBrowse.ensureDeck(WORDS_ID, WORDS_TITLE, "words");
+    const added = LM.cardsBrowse.addCard(WORDS_ID, res.card);
     say("Dodano „" + i.word + "” do Moich słów", { actions: [
       { label: "Dodaj znaczenie", onClick: function () { addMeaning(added.id, i.word); } },
-      { label: "Cofnij", onClick: function () { ELM.fiszkiBrowse.removeCard(added.id); refreshOpenView(); } }
+      { label: "Cofnij", onClick: function () { LM.cardsBrowse.removeCard(added.id); refreshOpenView(); } }
     ] });
     refreshOpenView();
     refreshHighlights();
@@ -187,7 +187,7 @@ window.ELM = window.ELM || {};
 
   /** „Do Moich słów” z banku zwrotów: zwykła karta PL → EN ({ en, pl, example?, route, title }); duplikat (ta sama fraza) → „Pokaż”. */
   function addPhrase(p) {
-    if (!hasProfile()) { ELM.app.withProfile("Słowa zapisują się w profilu.", function () { addPhrase(p); }); return null; }
+    if (!hasProfile()) { LM.app.withProfile("Słowa zapisują się w profilu.", function () { addPhrase(p); }); return null; }
     const phrase = String(p.en || "").replace(/\s*…\s*$/, "").replace(/\s+/g, " ").trim();
     if (!phrase || !p.pl) return null;
     const dup = findByWord(phrase);
@@ -197,11 +197,11 @@ window.ELM = window.ELM || {};
     }
     const res = L().makeCard({ type: "basic", front: p.pl, back: phrase, hint: "", example: p.example || "" });
     if (res.error) { say(res.error); return null; }
-    Object.assign(res.card, L().sanitizeWordFields({ word: phrase, source: { route: p.route, title: p.title }, addedAt: ELM.learn.today() }));
-    ELM.fiszkiBrowse.ensureDeck(WORDS_ID, WORDS_TITLE, "words");
-    const added = ELM.fiszkiBrowse.addCard(WORDS_ID, res.card);
+    Object.assign(res.card, L().sanitizeWordFields({ word: phrase, source: { route: p.route, title: p.title }, addedAt: LM.learn.today() }));
+    LM.cardsBrowse.ensureDeck(WORDS_ID, WORDS_TITLE, "words");
+    const added = LM.cardsBrowse.addCard(WORDS_ID, res.card);
     say("Dodano „" + phrase + "” do Moich słów", { actions: [
-      { label: "Cofnij", onClick: function () { ELM.fiszkiBrowse.removeCard(added.id); refreshOpenView(); } }
+      { label: "Cofnij", onClick: function () { LM.cardsBrowse.removeCard(added.id); refreshOpenView(); } }
     ] });
     refreshOpenView();
     refreshHighlights();
@@ -226,7 +226,7 @@ window.ELM = window.ELM || {};
 
   function openForm() {
     const i = info();
-    if (i) ELM.fiszki.openFromSelection(i.text);
+    if (i) LM.cards.openFromSelection(i.text);
   }
 
   function updateMenu() {
@@ -235,7 +235,7 @@ window.ELM = window.ELM || {};
     ensureMenu();
     menu.replaceChildren.apply(menu, [
       i.canWord ? el("button", { type: "button", class: "btn btn-primary btn-small", title: "Skrót: M",
-        onclick: function () { const cur = info(); if (cur) addWord(cur); } }, ELM.ui.withIcon("layers", "Do Moich słów")) : null,
+        onclick: function () { const cur = info(); if (cur) addWord(cur); } }, LM.ui.withIcon("layers", "Do Moich słów")) : null,
       el("button", { type: "button", class: "btn btn-secondary btn-small", title: "Skrót: Ctrl+Shift+F", onclick: openForm }, "Utwórz fiszkę…")
     ].filter(Boolean));
     menu.hidden = false;
@@ -258,7 +258,7 @@ window.ELM = window.ELM || {};
     // Ctrl/Cmd+Shift+F: dotychczasowy formularz fiszki z zaznaczenia (bez zmian)
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === "F" || e.key === "f")) {
       const i = info();
-      if (i) { e.preventDefault(); ELM.fiszki.openFromSelection(i.text); }
+      if (i) { e.preventDefault(); LM.cards.openFromSelection(i.text); }
       return;
     }
     // M (bez modyfikatorów): „Do Moich słów”, tylko przy zaznaczeniu i poza polem tekstowym
@@ -303,15 +303,15 @@ window.ELM = window.ELM || {};
       delete cur.suspended;
       if (cur.state === "new" && !cur.reps) delete st().cards[id];
     } else {
-      st().cards[id] = Object.assign(ELM.fiszkiHarmonogram.newCard(), cur || {}, { suspended: true });
+      st().cards[id] = Object.assign(LM.cardsSchedule.newCard(), cur || {}, { suspended: true });
     }
     F().saveState();
   }
 
   function removeWord(c, after) {
-    ELM.dialogs.confirm({ title: "Usunąć słowo?", message: "„" + wordOf(c) + "” zostanie usunięte z Moich słów razem z historią powtórek.", confirmLabel: "Usuń słowo" }).then(function (ok) {
+    LM.dialogs.confirm({ title: "Usunąć słowo?", message: "„" + wordOf(c) + "” zostanie usunięte z Moich słów razem z historią powtórek.", confirmLabel: "Usuń słowo" }).then(function (ok) {
       if (!ok) return;
-      ELM.fiszkiBrowse.removeCard(c.id);
+      LM.cardsBrowse.removeCard(c.id);
       refreshHighlights();
       if (after) after();
     });
@@ -321,9 +321,9 @@ window.ELM = window.ELM || {};
 
   function renderView(root) {
     const all = cards();
-    root.appendChild(ELM.powtorki.header("slowa", "Słowa i wyrażenia zaznaczone w tekstach – każde ze zdaniem, z którego pochodzi."));
+    root.appendChild(LM.review.header("slowa", "Słowa i wyrażenia zaznaczone w tekstach – każde ze zdaniem, z którego pochodzi."));
     if (!all.length) {
-      root.appendChild(ELM.ui.emptyState({
+      root.appendChild(LM.ui.emptyState({
         class: "fw-empty", art: "pusty-notes", title: "Nie zapisałeś jeszcze żadnego słowa.", hint: "Zaznacz słowo albo wyrażenie w dowolnym tekście (strona niezbędnika, podsumowanie, egzamin, Laboratorium), a potem wybierz „Do Moich słów” albo naciśnij klawisz M. Karta z luką trafi tutaj i do codziennych powtórek."
       }));
       return;
@@ -331,10 +331,10 @@ window.ELM = window.ELM || {};
     root.appendChild(F().bar(L().deckStats(all, st().cards, Date.now())));
 
     const actions = [
-      el("a", { class: "btn btn-primary", href: "#/powtorki/sesja?tylko=talia:" + WORDS_ID }, ELM.ui.withIcon("play", "Ucz się teraz")),
+      el("a", { class: "btn btn-primary", href: "#/powtorki/sesja?tylko=talia:" + WORDS_ID }, LM.ui.withIcon("play", "Ucz się teraz")),
       el("button", { type: "button", class: "btn btn-secondary", onclick: function () {
         F().downloadText("moje-slowa.csv", "﻿" + L().exportWordsCsv(cards()), "text/csv;charset=utf-8");
-      } }, ELM.ui.withIcon("download", "Eksportuj CSV"))
+      } }, LM.ui.withIcon("download", "Eksportuj CSV"))
     ];
     root.appendChild(el("div", { class: "fc-actions" }, actions));
 
@@ -353,7 +353,7 @@ window.ELM = window.ELM || {};
     root.appendChild(list);
 
     function paint() {
-      const fold = ELM.searchLogic ? ELM.searchLogic.fold : function (x) { return String(x).toLowerCase(); };
+      const fold = LM.searchLogic ? LM.searchLogic.fold : function (x) { return String(x).toLowerCase(); };
       const q = fold(view.query.trim());
       const shown = cards().filter(function (c) {
         if (view.noMeaning && c.hint) return false;
@@ -367,7 +367,7 @@ window.ELM = window.ELM || {};
       });
       count.textContent = "Słowa: " + shown.length + " z " + all.length;
       list.replaceChildren();
-      if (!shown.length) { list.appendChild(ELM.ui.emptyState({ tag: "li", art: "brak-wynikow", title: "Brak słów pasujących do filtrów." })); return; }
+      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "brak-wynikow", title: "Brak słów pasujących do filtrów." })); return; }
       shown.forEach(function (c) { list.appendChild(row(c)); });
       if (focusedWord) {
         const first = list.querySelector(".fw-row"); focusedWord = null;
@@ -385,7 +385,7 @@ window.ELM = window.ELM || {};
           if (v) card.hint = v; else delete card.hint;
           F().saveState();
         } });
-      const src = c.source && c.source.route ? el("a", { class: "fw-source", href: c.source.route }, ELM.ui.withIcon("external-link", c.source.title || "Źródło")) : null;
+      const src = c.source && c.source.route ? el("a", { class: "fw-source", href: c.source.route }, LM.ui.withIcon("external-link", c.source.title || "Źródło")) : null;
       return el("li", { class: "card fc-row fw-row" }, [
         el("div", { class: "fc-row-main" }, [
           el("p", { class: "fc-row-front fw-word", text: w }),
@@ -395,13 +395,13 @@ window.ELM = window.ELM || {};
           el("p", { class: "tool-note" }, [src, src ? " · " : null, fmtDay(c) ? "dodano " + fmtDay(c) : null])
         ]),
         el("div", { class: "fc-row-meta" }, [
-          el("span", { class: "fc-status is-" + sts.id }, [ELM.icon(sts.icon, { size: 14 }), " " + sts.label]),
+          el("span", { class: "fc-status is-" + sts.id }, [LM.icon(sts.icon, { size: 14 }), " " + sts.label]),
           el("span", { class: "tool-note", text: x && x.state !== "new" ? "Termin: " + F().fmtWhen(Math.max(x.due, x.buriedUntil || 0)) : "Termin: —" })
         ]),
         el("div", { class: "fc-row-actions" }, [
           el("button", { type: "button", class: "btn btn-link btn-small", "aria-label": (x && x.suspended ? "Przywróć słowo: " : "Zawieś słowo: ") + w,
             onclick: function () { toggleSuspend(c.id); paint(); } }, x && x.suspended ? "Przywróć" : "Zawieś"),
-          el("button", { type: "button", class: "btn btn-danger btn-small", "aria-label": "Usuń słowo: " + w, onclick: function () { removeWord(c, function () { ELM.fiszki.render(); }); } }, "Usuń")
+          el("button", { type: "button", class: "btn btn-danger btn-small", "aria-label": "Usuń słowo: " + w, onclick: function () { removeWord(c, function () { LM.cards.render(); }); } }, "Usuń")
         ])
       ]);
     }
@@ -535,9 +535,9 @@ window.ELM = window.ELM || {};
     refreshHighlights();
   }
 
-  ELM.fiszkiWords = {
+  LM.words = {
     WORDS_ID: WORDS_ID, WORDS_HASH: WORDS_HASH, info: info, addWord: addWord, addPhrase: addPhrase, addMeaning: addMeaning, addExample: addExample,
     cards: cards, wordOf: wordOf, sentenceOf: sentenceOf, findByWord: findByWord, hideMenu: hideMenu, prefsChanged: prefsChanged,
     refreshHighlights: refreshHighlights, renderView: renderView, focusWord: focusWord, counts: counts
   };
-})(window.ELM);
+})(window.LM);
