@@ -1,9 +1,9 @@
 /*
- * render.js — rysowanie widoków: lewy panel (poziomy), nagłówek poziomu,
- * kategorie, lista essentials z polem „Umiem” i podsumowanie poziomu.
+ * render.js — draws the views: left panel (levels), level header,
+ * the topic list with "I know this" checkboxes and the level summary.
  *
- * Treść listy jest tylko do odczytu (dawny „Tryb edycji” został usunięty).
- * Każdy tekst trafia do DOM jako tekst (textContent), nigdy jako HTML.
+ * The list is read-only (the old "Edit mode" was removed).
+ * Every text goes into the DOM as text (textContent), never as HTML.
  */
 window.LM = window.LM || {};
 
@@ -13,19 +13,19 @@ window.LM = window.LM || {};
   const U = LM.utils;
   const el = U.el;
 
-  // Skróty do innych części aplikacji (ładowane później, używane w trakcie działania)
+  // Shortcuts to other parts of the app (loaded later, used at run time)
   function app() { return LM.app; }
 
   // =====================================================================
   // ELEMENTY WSPÓLNE
   // =====================================================================
 
-  /** Wypełnienie paska jako transform: scaleX (animuje się płynnie, bez przeliczania układu). */
+  /** Bar fill as transform: scaleX (animates smoothly, without layout work). */
   function fillStyle(percent) {
     return "transform:scaleX(" + Math.max(0, Math.min(100, percent)) / 100 + ")";
   }
 
-  /** Pasek postępu. percent: 0–100. */
+  /** Progress bar. percent: 0–100. */
   function progressBar(percent, small, label) {
     return el("div", {
       class: "progress" + (small ? " is-small" : ""),
@@ -33,11 +33,11 @@ window.LM = window.LM || {};
       "aria-valuemin": "0",
       "aria-valuemax": "100",
       "aria-valuenow": String(percent),
-      "aria-label": label || "Postęp"
+      "aria-label": label || "Progress"
     }, el("div", { class: "progress-fill", style: fillStyle(percent) }));
   }
 
-  /** Okrągły przycisk z symbolem i czytelną etykietą dla czytników ekranu. */
+  /** Round button with a symbol and a readable label for screen readers. */
   function iconBtn(symbol, label, onClick, opts) {
     opts = opts || {};
     return el("button", {
@@ -50,7 +50,7 @@ window.LM = window.LM || {};
     }, LM.ICON_NODES && LM.ICON_NODES[symbol] ? LM.icon(symbol, { size: 18 }) : el("span", { "aria-hidden": "true", text: symbol }));
   }
 
-  /** Pusty stan z komunikatem. */
+  /** Empty state with a message. */
   function emptyState(message) {
     return el("div", { class: "empty-state" }, el("p", { class: "empty-state-text", text: message }));
   }
@@ -60,9 +60,9 @@ window.LM = window.LM || {};
   // =====================================================================
 
   /**
-   * Pozycja lewego panelu: ikona (zawsze widoczna, także w wąskim pasku)
-   * + etykieta (widoczna po rozwinięciu). Etykieta zostaje w DOM, więc
-   * czytniki ekranu zawsze znają nazwę pozycji.
+   * Item of the left panel: icon (always visible, also in the narrow rail)
+   * + label (visible when expanded). The label stays in the DOM, so
+   * screen readers always know the item's name.
    */
   function sbItem(o) {
     return el("a", {
@@ -78,27 +78,27 @@ window.LM = window.LM || {};
     ]);
   }
 
-  /** Poziom, którego test końcowy jest na ekranie (#/a1/test → "A1") albo null — wtedy w panelu świeci poziom, a nie „Ćwiczenia”. */
+  /** Level whose final test is on screen (#/a1/test → "A1") or null — then the panel highlights the level, not "Practice". */
   function finalTestLevel() {
     const m = /^#\/([abcABC][12])\/test\/?$/.exec(location.hash || "");
     return m ? m[1].toUpperCase() : null;
   }
 
-  /** Górna część lewego panelu: Dziś, Fiszki i błędy (jedna plakietka), Ćwiczenia, Lab czasów, Pisanie. */
+  /** Top of the left panel: Trail, Today, Review (one badge), Practice, the lab, Writing. */
   function renderToolsNav() {
     const box = document.getElementById("tools-nav");
     if (!box) return;
     const st = LM.state;
     const hasProfile = app().hasProfiles();
-    const reviews = hasProfile && LM.reviewQueue ? LM.reviewQueue.dueCount() : 0; // jedna liczba: DO POWTÓRKI (fiszki + Moje błędy + słabe punkty); nowe karty osobno (spec v7 14, P3)
+    const reviews = hasProfile && LM.reviewQueue ? LM.reviewQueue.dueCount() : 0; // one number: DUE (flashcards + My mistakes + weak spots); new cards apart (spec v7 14, P3)
     const items = [
-      { href: "#/trail", label: "Szlak", icon: "route", active: st.view === "trail" },
-      { href: "#/today", label: "Dziś", icon: "sunrise", active: st.view === "today" },
-      { href: "#/review", label: "Fiszki i błędy", icon: "layers", active: st.view === "review" || st.view === "cards" || st.view === "mistakes",
-        badge: reviews ? String(reviews) : null, badgeLabel: reviews ? reviews + " do powtórki" : null },
-      { href: "#/practice", label: "Ćwiczenia", icon: "dumbbell", active: st.view === "exercises" && !finalTestLevel() },
-      { href: "#/lab", label: "Lab czasów", icon: "flask-conical", active: st.view === "lab" },
-      { href: "#/writing", label: "Pisanie", icon: "pencil", active: st.view === "writing" }
+      { href: "#/trail", label: "Trail", icon: "route", active: st.view === "trail" },
+      { href: "#/today", label: "Today", icon: "sunrise", active: st.view === "today" },
+      { href: "#/review", label: "Review", icon: "layers", active: st.view === "review" || st.view === "cards" || st.view === "mistakes",
+        badge: reviews ? String(reviews) : null, badgeLabel: reviews ? reviews + " due" : null },
+      { href: "#/practice", label: "Practice", icon: "dumbbell", active: st.view === "exercises" && !finalTestLevel() },
+      { href: "#/lab", label: LM.APP.lab.title, icon: "flask-conical", active: st.view === "lab" },
+      { href: "#/writing", label: "Writing", icon: "pencil", active: st.view === "writing" }
     ];
     box.replaceChildren(el("ul", { class: "sb-list" }, items.map(function (it) {
       return el("li", null, sbItem({
@@ -118,8 +118,8 @@ window.LM = window.LM || {};
     return LM.syl.landName(levelId);
   }
 
-  // Elementy poziomów budujemy raz i potem tylko aktualizujemy (pierścienie
-  // i paski przechodzą płynnie z poprzedniej wartości, bez migania od zera).
+  // Level items are built once and then only updated (rings
+  // and bars move smoothly from the previous value, without flashing from zero).
   const levelNodes = {};
 
   function renderSidebar() {
@@ -128,7 +128,7 @@ window.LM = window.LM || {};
     const list = document.getElementById("level-list");
     const currentId = LM.today && LM.today.currentLevelId ? LM.today.currentLevelId() : null;
 
-    // Napis pod logo (stały; postęp w panelu dotyczy całych poziomów)
+    // Text under the logo (fixed; progress in the panel is for whole levels)
     document.getElementById("sidebar-category-name").textContent = LM.APP.tagline;
 
     let ul = list.querySelector(":scope > ul.sb-list");
@@ -136,7 +136,7 @@ window.LM = window.LM || {};
 
     LM.syl.levels().forEach(function (level) {
       const s = app().getLevelStats(level.id);
-      // Poziom jest wyróżniony na jego liście i jego podstronach
+      // A level is highlighted on its own page and its topic pages
       const active = ((st.view === "level" || st.view === "page") && level.id === st.ui.levelId) || finalTestLevel() === level.id;
       const name = levelName(level.id);
       let n = levelNodes[level.id];
@@ -145,14 +145,14 @@ window.LM = window.LM || {};
         const fill = el("div", { class: "progress-fill", style: "transform:scaleX(" + s.percent / 100 + ")" });
         const count = el("span", { class: "sb-label-sub num" });
         const title = el("span", { class: "sb-label-title" });
-        // Kółko poziomu w opakowaniu: na nim ląduje znaczek zaliczonego testu końcowego (paczka v6)
+        // Level circle in a wrapper: the stamp of a passed final test goes on it (pack v6)
         const ringWrap = el("span", { class: "sb-ring-wrap" }, [ring, el("span", { class: "sb-ring-code", "aria-hidden": "true", text: level.id })]);
         const a = sbItem({
           href: app().levelHash(level.id),
           cls: "is-level lvl-" + level.id,
           icon: ringWrap,
           label: [title, count, el("span", { class: "progress is-small sb-bar", "aria-hidden": "true" }, fill)],
-          // Ten sam adres co obecny: przerysuj listę (np. powrót na górę) zamiast nic nie robić
+          // Same address as now: redraw the list (e.g. back to the top) instead of doing nothing
           onclick: function (e) {
             if (location.hash === app().levelHash(level.id)) { e.preventDefault(); app().selectLevel(level.id); }
           }
@@ -166,38 +166,38 @@ window.LM = window.LM || {};
       n.a.classList.toggle("is-soon", soon);
       n.fill.style.transform = "scaleX(" + s.percent / 100 + ")";
       LM.ui.setRing(n.ring, s.percent);
-      n.ring.removeAttribute("role"); // nazwę i wartość ogłasza link (aria-label), pierścień jest ozdobą
+      n.ring.removeAttribute("role"); // the link announces name and value (aria-label); the ring is decoration
       n.ring.setAttribute("aria-hidden", "true");
       n.a.classList.toggle("is-active", active);
       if (active) n.a.setAttribute("aria-current", "page"); else n.a.removeAttribute("aria-current");
-      // Znaczek zaliczonego testu końcowego: ikona nagrody na kółku + tekst „A1 zaliczony 12.11.2026” w etykiecie linku
+      // Stamp of a passed final test: award icon on the circle + "A1 passed Nov 12, 2026" in the link label
       const passedText = LM.final ? LM.final.passedText(level.id) : null;
       const oldStamp = n.ringWrap.querySelector(".stamp");
       if (oldStamp) oldStamp.remove();
-      if (passedText) n.ringWrap.appendChild(LM.ui.stamp(level.id, { size: 16 })); // pieczątka ✓ w rogu kółka
+      if (passedText) n.ringWrap.appendChild(LM.ui.stamp(level.id, { size: 16 })); // ✓ stamp in the corner of the circle
       n.a.classList.toggle("is-passed", !!passedText);
       n.a.classList.toggle("is-current", level.id === currentId);
       n.a.setAttribute("aria-label", "Level " + level.id + (name ? ", " + name : "") + (soon ? ": coming soon" : ": " + s.done + " of " + s.total +
         " topics known (" + s.percent + "%)") + (passedText ? ". " + passedText : "") + (level.id === currentId ? ". Current land" : ""));
     });
 
-    // Pod poziomami: grupa „Egzaminy” z rejestru (E8, matury, B2…), na końcu Certyfikat C1 (własny moduł)
+    // Below the levels: the "Exams" group from the registry (hidden while it is empty)
     if (LM.exams) LM.exams.renderNav();
   }
 
   // =====================================================================
-  // TREŚĆ POZIOMU (prawa część)
+  // LEVEL CONTENT (right side)
   // =====================================================================
 
-  /** Widoki, które pokazują dane profilu: bez profilu mają kartę powitalną zamiast treści. */
+  /** Views that show profile data: without a profile they show a welcome card instead. */
   const PERSONAL_VIEWS = ["today", "review", "mistakes", "cards", "stats", "notes", "placement", "trail"];
 
   function renderMain(opts) {
     opts = opts || {};
-    // Tryb gościa (spec v7 14, P1): treści publiczne działają bez profilu, a akcje zapisujące proszą o profil
-    // (LM.profiles.requireProfile). Strony osobiste bez profilu pokazują kartę powitalną pod tym samym adresem.
+    // Guest mode (spec v7 14, P1): public content works without a profile, saving actions ask for one
+    // (LM.profiles.requireProfile). Personal pages without a profile show a welcome card at the same address.
     if (!app().hasProfiles() && PERSONAL_VIEWS.indexOf(LM.state.view) !== -1) return LM.profiles.renderWelcome({ personal: true });
-    // Strona główna, zakładka „Certyfikat C1” albo podstrona zamiast listy
+    // Home page, not found, a tool view or a topic page instead of the level page
     if (LM.state.view === "home") return LM.handbook.renderHome();
     if (LM.state.view === "notfound") return renderNotFound();
     if (LM.state.view === "exam") return LM.exams.render(LM.state.toolRoute);
@@ -258,8 +258,8 @@ window.LM = window.LM || {};
   // ---------- Level header ----------
 
   /**
-   * Nagłówek poziomu: duży znak poziomu w kolorze krainy, nazwa i cel (z opisu),
-   * pierścień postępu całego poziomu (wszystkie kategorie).
+   * Level header: the big level code in the land colour, its land name and goal,
+   * progress ring of the whole level.
    */
   function renderLevelHeader(level) {
     const name = levelName(level.id);

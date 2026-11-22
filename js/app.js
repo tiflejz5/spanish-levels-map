@@ -25,7 +25,7 @@ window.LM = window.LM || {};
     view: "home",
     route: null,
     toolRoute: null,
-    listScroll: 0 // pozycja przewinięcia listy, przywracana po powrocie z podstrony
+    listScroll: 0 // scroll position of the level page, restored when coming back from a topic page
   };
 
 
@@ -39,12 +39,12 @@ window.LM = window.LM || {};
       state.storageOk = LM.store.isStorageAvailable();
 
       if (!state.storageOk) {
-        // Bez localStorage aplikacja działa, ale tylko do zamknięcia karty
+        // Without localStorage the app works, but only until the tab closes
         state.profiles = LM.store.emptyProfiles();
         syncProgress();
-        addBanner("error", "Pamięć przeglądarki (localStorage) jest niedostępna, więc zmiany NIE będą zapisywane. " +
-          "Sprawdź ustawienia przeglądarki (np. tryb prywatny, blokada plików cookie). Możesz zaimportować kopię i korzystać ze strony do zamknięcia karty.",
-          { label: "Importuj kopię…", onClick: function () { LM.dataMenu.importAll(); } });
+        addBanner("error", "Browser storage (localStorage) is not available, so changes will NOT be saved. " +
+          "Check your browser settings (e.g. private mode, blocked cookies). You can import a backup and use the app until you close the tab.",
+          { label: "Import a backup…", onClick: function () { LM.dataMenu.importAll(); } });
         fixUi();
         applyRoute();
         renderAll();
@@ -73,10 +73,9 @@ window.LM = window.LM || {};
 
   function bindStaticEvents() {
     LM.profiles.bindEvents();
-    // Zapisz zaległe zmiany przy zamykaniu / chowaniu karty
-    // Podstrony niezbędnika: adresy #/a1/… (zmiana adresu = zmiana widoku)
+    // Topic pages: routes #/a1/… (a change of address = a change of view)
     window.addEventListener("hashchange", onRoute);
-    // Menu boczne jako szuflada na telefonie
+    // The side menu is a drawer on a phone
     document.getElementById("menu-btn").addEventListener("click", function () { setNavOpen(!document.body.classList.contains("nav-open")); });
     document.getElementById("nav-overlay").addEventListener("click", function () { setNavOpen(false); });
     document.addEventListener("keydown", function (e) {
@@ -109,12 +108,12 @@ window.LM = window.LM || {};
   // NAWIGACJA
   // =====================================================================
 
-  /** Adres listy poziomu, np. "#/a1". */
+  /** Route of a level page, e.g. "#/a1". */
   function levelHash(levelId) {
     return "#/" + String(levelId).toLowerCase();
   }
 
-  /** Przejście do listy poziomu (sidebar). Zmienia adres na #/a1 itd. */
+  /** Go to a level page (sidebar). Changes the address to #/a1 etc. */
   function selectLevel(levelId) {
     state.ui.levelId = levelId;
     saveUI();
@@ -185,7 +184,7 @@ window.LM = window.LM || {};
     document.documentElement.setAttribute("data-section", state.view === "exam" && state.toolRoute ? state.toolRoute.examId : "app");
   }
 
-  /** Reakcja na zmianę adresu (linki, „Wróć”, logo, przycisk Wstecz). */
+  /** Reacts to a change of address (links, "Back", logo, the browser's back button). */
   function onRoute() {
     if (!state.profiles) return;
     const previous = state.view;
@@ -193,10 +192,10 @@ window.LM = window.LM || {};
     if (previous === "level") state.listScroll = U.getScroll();
     setNavOpen(false);
     if (LM.sidebar) LM.sidebar.afterNavigate();
-    if (LM.motion) LM.motion.cleanup(); // animacje poprzedniej strony (GSAP) sprzątamy
+    if (LM.motion) LM.motion.cleanup(); // clean up the previous page's animations (GSAP)
     applyRoute();
     syncSection();
-    document.documentElement.classList.remove("focus-mode"); // tryb skupienia trenera kończy się przy zmianie strony
+    document.documentElement.classList.remove("focus-mode"); // a trainer's focus mode ends when the page changes
     state.lastHash = location.hash;
     if (state.view === "mistakes" && previousHash !== location.hash) LM.mistakes.onEnter(state.toolRoute);
     if (state.view === "placement" && previousHash !== location.hash) LM.placement.onEnter();
@@ -204,23 +203,23 @@ window.LM = window.LM || {};
     saveUI();
     if (state.view !== "page") document.title = LM.APP.appTitle + " (A1–C2)";
     if (state.view === "level" && previous === "page") {
-      renderAll({ scrollTop: state.listScroll }); // powrót z podstrony: to samo miejsce listy
+      renderAll({ scrollTop: state.listScroll }); // back from a topic page: the same place in the list
     } else {
       renderAll({ resetScroll: true });
     }
     playViewEnter();
   }
 
-  /** Krótka animacja wejścia treści po zmianie strony (CSS: .view-enter). */
+  /** Short entrance animation of the content after a page change (CSS: .view-enter). */
   function playViewEnter() {
     const view = document.getElementById("view");
     if (!view) return;
     view.classList.remove("view-enter");
-    void view.offsetWidth; // wymusza ponowne uruchomienie animacji
+    void view.offsetWidth; // forces the animation to restart
     view.classList.add("view-enter");
   }
 
-  /** Otwiera/zamyka menu boczne jako szufladę (tylko wąski ekran). */
+  /** Opens/closes the side menu as a drawer (narrow screen only). */
   function setNavOpen(open) {
     document.body.classList.toggle("nav-open", open);
     document.getElementById("nav-overlay").hidden = !open;
@@ -254,12 +253,12 @@ window.LM = window.LM || {};
     LM.render.renderMain(opts);
   }
 
-  /** Odświeża plakietki nauki w lewym panelu (np. liczbę powtórek na dziś). */
+  /** Refreshes the learning badges in the left panel (e.g. the number of reviews due today). */
   function refreshLearning() {
     LM.render.renderToolsNav();
   }
 
-  /** Odświeża liczniki i paski postępu bez przerysowania treści (fokus zostaje). */
+  /** Refreshes counters and progress bars without redrawing the content (focus stays). */
   function refreshProgress() {
     LM.render.renderSidebar();
     LM.render.updateEssentialsProgress();
@@ -269,41 +268,41 @@ window.LM = window.LM || {};
   // ZAPIS
   // =====================================================================
 
-  /** Zapisuje profile (razem z postępem każdego z nich). */
+  /** Saves the profiles (each with its progress). */
   function saveProgressNow() {
     if (!state.storageOk) return;
     const res = LM.store.saveProfiles(state.profiles);
-    if (!res.ok) reportSaveError("Nie zapisano postępu! " + res.error);
+    if (!res.ok) reportSaveError("Your progress was not saved! " + res.error);
   }
 
   function saveUI() {
     if (state.storageOk) LM.store.saveUI(state.ui);
   }
 
-  /** Błąd zapisu: pokazujemy baner (tylko raz dla tego samego komunikatu). */
+  /** Save error: shows a banner (only once for the same message). */
   let lastSaveError = "";
   function reportSaveError(text) {
     if (text === lastSaveError) return;
     lastSaveError = text;
-    addBanner("error", text + " Zrób eksport danych, żeby nie stracić zmian.");
+    addBanner("error", text + " Export your data so you do not lose your changes.");
   }
 
   // =====================================================================
-  // POSTĘP UCZNIA
+  // LEARNER PROGRESS
   // =====================================================================
 
   function setProgress(essentialId, checked) {
-    if (!getActiveProfile()) return; // bez profilu nie ma gdzie zapisać postępu
+    if (!getActiveProfile()) return; // without a profile there is nowhere to save progress
     if (checked) state.progress[essentialId] = true;
     else delete state.progress[essentialId];
     saveProgressNow();
-    LM.markActivity(); // zmiana „Umiem” = dzień nauki
-    if (LM.celebrate) LM.celebrate.check(); // kamienie milowe „Umiem” i poziomów
+    LM.markActivity(); // a change of "I know this" = a study day
+    if (LM.celebrate) LM.celebrate.check(); // milestones of "I know this" and of levels
     refreshProgress();
   }
 
   // =====================================================================
-  // PODMIANA DANYCH (import / reset)
+  // REPLACING THE DATA (import / reset)
   // =====================================================================
 
   /**
@@ -325,7 +324,7 @@ window.LM = window.LM || {};
   // PROFILE
   // =====================================================================
 
-  /** Aktywny profil albo null, gdy nie ma żadnego profilu. */
+  /** The active profile, or null when there is no profile. */
   function getActiveProfile() {
     const p = state.profiles;
     if (!p || !p.profiles.length) return null;
@@ -337,22 +336,22 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Tryb gościa (spec v7 14, P1): wykonuje akcję zapisującą. Z profilem od razu; bez profilu pokazuje okno
-   * „Utwórz profil…” i wykonuje akcję po jego utworzeniu (strona zostaje ta sama). reason — dopisek w oknie.
+   * Guest mode (spec v7 14, P1): runs an action that saves something. With a profile at once; without one it shows the
+   * "Create a profile…" dialog and runs the action after the profile is created (the page stays). reason — a note in the dialog.
    */
   function withProfile(reason, fn) {
     if (getActiveProfile()) { fn(); return; }
     LM.profiles.requireProfile({ reason: reason }).then(function (ok) { if (ok) fn(); });
   }
 
-  /** Ustawia state.progress na postęp aktywnego profilu (bez profilu: pusty). */
+  /** Sets state.progress to the active profile's progress (empty without a profile). */
   function syncProgress() {
     const active = getActiveProfile();
     state.profiles.activeId = active ? active.id : null;
     state.progress = active ? active.progress : {};
   }
 
-  /** Dodaje profil o podanej nazwie i ustawia go jako aktywny. */
+  /** Adds a profile with the given name and makes it active. */
   function addProfile(name) {
     const profile = { id: U.uid("p"), name: String(name).trim(), progress: {} };
     state.profiles.profiles.push(profile);
@@ -366,7 +365,7 @@ window.LM = window.LM || {};
     profilesChanged();
   }
 
-  /** Po każdej zmianie profili: przelicz, zapisz, przerysuj. */
+  /** After every change of profiles: recompute, save, redraw. */
   function profilesChanged() {
     syncProgress();
     saveProgressNow();
@@ -380,10 +379,10 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // KOMUNIKATY I EKRANY BŁĘDÓW
+  // MESSAGES AND ERROR SCREENS
   // =====================================================================
 
-  /** Baner nad treścią. type: "info" | "warning" | "error". */
+  /** Banner above the content. type: "info" | "warning" | "error". */
   function addBanner(type, text, action) {
     const banner = el("div", { class: "banner is-" + type, role: type === "error" ? "alert" : "status" }, [
       el("span", { class: "banner-text", text: text }),
@@ -391,8 +390,8 @@ window.LM = window.LM || {};
       el("button", {
         type: "button",
         class: "icon-btn",
-        "aria-label": "Zamknij komunikat",
-        "data-tooltip": "Zamknij komunikat",
+        "aria-label": "Close message",
+        "data-tooltip": "Close message",
         "data-tooltip-align": "end",
         onclick: function () { banner.remove(); }
       }, LM.icon("x", { size: 18 }))
@@ -451,18 +450,18 @@ window.LM = window.LM || {};
     ]));
   }
 
-  /** Ostatnia deska ratunku przy nieoczekiwanym błędzie. */
+  /** Last resort for an unexpected error. */
   function showFatal(err) {
     console.error(err);
     const view = document.getElementById("view");
     if (!view) return;
     view.replaceChildren(el("div", { class: "error-screen" }, [
-      el("h1", { text: "Coś poszło nie tak" }),
-      el("p", { text: "Aplikacja napotkała nieoczekiwany błąd. Spróbuj odświeżyć stronę. Jeśli problem wraca, zaimportuj kopię zapasową w menu „Dane”." }),
+      el("h1", { text: "Something went wrong" }),
+      el("p", { text: "The app hit an unexpected error. Try reloading the page. If the problem comes back, import a backup from the “Data” menu." }),
       el("div", { class: "error-details", text: String(err && err.stack || err) }),
       el("div", { class: "error-actions" }, [
-        el("button", { type: "button", class: "btn btn-primary", onclick: function () { location.reload(); } }, "Odśwież stronę"),
-        el("button", { type: "button", class: "btn btn-secondary", onclick: function () { LM.dataMenu.importAll(); } }, "Importuj dane…")
+        el("button", { type: "button", class: "btn btn-primary", onclick: function () { location.reload(); } }, "Reload the page"),
+        el("button", { type: "button", class: "btn btn-secondary", onclick: function () { LM.dataMenu.importAll(); } }, "Import data…")
       ])
     ]));
   }
@@ -491,7 +490,7 @@ window.LM = window.LM || {};
     countDone: countDone
   };
 
-  // Start po wczytaniu strony
+  // Start once the page has loaded
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
   else init();
 })(window.LM);
