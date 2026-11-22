@@ -324,7 +324,7 @@ window.LM = window.LM || {};
     root.appendChild(LM.review.header("slowa", "Słowa i wyrażenia zaznaczone w tekstach – każde ze zdaniem, z którego pochodzi."));
     if (!all.length) {
       root.appendChild(LM.ui.emptyState({
-        class: "fw-empty", art: "pusty-notes", title: "Nie zapisałeś jeszcze żadnego słowa.", hint: "Zaznacz słowo albo wyrażenie w dowolnym tekście (strona niezbędnika, podsumowanie, egzamin, Laboratorium), a potem wybierz „Do Moich słów” albo naciśnij klawisz M. Karta z luką trafi tutaj i do codziennych powtórek."
+        class: "fw-empty", art: "empty-notes", title: "Nie zapisałeś jeszcze żadnego słowa.", hint: "Zaznacz słowo albo wyrażenie w dowolnym tekście (strona niezbędnika, podsumowanie, egzamin, Laboratorium), a potem wybierz „Do Moich słów” albo naciśnij klawisz M. Karta z luką trafi tutaj i do codziennych powtórek."
       }));
       return;
     }
@@ -367,7 +367,7 @@ window.LM = window.LM || {};
       });
       count.textContent = "Słowa: " + shown.length + " z " + all.length;
       list.replaceChildren();
-      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "brak-wynikow", title: "Brak słów pasujących do filtrów." })); return; }
+      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "no-results", title: "Brak słów pasujących do filtrów." })); return; }
       shown.forEach(function (c) { list.appendChild(row(c)); });
       if (focusedWord) {
         const first = list.querySelector(".fw-row"); focusedWord = null;

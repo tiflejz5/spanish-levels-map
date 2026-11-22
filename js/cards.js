@@ -745,7 +745,7 @@ window.LM = window.LM || {};
     if (!total) {
       const next = nextDue(now());
       box.appendChild(el("h2", { class: "section-title", id: "fc-sum-title", text: "Na dziś koniec" }));
-      box.appendChild(LM.ui.emptyState({ art: "brak-powtorek", title: next ? "Najbliższa powtórka: " + fmtWhen(next) + "." : "Nie masz nic do powtórki. Włącz talię, dodaj błąd do dziennika albo zrób kilka ćwiczeń." }));
+      box.appendChild(LM.ui.emptyState({ art: "nothing-due", title: next ? "Najbliższa powtórka: " + fmtWhen(next) + "." : "Nie masz nic do powtórki. Włącz talię, dodaj błąd do dziennika albo zrób kilka ćwiczeń." }));
       box.appendChild(summaryActions());
       return box;
     }

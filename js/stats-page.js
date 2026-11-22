@@ -270,7 +270,7 @@ window.LM = window.LM || {};
     view.appendChild(LM.ui.pageHead({ eyebrow: "Twoje postępy · Statystyki", title: "Statystyki", lead: "Twoje odpowiedzi w zadaniach, trafność i aktywność. Liczymy tylko Twoje dane – bez porównań z innymi." }));
     if (!hasData) {
       view.appendChild(LM.ui.emptyState({
-        art: "pusty-dziennik", title: "Tu pojawią się Twoje statystyki", hint: "Rozwiąż pierwszy zestaw zadań – każda odpowiedź się liczy. Po kilku zestawach zobaczysz, które tematy idą Ci najlepiej, a które warto powtórzyć.",
+        art: "empty-log", title: "Tu pojawią się Twoje statystyki", hint: "Rozwiąż pierwszy zestaw zadań – każda odpowiedź się liczy. Po kilku zestawach zobaczysz, które tematy idą Ci najlepiej, a które warto powtórzyć.",
         action: el("a", { class: "btn btn-primary", href: "#/practice" }, LM.ui.withIcon("dumbbell", "Przejdź do ćwiczeń"))
       }));
     }

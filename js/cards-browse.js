@@ -129,7 +129,7 @@ window.LM = window.LM || {};
       });
       count.textContent = "Karty: " + shown.length + " z " + cards.length;
       list.replaceChildren();
-      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "brak-wynikow", title: cards.length ? "Brak kart pasujących do filtrów." : "Ta talia nie ma jeszcze kart." })); return; }
+      if (!shown.length) { list.appendChild(LM.ui.emptyState({ tag: "li", art: "no-results", title: cards.length ? "Brak kart pasujących do filtrów." : "Ta talia nie ma jeszcze kart." })); return; }
       shown.forEach(function (c) {
         const x = st().cards[c.id];
         const sts = statusOf(x);

@@ -295,7 +295,7 @@ window.LM = window.LM || {};
 
   function emptyBox(text, withButton) {
     return LM.ui.emptyState({
-      art: "pusty-dziennik", title: text,
+      art: "empty-log", title: text,
       action: withButton ? el("button", {
         type: "button",
         class: "btn btn-primary",

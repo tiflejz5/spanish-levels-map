@@ -1,0 +1,3 @@
+# check-lang allow list: <path glob> <regex>. Each entry says why and until when.
+# Search folding still maps the Polish ł (tests depend on it); stage 3 moves folding into LM.lang.fold.
+js/search-logic.js const FOLD = \{

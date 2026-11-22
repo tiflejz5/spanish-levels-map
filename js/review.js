@@ -104,7 +104,7 @@ window.LM = window.LM || {};
       const next = LM.reviewQueue.nextDue(Date.now());
       section.appendChild(el("h2", { class: "tile-title", id: titleId, text: "Fiszki i błędy" }));
       section.appendChild(LM.ui.emptyState({
-        art: "brak-powtorek", title: "Na dziś koniec",
+        art: "nothing-due", title: "Na dziś koniec",
         hint: next ? "Najbliższa powtórka: " + LM.cards.internal.fmtWhen(next) + "." : "Włącz talię, zapisz błąd albo zrób kilka ćwiczeń – wrócą tu w rosnących odstępach.",
         class: "es-tile"
       }));

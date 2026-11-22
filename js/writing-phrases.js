@@ -203,7 +203,7 @@ window.LM = window.LM || {};
         ]));
       });
       count.textContent = "Zwroty: " + shown + " z " + total + (state.starred && !hasProfile() ? " (ulubione wymagają profilu)" : "");
-      if (!shown) groupsBox.appendChild(LM.ui.emptyState({ art: "brak-wynikow", title: state.starred ? "Nie masz jeszcze ulubionych zwrotów pasujących do filtrów. Kliknij „Ulubione” przy zwrocie." : "Brak zwrotów pasujących do filtrów." }));
+      if (!shown) groupsBox.appendChild(LM.ui.emptyState({ art: "no-results", title: state.starred ? "Nie masz jeszcze ulubionych zwrotów pasujących do filtrów. Kliknij „Ulubione” przy zwrocie." : "Brak zwrotów pasujących do filtrów." }));
       nav.appendChild(el("ul", { class: "zw-nav-list" }, navItems));
       if (keepScroll) window.scrollTo(0, y);
     }

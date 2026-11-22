@@ -1,16 +1,16 @@
 /*
- * notes.js — własne notatki (spec 04, część B).
+ * notes.js — your own notes (spec 04, part B).
  *
- *   LM.notes.button(key, { title, route })   przycisk „Notatki” (z kropką, gdy notatka istnieje);
- *                                              panel otwiera się dopiero po kliknięciu
- *   #/notes                                   „Moje notatki”: lista, szukanie, usuwanie
+ *   LM.notes.button(key, { title, route })   "Notes" button (with a dot when a note exists);
+ *                                              the panel opens only after a click
+ *   #/notes                                   "My notes": list, search, delete
  *
- * Klucze stron: id punktu niezbędnika („a2-czasy-past-simple”), „c1:<strona>”,
- * „lab:<czas>”, „set:<zestaw>”. Dane: LM.profileData (slm.notes, per profil):
- * zwykły tekst, maks. 10 000 znaków, pusta treść = usunięcie.
- * Zapis automatyczny po 500 ms bezczynności, przy zamknięciu panelu i przy zmianie strony.
- * Panel: z boku na szerokim ekranie, dolna szuflada na wąskim. Esc zamyka (z zapisem).
- * Treść trafia do strony wyłącznie jako tekst (textarea.value / textContent).
+ * Page keys: topic id ("a1-verbs-gustar"), "<exam code>:<page>",
+ * "lab:<card>", "set:<set>". Data: LM.profileData (slm.notes, per profile):
+ * plain text, at most 10,000 characters, empty text = delete.
+ * Saved automatically after 500 ms of no typing, when the panel closes and when the page changes.
+ * Panel: at the side on a wide screen, a bottom drawer on a narrow one. Esc closes it (and saves).
+ * The text goes into the page only as text (textarea.value / textContent).
  */
 window.LM = window.LM || {};
 
@@ -39,16 +39,16 @@ window.LM = window.LM || {};
     const b = el("button", {
       type: "button", class: "btn btn-secondary btn-small notes-btn" + (has ? " has-note" : ""),
       "aria-expanded": "false", "aria-controls": "notes-panel",
-      "aria-label": has ? "Notatki – ta strona ma notatkę" : "Notatki",
+      "aria-label": has ? "Notes – this page has a note" : "Notes",
       "data-note-key": key,
       onclick: function () {
         if (current && current.key === key && panel && !panel.hidden) { close(true); return; }
-        // tryb gościa: notatki są częścią profilu — najpierw profil, potem otwarcie panelu
-        LM.app.withProfile("Notatki zapisują się w profilu.", function () { open(key, meta, document.querySelector('[data-note-key="' + key + '"]') || b); });
+        // guest mode: notes belong to a profile — first a profile, then the panel opens
+        LM.app.withProfile("Notes are saved in your profile.", function () { open(key, meta, document.querySelector('[data-note-key="' + key + '"]') || b); });
       }
     }, [
       LM.icon("notebook", { size: 16 }),
-      el("span", { text: "Notatki" }),
+      el("span", { text: "Notes" }),
       el("span", { class: "notes-dot", "aria-hidden": "true" })
     ]);
     return b;
@@ -57,7 +57,7 @@ window.LM = window.LM || {};
   function refreshButton(b, has) {
     if (!b) return;
     b.classList.toggle("has-note", has);
-    b.setAttribute("aria-label", has ? "Notatki – ta strona ma notatkę" : "Notatki");
+    b.setAttribute("aria-label", has ? "Notes – this page has a note" : "Notes");
   }
 
   // =====================================================================
@@ -69,22 +69,22 @@ window.LM = window.LM || {};
     area = el("textarea", {
       class: "field notes-area", id: "notes-area", rows: "10", maxlength: String(max()),
       "aria-labelledby": "notes-title notes-page", "aria-describedby": "notes-status",
-      placeholder: "Twoje notatki do tej strony – tylko dla Ciebie, zapisują się same.",
-      oninput: function () { dirty = true; setStatus("Zapisywanie…"); updateCount(); clearTimeout(timer); timer = setTimeout(flush, DEBOUNCE); }
+      placeholder: "Your notes on this page – only for you, saved automatically.",
+      oninput: function () { dirty = true; setStatus("Saving…"); updateCount(); clearTimeout(timer); timer = setTimeout(flush, DEBOUNCE); }
     });
     statusEl = el("span", { class: "notes-status", id: "notes-status", role: "status", "aria-live": "polite" });
     countEl = el("span", { class: "notes-count", "aria-live": "polite" });
     panel = el("aside", { class: "notes-panel", id: "notes-panel", hidden: true, "aria-labelledby": "notes-title" }, [
       el("div", { class: "notes-head" }, [
-        el("div", null, [el("h2", { class: "notes-title", id: "notes-title" }, [LM.icon("notebook", { size: 18 }), " Notatki"]), titleEl]),
-        el("button", { type: "button", class: "icon-btn notes-close", "aria-label": "Zamknij notatki", onclick: function () { close(true); } }, LM.icon("x", { size: 18 }))
+        el("div", null, [el("h2", { class: "notes-title", id: "notes-title" }, [LM.icon("notebook", { size: 18 }), " Notes"]), titleEl]),
+        el("button", { type: "button", class: "icon-btn notes-close", "aria-label": "Close notes", onclick: function () { close(true); } }, LM.icon("x", { size: 18 }))
       ]),
       area,
-      el("div", { class: "notes-foot" }, [statusEl, countEl, el("a", { class: "notes-all", href: HASH, onclick: function () { close(false); } }, "Wszystkie notatki")])
+      el("div", { class: "notes-foot" }, [statusEl, countEl, el("a", { class: "notes-all", href: HASH, onclick: function () { close(false); } }, "All notes")])
     ]);
     panel.addEventListener("keydown", function (e) { if (e.key === "Escape") { e.preventDefault(); close(true); } });
     document.body.appendChild(panel);
-    // Zmiana strony: zapis i zamknięcie
+    // Page change: save and close
     window.addEventListener("hashchange", function () { if (panel && !panel.hidden) close(false); });
     window.addEventListener("beforeunload", flush);
   }
@@ -98,7 +98,7 @@ window.LM = window.LM || {};
     area.value = note ? note.text : "";
     dirty = false;
     titleEl.textContent = current.title;
-    setStatus(note ? "Zapisano" : "");
+    setStatus(note ? "Saved" : "");
     updateCount();
     panel.hidden = false;
     document.body.classList.add("notes-open");
@@ -117,27 +117,27 @@ window.LM = window.LM || {};
     if (restore !== false && b && document.contains(b)) b.focus();
   }
 
-  /** Zapis bieżącej notatki (pusta treść usuwa wpis). */
+  /** Saves the current note (empty text deletes the entry). */
   function flush() {
     clearTimeout(timer);
     if (!current || !dirty) return;
     dirty = false;
     const saved = pd().setNote(current.key, area.value, { title: current.title, route: current.route });
     refreshButton(current.button, !!saved);
-    setStatus(saved ? "Zapisano" : "Pusta notatka – usunięta");
+    setStatus(saved ? "Saved" : "Empty note – deleted");
   }
 
   function setStatus(text) { if (statusEl) statusEl.textContent = text; }
 
-  /** Licznik znaków po przekroczeniu 80% limitu. */
+  /** Character counter after 80% of the limit. */
   function updateCount() {
     const n = area.value.length;
-    countEl.textContent = n >= max() * 0.8 ? n.toLocaleString("pl-PL") + " / " + max().toLocaleString("pl-PL") : "";
+    countEl.textContent = n >= max() * 0.8 ? LM.fmt.number(n) + " / " + LM.fmt.number(max()) : "";
     countEl.classList.toggle("is-full", n >= max());
   }
 
   // =====================================================================
-  // STRONA „MOJE NOTATKI”
+  // "MY NOTES" PAGE
   // =====================================================================
 
   const filter = { query: "" };
@@ -147,7 +147,7 @@ window.LM = window.LM || {};
   function fmtDate(iso) {
     const d = new Date(iso);
     if (isNaN(d)) return "";
-    return d.toLocaleDateString("pl-PL", { day: "numeric", month: "long", year: "numeric" }) + ", " + d.toLocaleTimeString("pl-PL", { hour: "2-digit", minute: "2-digit" });
+    return LM.fmt.date(d) + ", " + LM.fmt.time(d);
   }
 
   function render() {
@@ -155,13 +155,13 @@ window.LM = window.LM || {};
     view.className = "view tool-view notes-view";
     view.dataset.file = HASH;
     view.replaceChildren();
-    document.title = "Moje notatki · " + LM.APP.appTitle;
-    view.appendChild(LM.ui.pageHead({ eyebrow: "Twoje postępy · Moje notatki", title: "Moje notatki", lead: "Notatki z podstron, egzaminów, Laboratorium czasów i zestawów ćwiczeń. Widzisz je tylko Ty, w tym profilu." }));
+    document.title = "My notes · " + LM.APP.appTitle;
+    view.appendChild(LM.ui.pageHead({ eyebrow: "Your progress · My notes", title: "My notes", lead: "Notes from topic pages, exams, the lab and exercise sets. Only you can see them, in this profile." }));
     const all = pd().noteList();
     if (!all.length) {
       view.appendChild(LM.ui.emptyState({
-        art: "pusty-notes", title: "Nie masz jeszcze notatek.",
-        hint: "Na każdej stronie z treścią jest przycisk „Notatki”. Kliknij go, wpisz swoje uwagi – zapiszą się same i pojawią tutaj."
+        art: "empty-notes", title: "You have no notes yet.",
+        hint: "Every content page has a “Notes” button. Select it and type your thoughts – they are saved automatically and show up here."
       }));
       return;
     }
@@ -171,34 +171,34 @@ window.LM = window.LM || {};
       const q = filter.query.trim();
       const fold = LM.searchLogic ? LM.searchLogic.fold : function (s) { return String(s).toLocaleLowerCase("pl"); };
       const shown = all.filter(function (n) { return !q || fold(n.title + " " + n.text).indexOf(fold(q)) !== -1; });
-      count.textContent = "Notatki: " + shown.length + " z " + all.length;
+      count.textContent = "Notes: " + shown.length + " of " + all.length;
       listBox.replaceChildren();
-      if (!shown.length) { listBox.appendChild(LM.ui.emptyState({ tag: "li", art: "brak-wynikow", title: "Brak notatek pasujących do wyszukiwania." })); return; }
+      if (!shown.length) { listBox.appendChild(LM.ui.emptyState({ tag: "li", art: "no-results", title: "No notes match your search." })); return; }
       shown.forEach(function (n) {
         listBox.appendChild(el("li", { class: "card notes-item" }, [
           el("div", { class: "notes-item-head" }, [
-            n.route ? el("a", { class: "notes-item-title", href: n.route, text: n.title || "Notatka" }) : el("span", { class: "notes-item-title", text: n.title || "Notatka" }),
-            el("span", { class: "notes-item-date", text: "Zmieniono: " + fmtDate(n.updatedAt) })
+            n.route ? el("a", { class: "notes-item-title", href: n.route, text: n.title || "Note" }) : el("span", { class: "notes-item-title", text: n.title || "Note" }),
+            el("span", { class: "notes-item-date", text: "Changed: " + fmtDate(n.updatedAt) })
           ]),
           el("p", { class: "notes-item-text", text: n.text.length > 320 ? n.text.slice(0, 320) + "…" : n.text }),
           el("div", { class: "journal-actions" }, [
-            n.route ? el("a", { class: "btn btn-secondary btn-small", href: n.route }, "Przejdź do strony") : null,
+            n.route ? el("a", { class: "btn btn-secondary btn-small", href: n.route }, "Go to the page") : null,
             el("button", {
-              type: "button", class: "btn btn-danger btn-small", "aria-label": "Usuń notatkę: " + (n.title || "Notatka"),
+              type: "button", class: "btn btn-danger btn-small", "aria-label": "Delete note: " + (n.title || "Note"),
               onclick: function () {
                 LM.dialogs.confirm({
-                  title: "Usunąć notatkę?",
-                  message: "Notatka do strony „" + (n.title || "Notatka") + "” zostanie usunięta. Tej operacji nie można cofnąć.",
-                  confirmLabel: "Usuń notatkę"
+                  title: "Delete this note?",
+                  message: "The note on “" + (n.title || "Note") + "” will be deleted. This cannot be undone.",
+                  confirmLabel: "Delete note"
                 }).then(function (ok) { if (ok) { pd().removeNote(n.key); render(); } });
               }
-            }, "Usuń")
+            }, "Delete")
           ])
         ]));
       });
     }
-    const search = el("input", { id: "notes-search", class: "field", type: "search", value: filter.query, placeholder: "Szukaj w notatkach…", autocomplete: "off", oninput: function () { filter.query = search.value; paint(); } });
-    view.appendChild(el("div", { class: "journal-filters", role: "search" }, el("div", { class: "form-field is-grow" }, [el("label", { class: "field-label", for: "notes-search", text: "Szukaj" }), search])));
+    const search = el("input", { id: "notes-search", class: "field", type: "search", value: filter.query, placeholder: "Search your notes…", autocomplete: "off", oninput: function () { filter.query = search.value; paint(); } });
+    view.appendChild(el("div", { class: "journal-filters", role: "search" }, el("div", { class: "form-field is-grow" }, [el("label", { class: "field-label", for: "notes-search", text: "Search" }), search])));
     view.appendChild(count);
     view.appendChild(listBox);
     paint();

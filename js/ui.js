@@ -88,7 +88,7 @@ window.LM = window.LM || {};
 
   /**
    * Empty state with an illustration (pack v7, C6): LM.ui.emptyState({ art, title, hint, action, level, tag }).
-   *   art    — klucz z LM.EMPTY_ART (assets/empty-states.js), 96×96, kreska currentColor
+   *   art    — key in LM.EMPTY_ART (assets/empty-states.js), 96×96, stroke currentColor
    *   action — an element (button, link) or null; level — level of the accent colour (default: the profile's current level)
    *   tag    — "li" when the empty state is a list item (default div)
    */
