@@ -305,7 +305,7 @@ window.LM = window.LM || {};
     const done = LM.state.progress[topic.id] === true;
     const textId = "ess-text-" + topic.id;
     let li = null;
-    const checkbox = el("label", { class: "umiem" }, [
+    const checkbox = el("label", { class: "known-check" }, [
       el("input", {
         type: "checkbox",
         checked: done,

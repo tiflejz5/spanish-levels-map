@@ -587,7 +587,7 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .ess-item .field { flex: 1; }
 
 /* Checkbox „Umiem” jako pigułka */
-.umiem {
+.known-check {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -603,7 +603,7 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
   user-select: none;
   transition: background var(--transition), border-color var(--transition), color var(--transition);
 }
-.umiem input {
+.known-check input {
   appearance: none;
   -webkit-appearance: none;
   width: 20px; height: 20px;
@@ -616,7 +616,7 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
   cursor: pointer;
   transition: background var(--transition), border-color var(--transition);
 }
-.umiem input::after {
+.known-check input::after {
   content: "";
   width: 9px; height: 5px;
   border-left: 2px solid var(--on-accent);
@@ -626,18 +626,18 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
   transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-spring);
 }
 /* Zaznaczone: kolor krainy (poza poziomem — kolor sukcesu) */
-.umiem input:checked { background: var(--lvl, var(--success-fill)); border-color: var(--lvl, var(--success-fill)); }
-.umiem input:checked::after { opacity: 1; transform: rotate(-45deg) translate(1px, -1px) scale(1); }
+.known-check input:checked { background: var(--lvl, var(--success-fill)); border-color: var(--lvl, var(--success-fill)); }
+.known-check input:checked::after { opacity: 1; transform: rotate(-45deg) translate(1px, -1px) scale(1); }
 /* C3: zaznaczone „Umiem” = okrągła pieczątka w kolorze krainy; „odbicie” tylko przy zaznaczeniu przez użytkownika (.is-fresh) */
-.umiem input:checked { transform: rotate(-6deg); }
-.umiem.is-fresh input:checked { animation: umiem-stamp 220ms var(--ease-out); }
-@keyframes umiem-stamp {
+.known-check input:checked { transform: rotate(-6deg); }
+.known-check.is-fresh input:checked { animation: known-stamp 220ms var(--ease-out); }
+@keyframes known-stamp {
   from { transform: scale(1.25) rotate(-10deg); }
   to { transform: scale(1) rotate(-6deg); }
 }
-.umiem:hover { border-color: var(--line-control); }
-.umiem input:focus-visible { box-shadow: var(--focus-ring); }
-.umiem:has(input:checked) {
+.known-check:hover { border-color: var(--line-control); }
+.known-check input:focus-visible { box-shadow: var(--focus-ring); }
+.known-check:has(input:checked) {
   background: var(--lvl-soft, var(--success-soft));
   border-color: color-mix(in srgb, var(--lvl, var(--success)) 45%, transparent);
   color: var(--lvl-ink, var(--success));
@@ -814,9 +814,9 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
   font-weight: 500;
   color: var(--ink-muted);
 }
-.page-head .umiem { margin-left: auto; }
-.umiem-lg { padding: 6px 16px 6px 8px; font-size: var(--fs-sm-plus); }
-.umiem-lg input { width: 24px; height: 24px; }
+.page-head .known-check { margin-left: auto; }
+.known-check-lg { padding: 6px 16px 6px 8px; font-size: var(--fs-sm-plus); }
+.known-check-lg input { width: 24px; height: 24px; }
 .page-edit-hint { margin-bottom: 20px; }
 .page-foot { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line); }
 
@@ -1199,7 +1199,7 @@ html.theme-anim *::after {
 @media (pointer: coarse) {
   .btn, .segmented-btn, .c1-sec-toggle, .c1-nav-link { min-height: 44px; }
   .icon-btn { min-width: 44px; min-height: 44px; }
-  .umiem { min-height: 44px; }
+  .known-check { min-height: 44px; }
   .task-item label { min-height: 44px; align-items: center; }
   .task-item input { margin-top: 0; }
   /* Pola w lukach ćwiczeń (Part 1–3): także 44 px na ekranach dotykowych */
@@ -1858,9 +1858,9 @@ textarea.field { overflow: auto; }
 .essentials .ess-text { padding: 8px 0; color: var(--ink); }
 .essentials .ess-item.is-done .ess-text { color: var(--ink-muted); }
 /* Znacznik „Umiem”: przełącznik 44 px; stan = ptaszek + wyszarzony tekst, nie tylko kolor */
-.essentials .umiem { width: 44px; height: 44px; padding: 0; justify-content: center; border: 0; background: none; border-radius: var(--radius-sm); }
-.essentials .umiem:has(input:checked) { background: none; border: 0; }
-.essentials .umiem input { width: 24px; height: 24px; }
+.essentials .known-check { width: 44px; height: 44px; padding: 0; justify-content: center; border: 0; background: none; border-radius: var(--radius-sm); }
+.essentials .known-check:has(input:checked) { background: none; border: 0; }
+.essentials .known-check input { width: 24px; height: 24px; }
 .essentials .ess-link { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .essentials .ess-link-arrow { margin-left: 0; flex-shrink: 0; }
 .essentials .ess-link .ess-title { flex: 1; min-width: 0; }
@@ -2390,7 +2390,7 @@ a.lab-tile:hover { border-color: var(--line-strong); box-shadow: var(--shadow); 
 .lab-card-head { padding: 24px; border-bottom: 1px solid var(--line); background: var(--surface); }
 .lab-card-eyebrow { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); }
 .lab-card-title { margin: 0; font-family: var(--font-display); font-size: var(--fs-3xl); font-weight: 640; letter-spacing: -0.02em; line-height: 1.1; }
-.lab-card-pl { margin: 4px 0 8px; color: var(--ink-muted); }
+.lab-card-gloss { margin: 4px 0 8px; color: var(--ink-muted); }
 .lab-card-summary { margin: 0; font-size: var(--fs-md-plus); }
 .lab-block { max-width: 860px; }
 .lab-block-title { margin: 0 0 10px; font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 600; }
@@ -2423,7 +2423,7 @@ a.lab-tile:hover { border-color: var(--line-strong); box-shadow: var(--shadow); 
 .lab-use p, .lab-contrast p, .lab-result p { margin: 0 0 6px; }
 .lab-use-label { font-size: var(--fs-xs-plus); font-weight: 600; color: var(--lvl-ink, var(--ink-muted)); }
 .lab-use-en { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-family: var(--font-display); font-size: var(--fs-md-plus); font-weight: 560; }
-.lab-use-pl { color: var(--ink-muted); font-size: var(--fs-sm-plus); }
+.lab-use-gloss { color: var(--ink-muted); font-size: var(--fs-sm-plus); }
 .lab-speak { flex-shrink: 0; width: 44px; height: 44px; min-height: 44px; padding: 0; justify-content: center; border-radius: 50%; }
 .lab-signals { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; }
 .lab-signals .chip { font-size: var(--fs-sm); padding: 5px 12px; background: var(--lvl-soft, var(--surface-3)); color: var(--lvl-ink, var(--ink)); }
@@ -2699,7 +2699,7 @@ a.st-bar-label:hover { text-decoration-color: currentColor; }
 .notes-btn.has-note .notes-dot { display: inline-block; }
 .notes-btn[aria-expanded="true"] { border-color: var(--accent); background: var(--accent-soft); }
 .page-head .notes-btn { margin-left: auto; }
-.page-head .notes-btn + .umiem { margin-left: 8px; }
+.page-head .notes-btn + .known-check { margin-left: 8px; }
 .c1-page-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin-bottom: 14px; }
 
 .lab-card-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
@@ -2952,7 +2952,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 
 /* ===================== FISZKI (js/cards.js, spec 10) ===================== */
 /* Elementy ukrywane atrybutem hidden (przycisk przy zaznaczeniu, pola formularza) nie mogą wracać przez display */
-.fiszki-view [hidden] { display: none; }
+.cards-view [hidden] { display: none; }
 .btn-large { min-height: 52px; padding: 12px 24px; font-size: var(--fs-md); }
 .fc-hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; margin-bottom: 24px; }
 .fc-hero-label { margin: 0; font-size: var(--fs-xs-plus); font-weight: 600; color: var(--ink-muted); }
@@ -3099,8 +3099,8 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 }
 
 /* Fiszki: integracje — kafelek „Dziś”, przycisk przy zaznaczeniu, Dziennik, Statystyki */
-.bento-fiszki { grid-column: span 12; }
-@media (max-width: 1023px) { .bento-fiszki { grid-column: span 6; } }
+.bento-cards { grid-column: span 12; }
+@media (max-width: 1023px) { .bento-cards { grid-column: span 6; } }
 /* Menu przy zaznaczeniu tekstu (Moje słowa): „Do Moich słów” i „Utwórz fiszkę…” */
 .fc-sel-menu {
   position: fixed; z-index: 60; display: flex; flex-wrap: wrap; gap: 6px; max-width: calc(100vw - 16px); padding: 6px;
@@ -3108,8 +3108,8 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 }
 .fc-sel-menu[hidden] { display: none; }
 .fc-sel-menu .btn { min-height: 44px; }
-.journal-in-fiszki { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 6px; font-size: var(--fs-sm); font-weight: 600; color: var(--success); }
-.st-fiszki { grid-column: 1 / -1; }
+.journal-in-cards { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 6px; font-size: var(--fs-sm); font-weight: 600; color: var(--success); }
+.st-cards { grid-column: 1 / -1; }
 .fc-st-bars { display: flex; align-items: flex-end; gap: 3px; height: 96px; margin: 4px 0 12px; padding: 0 2px; border-bottom: 1px solid var(--line-strong); }
 .fc-st-bar { flex: 1 1 0; min-width: 2px; border-radius: 3px 3px 0 0; background: var(--accent); }
 .fc-st-bar.is-zero { background: var(--surface-3); }
@@ -3126,17 +3126,17 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .fc-exam-tile { display: flex; flex-direction: column; gap: 8px; margin: var(--space-4, 16px) 0; }
 .fc-exam-deck { display: flex; flex-direction: column; gap: 2px; }
 .fc-exam-deck-title { margin: 0; }
-.fiszki-view .chip-filter + .fc-deck-list { margin-top: 16px; }
+.cards-view .chip-filter + .fc-deck-list { margin-top: 16px; }
 
 /* Ściąga poziomu (paczka v6, spec 16, sekcja 1): strona i karta na liście poziomu */
-.sciaga-card { margin-top: 16px; }
-.sciaga-card-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.sciaga-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
-.sciaga-head { display: flex; align-items: center; gap: 16px; margin: 8px 0 20px; padding-bottom: 14px; border-bottom: 2px solid var(--line); }
-.sciaga-code { font-family: var(--font-display, "Fraunces Variable", serif); font-size: 3rem; font-weight: 600; line-height: 1; color: var(--ink); }
-.sciaga-title { margin: 0; font-family: var(--font-display, "Fraunces Variable", serif); font-size: var(--fs-lg, 1.4rem); font-weight: 600; }
-.sciaga-sub { margin: 2px 0 0; color: var(--ink-muted); font-size: var(--fs-sm-plus); }
-.sciaga .md-table-wrap { overflow-x: auto; }
+.cheatsheet-card { margin-top: 16px; }
+.cheatsheet-card-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.cheatsheet-tools { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.cheatsheet-head { display: flex; align-items: center; gap: 16px; margin: 8px 0 20px; padding-bottom: 14px; border-bottom: 2px solid var(--line); }
+.cheatsheet-code { font-family: var(--font-display, "Fraunces Variable", serif); font-size: 3rem; font-weight: 600; line-height: 1; color: var(--ink); }
+.cheatsheet-title { margin: 0; font-family: var(--font-display, "Fraunces Variable", serif); font-size: var(--fs-lg, 1.4rem); font-weight: 600; }
+.cheatsheet-sub { margin: 2px 0 0; color: var(--ink-muted); font-size: var(--fs-sm-plus); }
+.cheatsheet .md-table-wrap { overflow-x: auto; }
 
 /* „Życie i egzamin” (paczka v6, spec 16, sekcja 2.3): zdanie z życia + zadanie w stylu egzaminu + chipy egzaminów */
 .callout-real-exam { background: var(--info-bg); border-color: var(--info-border); box-shadow: inset 4px 0 0 var(--accent); border-radius: 0 var(--radius-lg) var(--radius-lg) 0; padding-left: 26px; }
@@ -3164,7 +3164,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 }
 
 /* ===================== PISANIE: wzorcowe wypracowania z komentarzami (paczka v6, spec 17) ===================== */
-.pisanie-view .wz-exam-block { margin: 28px 0; }
+.writing-view .wz-exam-block { margin: 28px 0; }
 .wz-exam-title { display: flex; align-items: center; gap: 10px; }
 .wz-exam { padding: 2px 10px 2px 20px; border: 1px solid var(--line-strong, var(--line)); background: radial-gradient(circle at 10px 50%, var(--exam, var(--accent)) 3.5px, transparent 4px), var(--surface); color: var(--ink); font-weight: 500; }
 .wz-genre-title { margin: 18px 0 8px; font-size: var(--fs-md); }
@@ -3208,12 +3208,12 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .wz-line.is-active { stroke: var(--accent); stroke-width: 1.5; opacity: 1; }
 
 /* kotwica: delikatne tło w kolorze typu + numer; kolor nie jest jedynym nośnikiem */
-.wz-t-punkty { --wz: var(--accent); }
-.wz-t-lacznik { --wz: var(--success); }
-.wz-t-rejestr { --wz: var(--info-border, var(--accent)); --wz-ink: var(--accent); }
-.wz-t-struktura { --wz: var(--ink-muted); }
-.wz-t-zakres { --wz: var(--c1-gold, var(--accent)); }
-.wz-t-uwaga { --wz: var(--warning); }
+.wz-t-task { --wz: var(--accent); }
+.wz-t-linker { --wz: var(--success); }
+.wz-t-register { --wz: var(--info-border, var(--accent)); --wz-ink: var(--accent); }
+.wz-t-structure { --wz: var(--ink-muted); }
+.wz-t-range { --wz: var(--c1-gold, var(--accent)); }
+.wz-t-improve { --wz: var(--warning); }
 .wz-anchor { position: relative; cursor: pointer; border-radius: 3px; padding: 0 1px; background: color-mix(in srgb, var(--wz, var(--accent)) 16%, transparent); border-bottom: 2px solid var(--wz, var(--accent)); }
 .wz-anchor.is-off { background: none; border-bottom-color: transparent; cursor: text; }
 .wz-anchor.is-off .wz-num { display: none; }
@@ -3253,7 +3253,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .zw-list { display: grid; gap: 10px; margin: 8px 0 0; padding: 0; list-style: none; }
 .zw-phrase { display: grid; grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 14px 16px; }
 .zw-en { margin: 0; font-size: var(--fs-md); font-weight: 600; overflow-wrap: anywhere; }
-.zw-pl { margin: 2px 0 0; color: var(--ink-muted); }
+.zw-gloss { margin: 2px 0 0; color: var(--ink-muted); }
 .zw-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 0; }
 .zw-more { margin-top: 6px; }
 .zw-more summary { cursor: pointer; display: flex; align-items: center; min-height: 44px; font-weight: 600; font-size: var(--fs-sm-plus); }
@@ -3280,7 +3280,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .zw-panel-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .zw-panel-item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface-2, var(--surface)); }
 .zw-panel-en { margin: 0; font-weight: 600; overflow-wrap: anywhere; }
-.zw-panel-pl { margin: 0; color: var(--ink-muted); font-size: var(--fs-sm); }
+.zw-panel-gloss { margin: 0; color: var(--ink-muted); font-size: var(--fs-sm); }
 .zw-panel-item .btn { min-height: 44px; }
 @media (min-width: 900px) {
   .zw-panel { inset: 72px 16px 16px auto; width: 380px; max-height: none; border-radius: var(--radius); box-shadow: 0 8px 32px rgba(0, 0, 0, .25); }
@@ -3462,7 +3462,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 @keyframes ex-hl-mark { to { background-size: 100% 100%; } }
 .ex-hl-line { margin: 4px 0 0; }
 .ex-gap-text.ex-hl { white-space: nowrap; }
-.stamp.is-fresh { animation: umiem-stamp 220ms var(--ease-out); }
+.stamp.is-fresh { animation: known-stamp 220ms var(--ease-out); }
 
 /* ===================== C6: STANY PUSTE Z ILUSTRACJĄ ===================== */
 .empty-state.has-art .es-art { width: 96px; height: 96px; color: var(--ink-muted); flex-shrink: 0; }
@@ -3703,7 +3703,7 @@ a.pw-row-label:hover { text-decoration: underline; }
 .kbd-list kbd { display: inline-block; min-width: 26px; padding: 2px 8px; border: 1px solid var(--line-strong); border-bottom-width: 2px; border-radius: var(--radius-xs); background: var(--surface); color: var(--ink); font: 650 var(--fs-sm) var(--font); text-align: center; }
 
 /* ===================== v8 KONTROLA: cele ≥ 44 px, zakładki na 360 px ===================== */
-.umiem { min-height: 44px; min-width: 44px; justify-content: center; }
+.known-check { min-height: 44px; min-width: 44px; justify-content: center; }
 .segmented-btn { min-height: 44px; }
 .ess-link { display: inline-flex; align-items: center; min-height: 44px; }
 .c1-back a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -3761,8 +3761,8 @@ a.pw-row-label:hover { text-decoration: underline; }
 .exam-cover.is-full .exam-cover-setdate { display: none; }
 
 /* Lekcja: „Notatki” i „Umiem” jako para tej samej wysokości i promienia */
-.page-head :is(.notes-btn, .umiem) { min-height: 40px; border-radius: var(--radius-sm); }
-.page-head .umiem { padding: 4px 14px 4px 8px; }
+.page-head :is(.notes-btn, .known-check) { min-height: 40px; border-radius: var(--radius-sm); }
+.page-head .known-check { padding: 4px 14px 4px 8px; }
 
 /* Tryb gościa (spec v7 14, P1): uwaga „bez profilu” i okno tworzenia profilu */
 .guest-note { margin: 0 0 14px; padding: 10px 14px; border: 1px dashed var(--line-strong); border-radius: var(--radius-sm); background: var(--surface-2); }

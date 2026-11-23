@@ -847,7 +847,7 @@ window.LM = window.LM || {};
   function render() {
     const view = document.getElementById("view");
     const route = parseRoute(location.hash) || { kind: "home" };
-    view.className = "view tool-view fiszki-view";
+    view.className = "view tool-view cards-view";
     view.dataset.file = route.kind === "session" ? SESSION : HASH;
     view.replaceChildren();
     document.title = "Flashcards and mistakes · " + LM.APP.appTitle;
@@ -1051,9 +1051,9 @@ window.LM = window.LM || {};
       const k = due < end0 ? 0 : Math.floor((due - end0) / dayMs) + 1;
       if (k < 7) forecast[k]++;
     });
-    const head = el("h2", { class: "tile-title", id: "st-fiszki", text: "Flashcards" });
+    const head = el("h2", { class: "tile-title", id: "st-cards", text: "Flashcards" });
     if (!total && !Object.keys(s.cards).length) {
-      return el("section", { class: "card st-tile st-fiszki", "aria-labelledby": "st-fiszki" }, [head,
+      return el("section", { class: "card st-tile st-cards", "aria-labelledby": "st-cards" }, [head,
         el("p", { class: "st-empty", text: "You have no flashcard reviews yet. Start with a deck in the Decks tab – the stats appear after your first session." }),
         el("p", null, el("a", { class: "btn btn-secondary btn-small", href: HASH }, "Open flashcards"))]);
     }
@@ -1065,7 +1065,7 @@ window.LM = window.LM || {};
     };
     const pct = total >= 20 ? Math.round(100 * good / total) + "%" : "—";
     const fLabels = ["today", "tomorrow"].concat([2, 3, 4, 5, 6].map(function (k) { return LM.fmt.weekdayShort(new Date(t + k * dayMs)); }));
-    return el("section", { class: "card st-tile st-fiszki", "aria-labelledby": "st-fiszki" }, [head,
+    return el("section", { class: "card st-tile st-cards", "aria-labelledby": "st-cards" }, [head,
       el("div", { class: "st-stats is-three" }, [
         stat("Reviews (30 days)", String(total)),
         stat("Good or Easy (30 days)", pct, total >= 20 ? null : "Shown from 20 reviews (now: " + total + ")."),

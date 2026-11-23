@@ -370,7 +370,7 @@ window.LM = window.LM || {};
         LM.notes ? LM.notes.button("lab:" + t.id, { title: LM.APP.lab.title + " · " + t.name, route: BASE + "/" + t.id }) : null
       ]),
       el("h2", { class: "lab-card-title", id: "lab-card-title", lang: "en", text: t.name }),
-      el("p", { class: "lab-card-pl", text: t.namePl }),
+      el("p", { class: "lab-card-gloss", text: t.namePl }),
       el("p", { class: "lab-card-summary", text: t.summary })
     ]));
 
@@ -380,7 +380,7 @@ window.LM = window.LM || {};
       return el("li", { class: "card lab-use" }, [
         el("p", { class: "lab-use-label", text: u.label }),
         el("p", { class: "lab-use-en" }, [el("span", { lang: "en", text: u.en }), speakButton(u.en)]),
-        el("p", { class: "lab-use-pl", text: u.pl })
+        el("p", { class: "lab-use-gloss", text: u.pl })
       ]);
     }))));
     if (t.signals && t.signals.length) {
@@ -518,7 +518,7 @@ window.LM = window.LM || {};
     const column = function (t) {
       return el("section", { class: "card lab-compare-col lvl-" + t.level + " lab-group-" + t.group, "aria-labelledby": "cmp-" + t.id }, [
         el("h2", { class: "lab-card-title", id: "cmp-" + t.id, lang: "en" }, [t.name, " ", levelChip(t.level)]),
-        el("p", { class: "lab-card-pl", text: t.namePl + " – " + t.summary }),
+        el("p", { class: "lab-card-gloss", text: t.namePl + " – " + t.summary }),
         timelineBlock(t, { noSwitch: true, animate: false, compact: true }),
         el("h3", { class: "lab-block-title", text: "Form" }),
         formationTable(t),

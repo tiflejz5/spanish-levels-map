@@ -172,7 +172,7 @@ window.LM = window.LM || {};
   function render() {
     const view = document.getElementById("view");
     const route = parseRoute(location.hash) || { kind: "list" };
-    view.className = "view tool-view pisanie-view";
+    view.className = "view tool-view writing-view";
     view.dataset.file = HASH;
     view.replaceChildren();
     const lazy = route.kind === "model" ? ["writingModel", "js/writing-model.js"] : route.kind === "phrases" ? ["writingPhrases", "js/writing-phrases.js"] : null;

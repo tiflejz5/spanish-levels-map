@@ -285,7 +285,7 @@ window.LM = window.LM || {};
             return el("li", { class: "zw-panel-item" }, [
               el("div", null, [
                 el("p", { class: "zw-panel-en", lang: "en", text: p.en }),
-                el("p", { class: "zw-panel-pl", text: p.pl + " · " + p.level })
+                el("p", { class: "zw-panel-gloss", text: p.pl + " · " + p.level })
               ]),
               el("button", { type: "button", class: "btn btn-secondary btn-small", "aria-label": "Insert: " + LM.writingPhrases.plain(p.en), onclick: function () { insertPhrase(p.en); } }, "Insert")
             ]);

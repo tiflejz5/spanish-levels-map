@@ -20,9 +20,9 @@
 
   /* Interfejs, którego nie drukujemy */
   .sidebar, .topbar, .banners, .nav-overlay, .toast-region, dialog, .fc-sel-menu, .fw-tip,
-  .page-head, .page-foot, .c1-page-tools, .umiem, .notes-btn, .notes-panel,
+  .page-head, .page-foot, .c1-page-tools, .known-check, .notes-btn, .notes-panel,
   .ex-topic, .page-nav, .level-final-card,
-  .btn, button, .md-answers-toggle, .no-print, .sciaga-tools, #menu-btn {
+  .btn, button, .md-answers-toggle, .no-print, .cheatsheet-tools, #menu-btn {
     display: none !important;
   }
 
@@ -66,27 +66,27 @@
    Krój nie mniejszy niż 9,5 pt (kontroluje to tools/cheatsheets-pdf.js: 1 strona A4).
    ===================================================================== */
 @media print {
-  .sciaga-view .sciaga-tools { display: none !important; }
-  .sciaga-head { display: flex !important; align-items: baseline; gap: 10pt; margin: 0 0 6pt; padding: 0 0 4pt; border-bottom: 1.5pt solid #000; break-after: avoid; }
-  .sciaga-code { font-family: "Fraunces Variable", "Iowan Old Style", Georgia, serif; font-size: 30pt; font-weight: 700; line-height: 1; color: #000 !important; }
-  .sciaga-title { margin: 0; font-family: "Fraunces Variable", Georgia, serif; font-size: 14pt; font-weight: 700; color: #000 !important; }
-  .sciaga-sub { margin: 0 0 0 auto; font-size: 9.5pt; color: #000 !important; }
-  .sciaga-view .md.sciaga { display: block; column-count: 2; column-gap: 6mm; font-size: 9.5pt; line-height: 1.28; }
-  .sciaga.md h2 { font-size: 11pt; margin: 6pt 0 2pt; break-after: avoid; }
-  .sciaga.md .md-section { margin: 0 0 4pt; }
-  .sciaga.md ul, .sciaga.md ol { margin: 2pt 0; padding-left: 12pt; }
-  .sciaga.md li { margin: 0 0 1.5pt; }
-  .sciaga.md p { margin: 2pt 0; }
-  .sciaga.md .md-table, .sciaga.md .md-table-wrap { margin: 0 0 3pt; }
-  .sciaga.md table { font-size: 9.5pt; width: 100% !important; table-layout: auto; break-inside: avoid; }
-  .sciaga.md th, .sciaga.md td { padding: 1pt 3pt !important; }
-  .sciaga.md .wiki-link, .sciaga.md .md-wiki, .sciaga.md a.chip { display: none !important; }
-  .sciaga-view .view, .sciaga-view { padding: 0 !important; }
+  .cheatsheet-view .cheatsheet-tools { display: none !important; }
+  .cheatsheet-head { display: flex !important; align-items: baseline; gap: 10pt; margin: 0 0 6pt; padding: 0 0 4pt; border-bottom: 1.5pt solid #000; break-after: avoid; }
+  .cheatsheet-code { font-family: "Fraunces Variable", "Iowan Old Style", Georgia, serif; font-size: 30pt; font-weight: 700; line-height: 1; color: #000 !important; }
+  .cheatsheet-title { margin: 0; font-family: "Fraunces Variable", Georgia, serif; font-size: 14pt; font-weight: 700; color: #000 !important; }
+  .cheatsheet-sub { margin: 0 0 0 auto; font-size: 9.5pt; color: #000 !important; }
+  .cheatsheet-view .md.cheatsheet { display: block; column-count: 2; column-gap: 6mm; font-size: 9.5pt; line-height: 1.28; }
+  .cheatsheet.md h2 { font-size: 11pt; margin: 6pt 0 2pt; break-after: avoid; }
+  .cheatsheet.md .md-section { margin: 0 0 4pt; }
+  .cheatsheet.md ul, .cheatsheet.md ol { margin: 2pt 0; padding-left: 12pt; }
+  .cheatsheet.md li { margin: 0 0 1.5pt; }
+  .cheatsheet.md p { margin: 2pt 0; }
+  .cheatsheet.md .md-table, .cheatsheet.md .md-table-wrap { margin: 0 0 3pt; }
+  .cheatsheet.md table { font-size: 9.5pt; width: 100% !important; table-layout: auto; break-inside: avoid; }
+  .cheatsheet.md th, .cheatsheet.md td { padding: 1pt 3pt !important; }
+  .cheatsheet.md .wiki-link, .cheatsheet.md .md-wiki, .cheatsheet.md a.chip { display: none !important; }
+  .cheatsheet-view .view, .cheatsheet-view { padding: 0 !important; }
 }
 
 @media print {
   /* Ściąga: słowa w tabelach nie są łamane w środku (kolumna rozszerza się do najdłuższego słowa) */
-  .sciaga.md th, .sciaga.md td { overflow-wrap: break-word !important; word-break: normal !important; hyphens: none; }
+  .cheatsheet.md th, .cheatsheet.md td { overflow-wrap: break-word !important; word-break: normal !important; hyphens: none; }
 }
 
 @media print {

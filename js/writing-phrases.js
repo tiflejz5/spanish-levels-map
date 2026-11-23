@@ -167,7 +167,7 @@ window.LM = window.LM || {};
       return el("li", { class: "card zw-phrase", "data-pid": p.id }, [
         el("div", { class: "zw-text" }, [
           el("p", { class: "zw-en", lang: "en", text: p.en }),
-          el("p", { class: "zw-pl", text: p.pl }),
+          el("p", { class: "zw-gloss", text: p.pl }),
           el("p", { class: "zw-chips" }, [
             el("span", { class: "chip", text: "Level " + p.level }),
             el("span", { class: "chip", text: REGISTERS[p.register] })
