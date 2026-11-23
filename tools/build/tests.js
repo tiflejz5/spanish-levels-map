@@ -1,6 +1,6 @@
 /*
- * tests.js — placement test and level final tests (port of the placement part of
- * tools/zbuduj-niezbednik.js and of tools/zbuduj-testy-koncowe.js).
+ * tests.js — placement test and level final tests (port of the placement part of the reference
+ * content builder and of its final test builder).
  *
  *   content/tests/placement.json       → data/placement.js      LM.PLACEMENT = { version, questions }  (lazy)
  *   content/tests/final-<level>.json   → data/final-<level>.js  LM.FINALS[<level>] = set               (lazy)

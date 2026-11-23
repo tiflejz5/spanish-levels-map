@@ -1,18 +1,18 @@
 /*
- * markdown.js — mały renderer Markdown (bez bibliotek), wystarczający
- * dla podstron z folderu niezbednik/:
- *   - frontmatter YAML (proste pary „klucz: wartość”),
- *   - nagłówki #…######, akapity (każda linia w nowej linii),
- *   - listy punktowane i numerowane (także zagnieżdżone wcięciem),
- *   - tabele GFM (| a | b | + wiersz | --- |),
- *   - cytaty > (każda linia osobno — dobre do dialogów),
- *   - **pogrubienie**, *kursywa*, ***oba***, `kod`, linia ---,
- *   - linki [tekst](https://…) oraz wewnętrzne [tekst](#/a1),
- *   - linki [[id]] (rozwiązywane przez LM.markdown.resolveWiki),
- *   - listy zadań „- [ ] …” jako pola wyboru (input.md-task).
+ * markdown.js — a small Markdown renderer (no libraries), enough
+ * for the pages in content/:
+ *   - YAML front matter (simple "key: value" pairs),
+ *   - headings #…######, paragraphs (each line on a new line),
+ *   - bullet and numbered lists (also nested by indentation),
+ *   - GFM tables (| a | b | + a | --- | row),
+ *   - quotes > (each line on its own — good for dialogues),
+ *   - **bold**, *italics*, ***both***, `code`, a --- rule,
+ *   - links [text](https://…) and internal [text](#/a1),
+ *   - [[id]] links (resolved by LM.markdown.resolveWiki),
+ *   - task lists "- [ ] …" as checkboxes (input.md-task).
  *
- * BEZPIECZEŃSTWO: wynik budujemy z elementów DOM i węzłów tekstowych.
- * Surowy HTML z pliku .md NIE jest interpretowany (pokaże się jako tekst).
+ * SECURITY: the output is built from DOM elements and text nodes.
+ * Raw HTML from a .md file is NOT interpreted (it shows as text).
  */
 window.LM = window.LM || {};
 
@@ -31,7 +31,7 @@ window.LM = window.LM || {};
   // FRONTMATTER
   // =====================================================================
 
-  /** Oddziela frontmatter (--- … ---) od treści. Zwraca { meta, body }. */
+  /** Splits the front matter (--- … ---) from the text. Returns { meta, body }. */
   function parseFrontmatter(text) {
     text = String(text || "").replace(/\r\n/g, "\n");
     const m = /^---\n([\s\S]*?)\n---\n?/.exec(text);
@@ -48,7 +48,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // BLOKI
+  // BLOCKS
   // =====================================================================
 
   function indentOf(line) {
@@ -59,13 +59,13 @@ window.LM = window.LM || {};
     return lines[i].trim().charAt(0) === "|" && i + 1 < lines.length && RE_TABLE_SEP.test(lines[i + 1]);
   }
 
-  /** Czy linia rozpoczyna nowy blok (kończy wtedy akapit). */
+  /** Whether a line starts a new block (it then ends a paragraph). */
   function startsBlock(lines, i) {
     const l = lines[i];
     return RE_HEADING.test(l) || RE_QUOTE.test(l) || RE_LIST.test(l) || RE_HR.test(l) || isTableStart(lines, i);
   }
 
-  /** Zamienia linie tekstu na listę bloków (prosty „AST”). */
+  /** Turns lines of text into a list of blocks (a simple "AST"). */
   function parseBlocks(lines) {
     const blocks = [];
     let i = 0;
@@ -96,7 +96,7 @@ window.LM = window.LM || {};
         blocks.push(l.block);
         i = l.next;
       } else {
-        // Akapit: kolejne niepuste linie, aż do pustej linii lub nowego bloku
+        // Paragraph: consecutive non-empty lines, up to an empty line or a new block
         const p = [line.trim()];
         i++;
         while (i < lines.length && lines[i].trim() && !startsBlock(lines, i)) {
@@ -126,7 +126,7 @@ window.LM = window.LM || {};
     let i = start + 2;
     while (i < lines.length && lines[i].trim().charAt(0) === "|") {
       const cells = splitRow(lines[i]);
-      // Wyrównanie liczby komórek do nagłówka
+      // Pad the number of cells to the header
       while (cells.length < header.length) cells.push("");
       rows.push(cells.slice(0, header.length));
       i++;
@@ -145,7 +145,7 @@ window.LM = window.LM || {};
     while (i < lines.length) {
       let m = RE_LIST.exec(lines[i]);
       if (!lines[i].trim()) {
-        // Pusta linia między punktami tej samej listy — lista trwa dalej
+        // An empty line between items of the same list — the list goes on
         let k = i + 1;
         while (k < lines.length && !lines[k].trim()) k++;
         if (k < lines.length && sameKind(RE_LIST.exec(lines[k]))) { i = k; continue; }
@@ -153,7 +153,7 @@ window.LM = window.LM || {};
       }
       if (!sameKind(m)) break;
 
-      // Lista zadań: „- [ ] tekst” / „- [x] tekst” → pole wyboru
+      // Task list: "- [ ] text" / "- [x] text" → checkbox
       const task = /^\[([ xX])\]\s+(.*)$/.exec(m[3]);
       const item = { lines: [task ? task[2] : m[3]], children: [], task: task ? { checked: task[1] !== " " } : null };
       const sub = [];
@@ -170,8 +170,8 @@ window.LM = window.LM || {};
           }
           break;
         }
-        if (indentOf(l) > base) { sub.push(l); i++; continue; }      // wcięte: zawartość punktu
-        if (!startsBlock(lines, i)) { item.lines.push(l.trim()); i++; continue; } // ciąg dalszy linii
+        if (indentOf(l) > base) { sub.push(l); i++; continue; }      // indented: content of the item
+        if (!startsBlock(lines, i)) { item.lines.push(l.trim()); i++; continue; } // continuation of the line
         break;
       }
       if (sub.length) {
@@ -184,12 +184,12 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // FORMATOWANIE W LINII (**pogrubienie**, *kursywa*, `kod`)
+  // INLINE FORMATTING (**bold**, *italics*, `code`)
   // =====================================================================
 
   const SPACE = /\s/;
 
-  /** Tekst → fragment DOM. */
+  /** Text → DOM fragment. */
   function inline(text) {
     const frag = document.createDocumentFragment();
     String(text).split(/(`[^`]+`)/).forEach(function (part) {
@@ -200,9 +200,9 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Linki [[id]] — zamieniane przez funkcję LM.markdown.resolveWiki(id),
-   * która zwraca { href, text } albo null (nieznane id → zwykły tekst
-   * + ostrzeżenie w konsoli). Bez tej funkcji [[id]] zostaje bez zmian.
+   * [[id]] links — replaced through LM.markdown.resolveWiki(id),
+   * which returns { href, text } or null (unknown id → plain text
+   * + a console warning). Without that function [[id]] stays as it is.
    */
   function appendWikiLinks(parent, text) {
     const resolver = LM.markdown.resolveWiki;
@@ -220,13 +220,13 @@ window.LM = window.LM || {};
           el("span", { class: "wiki-chip-text", text: target.text })
         ]));
       } else {
-        console.warn("Nieznany link [[" + m[1] + "]] — wyświetlony jako zwykły tekst.");
+        console.warn("Unknown link [[" + m[1] + "]] — shown as plain text.");
         parent.appendChild(document.createTextNode(m[1]));
       }
     });
   }
 
-  // Linki [tekst](adres) — tylko bezpieczne adresy; inne zostają zwykłym tekstem
+  // Links [text](address) — safe addresses only; anything else stays plain text
   const RE_LINK = /\[([^\]]+)\]\(([^)\s]+)\)/g;
   const SAFE_HREF = /^(https?:\/\/|mailto:|#\/)/i;
 
@@ -251,9 +251,9 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Gwiazdki: uproszczony algorytm „delimiter runs” z CommonMark.
-   * Obsługuje m.in. *She work**s** in a bank.* oraz ***THIR**ty*.
-   * Podkreślenia (_) celowo NIE są formatowaniem — w ćwiczeniach „___” to luka.
+   * Asterisks: a simplified "delimiter runs" algorithm from CommonMark.
+   * Handles e.g. *She work**s** in a bank.* and ***THIR**ty*.
+   * Underscores (_) are deliberately NOT formatting — in exercises "___" is a gap.
    */
   function appendEmphasis(parent, text) {
     const nodes = [];
@@ -271,9 +271,9 @@ window.LM = window.LM || {};
         while (j < text.length && text[j] === "*") j++;
         const before = i > 0 ? text[i - 1] : " ";
         const after = j < text.length ? text[j] : " ";
-        // Łagodniej niż CommonMark: gwiazdki obok znaku interpunkcyjnego też
-        // mogą otwierać/zamykać, np. I**'ve been** albo brother**, who…,**
-        // (ściśle wg specyfikacji pokazałyby się jako zwykłe gwiazdki).
+        // More lenient than CommonMark: asterisks next to punctuation can also
+        // open/close, e.g. I**'ve been** or brother**, who…,**
+        // (strictly by the spec they would show as plain asterisks).
         const left = !SPACE.test(after);
         const right = !SPACE.test(before);
         if (buf) { nodes.push({ t: "text", v: buf }); buf = ""; }
@@ -296,12 +296,12 @@ window.LM = window.LM || {};
       const closer = nodes[c];
       if (closer.t !== "delim" || !closer.close || closer.n === 0) { c++; continue; }
 
-      // Szukamy najbliższego pasującego otwarcia
+      // Look for the nearest matching opener
       let found = -1;
       for (let o = c - 1; o >= 0; o--) {
         const op = nodes[o];
         if (op.t !== "delim" || !op.open) continue;
-        // Reguła „wielokrotności 3” z CommonMark
+        // The "multiple of 3" rule from CommonMark
         if ((op.close || closer.open) && (op.orig + closer.orig) % 3 === 0 &&
             !(op.orig % 3 === 0 && closer.orig % 3 === 0)) continue;
         found = o;
@@ -311,7 +311,7 @@ window.LM = window.LM || {};
 
       const opener = nodes[found];
       const use = opener.n >= 2 && closer.n >= 2 ? 2 : 1;
-      // Niewykorzystane gwiazdki w środku stają się zwykłym tekstem
+      // Unused asterisks in the middle become plain text
       const inner = nodes.slice(found + 1, c).map(function (nd) {
         return nd.t === "delim" ? { t: "text", v: "*".repeat(nd.n) } : nd;
       });
@@ -334,7 +334,7 @@ window.LM = window.LM || {};
     return node;
   }
 
-  /** Kilka linii → fragment z <br> między nimi. */
+  /** Several lines → a fragment with <br> between them. */
   function inlineLines(lines) {
     const frag = document.createDocumentFragment();
     lines.forEach(function (line, i) {
@@ -345,7 +345,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // RYSOWANIE BLOKÓW
+  // DRAWING BLOCKS
   // =====================================================================
 
   function renderBlock(b) {
@@ -365,7 +365,7 @@ window.LM = window.LM || {};
           class: isTasks ? "task-list" : null
         });
         b.items.forEach(function (item) {
-          // Punkt listy zadań: pole wyboru z etykietą (stan zapisuje strona, która go używa)
+          // Task list item: a checkbox with a label (the page that uses it saves the state)
           const li = item.task
             ? el("li", { class: "task-item" }, el("label", null, [
                 el("input", { type: "checkbox", class: "md-task", checked: item.task.checked }),
@@ -393,9 +393,9 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Rysuje dokument. Bloki są grupowane w <section> według nagłówków ##.
-   * opts.hiddenSections: nazwy sekcji (małymi literami), które mają być
-   * ukryte pod przyciskiem „Pokaż odpowiedzi” (np. ["odpowiedzi"]).
+   * Draws a document. Blocks are grouped into <section> elements by ## headings.
+   * opts.hiddenSections: section names that are hidden
+   * behind a "Show answers" button (e.g. ["Answers"]).
    */
   function render(blocks, opts) {
     opts = opts || {};
@@ -410,7 +410,7 @@ window.LM = window.LM || {};
         root.appendChild(section);
         target = section;
         if (hidden.indexOf(b.text.trim().toLowerCase()) !== -1) {
-          // Sekcja z odpowiedziami: treść ukryta pod przyciskiem
+          // Answers section: content hidden behind a button
           const box = el("div", { class: "md-answers", hidden: true });
           const btn = el("button", {
             type: "button",
@@ -419,10 +419,10 @@ window.LM = window.LM || {};
             onclick: function () {
               const show = box.hidden;
               box.hidden = !show;
-              btn.textContent = show ? "Ukryj odpowiedzi" : "Pokaż odpowiedzi";
+              btn.textContent = show ? "Hide answers" : "Show answers";
               btn.setAttribute("aria-expanded", show ? "true" : "false");
             }
-          }, "Pokaż odpowiedzi");
+          }, "Show answers");
           section.classList.add("is-answers");
           section.appendChild(btn);
           section.appendChild(box);
@@ -435,7 +435,7 @@ window.LM = window.LM || {};
     return root;
   }
 
-  /** Pełne przetworzenie pliku .md: { meta, blocks }. */
+  /** Full processing of a .md file: { meta, blocks }. */
   function parse(text) {
     const fm = parseFrontmatter(text);
     return { meta: fm.meta, blocks: parseBlocks(fm.body.split("\n")) };

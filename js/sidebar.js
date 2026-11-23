@@ -1,19 +1,19 @@
 /*
- * sidebar.js — zachowanie lewego panelu (DESIGN.md, sekcja 3.1).
+ * sidebar.js — behaviour of the left panel (DESIGN.md, section 3.1).
  *
- * Stany:
- *   wąski pasek (72 px)  — domyślnie od 768 px szerokości,
- *   rozwinięty (288 px)  — nad treścią (warstwa poza przepływem, z cieniem),
- *                          po najechaniu myszą (opóźnienie 120 ms / zamykanie
- *                          250 ms), po fokusie z klawiatury albo po dotknięciu
- *                          przycisku rozwijania (tablet),
- *   przypięty            — pełny panel na stałe, treść odsuwa się
+ * States:
+ *   narrow rail (72 px)  — the default from 768 px width,
+ *   expanded (288 px)    — over the content (a layer outside the flow, with a shadow),
+ *                          on mouse hover (120 ms delay / 250 ms to close),
+ *                          on keyboard focus or when the expand button is
+ *                          tapped (tablet),
+ *   pinned               — the full panel all the time, the content moves aside
  *                          (html[data-sidebar="pinned"]),
- *   szuflada (< 768 px)  — przycisk „Menu” w górnym pasku (js/app.js).
+ *   drawer (< 768 px)    — the "Menu" button in the top bar (js/app.js).
  *
- * Przypięcie zapisujemy globalnie dla urządzenia (nie w profilu ani w eksporcie):
+ * Pinning is stored device-wide (not in the profile and not in the export):
  *   slm.sidebar = { version: 1, pinned: true|false }
- * Stan odczytuje już skrypt w <head> (index.html), żeby treść nie przeskakiwała.
+ * The <head> script (index.html) already reads it, so the content does not jump.
  */
 window.LM = window.LM || {};
 
@@ -21,8 +21,8 @@ window.LM = window.LM || {};
   "use strict";
 
   const KEY = LM.storage.key("sidebar"); // device-wide, not exported (registry in js/profile-data.js)
-  const OPEN_DELAY = 120;   // ms — nie reagujemy na przypadkowy przelot myszą
-  const CLOSE_DELAY = 250;  // ms — chwila na powrót kursora
+  const OPEN_DELAY = 120;   // ms — ignore a mouse passing by
+  const CLOSE_DELAY = 250;  // ms — a moment for the pointer to come back
 
   const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
   const narrow = window.matchMedia("(max-width: 767px)");
@@ -30,32 +30,32 @@ window.LM = window.LM || {};
   let pinned = document.documentElement.getAttribute("data-sidebar") === "pinned";
   let expanded = false;
   let hovering = false;
-  let held = false;            // otwarty popover „+N” (js/exam-core.js) trzyma panel rozwinięty
-  let focusSuppressed = false; // po Esc / zwinięciu przyciskiem: fokus w panelu nie rozwija go ponownie
+  let held = false;            // the open "+N" popover (js/exam-core.js) keeps the panel expanded
+  let focusSuppressed = false; // after Esc / collapsing with the button: focus inside the panel does not expand it again
   let openTimer = null;
   let closeTimer = null;
 
   let sidebar, panel, toggleBtn, pinBtn;
 
-  // ---------- Zapis (try/catch: bez dostępu do pamięci działa do zamknięcia karty) ----------
+  // ---------- Saving (try/catch: without storage access it works until the tab closes) ----------
 
   function save() {
     try { window.localStorage.setItem(KEY, JSON.stringify({ version: 1, pinned: pinned })); } catch (e) { /* brak zapisu */ }
   }
 
-  // ---------- Stan ----------
+  // ---------- State ----------
 
   function isOpen() { return pinned || expanded; }
 
   function setExpanded(value) {
-    if (narrow.matches) value = false; // na telefonie panel to szuflada (body.nav-open)
+    if (narrow.matches) value = false; // on a phone the panel is a drawer (body.nav-open)
     expanded = !!value;
     clearTimeout(openTimer);
     clearTimeout(closeTimer);
     sidebar.classList.toggle("is-expanded", isOpen());
     sidebar.classList.toggle("is-overlay", expanded && !pinned);
     toggleBtn.setAttribute("aria-expanded", isOpen() ? "true" : "false");
-    const label = isOpen() ? "Zwiń panel" : "Rozwiń panel";
+    const label = isOpen() ? "Collapse sidebar" : "Expand sidebar";
     toggleBtn.setAttribute("aria-label", label);
     toggleBtn.setAttribute("data-tooltip", label);
     toggleBtn.replaceChildren(LM.icon(isOpen() ? "panel-left-close" : "panel-left-open", { size: 20 }));
@@ -65,20 +65,20 @@ window.LM = window.LM || {};
     document.documentElement.setAttribute("data-sidebar", pinned ? "pinned" : "rail");
     pinBtn.setAttribute("aria-pressed", pinned ? "true" : "false");
     pinBtn.querySelector(".sb-icon").replaceChildren(LM.icon(pinned ? "pin" : "pin-off", { size: 20 }));
-    pinBtn.querySelector(".sb-label").textContent = pinned ? "Odepnij panel" : "Przypnij panel";
-    pinBtn.setAttribute("aria-label", pinned ? "Odepnij panel" : "Przypnij panel");
-    toggleBtn.hidden = pinned; // przypięty panel jest zawsze rozwinięty
+    pinBtn.querySelector(".sb-label").textContent = pinned ? "Unpin sidebar" : "Pin sidebar";
+    pinBtn.setAttribute("aria-label", pinned ? "Unpin sidebar" : "Pin sidebar");
+    toggleBtn.hidden = pinned; // a pinned panel is always expanded
   }
 
   function togglePin() {
     pinned = !pinned;
     save();
     paintPin();
-    // Po odpięciu panel zostaje rozwinięty, jeśli kursor jest nad nim (zwinie się po zjechaniu)
+    // After unpinning the panel stays expanded while the pointer is over it (it collapses when the pointer leaves)
     setExpanded(!pinned && hovering && finePointer.matches);
   }
 
-  // ---------- Zdarzenia ----------
+  // ---------- Events ----------
 
   function onEnter() {
     hovering = true;
@@ -92,7 +92,7 @@ window.LM = window.LM || {};
     clearTimeout(openTimer);
     if (held || pinned || narrow.matches || !finePointer.matches || !expanded) return;
     closeTimer = setTimeout(function () {
-      // Fokus z klawiatury w panelu trzyma go rozwiniętym
+      // Keyboard focus inside the panel keeps it expanded
       const active = document.activeElement;
       if (panel.contains(active) && active.matches(":focus-visible") && !focusSuppressed) return;
       setExpanded(false);
@@ -101,7 +101,7 @@ window.LM = window.LM || {};
 
   function onFocusIn(e) {
     if (pinned || narrow.matches || focusSuppressed || expanded) return;
-    // Tylko fokus z klawiatury (kliknięcie myszą / tapnięcie nie rozwija przez fokus)
+    // Keyboard focus only (a mouse click / tap does not expand through focus)
     if (e.target.matches(":focus-visible")) setExpanded(true);
   }
 
@@ -119,13 +119,13 @@ window.LM = window.LM || {};
     }
   }
 
-  /** Dotknięcie / kliknięcie poza rozwiniętym panelem zamyka go (tablet). */
+  /** A tap / click outside the expanded panel closes it (tablet). */
   function onPointerDownOutside(e) {
     if (!expanded || pinned || narrow.matches || held) return;
     if (!panel.contains(e.target)) setExpanded(false);
   }
 
-  /** Po przejściu na inną stronę: zwiń rozwinięty (nieprzypięty) panel, chyba że kursor jest nad nim. */
+  /** After going to another page: collapse an expanded (unpinned) panel, unless the pointer is over it. */
   function afterNavigate() {
     if (!sidebar || pinned) return;
     if (expanded && !hovering) setExpanded(false);
@@ -146,7 +146,7 @@ window.LM = window.LM || {};
     document.addEventListener("pointerdown", onPointerDownOutside);
     toggleBtn.addEventListener("click", function () {
       const open = !expanded;
-      focusSuppressed = !open; // zwinięte przyciskiem: fokus zostaje na przycisku, panel się nie rozwija
+      focusSuppressed = !open; // collapsed with the button: focus stays on the button, the panel does not expand
       setExpanded(open);
     });
     pinBtn.addEventListener("click", togglePin);
@@ -157,7 +157,7 @@ window.LM = window.LM || {};
     setExpanded(false);
   }
 
-  /** Popover „+N” otwarty: panel nie zwija się pod nim; po zamknięciu wraca do zwykłych reguł. */
+  /** "+N" popover open: the panel does not collapse under it; after closing, the usual rules apply again. */
   function hold(on) {
     held = !!on;
     if (!held && sidebar && !pinned && expanded && !hovering && !panel.contains(document.activeElement)) setExpanded(false);

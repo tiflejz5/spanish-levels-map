@@ -1,12 +1,12 @@
 /*
- * toc.js — spis treści podstron (paczka v8, S3).
+ * toc.js — table of contents of topic pages (pack v8, S3).
  *
- *   LM.toc.wrap(article) → element do wstawienia zamiast artykułu
+ *   LM.toc.wrap(article) → element to insert instead of the article
  *
- * Podstrony z ≥ 4 sekcjami „##”: od 1200 px spis jest przyklejony z prawej strony (między --w-text a --w-wide)
- * ze scrollspy (aria-current="location" na bieżącej sekcji); węższy ekran dostaje <details> „Na tej stronie” nad treścią.
- * Adres w pasku zajmuje router, więc przejścia robi scrollIntoView (z focusem na nagłówku), a nie kotwice #id.
- * W druku spis jest ukryty (css/print.css). Mniej niż 4 sekcje: artykuł bez zmian.
+ * Pages with ≥ 4 "##" sections: from 1200 px the list sticks on the right (between --w-text and --w-wide)
+ * with scrollspy (aria-current="location" on the current section); narrower screens get <details> "On this page" above the text.
+ * The router owns the address bar, so links use scrollIntoView (with focus on the heading), not #id anchors.
+ * Hidden in print (css/print.css). Fewer than 4 sections: the article is unchanged.
  */
 window.LM = window.LM || {};
 
@@ -35,7 +35,7 @@ window.LM = window.LM || {};
     }));
   }
 
-  /** Scrollspy (IntersectionObserver): zaznacza w spisie bieżącą sekcję. */
+  /** Scrollspy (IntersectionObserver): marks the current section in the list. */
   function spy(headings, side) {
     if (observer) { observer.disconnect(); observer = null; }
     if (!window.IntersectionObserver) return;
@@ -50,7 +50,7 @@ window.LM = window.LM || {};
         else { links[k].removeAttribute("aria-current"); links[k].classList.remove("is-current"); }
       });
     }
-    // Linia czytania: 25% wysokości okna; bieżąca sekcja = ostatni nagłówek, który ją minął (obserwator budzi się przy przekroczeniu pasa)
+    // Reading line: 25% of the window height; current section = the last heading that passed it (the observer wakes up when one crosses the band)
     observer = new IntersectionObserver(function () {
       const line = window.innerHeight * 0.25;
       let cur = headings[0];
@@ -70,12 +70,12 @@ window.LM = window.LM || {};
       h.setAttribute("tabindex", "-1");
       h.classList.add("toc-target");
     });
-    const side = el("nav", { class: "page-toc is-side", "aria-label": "Spis treści" }, [
-      el("p", { class: "toc-title", text: "Na tej stronie" }),
+    const side = el("nav", { class: "page-toc is-side", "aria-label": "Table of contents" }, [
+      el("p", { class: "toc-title", text: "On this page" }),
       list(headings)
     ]);
     const inline = el("details", { class: "page-toc is-inline" }, [
-      el("summary", { text: "Na tej stronie" }),
+      el("summary", { text: "On this page" }),
       list(headings, function () { inline.open = false; })
     ]);
     const body = el("div", { class: "page-body" }, [article, el("aside", { class: "page-aside" }, side)]);

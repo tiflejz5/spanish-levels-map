@@ -1,5 +1,5 @@
 /*
- * lab.js — Tense & Mood Lab data (lab part of the reference tools/zbuduj-cwiczenia.js).
+ * lab.js — Tense & Mood Lab data (lab part of the reference exercise builder).
  *
  *   content/lab/cards.json, contrasts.json, trees.json → data/lab.js
  *   LM.LAB = { axes, cards, contrasts, trees, tenses, tree }   (lazy)

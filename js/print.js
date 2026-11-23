@@ -1,10 +1,10 @@
 /*
- * print.js — przygotowanie strony do druku (paczka v6, spec 16, sekcja 1.3).
+ * print.js — gets the page ready for printing (pack v6, spec 16, section 1.3).
  *
- * Na czas druku wymusza jasny motyw i neutralny zakres kolorów (papier i atrament), a po wydruku przywraca
- * poprzednie ustawienia. Reszta (ukrywanie interfejsu, układ A4, odpowiedzi na końcu) jest w css/print.css.
+ * While printing it forces the light theme and a neutral colour scope (paper and ink), and restores the previous
+ * settings afterwards. The rest (hiding the interface, A4 layout, answers at the end) is in css/print.css.
  *
- *   LM.print.now()   window.print() po wymuszeniu jasnego motywu (też dla przycisków „Drukuj”)
+ *   LM.print.now()   window.print() after forcing the light theme (also for the "Print" buttons)
  */
 window.LM = window.LM || {};
 

@@ -1,5 +1,5 @@
 /*
- * exercises.js — exercise sets and mixes (port of the reference tools/zbuduj-cwiczenia.js).
+ * exercises.js — exercise sets and mixes (port of the reference exercise builder).
  *
  *   content/exercises/topics.json   map: topic id → [set ids]
  *   content/exercises/<set id>.json sets (spec 07 §5)

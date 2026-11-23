@@ -1,14 +1,14 @@
 /*
- * theme.js — motyw jasny / ciemny.
+ * theme.js — light / dark theme.
  *
- * Trzy ustawienia: „auto” (jak w systemie, prefers-color-scheme),
- * „light” i „dark”. Przycisk w prawym górnym rogu przełącza je po kolei.
- * Wybór zapisujemy w localStorage pod kluczem slm.theme — globalnie dla
- * urządzenia (nie w profilu i nie w eksporcie danych).
+ * Three settings: "auto" (as in the system, prefers-color-scheme),
+ * "light" and "dark". The button at the top right cycles through them.
+ * The choice is stored in localStorage under slm.theme — device-wide
+ * (not in the profile and not in the data export).
  *
- * Atrybut data-theme na <html> ustawia już mały skrypt w <head>
- * (index.html), zanim strona się narysuje — dzięki temu nie ma błysku
- * złego motywu. Ten plik obsługuje przycisk i zmiany „na żywo”.
+ * A small script in <head> (index.html) sets data-theme on <html> before
+ * the page paints, so there is no flash of the wrong theme. This file
+ * handles the button and live changes.
  */
 window.LM = window.LM || {};
 
@@ -17,7 +17,7 @@ window.LM = window.LM || {};
 
   const KEY = LM.storage.key("theme"); // device-wide, not exported (registry in js/profile-data.js)
   const ORDER = ["auto", "light", "dark"];
-  const NAMES = { auto: "Automatycznie (jak w systemie)", light: "Jasny", dark: "Ciemny" };
+  const NAMES = { auto: "Auto (as in your system)", light: "Light", dark: "Dark" };
   const THEME_COLOR = { light: "#faf6ee", dark: "#0e1526" };
 
   const query = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : { matches: false };
@@ -34,18 +34,18 @@ window.LM = window.LM || {};
   }
 
   function savePref(v) {
-    try { window.localStorage.setItem(KEY, v); } catch (e) { /* bez zapisu — działa do zamknięcia karty */ }
+    try { window.localStorage.setItem(KEY, v); } catch (e) { /* not saved — works until the tab closes */ }
   }
 
   function resolved() {
     return pref === "auto" ? (query.matches ? "dark" : "light") : pref;
   }
 
-  /** Ustawia motyw na <html>, kolor paska przeglądarki i wygląd przycisku. */
+  /** Sets the theme on <html>, the browser bar colour and the button look. */
   function apply(animate) {
     const root = document.documentElement;
     if (animate) {
-      // Krótkie przejście kolorów tylko w chwili zmiany motywu
+      // A short colour transition only at the moment the theme changes
       root.classList.add("theme-anim");
       clearTimeout(animTimer);
       animTimer = setTimeout(function () { root.classList.remove("theme-anim"); }, 320);
@@ -57,9 +57,9 @@ window.LM = window.LM || {};
     paintButton();
   }
 
-  // ---------- Przycisk ----------
+  // ---------- Button ----------
 
-  // Ikony Lucide (js/ui.js): słońce, księżyc, słońce z księżycem = jak w systemie
+  // Lucide icons (js/ui.js): sun, moon, sun with moon = as in the system
   const ICON = { light: "sun", dark: "moon", auto: "sun-moon" };
 
   function icon(kind) {
@@ -73,10 +73,10 @@ window.LM = window.LM || {};
   function paintButton() {
     const btn = document.getElementById("theme-btn");
     if (!btn) return;
-    const label = "Motyw: " + NAMES[pref] + ". Kliknij, aby przełączyć na: " + NAMES[nextPref()];
+    const label = "Theme: " + NAMES[pref] + ". Select to switch to: " + NAMES[nextPref()];
     btn.replaceChildren(icon(pref));
     btn.setAttribute("aria-label", label);
-    btn.setAttribute("data-tooltip", "Motyw: " + NAMES[pref]);
+    btn.setAttribute("data-tooltip", "Theme: " + NAMES[pref]);
     btn.setAttribute("data-tooltip-align", "end");
     btn.setAttribute("data-pref", pref);
   }
@@ -90,14 +90,14 @@ window.LM = window.LM || {};
         apply(true);
       });
     }
-    // W trybie „Automatycznie” reagujemy na zmianę ustawienia systemu na żywo
+    // In "Auto" mode, follow a change of the system setting live
     const onSystemChange = function () {
       if (pref === "auto" && document.documentElement.getAttribute("data-theme") !== resolved()) apply(true);
     };
     if (query.addEventListener) query.addEventListener("change", onSystemChange);
     else if (query.addListener) query.addListener(onSystemChange);
-    // Zapasowo: sprawdzamy też po powrocie do karty (część przeglądarek nie wysyła
-    // „change”, gdy karta była w tle)
+    // Fallback: check again when the tab becomes visible (some browsers do not send
+    // "change" while the tab is in the background)
     window.addEventListener("focus", onSystemChange);
     document.addEventListener("visibilitychange", function () { if (!document.hidden) onSystemChange(); });
     apply(false);

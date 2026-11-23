@@ -1,7 +1,7 @@
 /*
- * dialogs.js — proste okna dialogowe (potwierdzenie, pytanie o tekst,
- * komunikat) zbudowane na elemencie <dialog>.
- * Zastępują systemowe confirm()/prompt(), żeby pasowały wyglądem.
+ * dialogs.js — simple dialogs (confirm, ask for text, message)
+ * built on the <dialog> element.
+ * They replace the system confirm()/prompt() so they match the app's look.
  */
 window.LM = window.LM || {};
 
@@ -12,11 +12,11 @@ window.LM = window.LM || {};
   let counter = 0;
 
   /**
-   * Otwiera okno. Opcje:
-   *   title, body (element/tekst/tablica), className,
+   * Opens a dialog. Options:
+   *   title, body (element/text/array), className,
    *   actions: [{ label, value, variant, autofocus }],
-   *   cancelValue: wartość zwracana po Esc
-   * Zwraca { element, close(value), result: Promise }.
+   *   cancelValue: value returned after Esc
+   * Returns { element, close(value), result: Promise }.
    */
   function open(opts) {
     const titleId = "dlg-title-" + (++counter);
@@ -35,7 +35,7 @@ window.LM = window.LM || {};
       closed = true;
       if (dialog.open) dialog.close();
       dialog.remove();
-      // Przywróć fokus tam, gdzie był przed otwarciem okna
+      // Give focus back to where it was before the dialog opened
       if (previousFocus && document.contains(previousFocus) && previousFocus.focus) previousFocus.focus();
       resolveFn(value);
     }
@@ -47,7 +47,7 @@ window.LM = window.LM || {};
         autofocus: a.autofocus || null,
         onclick: function () {
           if (typeof a.onClick === "function") {
-            // onClick może zwrócić false, żeby nie zamykać okna (np. błąd walidacji)
+            // onClick may return false to keep the dialog open (e.g. a validation error)
             if (a.onClick() === false) return;
           }
           close(a.value);
@@ -61,7 +61,7 @@ window.LM = window.LM || {};
       actions.length ? el("div", { class: "dialog-actions" }, actions) : null
     ]));
 
-    // Esc → anuluj
+    // Esc → cancel
     dialog.addEventListener("cancel", function (e) {
       e.preventDefault();
       close(opts.cancelValue);
@@ -72,20 +72,20 @@ window.LM = window.LM || {};
     return { element: dialog, close: close, result: result };
   }
 
-  /** Okno potwierdzenia. Zwraca Promise<true|false>. */
+  /** Confirmation dialog. Returns Promise<true|false>. */
   function confirm(opts) {
     return open({
-      title: opts.title || "Na pewno?",
+      title: opts.title || "Are you sure?",
       body: el("p", { text: opts.message || "" }),
       cancelValue: false,
       actions: [
-        { label: opts.cancelLabel || "Anuluj", value: false, variant: "btn-secondary", autofocus: true },
-        { label: opts.confirmLabel || "Usuń", value: true, variant: opts.danger === false ? "btn-primary" : "btn-danger-solid" }
+        { label: opts.cancelLabel || "Cancel", value: false, variant: "btn-secondary", autofocus: true },
+        { label: opts.confirmLabel || "Delete", value: true, variant: opts.danger === false ? "btn-primary" : "btn-danger-solid" }
       ]
     }).result;
   }
 
-  /** Okno z polem tekstowym. Zwraca Promise<string|null> (null = anulowano). */
+  /** Dialog with a text field. Returns Promise<string|null> (null = cancelled). */
   function prompt(opts) {
     const input = el("input", {
       type: "text",
@@ -98,7 +98,7 @@ window.LM = window.LM || {};
 
     function validate() {
       if (!input.value.trim()) {
-        error.textContent = "To pole nie może być puste.";
+        error.textContent = "This field cannot be empty.";
         input.focus();
         return false;
       }
@@ -114,12 +114,12 @@ window.LM = window.LM || {};
       ],
       cancelValue: null,
       actions: [
-        { label: "Anuluj", value: null },
-        { label: opts.confirmLabel || "Zapisz", variant: "btn-primary", onClick: validate, value: "__input__" }
+        { label: "Cancel", value: null },
+        { label: opts.confirmLabel || "Save", variant: "btn-primary", onClick: validate, value: "__input__" }
       ]
     });
 
-    // Enter zatwierdza
+    // Enter confirms
     input.addEventListener("keydown", function (e) {
       if (e.key === "Enter") {
         e.preventDefault();
@@ -134,7 +134,7 @@ window.LM = window.LM || {};
     });
   }
 
-  /** Zwykły komunikat z przyciskiem OK. */
+  /** A plain message with a close button. */
   function alert(opts) {
     return open({
       title: opts.title,

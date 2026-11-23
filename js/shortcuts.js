@@ -1,12 +1,12 @@
 /*
- * shortcuts.js — okienko skrótów klawiszowych („?”) i wspólny odsłuch zdań (paczka v8, S5).
+ * shortcuts.js — the keyboard shortcuts panel ("?") and shared sentence playback (pack v8, S5).
  *
- *   LM.shortcuts.open()        okienko z listą skrótów dla bieżącego widoku (zadania, powtórki, C1 i egzaminy, strony treści)
- *   LM.shortcuts.speak(text)   czyta zdanie głosem angielskim (en-GB, potem en-US); drugie wywołanie w trakcie czytania przerywa
+ *   LM.shortcuts.open()        panel with the shortcuts of the current view (exercises, review session, topic pages)
+ *   LM.shortcuts.speak(text)   reads a sentence aloud (stage 3 moves voice choice into LM.speech); a second call while
+ *                              reading stops it
  *
- * Skróty nie działają w polach tekstowych (poza Enter, który ma własną obsługę w widokach).
- * Zadania: js/exercise-engine.js, sesja powtórek: js/cards.js, strony treści: js/handbook.js; tu: „?”,
- * odsłuch wiersza w ćwiczeniach C1 (S, wiersz ostatnio wybrany) i Enter = „Sprawdź” w polach C1.
+ * Shortcuts do not work in text fields (except Enter, which each view handles itself).
+ * Exercises: js/exercise-engine.js, review session: js/cards.js, topic pages: js/handbook.js; here: "?".
  */
 window.LM = window.LM || {};
 
@@ -17,67 +17,57 @@ window.LM = window.LM || {};
   const el = U.el;
 
   const CONTEXTS = {
-    zadania: {
-      title: "Skróty w zadaniach",
+    exercises: {
+      title: "Shortcuts in exercises",
       rows: [
-        ["1–4 lub A–D", "wybór odpowiedzi (przy opcjach A–H: litera opcji)"],
-        ["Enter", "Sprawdź, a po sprawdzeniu Dalej"],
-        ["S", "odsłuch zdania (przed sprawdzeniem luka jest pauzą)"],
-        ["Tab", "następna luka"],
-        ["Backspace", "cofnięcie ostatniego wyrazu (układanie zdania)"],
-        ["Ctrl + Enter", "Sprawdź w polu wieloliniowym"],
-        ["?", "ta lista"]
+        ["1–4 or A–D", "choose an answer (with options A–H: the option's letter)"],
+        ["Enter", "Check, then Next"],
+        ["S", "play the sentence (before checking, the gap is a pause)"],
+        ["Tab", "next gap"],
+        ["Backspace", "undo the last word (Put in order)"],
+        ["Ctrl + Enter", "Check in a multi-line field"],
+        ["?", "this list"]
       ]
     },
-    powtorki: {
-      title: "Skróty w sesji powtórek",
+    review: {
+      title: "Shortcuts in a review session",
       rows: [
-        ["Spacja", "pokaż odpowiedź, potem „Dobrze”"],
-        ["1–4", "oceny: Znowu, Trudne, Dobrze, Łatwe"],
-        ["S", "odsłuch zdania z karty (luka jest pauzą)"],
-        ["Z", "cofnij ostatnią ocenę"],
-        ["W", "zawieś kartę"],
-        ["B", "odłóż kartę do jutra"],
-        ["E", "edytuj kartę (własne talie)"],
-        ["?", "ta lista"]
+        ["Space", "show the answer, then “Good”"],
+        ["1–4", "ratings: Again, Hard, Good, Easy"],
+        ["S", "play the sentence on the card (the gap is a pause)"],
+        ["Z", "undo the last rating"],
+        ["W", "suspend the card"],
+        ["B", "put the card off until tomorrow"],
+        ["E", "edit the card (your own decks)"],
+        ["?", "this list"]
       ]
     },
-    c1: {
-      title: "Skróty w ćwiczeniach",
+    page: {
+      title: "Shortcuts on a topic page",
       rows: [
-        ["Enter", "Sprawdź (w polu odpowiedzi)"],
-        ["Tab", "następne pole"],
-        ["S", "odsłuch ostatnio wybranego zdania (poza polem tekstowym)"],
-        ["?", "ta lista"]
+        ["[", "previous topic of the level"],
+        ["]", "next topic of the level"],
+        ["/", "search"],
+        ["Ctrl + K", "search"],
+        ["?", "this list"]
       ]
     },
-    strona: {
-      title: "Skróty na stronie tematu",
+    general: {
+      title: "Shortcuts",
       rows: [
-        ["[", "poprzedni temat poziomu"],
-        ["]", "następny temat poziomu"],
-        ["/", "szukaj"],
-        ["Ctrl + K", "szukaj"],
-        ["?", "ta lista"]
-      ]
-    },
-    ogolne: {
-      title: "Skróty",
-      rows: [
-        ["/", "szukaj"],
-        ["Ctrl + K", "szukaj"],
-        ["?", "ta lista"]
+        ["/", "search"],
+        ["Ctrl + K", "search"],
+        ["?", "this list"]
       ]
     }
   };
 
   function contextNow() {
-    if (document.querySelector(".ex-view .ex-card")) return "zadania";
-    if (document.querySelector(".fc-session")) return "powtorki";
+    if (document.querySelector(".ex-view .ex-card")) return "exercises";
+    if (document.querySelector(".fc-session")) return "review";
     const v = LM.state && LM.state.view;
-    if (v === "c1" || v === "exam") return "c1";
-    if (v === "page") return "strona";
-    return "ogolne";
+    if (v === "page") return "page";
+    return "general";
   }
 
   function typing(t) {
@@ -90,20 +80,20 @@ window.LM = window.LM || {};
     const c = CONTEXTS[contextNow()];
     const list = el("dl", { class: "kbd-list" });
     c.rows.forEach(function (r) {
-      list.appendChild(el("dt", null, r[0].split(" lub ").map(function (k, i) {
-        return [i ? " lub " : null, el("kbd", { text: k })];
+      list.appendChild(el("dt", null, r[0].split(" or ").map(function (k, i) {
+        return [i ? " or " : null, el("kbd", { text: k })];
       })));
       list.appendChild(el("dd", { text: r[1] }));
     });
     return LM.dialogs.open({
       title: c.title, className: "dialog-shortcuts",
-      body: [list, el("p", { class: "tool-note", text: "Skróty nie działają w polach tekstowych (poza Enter)." })],
+      body: [list, el("p", { class: "tool-note", text: "Shortcuts do not work in text fields (except Enter)." })],
       cancelValue: true,
-      actions: [{ label: "Zamknij", value: true, variant: "btn-primary", autofocus: true }]
+      actions: [{ label: "Close", value: true, variant: "btn-primary", autofocus: true }]
     }).result;
   }
 
-  // ---------- odsłuch ----------
+  // ---------- playback ----------
 
   let current = null;
 
@@ -114,18 +104,18 @@ window.LM = window.LM || {};
       || all.filter(function (v) { return /^en/i.test(v.lang); })[0] || null;
   }
 
-  /** Czyta zdanie po angielsku; true, gdy ruszyło (false: brak syntezatora albo głosu — wtedy komunikat). Ponowne S zatrzymuje. */
+  /** Reads a sentence aloud; true when it started (false: no synthesizer or no voice — then a message). S again stops it. */
   function speak(text, rate) {
     const s = window.speechSynthesis;
     if (!s || typeof window.SpeechSynthesisUtterance !== "function") {
-      if (LM.ui) LM.ui.toast({ text: "Ta przeglądarka nie ma syntezatora mowy.", icon: "volume-x" });
+      if (LM.ui) LM.ui.toast({ text: "This browser has no speech synthesizer.", icon: "volume-x" });
       return false;
     }
     if (current) { s.cancel(); current = null; return true; }
     const voice = enVoice();
     const all = s.getVoices();
     if (all.length && !voice) {
-      if (LM.ui) LM.ui.toast({ text: "Ta przeglądarka nie ma głosu angielskiego.", icon: "volume-x" });
+      if (LM.ui) LM.ui.toast({ text: "This browser has no " + LM.APP.language + " voice.", icon: "volume-x" });
       return false;
     }
     const u = new window.SpeechSynthesisUtterance(text);
@@ -138,46 +128,10 @@ window.LM = window.LM || {};
     return true;
   }
 
-  // ---------- ćwiczenia C1 i egzaminów: pola tekstowe w wierszach ----------
-
-  let lastRow = null;
-
-  function c1View() { return document.querySelector("#view .c1-tr-item, #view .c1-gap-item, #view [class*='c1-'][class*='-item']"); }
-
-  /** Tekst wiersza: bez słowa kluczowego i opinii; pola odpowiedzi jako pauza (albo wpisana wartość). */
-  function rowText(node) {
-    let out = "";
-    (function walk(n) {
-      if (n.nodeType === 3) { out += n.nodeValue; return; }
-      if (n.nodeType !== 1) return;
-      if (/c1-(feedback|answer|explanation|journal|keyword|tr-key)/.test(n.className || "")) return;
-      if (n.tagName === "INPUT" || n.tagName === "TEXTAREA") { out += n.value ? " " + n.value + " " : " … "; return; }
-      for (let c = n.firstChild; c; c = c.nextSibling) walk(c);
-      if (n.tagName === "P" || n.tagName === "LI") out += " ";
-    })(node);
-    return out.replace(/\s+/g, " ").replace(/\s+([,.;!?])/g, "$1").trim();
-  }
-
-  document.addEventListener("focusin", function (e) {
-    const li = e.target.closest && e.target.closest("#view li");
-    if (li && c1View() && li.querySelector("input[type=text], textarea")) lastRow = li;
-  });
-
   document.addEventListener("keydown", function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
-    const t = e.target;
-    // Enter w polu odpowiedzi ćwiczenia C1 = „Sprawdź” (zadania z silnika mają własną obsługę)
-    if (e.key === "Enter" && typing(t) && t.tagName === "INPUT" && !document.querySelector(".ex-view .ex-card") && c1View() && t.closest("#view li")) {
-      const btn = Array.prototype.find.call(document.querySelectorAll("#view button.btn-primary"), function (b) { return b.textContent.trim() === "Sprawdź" && !b.disabled; });
-      if (btn) { e.preventDefault(); btn.click(); }
-      return;
-    }
-    if (typing(t) || dialogOpen()) return;
-    if (e.key === "?") { e.preventDefault(); open(); return; }
-    if ((e.key === "s" || e.key === "S") && c1View() && lastRow && document.contains(lastRow) && !document.querySelector(".ex-view .ex-card")) {
-      const text = rowText(lastRow);
-      if (text) { e.preventDefault(); speak(text); }
-    }
+    if (typing(e.target) || dialogOpen()) return;
+    if (e.key === "?") { e.preventDefault(); open(); }
   });
 
   LM.shortcuts = { open: open, speak: speak, contextNow: contextNow, CONTEXTS: CONTEXTS };

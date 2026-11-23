@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Motyw jasny i ciemny (kolory w css/style.css, przełącznik w js/theme.js) -->
+  <!-- Light and dark theme (colors in css/style.css, switch in js/theme.js) -->
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#faf6ee">
   <!-- Not indexed by search engines until a native speaker has checked the published levels (spec 01 D14, spec 13) -->
   <meta name="robots" content="noindex, nofollow">
-  <title>English Levels Map (A1–C2)</title>
-  <!-- Ustawia motyw i stan lewego panelu ZANIM strona się narysuje.
+  <title>Spanish Levels Map (A1–C2)</title>
+  <!-- Sets the theme and the state of the left panel BEFORE the page is drawn.
        Keys must match the registry in js/profile-data.js (LM.APP.storagePrefix + id); this script runs before any JS file.
-       slm.theme: "auto" (jak w systemie), "light" albo "dark".
+       slm.theme: "auto" (as in the system), "light" or "dark".
        slm.sidebar: { version: 1, pinned: true|false } (js/sidebar.js). -->
   <script>
     (function () {
@@ -23,15 +23,15 @@
       root.setAttribute("data-theme-pref", pref);
       var meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute("content", dark ? "#0e1526" : "#faf6ee");
-      // Lewy panel przypięty? (slm.sidebar, globalnie dla urządzenia) — przed narysowaniem,
-      // żeby treść nie przeskakiwała przy starcie
+      // Left panel pinned? (slm.sidebar, global for the device) — before drawing,
+      // so the content does not jump at start
       var pinned = false;
       try { var sb = JSON.parse(localStorage.getItem("slm.sidebar") || "null"); pinned = !!(sb && sb.version === 1 && sb.pinned === true); } catch (e) {}
       root.setAttribute("data-sidebar", pinned ? "pinned" : "rail");
     })();
   </script>
-  <!-- Fonty self-hosted (assets/fonts): preload tylko krytycznych plików i tylko przez http(s) —
-       z file:// preload „crossorigin” jest blokowany (błędy w konsoli), a fonty i tak wczytuje CSS -->
+  <!-- Self-hosted fonts (assets/fonts): preload only the critical files and only over http(s) —
+       from file:// a "crossorigin" preload is blocked (console errors), and CSS loads the fonts anyway -->
   <script>
     if (/^https?:$/.test(location.protocol)) {
       ["inter-latin", "inter-latin-ext", "fraunces-latin"].forEach(function (f) {
@@ -45,33 +45,33 @@
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="assets/favicon-180.png" type="image/png" sizes="180x180">
   <link rel="apple-touch-icon" href="assets/favicon-180.png">
-  <link rel="stylesheet" href="css/style.css?v=151">
-  <link rel="stylesheet" href="css/print.css?v=151" media="print">
+  <link rel="stylesheet" href="css/style.css?v=152">
+  <link rel="stylesheet" href="css/print.css?v=152" media="print">
 </head>
 <body>
   <noscript>
-    <p class="noscript">Ta strona wymaga włączonej obsługi JavaScript w przeglądarce.</p>
+    <p class="noscript">This page needs JavaScript turned on in your browser.</p>
   </noscript>
 
   <div class="app" id="app">
-    <!-- LEWY PANEL (js/sidebar.js, DESIGN.md sekcja 3.1):
-         wąski pasek (72 px) rozwijany nad treścią po najechaniu / fokusie / dotknięciu,
-         przypinany pinezką; poniżej 768 px szuflada otwierana przyciskiem „Menu”. -->
-    <aside class="sidebar" id="sidebar" aria-label="Nawigacja">
+    <!-- LEFT PANEL (js/sidebar.js, DESIGN.md section 3.1):
+         a narrow bar (72 px) that expands over the content on hover / focus / touch,
+         pinned with the pin button; below 768 px a drawer opened with the "Menu" button. -->
+    <aside class="sidebar" id="sidebar" aria-label="Navigation">
       <div class="sb-panel" id="sb-panel">
         <div class="sb-head">
-          <!-- Logo: link do strony głównej (#/) z każdego miejsca -->
-          <a class="brand sb-brand" href="#/" aria-label="English Levels Map – strona główna" data-logo></a>
-          <button type="button" class="icon-btn sb-toggle" id="sb-toggle" aria-controls="sb-panel" aria-expanded="false" aria-label="Rozwiń panel"><span data-icon="panel-left-open"></span></button>
+          <!-- Logo: a link to the home page (#/) from everywhere -->
+          <a class="brand sb-brand" href="#/" aria-label="Spanish Levels Map – home" data-logo></a>
+          <button type="button" class="icon-btn sb-toggle" id="sb-toggle" aria-controls="sb-panel" aria-expanded="false" aria-label="Expand sidebar"><span data-icon="panel-left-open"></span></button>
         </div>
-        <p class="sb-tagline" id="sidebar-category-name">Mapa angielskiego A1–C2</p>
+        <p class="sb-tagline" id="sidebar-category-name">Your map of Spanish, A1–C2</p>
 
         <div class="sb-scroll">
-          <!-- Narzędzia nauki (Dziś, Test poziomu, Dziennik błędów) rysuje js/render.js -->
-          <nav class="sb-nav" id="tools-nav" aria-label="Nauka"></nav>
+          <!-- Learning tools (Trail, Today, Review, Practice, Lab, Writing) are drawn by js/render.js -->
+          <nav class="sb-nav" id="tools-nav" aria-label="Learn"></nav>
 
-          <!-- Poziomy A1–C2 (postęp we wszystkich kategoriach) rysuje js/render.js -->
-          <p class="sb-caption" id="sb-levels-caption">Poziomy · wszystkie kategorie</p>
+          <!-- Levels A1–C2 (progress in all categories) are drawn by js/render.js -->
+          <p class="sb-caption" id="sb-levels-caption">Levels · all categories</p>
           <nav class="sb-nav level-list" id="level-list" aria-labelledby="sb-levels-caption"></nav>
 
           <!-- Sidebar group "Exams" from the registry (js/exam-core.js); hidden while the registry is empty (spec 06 E8) -->
@@ -82,20 +82,20 @@
         <div class="sb-foot">
           <button type="button" class="sb-item sb-pin" id="sb-pin" aria-pressed="false">
             <span class="sb-icon" aria-hidden="true"><span data-icon="pin"></span></span>
-            <span class="sb-label">Przypnij panel</span>
+            <span class="sb-label">Pin sidebar</span>
           </button>
         </div>
       </div>
     </aside>
 
-    <!-- PRAWA CZĘŚĆ: treść wybranego poziomu -->
+    <!-- RIGHT PART: the content of the current page -->
     <main class="main" id="main" tabindex="-1">
-      <!-- Górny pasek: przycisk menu (tylko telefon) i menu profilu z sekcją „Dane” (prawy górny róg, js/profiles.js) -->
+      <!-- Top bar: the menu button (phone only) and the profile menu with the "Data" section (top right corner, js/profiles.js) -->
       <div class="topbar" id="topbar">
         <button type="button" class="btn btn-secondary btn-small menu-btn" id="menu-btn" aria-controls="sidebar" aria-expanded="false"><span data-icon="menu"></span>Menu</button>
         <div class="topbar-actions">
-          <!-- Motyw: Automatycznie → Jasny → Ciemny (js/theme.js) -->
-          <button type="button" class="icon-btn theme-btn" id="theme-btn" aria-label="Motyw"></button>
+          <!-- Theme: Auto → Light → Dark (js/theme.js) -->
+          <button type="button" class="icon-btn theme-btn" id="theme-btn" aria-label="Theme"></button>
           <div class="profile-slot" id="profile-slot"></div>
         </div>
       </div>
@@ -103,95 +103,94 @@
       <div class="view" id="view"></div>
     </main>
   </div>
-  <!-- Tło za otwartym menu na telefonie (kliknięcie zamyka menu) -->
+  <!-- Backdrop behind the open menu on a phone (a click closes the menu) -->
   <div class="nav-overlay" id="nav-overlay" hidden></div>
 
-  <!-- Skrypty ładowane po kolei (bez modułów ES, żeby działało z file://).
-       ?v=146 to numer wersji: po zmianie plików JS/CSS zwiększ go wszędzie,
-       żeby przeglądarki nie użyły starych kopii z pamięci podręcznej. -->
-  <script defer src="js/utils.js?v=151"></script>
+  <!-- Scripts load in order (no ES modules, so the app works from file://).
+       ?v= is the version stamp: npm run build -- --bump raises it everywhere,
+       so browsers do not use old copies from their cache. -->
+  <script defer src="js/utils.js?v=152"></script>
   <!-- App and language configuration: LM.APP, LM.VERSION (js/config.js) and Spanish rules LM.lang (js/lang.js) -->
-  <script defer src="js/config.js?v=151"></script>
-  <script defer src="js/lang.js?v=151"></script>
+  <script defer src="js/config.js?v=152"></script>
+  <script defer src="js/lang.js?v=152"></script>
   <!-- The syllabus (generated: npm run build) is the only list of levels, units, categories and topics; LM.syl reads it -->
-  <script defer src="data/syllabus.js?v=151"></script>
-  <script defer src="js/syllabus.js?v=151"></script>
+  <script defer src="data/syllabus.js?v=152"></script>
+  <script defer src="js/syllabus.js?v=152"></script>
   <!-- Storage key registry (LM.storage) and per-profile learning data: early, because theme.js and sidebar.js read their keys at start -->
-  <script defer src="js/learning-stats.js?v=151"></script>
-  <script defer src="js/profile-data.js?v=151"></script>
-  <!-- Ikony Lucide (generowane: npm run zasoby) i wspólne elementy wizualne -->
-  <script defer src="assets/icons.js?v=151"></script>
-  <script defer src="assets/lands.js?v=151"></script>
-  <script defer src="assets/empty-states.js?v=151"></script>
-  <script defer src="js/ui.js?v=151"></script>
-  <script defer src="js/motion.js?v=151"></script>
-  <!-- Czysta logika nauki: powtórki, seria, test poziomu (testy: node tools/tests.js) -->
-  <script defer src="js/learning.js?v=151"></script>
-  <script defer src="js/theme.js?v=151"></script>
-  <script defer src="js/print.js?v=151"></script>
-  <script defer src="js/store.js?v=151"></script>
-  <script defer src="js/dialogs.js?v=151"></script>
-  <script defer src="js/render.js?v=151"></script>
-  <script defer src="js/profiles.js?v=151"></script>
-  <script defer src="js/markdown.js?v=151"></script>
-  <!-- Wyróżnione sekcje (callouty) i tabele w treściach -->
-  <script defer src="js/callouts.js?v=151"></script>
-  <script defer src="js/toc.js?v=151"></script>
-  <script defer src="js/shortcuts.js?v=151"></script>
-  <script defer src="js/handbook.js?v=151"></script>
+  <script defer src="js/learning-stats.js?v=152"></script>
+  <script defer src="js/profile-data.js?v=152"></script>
+  <!-- Lucide icons (generated by the build) and shared visual elements -->
+  <script defer src="assets/icons.js?v=152"></script>
+  <script defer src="assets/lands.js?v=152"></script>
+  <script defer src="assets/empty-states.js?v=152"></script>
+  <script defer src="js/ui.js?v=152"></script>
+  <script defer src="js/motion.js?v=152"></script>
+  <!-- Pure learning logic: reviews, streak, placement test (tests: node tools/tests.js) -->
+  <script defer src="js/learning.js?v=152"></script>
+  <script defer src="js/theme.js?v=152"></script>
+  <script defer src="js/print.js?v=152"></script>
+  <script defer src="js/store.js?v=152"></script>
+  <script defer src="js/dialogs.js?v=152"></script>
+  <script defer src="js/render.js?v=152"></script>
+  <script defer src="js/profiles.js?v=152"></script>
+  <script defer src="js/markdown.js?v=152"></script>
+  <!-- Highlighted sections (callouts) and tables in content -->
+  <script defer src="js/callouts.js?v=152"></script>
+  <script defer src="js/toc.js?v=152"></script>
+  <script defer src="js/shortcuts.js?v=152"></script>
+  <script defer src="js/handbook.js?v=152"></script>
   <!-- Generated data (npm run build): topic pages, summaries, cheat sheets, home; the trail generated from the syllabus -->
-  <script defer src="data/pages.js?v=151"></script>
-  <script defer src="data/trail.js?v=151"></script>
+  <script defer src="data/pages.js?v=152"></script>
+  <script defer src="data/trail.js?v=152"></script>
   <!-- Shared writing trainer engine (exams from the registry) -->
-  <script defer src="js/writing-trainer.js?v=151"></script>
-  <!-- Trener Speaking egzaminów z rejestru (B2 First): timery, samoocena, historia sesji -->
-  <!-- Egzaminy z rejestru: rejestr (mały, przy starcie), logika i moduł; treści egzaminu ładowane na żądanie -->
-  <script defer src="data/exams-registry.js?v=151"></script>
-  <script defer src="js/exam-logic.js?v=151"></script>
-  <script defer src="js/exam-core.js?v=151"></script>
-  <script defer src="js/exam-ui.js?v=151"></script>
-  <!-- Dane nauki osobno dla każdego profilu i dziennik błędów -->
-  <!-- Fiszki: harmonogram i czysta logika (testy: node tools/tests.js), zapis slm.cards.<profil> -->
-  <script defer src="js/cards-schedule.js?v=151"></script>
-  <script defer src="js/cards-logic.js?v=151"></script>
-  <script defer src="js/cards-store.js?v=151"></script>
-  <script defer src="js/trail-logic.js?v=151"></script>
-  <script defer src="js/trail-store.js?v=151"></script>
-  <!-- Indeks talii (mały; same talie ładowane na żądanie z dane/fiszki/talie/) i zakładka /fiszki -->
-  <script defer src="data/decks-index.js?v=151"></script>
-  <script defer src="js/cards.js?v=151"></script>
-  <script defer src="js/cards-browse.js?v=151"></script>
-  <script defer src="js/words.js?v=151"></script>
-  <!-- Fiszki i błędy: jedna kolejka (review-queue.js, czysta logika) i widok #/powtorki (review.js) -->
-  <script defer src="js/review-queue.js?v=151"></script>
-  <script defer src="js/mistake-task.js?v=151"></script>
-  <script defer src="js/review.js?v=151"></script>
-  <!-- Pisanie: wzorcowe wypracowania z komentarzami (dane z trenerów pisania ładowane na żądanie) -->
-  <script defer src="js/writing.js?v=151"></script>
-  <script defer src="js/trail.js?v=151"></script>
-  <script defer src="js/mistakes.js?v=151"></script>
-  <!-- Silnik zadań (logika bez DOM + widok); dane ćwiczeń ładowane na żądanie z cwiczenia/ -->
-  <script defer src="js/exercise-logic.js?v=151"></script>
-  <script defer src="js/final-logic.js?v=151"></script>
-  <script defer src="js/exercise-engine.js?v=151"></script>
-  <script defer src="js/practice-hub.js?v=151"></script>
-  <script defer src="js/final.js?v=151"></script>
-  <!-- Laboratorium czasów (dane/lab-dane.js ładowane na żądanie) -->
-  <script defer src="js/lab.js?v=151"></script>
-  <!-- Statystyki (dziennik podejść, js/learning-stats.js) -->
-  <script defer src="js/stats-page.js?v=151"></script>
-  <!-- Wyszukiwarka (indeks dane/szukaj-indeks.js ładowany przy pierwszym otwarciu) -->
-  <script defer src="js/search-logic.js?v=151"></script>
-  <script defer src="js/search.js?v=151"></script>
-  <!-- Własne notatki (panel na stronach z treścią, #/notatki) -->
-  <script defer src="js/notes.js?v=151"></script>
-  <script defer src="js/today.js?v=151"></script>
-  <!-- Szybki test poziomu (pytania generowane: node tools/zbuduj-niezbednik.js) -->
-  <script defer src="js/placement.js?v=151"></script>
-  <script defer src="js/data-menu.js?v=151"></script>
-  <script defer src="js/sidebar.js?v=151"></script>
-  <!-- Celebracje kamieni milowych (GSAP na żądanie) -->
-  <script defer src="js/celebrate.js?v=151"></script>
-  <script defer src="js/app.js?v=151"></script>
+  <script defer src="js/writing-trainer.js?v=152"></script>
+  <!-- Exams from the registry: the registry (small, at start), logic and module; exam content loads on demand.
+       The speaking trainer (js/speaking-trainer.js, js/recorder.js) loads on entering it. -->
+  <script defer src="data/exams-registry.js?v=152"></script>
+  <script defer src="js/exam-logic.js?v=152"></script>
+  <script defer src="js/exam-core.js?v=152"></script>
+  <script defer src="js/exam-ui.js?v=152"></script>
+  <!-- Flashcards: scheduler and pure logic (tests: node tools/tests.js), saved in slm.cards.<profile>; the trail logic and store -->
+  <script defer src="js/cards-schedule.js?v=152"></script>
+  <script defer src="js/cards-logic.js?v=152"></script>
+  <script defer src="js/cards-store.js?v=152"></script>
+  <script defer src="js/trail-logic.js?v=152"></script>
+  <script defer src="js/trail-store.js?v=152"></script>
+  <!-- Deck index (small; the decks themselves load on demand) and the flashcard views -->
+  <script defer src="data/decks-index.js?v=152"></script>
+  <script defer src="js/cards.js?v=152"></script>
+  <script defer src="js/cards-browse.js?v=152"></script>
+  <script defer src="js/words.js?v=152"></script>
+  <!-- Flashcards and mistakes: one queue (review-queue.js, pure logic) and the #/review view (review.js) -->
+  <script defer src="js/review-queue.js?v=152"></script>
+  <script defer src="js/mistake-task.js?v=152"></script>
+  <script defer src="js/review.js?v=152"></script>
+  <!-- Writing: model answers with comments (data from the writing trainers, loaded on demand) -->
+  <script defer src="js/writing.js?v=152"></script>
+  <script defer src="js/trail.js?v=152"></script>
+  <script defer src="js/mistakes.js?v=152"></script>
+  <!-- Exercise engine (logic without DOM + view); exercise data loads on demand -->
+  <script defer src="js/exercise-logic.js?v=152"></script>
+  <script defer src="js/final-logic.js?v=152"></script>
+  <script defer src="js/exercise-engine.js?v=152"></script>
+  <script defer src="js/practice-hub.js?v=152"></script>
+  <script defer src="js/final.js?v=152"></script>
+  <!-- Tense & Mood Lab (data/lab.js loads on demand) -->
+  <script defer src="js/lab.js?v=152"></script>
+  <!-- Stats (attempts log, js/learning-stats.js) -->
+  <script defer src="js/stats-page.js?v=152"></script>
+  <!-- Search (the index loads on first opening) -->
+  <script defer src="js/search-logic.js?v=152"></script>
+  <script defer src="js/search.js?v=152"></script>
+  <!-- My notes (a panel on content pages, #/notes) -->
+  <script defer src="js/notes.js?v=152"></script>
+  <script defer src="js/today.js?v=152"></script>
+  <!-- Placement test (questions from content/tests/placement.json) -->
+  <script defer src="js/placement.js?v=152"></script>
+  <script defer src="js/data-menu.js?v=152"></script>
+  <script defer src="js/sidebar.js?v=152"></script>
+  <!-- Milestone celebrations (GSAP on demand) -->
+  <script defer src="js/celebrate.js?v=152"></script>
+  <script defer src="js/app.js?v=152"></script>
 </body>
 </html>

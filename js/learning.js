@@ -1,21 +1,21 @@
 /*
- * learning.js — czysta logika nauki (bez DOM i bez localStorage), więc da się
- * ją testować w Node: node tools/tests.js
+ * learning.js — pure learning logic (no DOM and no localStorage), so it can be
+ * tested in Node: node tools/tests.js
  *
- *   today()            — dzisiejszy LOKALNY dzień "RRRR-MM-DD" (podmienialna w testach)
- *   REVIEW_STEPS       — odstępy powtórek w dniach, np. [1, 3, 7]
- *   powtórki           — newReview, reviewKnown, reviewAgain, isDue
- *   seria nauki        — streak (bieżąca i najdłuższa), lastDays (kropki tygodnia)
- *   test poziomu       — TEST_LENGTH, START_LEVEL, nextLevelIndex, pickQuestion, resultLevelIndex
+ *   today()            — today's LOCAL day "YYYY-MM-DD" (replaceable in tests)
+ *   REVIEW_STEPS       — review intervals in days, e.g. [1, 3, 7]
+ *   reviews            — newReview, reviewKnown, reviewAgain, isDue
+ *   study streak       — streak (current and longest), lastDays (the week dots)
+ *   placement test     — TEST_LENGTH, START_LEVEL, nextLevelIndex, pickQuestion, resultLevelIndex
  *
- * Daty są zawsze dniami kalendarza użytkownika (bez godzin i stref).
+ * Dates are always days of the user's calendar (no hours, no time zones).
  */
 (function (root) {
   "use strict";
 
   const LM = root.LM = root.LM || {};
 
-  // Odstępy kolejnych powtórek (w dniach). Zmień tablicę, żeby zmienić harmonogram.
+  // Intervals of the next reviews (in days). Change the array to change the schedule.
   const REVIEW_STEPS = [1, 3, 7];
 
   const DAY_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
@@ -26,7 +26,7 @@
     return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   }
 
-  /** Data "RRRR-MM-DD" → Date (lokalne południe, żeby zmiana czasu nie przesuwała dnia). */
+  /** Date "YYYY-MM-DD" → Date (local noon, so a clock change does not move the day). */
   function toDate(day) {
     const m = DAY_RE.exec(day || "");
     if (!m) return null;
@@ -38,14 +38,14 @@
     return !!d && fromDate(d) === value;
   }
 
-  /** Dodaje n dni do daty "RRRR-MM-DD". */
+  /** Adds n days to a date "YYYY-MM-DD". */
   function addDays(day, n) {
     const d = toDate(day);
     d.setDate(d.getDate() + n);
     return fromDate(d);
   }
 
-  /** Liczba dni od a do b (b − a). */
+  /** Number of days from a to b (b − a). */
   function diffDays(a, b) {
     return Math.round((toDate(b) - toDate(a)) / 86400000);
   }
@@ -56,41 +56,41 @@
     addDays: addDays,
     diffDays: diffDays,
 
-    /** Dzisiejszy dzień użytkownika. W testach: LM.learn.today = () => "2026-01-01". */
+    /** The user's today. In tests: LM.learn.today = () => "2026-01-01". */
     today: function () { return fromDate(new Date()); },
 
-    // ---------- Powtórki ----------
+    // ---------- Reviews ----------
     //   review = { stage, due, mastered }
-    //   stage  — indeks w REVIEW_STEPS (odstęp, po którym przypada powtórka „due”)
+    //   stage  — index in REVIEW_STEPS (the interval after which the review is "due")
 
-    /** Stan nowego wpisu: pierwsza powtórka jutro. */
+    /** State of a new entry: the first review tomorrow. */
     newReview: function (today) {
       return { stage: 0, due: addDays(today, REVIEW_STEPS[0]), mastered: false };
     },
 
-    /** „Wiedziałem(am)”: następny etap; po ostatnim — opanowany. */
+    /** "I knew it": next stage; after the last one — mastered. */
     reviewKnown: function (review, today) {
       const next = review.stage + 1;
       if (next >= REVIEW_STEPS.length) return { stage: review.stage, due: review.due, mastered: true };
       return { stage: next, due: addDays(today, REVIEW_STEPS[next]), mastered: false };
     },
 
-    /** „Znowu błąd”: wraca do pierwszego etapu (jutro). */
+    /** "Wrong again": back to the first stage (tomorrow). */
     reviewAgain: function (review, today) {
       return { stage: 0, due: addDays(today, REVIEW_STEPS[0]), mastered: false };
     },
 
-    /** Do powtórki dziś (także zaległe — bez żadnej kary). */
+    /** Due today (also overdue — with no penalty). */
     isDue: function (review, today) {
       return !review.mastered && review.due <= today;
     },
 
-    // ---------- Seria nauki ----------
+    // ---------- Study streak ----------
 
     /**
-     * days — lista dni aktywności (dowolna kolejność, mogą się powtarzać).
-     * current: seria kończąca się dziś albo wczoraj (dzień bez aktywności
-     * „jeszcze trwa”, więc seria nie znika w ciągu dnia).
+     * days — list of activity days (any order, may repeat).
+     * current: the streak ending today or yesterday (a day without activity
+     * "is still going", so the streak does not vanish during the day).
      */
     streak: function (days, today) {
       const set = new Set((days || []).filter(isDay));
@@ -109,7 +109,7 @@
       return { current: current, longest: longest, activeToday: set.has(today) };
     },
 
-    /** Ostatnie n dni (od najstarszego do dziś): [{ day, active }]. */
+    /** The last n days (oldest to today): [{ day, active }]. */
     lastDays: function (days, today, n) {
       const set = new Set(days || []);
       const out = [];
@@ -121,8 +121,8 @@
     },
 
     /**
-     * „Przebyta mapa” na Dziś: średnia z procentów „Umiem” poziomów (stats: [{ id, percent }] w kolejności A1…C2),
-     * zaokrąglona do całości, oraz odcinki paska: [{ id, percent }] (percent 0–100, poza zakresem przycinany).
+     * "Map covered" on Today: the average of the levels' percentages (stats: [{ id, percent }] in order A1…C2),
+     * rounded to a whole number, and the bar segments: [{ id, percent }] (percent 0–100, clipped when out of range).
      */
     mapProgress: function (stats) {
       const segments = (stats || []).map(function (s) {
@@ -134,8 +134,8 @@
     },
 
     /**
-     * Sąsiedzi tematu na liście poziomu (kolejność z niezbednik/index.json, tylko tematy z podstroną).
-     * ids — id tematów poziomu w kolejności, id — bieżący. → { prev, next } (id albo null; nieznany temat: oba null).
+     * Neighbours of a topic in the level list (syllabus order, topics with a page only).
+     * ids — topic ids of the level in order, id — the current one. → { prev, next } (an id or null; unknown topic: both null).
      */
     topicNeighbors: function (ids, id) {
       const i = (ids || []).indexOf(id);
@@ -143,29 +143,29 @@
       return { prev: i > 0 ? ids[i - 1] : null, next: i < ids.length - 1 ? ids[i + 1] : null };
     },
 
-    // ---------- Test poziomu (adaptacyjny) ----------
+    // ---------- Placement test (adaptive) ----------
 
     LEVELS: ["A1", "A2", "B1", "B2", "C1", "C2"],
     TEST_LENGTH: 12,
     START_LEVEL: "A2",
     RESULT_WINDOW: 6,
 
-    /** Poprawna odpowiedź → poziom wyżej (maks. C2), błędna → niżej (min. A1). */
+    /** Right answer → one level up (at most C2), wrong → down (at least A1). */
     nextLevelIndex: function (index, correct) {
       return Math.max(0, Math.min(learn.LEVELS.length - 1, index + (correct ? 1 : -1)));
     },
 
     /**
-     * Losuje pytanie z poziomu levelIndex bez powtórzeń (used: Set id).
-     * Gdy pula poziomu się wyczerpie, bierze pytanie z najbliższego poziomu;
-     * przy tej samej odległości najpierw w kierunku ruchu testu
-     * (preferUp = true po dobrej odpowiedzi → wyżej, inaczej → niżej).
-     * random() → [0, 1). Zwraca pytanie albo null, gdy nie ma już żadnych pytań.
-     * opts (opcjonalnie, spec v6 13 sekcja 1.3):
-     *   avoidIds   — id z poprzedniego podejścia (Set albo tablica): pomijane, jeśli pula poziomu na to pozwala,
-     *   skillCounts — { grammar: n, vocabulary: n, reading: n } w tym podejściu: wybór umiejętności,
-     *                 która pojawiła się najrzadziej (remis → losowo), potem losowe pytanie z niej.
-     * Pytanie bez skill liczy się jak grammar.
+     * Draws a question from level levelIndex without repeats (used: Set of ids).
+     * When the level's pool runs out, it takes a question from the nearest level;
+     * at the same distance first in the direction the test is moving
+     * (preferUp = true after a right answer → up, otherwise → down).
+     * random() → [0, 1). Returns a question or null when there are no questions left.
+     * opts (optional, spec v6 13 section 1.3):
+     *   avoidIds   — ids from the previous attempt (Set or array): skipped when the level's pool allows it,
+     *   skillCounts — { grammar: n, vocabulary: n, reading: n } in this attempt: picks the skill
+     *                 that appeared least (tie → random), then a random question of it.
+     * A question without a skill counts as grammar.
      */
     pickQuestion: function (questions, levelIndex, used, random, preferUp, opts) {
       const rnd = random || Math.random;
@@ -182,10 +182,10 @@
       return null;
     },
 
-    /** Umiejętność pytania (bez pola skill — grammar, zgodność ze starymi pytaniami). */
+    /** Skill of a question (without a skill field — grammar). */
     skillOf: function (q) { return q.skill || "grammar"; },
 
-    /** Wybór z puli poziomu: najpierw bez pytań z poprzedniego podejścia, potem najrzadsza umiejętność. */
+    /** Choice from the level's pool: first without questions of the previous attempt, then the rarest skill. */
     pickBalanced: function (pool, opts, rnd) {
       const avoid = opts.avoidIds ? new Set(opts.avoidIds) : null;
       let list = pool;
@@ -205,7 +205,7 @@
       return list[Math.floor(rnd() * list.length)];
     },
 
-    /** Wynik: średnia indeksów poziomów ostatnich 6 pytań, zaokrąglona w dół. */
+    /** Result: the average level index of the last 6 questions, rounded down. */
     resultLevelIndex: function (askedLevelIndexes) {
       const last = askedLevelIndexes.slice(-learn.RESULT_WINDOW);
       if (!last.length) return 0;

@@ -1,25 +1,27 @@
 /*
- * callouts.js — wyróżnione sekcje (callouty) i dopracowanie treści Markdown
- * (DESIGN.md, sekcja 3.7). Pliki .md zostają bez zmian: sekcje rozpoznajemy
- * po TEKŚCIE nagłówka (## H2 albo pogrubiony podtytuł „**Kluczowe myśli**”).
+ * callouts.js — highlighted sections (callouts) and small improvements of Markdown content
+ * (DESIGN.md, section 3.7). The .md files stay unchanged: sections are recognised
+ * by the TEXT of the heading (## H2 or a bold subheading such as "**Key ideas**"), see spec 07 §1–§3.
  *
- * Nowy callout = nowy wpis w CALLOUT_RULES (wyrażenie dla tekstu nagłówka,
- * typ → klasa .callout-<typ> w css/style.css, ikona Lucide z assets/icons.js).
+ * A new callout = a new entry in CALLOUT_RULES (a pattern for the heading text,
+ * type → class .callout-<type> in css/style.css, a Lucide icon from assets/icons.js).
  *
- * Dodatkowo: tabele w przewijanym kontenerze z cieniami „jest więcej”.
+ * Also: tables in a scrolling container with "there is more" shadows.
  */
 window.LM = window.LM || {};
 
 (function (LM) {
   "use strict";
 
-  // Kolejność ma znaczenie: pierwsza pasująca reguła wygrywa.
+  function escapeRe(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
+
+  // Order matters: the first matching rule wins. Headings are the fixed English ones of spec 07 §1–§3.
   const CALLOUT_RULES = [
-    { match: /^(najczęstsza pułapka|typowe błędy|pułapka)/i, type: "trap", icon: "triangle-alert", label: "Uwaga" },
-    { match: /^życie i egzamin/i, type: "real-exam", icon: "arrow-left-right", label: "Życie i egzamin" },
-    { match: /^(kluczowe myśli|co umiesz)/i, type: "key", icon: "sparkles", label: "Najważniejsze" },
-    { match: /^(jesteś gotow|co dalej)/i, type: "next", icon: "map-pin", label: "Dalej" },
-    { match: /^(przykład|kluczowe zwroty|typowe połączenia)/i, type: "examples", icon: "list-checks", label: "Przykłady" }
+    { match: new RegExp("^(" + escapeRe(LM.APP.mistakesHeading) + "|the most common trap|watch out)", "i"), type: "trap", icon: "triangle-alert", label: "Watch out" },
+    { match: /^real life vs exam/i, type: "real-exam", icon: "arrow-left-right", label: "Real life vs exam" },
+    { match: /^(key ideas|what you can do at this level)/i, type: "key", icon: "sparkles", label: "Key ideas" },
+    { match: /^what next/i, type: "next", icon: "map-pin", label: "What next" },
+    { match: /^(examples|key phrases|word partners)/i, type: "examples", icon: "list-checks", label: "Examples" }
   ];
 
   function ruleFor(text) {
@@ -35,17 +37,17 @@ window.LM = window.LM || {};
     }
   }
 
-  /** Callouty w drzewie z LM.markdown.render (sekcje ## i podtytuły **…**). */
+  /** Callouts in the tree from LM.markdown.render (## sections and **…** subheadings). */
   function apply(root) {
     if (!root) return;
-    // 1. Sekcje ## (cała sekcja to callout)
+    // 1. ## sections (the whole section is a callout)
     root.querySelectorAll(".md-section").forEach(function (section) {
       if (section.classList.contains("is-answers")) return;
       const h2 = section.querySelector(":scope > h2");
       const rule = h2 && ruleFor(h2.textContent);
       if (rule) decorate(section, h2, rule);
     });
-    // 2. Podtytuły **…** (callout = podtytuł + akapity aż do następnego podtytułu / nagłówka)
+    // 2. **…** subheadings (callout = subheading + paragraphs up to the next subheading / heading)
     root.querySelectorAll("p.md-subhead").forEach(function (sub) {
       const rule = ruleFor(sub.textContent);
       if (!rule || sub.closest(".callout")) return;
@@ -71,8 +73,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * „Życie i egzamin” (spec v6 16, sekcja 2.3): kody w trzeciej kolumnie → chipy z kolorem egzaminu, tekstem
-   * (skrót + pełna nazwa dla czytników) i linkiem do strony egzaminu; komórki dostają etykiety do widoku kart na telefonie.
+   * "Real life vs exam" (stage E): codes in the third column → chips in the exam colour, with text
+   * (code + full name for screen readers) and a link to the exam page; cells get labels for the card view on a phone.
    */
   function enhanceRealExam(box) {
     const table = box.querySelector("table");
@@ -88,7 +90,7 @@ window.LM = window.LM || {};
       last.classList.add("exam-chips");
       last.replaceChildren.apply(last, codes.map(function (code) {
         const info = examByCode(code);
-        const chip = LM.utils.el("a", { class: "exam-chip", href: info.route, style: "--exam: " + info.accent, title: "Przydatne na: " + info.name }, [
+        const chip = LM.utils.el("a", { class: "exam-chip", href: info.route, style: "--exam: " + info.accent, title: "Useful for: " + info.name }, [
           LM.utils.el("span", { "aria-hidden": "true", text: code }),
           LM.utils.el("span", { class: "visually-hidden", text: info.name })
         ]);
@@ -96,12 +98,12 @@ window.LM = window.LM || {};
       }));
     });
     const wrap = table.closest(".md-table-wrap");
-    if (wrap) wrap.setAttribute("aria-label", "Życie i egzamin: zdania z życia i zadania w stylu egzaminu");
+    if (wrap) wrap.setAttribute("aria-label", "Real life vs exam: everyday sentences and exam-style tasks");
   }
 
   /**
-   * Tabele: kontener .md-table-wrap przewija się w poziomie; nakładka z cieniami
-   * pokazuje, że po lewej / prawej jest jeszcze treść (klasy .has-left / .has-right).
+   * Tables: the .md-table-wrap container scrolls sideways; an overlay with shadows
+   * shows that there is more content on the left / right (classes .has-left / .has-right).
    */
   function enhanceTables(root) {
     root.querySelectorAll(".md-table-wrap").forEach(function (wrap) {
@@ -109,10 +111,10 @@ window.LM = window.LM || {};
       const frame = LM.utils.el("div", { class: "md-table" });
       wrap.parentNode.insertBefore(frame, wrap);
       frame.appendChild(wrap);
-      wrap.setAttribute("tabindex", "0"); // przewijanie z klawiatury
+      wrap.setAttribute("tabindex", "0"); // keyboard scrolling
       wrap.setAttribute("role", "region");
       const head = wrap.querySelector("th");
-      wrap.setAttribute("aria-label", "Tabela" + (head ? ": " + head.textContent.trim() : "") + " (przewijana w poziomie)");
+      wrap.setAttribute("aria-label", "Table" + (head ? ": " + head.textContent.trim() : "") + " (scrolls sideways)");
       const update = function () {
         const max = wrap.scrollWidth - wrap.clientWidth;
         frame.classList.toggle("has-left", wrap.scrollLeft > 2);

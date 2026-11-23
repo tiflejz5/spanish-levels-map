@@ -22,7 +22,7 @@ window.LM = window.LM || {};
 
   function viewFor(entry) { return entry && parseRef(entry.ref) ? "task" : "card"; }
 
-  /** Oryginalne zadanie wpisu albo null (wpis ręczny, usunięty zestaw, brak pliku — wtedy sesja pokazuje kartę). */
+  /** The original item of an entry, or null (a manual entry, a deleted set, a missing file — then the session shows the card). */
   function load(entry) {
     const ref = parseRef(entry && entry.ref);
     if (!ref) return Promise.resolve(null);

@@ -1,14 +1,14 @@
 /*
- * trail.js — widok Szlaku (spec v7 13, sekcja 4): ścieżka nauki A1 → C2 z krainami, odcinkami, przystankami, powtórkami
- * i odnogami egzaminów; arkusz przystanku (Przeczytaj → Sprawdź się → Zaliczone / Pomiń); quizy i powtórki w silniku zadań.
+ * trail.js — the Trail view (spec v7 13, section 4): the learning path A1 → C2 with lands, units, stops and checkpoints;
+ * the stop sheet (Read → Check yourself → Done / Skip); quizzes and checkpoints run in the exercise engine.
  *
- *   #/trail              widok szlaku (bieżący przystanek przewinięty do widoku)
- *   #/trail/<idPrzystanku>   jak wyżej, z otwartym arkuszem przystanku (linki z „Dziś”; adres wraca do #/trail)
+ *   #/trail                  the trail view (the current stop scrolled into view)
+ *   #/trail/<stop id>        the same, with the stop sheet open (links from "Today"; the address goes back to #/trail)
  *
  * Pure logic: js/trail-logic.js. State: js/trail-store.js (slm.trail.<profile>). Data: data/trail.js (LM.TRAIL, generated
  * from the syllabus by tools/build/trail.js, spec 06 E9; one stop per topic, a checkpoint per unit) and
  * data/quizzes-<level>.js (LM.QUIZZES, on demand). A "soon" level is drawn dimmed with "Coming soon" (spec 06 E1).
- * Dostępność: lista przystanków to <ol> z przyciskami, stan zapisany tekstem („zaliczony”, „bieżący”, „pominięty”).
+ * Accessibility: the stop list is an <ol> of buttons, the state is written as text ("done", "current", "skipped").
  */
 window.LM = window.LM || {};
 
@@ -18,43 +18,39 @@ window.LM = window.LM || {};
   const U = LM.utils;
   const el = U.el;
   const HASH = "#/trail";
-  const ROW = 108;                 // wysokość wiersza przystanku (px)
+  const ROW = 108;                 // height of a stop row (px)
   // Stop icon per syllabus category
   const CAT_ICON = { verbs: "notebook-text", grammar: "notebook-text", functions: "arrow-left-right", vocabulary: "layers" };
-  const STATUS_TEXT = { done: "zaliczony", current: "bieżący", open: "otwarty", skipped: "pominięty" };
+  const STATUS_TEXT = { done: "done", current: "current", open: "open", skipped: "skipped" };
 
   function SL() { return LM.trailLogic; }
   function ST() { return LM.trailStore; }
   function pd() { return LM.profileData; }
   function hasProfile() { return !!(LM.app && LM.app.getActiveProfile()); }
-  function plural(n, one, few, many) {
-    if (n === 1) return one;
-    const d = n % 10, t = n % 100;
-    return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
-  }
+  function plural(n, one, other) { return LM.plural(n, one, other); }
 
   // =====================================================================
-  // DANE I STAN
+  // DATA AND STATE
   // =====================================================================
 
-  /** Dane szlaku są wczytane (skrypt startowy), a logika i magazyn gotowe. */
+  /** The trail data is loaded (start script), and the logic and store are ready. */
   function loaded() { return !!(LM.TRAIL && LM.trailLogic && LM.trailStore); }
-  /** Szlak da się policzyć dla aktywnego profilu. */
+  /** The trail can be computed for the active profile. */
   function ready() { return loaded() && hasProfile() && !!(LM.state && LM.state.profiles); }
 
   function env() {
     return {
-      isUmiem: function (id) { return LM.state.progress[id] === true; },
+      isKnown: function (id) { return LM.state.progress[id] === true; },
       setPercent: function (setId) { const r = pd() ? pd().setScore(setId) : null; return r && r.best.total ? Math.round(100 * r.best.score / r.best.total) : null; }
     };
   }
 
   function testLevel() { const t = hasProfile() && pd() ? pd().lastTest() : null; return t && t.level ? t.level : null; }
 
-  /** Punkt startu aktywnego profilu: { level, source, at }. */
+  /** Start of the active profile: { level, source, at }. */
   function startInfo() { return SL().effectiveStart(ST().data(), testLevel()); }
 
-  /** Cały szlak z bieżącym stanem (142 węzły — liczone na bieżąco, bez pamięci podręcznej, więc nigdy nieaktualne). */
+  /** The whole trail with the current state (computed every time, no cache, so never out of date). */
   function trail() { return SL().buildTrail(LM.TRAIL, ST().data(), env(), startInfo().level); }
 
   function nodeById(tr, id) { return tr.nodes.find(function (n) { return n.id === id; }) || null; }
@@ -66,10 +62,10 @@ window.LM = window.LM || {};
   function positionText(n) { return "Stop " + n.number + " of " + n.levelTotal + " · " + LM.ui.landLabel(n.level); }
 
   // =====================================================================
-  // API DLA INNYCH WIDOKÓW (Dziś, strona tematu, strona poziomu, statystyki)
+  // API FOR OTHER VIEWS (Today, topic page, level page, stats)
   // =====================================================================
 
-  /** Bieżący przystanek aktywnego profilu albo null: { node, unit: { done, total, index, count, title }, level } */
+  /** Current stop of the active profile, or null: { node, unit: { done, total, index, count, title }, level } */
   function current() {
     if (!ready()) return null;
     const tr = trail();
@@ -77,7 +73,7 @@ window.LM = window.LM || {};
     return { node: tr.current, unit: SL().unitProgress(tr, tr.current.unitId), level: tr.current.level, trail: tr };
   }
 
-  /** Postęp krainy z uwzględnieniem punktu startu: { done, total, percent, skipped }. */
+  /** Land progress, taking the start into account: { done, total, percent, skipped }. */
   function levelInfo(level) {
     if (!ready()) return null;
     const tr = trail();
@@ -92,47 +88,47 @@ window.LM = window.LM || {};
     if (!loaded() || !LM.syl.topic(topicId) || !LM.syl.isAvailable(LM.syl.topic(topicId).level)) return null;
     const found = topicId;
     const guest = !hasProfile();
-    const tr = guest ? SL().buildTrail(LM.TRAIL, SL().emptyState(), { isUmiem: function () { return false; }, setPercent: function () { return null; } }, "A1") : trail();
+    const tr = guest ? SL().buildTrail(LM.TRAIL, SL().emptyState(), { isKnown: function () { return false; }, setPercent: function () { return null; } }, "A1") : trail();
     const n = nodeById(tr, found);
     if (!n) return null;
     const lessons = tr.nodes.filter(function (x) { return x.type === "lesson"; });
     const next = lessons.slice(lessons.indexOf(n) + 1).find(function (x) { return x.status !== "done" && x.status !== "skipped"; }) || lessons[lessons.indexOf(n) + 1] || null;
     const actions = [];
-    if (n.stop.quiz) actions.push(el("button", { type: "button", class: "btn btn-primary btn-small", onclick: function () { startQuiz(n); } }, LM.ui.withIcon("play", "Sprawdź się (4 pytania)")));
-    else actions.push(el("button", { type: "button", class: "btn btn-secondary btn-small", onclick: function () { openSheet(n.id); } }, "Otwórz przystanek na szlaku"));
-    if (next) actions.push(el("a", { class: "btn btn-secondary btn-small", href: HASH + "/" + next.id }, LM.ui.withIcon("arrow-right", "Następny przystanek")));
-    return el("aside", { class: "card sz-bar lvl-" + n.level, "aria-label": "Szlak: " + positionText(n) }, [
+    if (n.stop.quiz) actions.push(el("button", { type: "button", class: "btn btn-primary btn-small", onclick: function () { startQuiz(n); } }, LM.ui.withIcon("play", "Check yourself (4 questions)")));
+    else actions.push(el("button", { type: "button", class: "btn btn-secondary btn-small", onclick: function () { openSheet(n.id); } }, "Open the stop on the trail"));
+    if (next) actions.push(el("a", { class: "btn btn-secondary btn-small", href: HASH + "/" + next.id }, LM.ui.withIcon("arrow-right", "Next stop")));
+    return el("aside", { class: "card sz-bar lvl-" + n.level, "aria-label": "Trail: " + positionText(n) }, [
       el("p", { class: "sz-bar-text" }, [
         el("span", { class: "sz-bar-land", "aria-hidden": "true" }, LM.ui.landIcon(n.level, { size: 22 })),
-        el("span", null, [el("strong", { text: positionText(n) }), n.status === "done" ? el("span", { class: "sz-bar-done", text: " · zaliczony" }) : null])
+        el("span", null, [el("strong", { text: positionText(n) }), n.status === "done" ? el("span", { class: "sz-bar-done", text: " · done" }) : null])
       ]),
       el("div", { class: "sz-bar-actions" }, actions)
     ]);
   }
 
   // =====================================================================
-  // ŁADOWANIE QUIZÓW I POWTÓREK
+  // LOADING QUIZZES AND CHECKPOINTS
   // =====================================================================
 
   function loadQuizzes(level) {
     const lvl = String(level).toLowerCase();
     if (LM.QUIZZES && Object.keys(LM.QUIZZES).some(function (k) { return k.indexOf(lvl + "-") === 0; })) return Promise.resolve();
-    return LM.loadModule("data/quizzes-" + lvl + ".js").catch(function () { /* poziom bez quizów */ });
+    return LM.loadModule("data/quizzes-" + lvl + ".js").catch(function () { /* a level without quizzes */ });
   }
 
-  /** Zadania quizu w formacie silnika (temat, poziom i zestaw potrzebne do dziennika podejść i statystyk). */
+  /** Quiz items in the engine format (topic, level and set are needed for the attempts log and the stats). */
   function quizItems(quiz) {
-    return quiz.items.map(function (it) { return Object.assign({ topic: quiz.topic, level: quiz.level, setId: quiz.id, tags: ["szlak"] }, it); });
+    return quiz.items.map(function (it) { return Object.assign({ topic: quiz.topic, level: quiz.level, setId: quiz.id, tags: ["trail"] }, it); });
   }
 
-  /** Quiz przystanku (po załadowaniu poziomu) albo null. */
+  /** The stop's quiz (after the level has loaded), or null. */
   function quizById(id) { return (LM.QUIZZES && LM.QUIZZES[id]) || null; }
 
   function startQuiz(n) {
-    LM.app.withProfile("Wynik quizu zapisuje się w profilu.", function () {
+    LM.app.withProfile("The quiz result is saved in your profile.", function () {
       loadQuizzes(n.level).then(function () {
         const quiz = quizById(n.stop.quiz);
-        if (!quiz) { LM.ui.toast({ text: "Ten przystanek nie ma jeszcze quizu.", icon: "info" }); return; }
+        if (!quiz) { LM.ui.toast({ text: "This stop has no quiz yet.", icon: "info" }); return; }
         closeSheet();
         runSession({
           title: quiz.title, intro: quiz.intro, items: quizItems(quiz), kind: "quiz", node: n, quiz: quiz
@@ -142,7 +138,7 @@ window.LM = window.LM || {};
   }
 
   function startReview(n) {
-    LM.app.withProfile("Wynik powtórki zapisuje się w profilu.", function () {
+    LM.app.withProfile("The checkpoint result is saved in your profile.", function () {
       const level = n.level;
       const stops = {};
       LM.TRAIL.levels.forEach(function (lv) { lv.units.forEach(function (u) { u.stops.forEach(function (s) { stops[s.id] = s; }); }); });
@@ -157,19 +153,19 @@ window.LM = window.LM || {};
           finalItems: function () { return res[2] && res[2].items ? res[2].items : []; }
         };
         const pick = SL().pickReview(Object.assign({ level: level }, n.stop), src, Math.random);
-        if (!pick.source || !pick.items.length) { LM.ui.toast({ text: "Powtórka dostępna po dodaniu quizów.", icon: "info" }); return; }
+        if (!pick.source || !pick.items.length) { LM.ui.toast({ text: "The checkpoint is available once the quizzes are added.", icon: "info" }); return; }
         closeSheet();
-        runSession({ title: n.stop.title, intro: "Powtórka: " + pick.items.length + " pytań z tego odcinka.", items: pick.items, kind: "review", node: n });
+        runSession({ title: n.stop.title, intro: "Checkpoint: " + plural(pick.items.length, "question") + " from this unit.", items: pick.items, kind: "review", node: n });
       });
     });
   }
 
-  /** Sesja w silniku zadań (js/exercise-engine.js, startCustom) z własnym zapisem wyniku i ekranem wyniku. */
+  /** A session in the exercise engine (js/exercise-engine.js, startCustom) with its own result saving and result screen. */
   function runSession(cfg) {
     const n = cfg.node;
     LM.exercises.startCustom({
-      title: cfg.title, intro: cfg.intro, items: cfg.items, mode: "learn", autostart: true, // klucz „custom:” — sesja pod #/practice/session
-      back: { href: HASH, label: "Wróć na szlak" },
+      title: cfg.title, intro: cfg.intro, items: cfg.items, mode: "learn", autostart: true, // key "custom:" — the session at #/practice/session
+      back: { href: HASH, label: "Back to the trail" },
       hooks: {
         finish: function (run, s) {
           if (cfg.kind === "quiz") {
@@ -185,7 +181,7 @@ window.LM = window.LM || {};
     });
   }
 
-  /** Ekran wyniku quizu / powtórki: wynik, zaliczenie, propozycja „Umiem” (nigdy automatyczna), dalsze kroki. */
+  /** Result screen of a quiz / checkpoint: the score, passing, an "I know this" suggestion (never automatic), next steps. */
   function renderResult(view, run, api, cfg) {
     const n = cfg.node, fin = run.final || { passed: false };
     const tr = trail();
@@ -193,22 +189,22 @@ window.LM = window.LM || {};
     const next = nextLesson(tr, node);
     const isQuiz = cfg.kind === "quiz";
     view.className = "view tool-view ex-view sz-result-view lvl-" + n.level;
-    document.title = (isQuiz ? "Wynik quizu" : "Wynik powtórki") + " · Szlak · " + LM.APP.appTitle;
+    document.title = (isQuiz ? "Quiz result" : "Checkpoint result") + " · Trail · " + LM.APP.appTitle;
     view.appendChild(el("header", { class: "tool-head" }, [
-      LM.ui.breadcrumbs([{ label: "Szlak", href: HASH }, { label: cfg.title }]),
-      el("h1", { class: "tool-title", text: isQuiz ? "Wynik: " + n.stop.title : cfg.title })
+      LM.ui.breadcrumbs([{ label: "Trail", href: HASH }, { label: cfg.title }]),
+      el("h1", { class: "tool-title", text: isQuiz ? "Result: " + n.stop.title : cfg.title })
     ]));
     const needed = SL().PASS_QUIZ;
     const wrong = run.items.filter(api.isWrong);
     const missing = isQuiz ? (n.stop.items || []).filter(function (id) { return LM.state.progress[id] !== true; }) : [];
-    const umiemBox = isQuiz && fin.passed && missing.length ? el("div", { class: "ex-umiem", role: "status" }, [
-      el("span", { class: "ex-umiem-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
-      el("div", { class: "ex-umiem-body" }, [
-        el("p", null, [el("strong", { text: "Zaznaczyć „Umiem”? " }), "Quiz zaliczony, ale „Umiem” zaznaczysz tylko Ty. Zaznaczyć dla: " + node.stop.title + "?"]),
+    const knownBox = isQuiz && fin.passed && missing.length ? el("div", { class: "ex-known", role: "status" }, [
+      el("span", { class: "ex-known-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
+      el("div", { class: "ex-known-body" }, [
+        el("p", null, [el("strong", { text: "Mark “I know this”? " }), "Quiz passed, but only you mark “I know this”. Mark it for: " + node.stop.title + "?"]),
         el("p", { class: "ex-journal-actions" }, el("button", { type: "button", class: "btn btn-primary btn-small", onclick: function (e) {
           missing.forEach(function (id) { LM.app.setProgress(id, true); });
-          e.currentTarget.closest(".ex-umiem").replaceWith(el("div", { class: "ex-umiem is-done", role: "status" }, [LM.icon("check", { size: 18 }), el("p", { text: "Zaznaczono „Umiem”. Brawo!" })]));
-        } }, LM.ui.withIcon("check", "Zaznacz „Umiem”")))
+          e.currentTarget.closest(".ex-known").replaceWith(el("div", { class: "ex-known is-done", role: "status" }, [LM.icon("check", { size: 18 }), el("p", { text: "Marked “I know this”. Well done!" })]));
+        } }, LM.ui.withIcon("check", "Mark “I know this”")))
       ])
     ]) : null;
     view.appendChild(el("section", { class: "card ex-result sz-result " + (fin.passed ? "is-passed" : "is-failed"), "aria-live": "polite" }, [
@@ -216,21 +212,21 @@ window.LM = window.LM || {};
       isQuiz
         ? el("p", { class: "lf-verdict" }, [
           el("span", { class: "c1-mark " + (fin.passed ? "is-ok" : "is-bad"), "aria-hidden": "true" }, LM.icon(fin.passed ? "check" : "x", { size: 16 })),
-          el("strong", { text: fin.passed ? "Przystanek zaliczony" : "Jeszcze nie" }),
-          el("span", { class: "lf-need", text: " – próg " + needed + " z " + run.total + " dobrych odpowiedzi" })
+          el("strong", { text: fin.passed ? "Stop passed" : "Not yet" }),
+          el("span", { class: "lf-need", text: " – pass mark " + needed + " of " + run.total + " right answers" })
         ])
-        : el("p", { class: "tool-note", text: "Powtórka zapisana. Wynik nie blokuje dalszej drogi, błędne odpowiedzi trafiły do dziennika." }),
-      umiemBox,
+        : el("p", { class: "tool-note", text: "Checkpoint saved. The score never blocks the way on; wrong answers went to your mistake log." }),
+      knownBox,
       wrong.length ? el("div", { class: "sz-wrong" }, [
-        el("h2", { class: "lf-h", text: "Do powtórzenia (" + wrong.length + ")" }),
+        el("h2", { class: "lf-h", text: "To review (" + wrong.length + ")" }),
         el("ul", { class: "lf-topic-list" }, wrong.map(function (p) { return el("li", null, [api.itemSummary(p.item), el("span", { class: "tool-note", text: " → " + api.modelAnswer(p.item) })]); }))
-      ]) : el("p", { class: "tool-note", text: "Bez błędów – brawo!" }),
+      ]) : el("p", { class: "tool-note", text: "No mistakes – well done!" }),
       api.journalSummary(),
       el("div", { class: "tool-actions" }, [
-        next && (fin.passed || !isQuiz) ? el("a", { class: "btn btn-primary", href: HASH + "/" + next.id }, LM.ui.withIcon("arrow-right", "Następny przystanek")) : null,
-        isQuiz && !fin.passed ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { startQuiz(node); } }, LM.ui.withIcon("rotate-ccw", "Spróbuj jeszcze raz")) : null,
-        isQuiz && !fin.passed ? el("a", { class: "btn btn-secondary", href: pageHref(node.stop) }, "Przeczytaj jeszcze raz") : null,
-        el("a", { class: "btn btn-secondary", href: HASH }, "Wróć na szlak")
+        next && (fin.passed || !isQuiz) ? el("a", { class: "btn btn-primary", href: HASH + "/" + next.id }, LM.ui.withIcon("arrow-right", "Next stop")) : null,
+        isQuiz && !fin.passed ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { startQuiz(node); } }, LM.ui.withIcon("rotate-ccw", "Try again")) : null,
+        isQuiz && !fin.passed ? el("a", { class: "btn btn-secondary", href: pageHref(node.stop) }, "Read the topic again") : null,
+        el("a", { class: "btn btn-secondary", href: HASH }, "Back to the trail")
       ])
     ]));
   }
@@ -243,7 +239,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // ARKUSZ PRZYSTANKU
+  // STOP SHEET
   // =====================================================================
 
   let sheet = null;
@@ -251,20 +247,20 @@ window.LM = window.LM || {};
   function closeSheet() { if (sheet) { sheet.close(); sheet = null; } }
 
   function openSheet(id, opts) {
-    if (!ready()) { LM.app.withProfile("Szlak zapisuje postęp w profilu.", function () { openSheet(id, opts); }); return; }
+    if (!ready()) { LM.app.withProfile("The trail saves progress in your profile.", function () { openSheet(id, opts); }); return; }
     opts = opts || {};
     closeSheet();
     const body = el("div", { class: "sz-sheet-body" });
     sheet = LM.dialogs.open({
       title: "", className: "dialog-sz sz-sheet", body: body, cancelValue: false,
-      actions: [{ label: "Zamknij", value: false, autofocus: true }]
+      actions: [{ label: "Close", value: false, autofocus: true }]
     });
     const sh = sheet;
     sh.result.then(function () { if (sheet === sh) sheet = null; });
     paintSheet(body, id, opts);
   }
 
-  /** Czy przystanek leży w dalszej krainie niż bieżąca, a poprzednia nie ma zaliczonego testu końcowego (spec 3.3). */
+  /** Whether the stop is in a later land than the current one while the previous land has no passed final test (spec 3.3). */
   function recommendFirst(tr, n) {
     const cur = tr.current;
     if (!cur || n.levelIndex <= cur.levelIndex) return null;
@@ -277,22 +273,22 @@ window.LM = window.LM || {};
     const tr = trail();
     const n = nodeById(tr, id);
     const dlg = body.closest("dialog");
-    if (!n) { body.replaceChildren(el("p", { text: "Nie ma takiego przystanku." })); return; }
+    if (!n) { body.replaceChildren(el("p", { text: "There is no such stop." })); return; }
     const title = dlg && dlg.querySelector(".dialog-title");
     if (title) title.textContent = n.stop.title;
     const parts = [];
     const st = n.current ? "current" : n.status;
     parts.push(el("p", { class: "sz-sheet-meta" }, [
-      n.type === "lesson" ? positionText(n) : "Powtórka · " + n.unitTitle,
+      n.type === "lesson" ? positionText(n) : "Checkpoint · " + n.unitTitle,
       " · ", el("strong", { class: "sz-state is-" + st, text: STATUS_TEXT[st] }),
-      n.via === "start" ? " (pominięty testem poziomu)" : n.via === "skip" ? " (pominięty przez Ciebie)" : n.via === "quiz" ? " (quizem)" : n.via === "umiem" ? " (całe „Umiem”)" : n.via === "set" ? " (zestawem)" : ""
+      n.via === "start" ? " (skipped by the placement test)" : n.via === "skip" ? " (skipped by you)" : n.via === "quiz" ? " (by the quiz)" : n.via === "known" ? " (topic marked “I know this”)" : n.via === "set" ? " (by the exercise set)" : ""
     ]));
 
     const rec = opts.force ? null : recommendFirst(tr, n);
     if (rec) {
       parts.push(el("div", { class: "sz-recommend", role: "note" }, [
         el("p", { text: "We suggest finishing " + LM.ui.landLabel(rec) + " first. Later lands are open, but the trail suggests an order." }),
-        el("button", { type: "button", class: "btn btn-secondary btn-small", onclick: function () { paintSheet(body, id, { force: true }); } }, "Mimo to otwórz")
+        el("button", { type: "button", class: "btn btn-secondary btn-small", onclick: function () { paintSheet(body, id, { force: true }); } }, "Open it anyway")
       ]));
       body.replaceChildren.apply(body, parts);
       return;
@@ -301,9 +297,9 @@ window.LM = window.LM || {};
     if (n.type === "review") {
       parts.push(el("p", { text: (n.stop.size || 6) + " questions from the stops of this unit. The score never blocks the way on; wrong answers go to your mistake log." }));
       const r = ST().data().reviews[n.id];
-      if (r) parts.push(el("p", { class: "tool-note", text: "Najlepszy wynik: " + r.best + "/" + r.of + "." }));
+      if (r) parts.push(el("p", { class: "tool-note", text: "Best result: " + r.best + "/" + r.of + "." }));
       parts.push(el("div", { class: "sz-sheet-actions" }, [
-        el("button", { type: "button", class: "btn btn-primary", onclick: function () { startReview(n); } }, LM.ui.withIcon("play", r ? "Powtórz jeszcze raz" : "Zacznij powtórkę"))
+        el("button", { type: "button", class: "btn btn-primary", onclick: function () { startReview(n); } }, LM.ui.withIcon("play", r ? "Do it again" : "Start the checkpoint"))
       ]));
       body.replaceChildren.apply(body, parts);
       return;
@@ -311,7 +307,7 @@ window.LM = window.LM || {};
 
     // checklist items of the stop (topics, spec 06 E2)
     const textOf = function (id) { const t = LM.syl.topic(id); return t ? LM.handbook.titleOf(t) : id; };
-    parts.push(el("h3", { class: "sz-sheet-h", text: "Czego się tu uczysz" }));
+    parts.push(el("h3", { class: "sz-sheet-h", text: "What you learn here" }));
     parts.push(el("ul", { class: "sz-items" }, (n.stop.items || []).map(function (itemId) {
       const done = LM.state.progress[itemId] === true;
       const cid = "sz-i-" + itemId;
@@ -325,56 +321,56 @@ window.LM = window.LM || {};
       ]));
     })));
 
-    // krok 1 i 2
+    // steps 1 and 2
     parts.push(el("ol", { class: "sz-steps" }, [
-      el("li", null, [el("strong", { text: "Przeczytaj" }), el("a", { class: "btn btn-secondary btn-small", href: pageHref(n.stop), onclick: closeSheet }, LM.ui.withIcon("file-text", "Otwórz stronę tematu"))]),
-      el("li", null, [el("strong", { text: "Sprawdź się" }), el("span", { class: "sz-step-actions" }, [
-        n.stop.quiz ? el("button", { type: "button", class: "btn btn-primary btn-small", onclick: function () { startQuiz(n); } }, LM.ui.withIcon("play", "Quiz (4 pytania)")) : null,
-        n.stop.set ? el("a", { class: "btn btn-secondary btn-small", href: setHref(n.stop), onclick: closeSheet }, "Zestaw ćwiczeń") : null,
-        !n.stop.quiz && !n.stop.set ? el("a", { class: "btn btn-secondary btn-small", href: pageHref(n.stop), onclick: closeSheet }, "Ćwiczenie na stronie tematu") : null
+      el("li", null, [el("strong", { text: "Read" }), el("a", { class: "btn btn-secondary btn-small", href: pageHref(n.stop), onclick: closeSheet }, LM.ui.withIcon("file-text", "Open the topic page"))]),
+      el("li", null, [el("strong", { text: "Check yourself" }), el("span", { class: "sz-step-actions" }, [
+        n.stop.quiz ? el("button", { type: "button", class: "btn btn-primary btn-small", onclick: function () { startQuiz(n); } }, LM.ui.withIcon("play", "Quiz (4 questions)")) : null,
+        n.stop.set ? el("a", { class: "btn btn-secondary btn-small", href: setHref(n.stop), onclick: closeSheet }, "Exercise set") : null,
+        !n.stop.quiz && !n.stop.set ? el("a", { class: "btn btn-secondary btn-small", href: pageHref(n.stop), onclick: closeSheet }, "Practice on the topic page") : null
       ])])
     ]));
     const qrec = ST().data().stops[n.id];
-    if (qrec && qrec.via === "quiz" && typeof qrec.best === "number") parts.push(el("p", { class: "tool-note", text: "Najlepszy wynik quizu: " + qrec.best + "/4." }));
+    if (qrec && qrec.via === "quiz" && typeof qrec.best === "number") parts.push(el("p", { class: "tool-note", text: "Best quiz result: " + qrec.best + "/4." }));
 
-    // propozycja „Umiem” po quizie (nigdy automatycznie)
+    // the "I know this" suggestion after a quiz (never automatic)
     const missing = (n.stop.items || []).filter(function (itemId) { return LM.state.progress[itemId] !== true; });
     if (n.via === "quiz" && missing.length) {
-      parts.push(el("div", { class: "ex-umiem", role: "status" }, [
-        el("span", { class: "ex-umiem-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
-        el("div", { class: "ex-umiem-body" }, [
-          el("p", null, [el("strong", { text: "Zaznaczyć „Umiem”? " }), "Quiz zaliczony. Zaznaczyć dla: " + n.stop.title + "?"]),
+      parts.push(el("div", { class: "ex-known", role: "status" }, [
+        el("span", { class: "ex-known-icon", "aria-hidden": "true" }, LM.icon("sparkles", { size: 20 })),
+        el("div", { class: "ex-known-body" }, [
+          el("p", null, [el("strong", { text: "Mark “I know this”? " }), "Quiz passed. Mark it for: " + n.stop.title + "?"]),
           el("p", { class: "ex-journal-actions" }, el("button", { type: "button", class: "btn btn-primary btn-small", onclick: function () {
             missing.forEach(function (itemId) { LM.app.setProgress(itemId, true); });
             paintSheet(body, id, Object.assign({}, opts, { force: true }));
             refreshView();
-          } }, LM.ui.withIcon("check", "Zaznacz „Umiem”")))
+          } }, LM.ui.withIcon("check", "Mark “I know this”")))
         ])
       ]));
     }
 
-    // zaliczone / pomiń
+    // done / skip
     const foot = [];
     const next = nextLesson(tr, n);
     if (n.status === "done") {
-      foot.push(el("button", { type: "button", class: "btn btn-primary", onclick: function () { closeSheet(); if (next) openSheet(next.id); else refreshView(); } }, LM.ui.withIcon("arrow-right", next ? "Zaliczone, dalej" : "Zaliczone")));
+      foot.push(el("button", { type: "button", class: "btn btn-primary", onclick: function () { closeSheet(); if (next) openSheet(next.id); else refreshView(); } }, LM.ui.withIcon("arrow-right", next ? "Done, next" : "Done")));
     }
-    if (n.via === "skip") foot.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { ST().unskipStop(n.id); paintSheet(body, id, Object.assign({}, opts, { force: true })); refreshView(); } }, "Cofnij pominięcie"));
+    if (n.via === "skip") foot.push(el("button", { type: "button", class: "btn btn-secondary", onclick: function () { ST().unskipStop(n.id); paintSheet(body, id, Object.assign({}, opts, { force: true })); refreshView(); } }, "Undo skip"));
     else if (n.status !== "done") foot.push(el("button", { type: "button", class: "btn btn-link", onclick: function () {
       ST().skipStop(n.id);
       closeSheet();
       refreshView();
-    } }, "Pomiń ten przystanek"));
+    } }, "Skip this stop"));
     if (foot.length) parts.push(el("div", { class: "sz-sheet-actions" }, foot));
     body.replaceChildren.apply(body, parts);
   }
 
   // =====================================================================
-  // PUNKT STARTU
+  // STARTING POINT
   // =====================================================================
 
   function startDialog() {
-    LM.app.withProfile("Punkt startu zapisuje się w profilu.", function () {
+    LM.app.withProfile("The start is saved in your profile.", function () {
       const cur = startInfo();
       const form = el("form", { class: "sz-start-form" }, SL().LEVELS.map(function (lvl) {
         const id = "sz-start-" + lvl;
@@ -385,12 +381,12 @@ window.LM = window.LM || {};
         ]);
       }));
       LM.dialogs.open({
-        title: "Zmień punkt startu",
-        body: [el("p", { text: "Krainy przed punktem startu dostają status „pominięte”. Nie blokują niczego i można do nich wrócić." }), form],
+        title: "Change the start",
+        body: [el("p", { text: "Lands before the start get the status “skipped”. They block nothing, and you can go back to them." }), form],
         cancelValue: false,
         actions: [
-          { label: "Anuluj", value: false },
-          { label: "Zapisz", variant: "btn-primary", value: true, onClick: function () {
+          { label: "Cancel", value: false },
+          { label: "Save", variant: "btn-primary", value: true, onClick: function () {
             const v = form.querySelector("input:checked");
             if (v) ST().setStart(v.value, "manual");
           } }
@@ -400,7 +396,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // WIDOK
+  // VIEW
   // =====================================================================
 
   function parseRoute(hash) {
@@ -414,12 +410,12 @@ window.LM = window.LM || {};
     const st = n.current ? "current" : n.status;
     const isReview = n.type === "review";
     const cat = isReview ? null : n.stop.category;
-    const label = (isReview ? "Powtórka: " : "") + n.stop.title + ". " + (isReview ? "" : positionText(n) + ". ") + STATUS_TEXT[st] + (n.via === "start" ? " testem poziomu" : "") + ".";
+    const label = (isReview ? "Checkpoint: " : "") + n.stop.title + ". " + (isReview ? "" : positionText(n) + ". ") + STATUS_TEXT[st] + (n.via === "start" ? " by the placement test" : "") + ".";
     const icon = st === "done" ? "check" : isReview ? "rotate-ccw" : (st === "skipped" ? "arrow-right" : CAT_ICON[cat] || "sparkles");
     return el("li", { class: "sz-node is-" + st + (isReview ? " is-review" : ""), style: "left:" + geo.x.toFixed(1) + "%;top:" + geo.y + "px", "data-stop": n.id }, [
       el("button", { type: "button", class: "sz-btn", "aria-label": label, "aria-haspopup": "dialog", onclick: function () { openSheet(n.id); } }, [
         el("span", { class: "sz-circle", "aria-hidden": "true" }, LM.icon(icon, { size: st === "done" ? 24 : 22 })),
-        el("span", { class: "sz-title", "aria-hidden": "true", text: isReview ? "Powtórka" : n.stop.title })
+        el("span", { class: "sz-title", "aria-hidden": "true", text: isReview ? "Checkpoint" : n.stop.title })
       ])
     ]);
   }
@@ -432,7 +428,7 @@ window.LM = window.LM || {};
       const k = node.global !== null ? node.global : (nodes[i - 1] ? nodes[i - 1].global : 0) + 0.5;
       return { x: 50 + 25 * Math.sin(k * 0.95 + node.levelIndex), y: Math.round(i * ROW + ROW / 2) };
     });
-    // krzywa przez środki węzłów
+    // a curve through the node centres
     let d = "M" + geo[0].x.toFixed(1) + " " + geo[0].y;
     for (let i = 1; i < geo.length; i++) {
       const a = geo[i - 1], b = geo[i], my = (a.y + b.y) / 2;
@@ -446,8 +442,8 @@ window.LM = window.LM || {};
     svg.appendChild(path);
     return el("section", { class: "sz-unit", "aria-labelledby": "sz-u-" + unit.id }, [
       el("div", { class: "sz-unit-head" }, [
-        el("h3", { class: "sz-unit-title", id: "sz-u-" + unit.id, text: "Odcinek " + prog.index + " · " + unit.title }),
-        el("span", { class: "sz-unit-prog num", text: prog.done + "/" + prog.total, "aria-label": prog.done + " z " + prog.total + " przystanków zaliczonych" })
+        el("h3", { class: "sz-unit-title", id: "sz-u-" + unit.id, text: "Unit " + prog.index + " · " + unit.title }),
+        el("span", { class: "sz-unit-prog num", text: prog.done + "/" + prog.total, "aria-label": prog.done + " of " + plural(prog.total, "stop") + " done" })
       ]),
       el("div", { class: "sz-lane", style: "height:" + H + "px" }, [svg, el("ol", { class: "sz-stops" }, nodes.map(function (node, i) { return nodeButton(node, geo[i]); }))])
     ]);
@@ -487,35 +483,35 @@ window.LM = window.LM || {};
       el("div", { class: "sz-level-text" }, [
         el("h2", { class: "sz-level-title", id: "sz-l-" + level, text: LM.ui.landLabel(level) }),
         el("p", { class: "sz-level-sub num" }, [
-          p.done + " z " + p.total + " " + plural(p.total, "przystanku", "przystanków", "przystanków") + " (" + p.percent + "%)",
-          skipped ? el("span", { class: "chip", text: "Pominięte testem poziomu" }) : null,
-          isCur ? el("span", { class: "chip is-here", text: "Tu jesteś" }) : null,
+          p.done + " of " + plural(p.total, "stop") + " (" + p.percent + "%)",
+          skipped ? el("span", { class: "chip", text: "Skipped by the placement test" }) : null,
+          isCur ? el("span", { class: "chip is-here", text: "You are here" }) : null,
           passed ? el("span", { class: "chip", text: passed }) : null
         ])
       ]),
       el("div", { class: "sz-level-links" }, [
-        el("a", { class: "btn btn-link btn-small", href: LM.app.levelHash(level) }, "Lista umiejętności"),
-        el("a", { class: "btn btn-secondary btn-small", href: lv.finalTest }, "Test końcowy " + level)
+        el("a", { class: "btn btn-link btn-small", href: LM.app.levelHash(level) }, "Topic list"),
+        el("a", { class: "btn btn-secondary btn-small", href: lv.finalTest }, level + " final test")
       ])
     ]);
     const inner = [head].concat(units);
     const cls = "sz-level lvl-" + level + (skipped ? " is-skipped" : "") + (isCur ? " is-current" : "");
     if (skipped) {
       return el("details", { class: cls, "aria-labelledby": "sz-l-" + level }, [
-        el("summary", { class: "sz-level-summary" }, [el("span", { "aria-hidden": "true" }, LM.ui.landIcon(level, { size: 24 })), el("span", { text: LM.ui.landLabel(level) + " · pominięte testem poziomu (" + p.done + "/" + p.total + ")" })])
+        el("summary", { class: "sz-level-summary" }, [el("span", { "aria-hidden": "true" }, LM.ui.landIcon(level, { size: 24 })), el("span", { text: LM.ui.landLabel(level) + " · skipped by the placement test (" + p.done + "/" + p.total + ")" })])
       ].concat(inner));
     }
     return el("section", { class: cls, "aria-labelledby": "sz-l-" + level }, inner);
   }
 
-  /** Pierwsze uruchomienie (nowy profil bez wybranego punktu startu i bez testu). */
+  /** First run (a new profile with no start chosen and no test). */
   function firstRun() {
     return el("section", { class: "card sz-first", "aria-labelledby": "sz-first-title" }, [
-      el("h2", { class: "sz-first-title", id: "sz-first-title", text: "Od czego zaczynamy?" }),
-      el("p", { text: "Szlak to jedna droga przez sześć krain. Możesz zacząć od początku albo zrobić krótki test poziomu, a szlak ustawi się tam, gdzie warto zacząć." }),
+      el("h2", { class: "sz-first-title", id: "sz-first-title", text: "Where do we start?" }),
+      el("p", { text: "The trail is one path through six lands. You can start at the beginning, or take the short placement test and the trail sets itself where it makes sense to start." }),
       el("div", { class: "tool-actions" }, [
-        el("a", { class: "btn btn-primary", href: LM.placement ? LM.placement.HASH : "#/placement" }, LM.ui.withIcon("target", "Zrób test poziomu (6 min)")),
-        el("button", { type: "button", class: "btn btn-secondary", onclick: function () { ST().setStart("A1", "default"); refreshView(); } }, "Zacznij od A1")
+        el("a", { class: "btn btn-primary", href: LM.placement ? LM.placement.HASH : "#/placement" }, LM.ui.withIcon("target", "Take the placement test (6 min)")),
+        el("button", { type: "button", class: "btn btn-secondary", onclick: function () { ST().setStart("A1", "default"); refreshView(); } }, "Start at A1")
       ])
     ]);
   }
@@ -533,31 +529,31 @@ window.LM = window.LM || {};
     view.className = "view tool-view sz-view";
     view.dataset.file = HASH;
     view.replaceChildren();
-    document.title = "Szlak · " + LM.APP.appTitle;
+    document.title = "Trail · " + LM.APP.appTitle;
     if (!ready()) {
-      view.appendChild(el("p", { class: "tool-note", role: "status", text: "Wczytuję Szlak…" }));
+      view.appendChild(el("p", { class: "tool-note", role: "status", text: "Loading the trail…" }));
       return;
     }
     const tr = trail();
     const start = startInfo();
     const cur = tr.current;
-    view.appendChild(LM.ui.pageHead({ eyebrow: "Nauka", title: "Szlak", lead: "Jedna droga przez krainy od A1 do C2: małe przystanki z powtórkami co kilka kroków. Szlak podpowiada kolejność, ale nic nie jest zablokowane." }));
+    view.appendChild(LM.ui.pageHead({ eyebrow: "Learn", title: "Trail", lead: "One path through the lands from A1 to C2: small stops with a checkpoint every few steps. The trail suggests an order, but nothing is locked." }));
     if (needsFirstRun()) view.appendChild(firstRun());
 
-    const startText = start.source === "test" ? "z testu poziomu" : start.source === "manual" ? "wybrany przez Ciebie" : "domyślny";
+    const startText = start.source === "test" ? "from the placement test" : start.source === "manual" ? "chosen by you" : "default";
     const bar = [
       el("div", { class: "sz-now" }, cur ? [
-        el("p", { class: "sz-now-label", text: "Bieżący przystanek" }),
+        el("p", { class: "sz-now-label", text: "Current stop" }),
         el("p", { class: "sz-now-title" }, [el("strong", { text: cur.stop.title }), el("span", { class: "tool-note", text: " · " + positionText(cur) })]),
-        el("p", { class: "tool-note num", text: "Odcinek " + SL().unitProgress(tr, cur.unitId).index + " · " + cur.unitTitle + " · " + SL().unitProgress(tr, cur.unitId).done + "/" + SL().unitProgress(tr, cur.unitId).total })
-      ] : [el("p", { class: "sz-now-title" }, el("strong", { text: "Cały szlak zaliczony od punktu startu. Gratulacje!" }))]),
+        el("p", { class: "tool-note num", text: "Unit " + SL().unitProgress(tr, cur.unitId).index + " · " + cur.unitTitle + " · " + SL().unitProgress(tr, cur.unitId).done + "/" + SL().unitProgress(tr, cur.unitId).total })
+      ] : [el("p", { class: "sz-now-title" }, el("strong", { text: "The whole trail is done from your start. Congratulations!" }))]),
       el("div", { class: "sz-now-actions" }, [
-        cur ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { openSheet(cur.id); } }, LM.ui.withIcon("arrow-right", "Idź dalej")) : null,
-        el("button", { type: "button", class: "btn btn-secondary", onclick: startDialog }, "Zmień punkt startu")
+        cur ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { openSheet(cur.id); } }, LM.ui.withIcon("arrow-right", "Continue the trail")) : null,
+        el("button", { type: "button", class: "btn btn-secondary", onclick: startDialog }, "Change the start")
       ])
     ];
-    view.appendChild(el("section", { class: "card sz-now-card", "aria-label": "Bieżący przystanek" }, bar));
-    view.appendChild(el("p", { class: "tool-note sz-start-note" }, "Punkt startu: " + LM.ui.landLabel(start.level) + " (" + startText + ")."));
+    view.appendChild(el("section", { class: "card sz-now-card", "aria-label": "Current stop" }, bar));
+    view.appendChild(el("p", { class: "tool-note sz-start-note" }, "Start: " + LM.ui.landLabel(start.level) + " (" + startText + ")."));
 
     const curLevel = cur ? cur.level : null;
     LM.TRAIL.levels.forEach(function (lv) { view.appendChild(levelSection(tr, lv, curLevel)); });
@@ -573,18 +569,18 @@ window.LM = window.LM || {};
       } else U.setScroll(0);
     }
     if (route.open) {
-      history.replaceState(null, "", HASH); // adres wraca do #/trail, odświeżenie nie otwiera arkusza ponownie
+      history.replaceState(null, "", HASH); // the address goes back to #/trail, a reload does not open the sheet again
       openSheet(route.open);
     }
   }
 
-  /** Link „Zobacz Polanę na szlaku” na stronie poziomu. */
+  /** "See A1 · Meadow on the trail" link on the level page. */
   function levelLink(level) {
     if (!loaded()) return null;
     return el("a", { class: "btn btn-link btn-small sz-level-link", href: HASH }, LM.ui.withIcon("route", "See " + LM.ui.landLabel(level) + " on the trail"));
   }
 
-  /** Kafel „Szlak” w Statystykach: zaliczone przystanki na poziom i średni wynik quizów. */
+  /** "Trail" tile in Stats: passed stops per level and the average quiz result. */
   function statsTile() {
     if (!ready()) return null;
     const tr = trail();
@@ -599,11 +595,11 @@ window.LM = window.LM || {};
       ]);
     });
     const quizzes = Object.keys(st.stops).filter(function (id) { return st.stops[id].via === "quiz"; }).length;
-    return el("section", { class: "card st-tile st-wide", "aria-labelledby": "st-szlak" }, [
-      el("h2", { class: "tile-title", id: "st-szlak", text: "Szlak" }),
+    return el("section", { class: "card st-tile st-wide", "aria-labelledby": "st-trail" }, [
+      el("h2", { class: "tile-title", id: "st-trail", text: "Trail" }),
       el("ul", { class: "sz-st-list" }, rows),
-      el("p", { class: "tool-note", text: avg === null ? "Quizy przystanków: jeszcze żadnego. Zaliczenie od 3 z 4 pytań." : "Quizy przystanków: " + quizzes + " " + plural(quizzes, "podejście", "podejścia", "podejść") + ", średni wynik " + avg + "%." }),
-      el("p", null, el("a", { class: "btn btn-link btn-small", href: HASH }, "Otwórz szlak"))
+      el("p", { class: "tool-note", text: avg === null ? "Stop quizzes: none yet. You pass with 3 of 4 questions." : "Stop quizzes: " + plural(quizzes, "attempt") + ", average result " + avg + "%." }),
+      el("p", null, el("a", { class: "btn btn-link btn-small", href: HASH }, "Open the trail"))
     ]);
   }
 

@@ -1,12 +1,12 @@
 /*
- * ui.js — elementy wizualne wspólne dla całej aplikacji (patrz DESIGN.md):
- *   LM.icon(name, opts)          ikona Lucide (dane: assets/icons.js)
- *   LM.ui.withIcon(name, text)   [ikona, tekst] do przycisków i linków
- *   LM.logo(opts)                znak logo (kompas ze szlakiem) + napis
- *   LM.ui.progressRing(…)        pierścień postępu (SVG)
- *   LM.loadGsap()                GSAP ładowany tylko na żądanie
+ * ui.js — visual pieces shared by the whole app (see DESIGN.md):
+ *   LM.icon(name, opts)          a Lucide icon (data: assets/icons.js)
+ *   LM.ui.withIcon(name, text)   [icon, text] for buttons and links
+ *   LM.logo(opts)                logo mark (a compass with a trail) + wordmark
+ *   LM.ui.progressRing(…)        progress ring (SVG)
+ *   LM.loadGsap()                GSAP, loaded only on demand
  *
- * Wszystko budujemy przez createElementNS — bez innerHTML.
+ * Everything is built with createElementNS — no innerHTML.
  */
 window.LM = window.LM || {};
 
@@ -22,14 +22,14 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // IKONY (Lucide, obrys 1.75 px, kolor z currentColor)
+  // ICONS (Lucide, 1.75 px stroke, color from currentColor)
   // =====================================================================
 
   /**
-   * Ikona jako element <svg>. opts:
-   *   size  — rozmiar w px (domyślnie 20)
-   *   label — tekst dla czytników ekranu (bez niego ikona jest aria-hidden)
-   *   class — dodatkowa klasa
+   * Icon as an <svg> element. opts:
+   *   size  — size in px (default 20)
+   *   label — text for screen readers (without it the icon is aria-hidden)
+   *   class — extra class
    */
   function icon(name, opts) {
     opts = opts || {};
@@ -45,7 +45,7 @@ window.LM = window.LM || {};
     if (opts.label) { svg.setAttribute("role", "img"); svg.setAttribute("aria-label", opts.label); }
     else svg.setAttribute("aria-hidden", "true");
     if (!nodes) {
-      if (window.console) console.warn("Brak ikony „" + name + "” (dopisz ją w tools/build-assets.js)");
+      if (window.console) console.warn("Missing icon “" + name + "” (add it in tools/build-assets.js)");
       return svg;
     }
     nodes.forEach(function (n) { svg.appendChild(svgEl(n[0], n[1])); });
@@ -54,11 +54,11 @@ window.LM = window.LM || {};
 
   /** Land symbol key per level in assets/lands.js. Land NAMES come from the syllabus (LM.syl.landName). */
   const LANDS = {
-    A1: { key: "kraina-a1" }, A2: { key: "kraina-a2" }, B1: { key: "kraina-b1" },
-    B2: { key: "kraina-b2" }, C1: { key: "kraina-c1" }, C2: { key: "kraina-c2" }
+    A1: { key: "land-a1" }, A2: { key: "land-a2" }, B1: { key: "land-b1" },
+    B2: { key: "land-b2" }, C1: { key: "land-c1" }, C2: { key: "land-c2" }
   };
 
-  /** Symbol krainy dla poziomu ("A1"…"C2"), kreska currentColor — kolor ustawia rodzic (np. --lvl). */
+  /** Land symbol of a level ("A1"…"C2"), stroke currentColor — the parent sets the colour (e.g. --lvl). */
   function landIcon(levelId, opts) {
     const land = LANDS[levelId];
     return icon(land ? land.key : "", Object.assign({ set: "land", size: 22 }, opts || {}));
@@ -71,8 +71,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Pieczątka w kolorze krainy (--lvl z klasy lvl-X rodzica albo własnej): okrągła, z ptaszkiem.
-   * opts: size (px, domyślnie 20), fresh — animacja „odbicia” (C3; bez ruchu przy reduced motion, CSS).
+   * Stamp in the land colour (--lvl from the parent's lvl-X class or its own): round, with a tick.
+   * opts: size (px, default 20), fresh — "bounce" animation (C3; no motion with reduced motion, CSS).
    */
   function stamp(levelId, opts) {
     opts = opts || {};
@@ -87,10 +87,10 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Stan pusty z ilustracją (paczka v7, C6): LM.ui.emptyState({ art, title, hint, action, level, tag }).
-   *   art    — klucz z LM.EMPTY_ART (assets/empty-states.js), 96×96, kreska currentColor
-   *   action — element (przycisk, link) albo null; level — poziom koloru akcentu (domyślnie bieżący poziom profilu)
-   *   tag    — "li", gdy stan pusty jest elementem listy (domyślnie div)
+   * Empty state with an illustration (pack v7, C6): LM.ui.emptyState({ art, title, hint, action, level, tag }).
+   *   art    — key in LM.EMPTY_ART (assets/empty-states.js), 96×96, stroke currentColor
+   *   action — an element (button, link) or null; level — level of the accent colour (default: the profile's current level)
+   *   tag    — "li" when the empty state is a list item (default div)
    */
   function emptyState(o) {
     const level = o.level || (LM.state && LM.state.ui && LM.state.ui.levelId) || "A1";
@@ -116,12 +116,12 @@ window.LM = window.LM || {};
     return box;
   }
 
-  /** [ikona, tekst] — np. el("button", …, LM.ui.withIcon("plus", "Dodaj błąd")). */
+  /** [icon, text] — e.g. el("button", …, LM.ui.withIcon("plus", "Add mistake")). */
   function withIcon(name, text, opts) {
     return [icon(name, Object.assign({ size: 18 }, opts || {})), document.createTextNode(text)];
   }
 
-  /** Nagłówek strony narzędzia: etykieta (NAUKA · ĆWICZENIA), h1 i opcjonalny lead. */
+  /** Header of a tool page: eyebrow (LEARN · PRACTICE), h1 and an optional lead. */
   function pageHead(o) {
     const h = document.createElement("header");
     h.className = "tool-head" + (o.className ? " " + o.className : "");
@@ -145,19 +145,19 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // OKRUSZKI (paczka v8, S1): jeden komponent nad h1 na wszystkich stronach treści
+  // BREADCRUMBS (pack v8, S1): one component above the h1 on every content page
   // =====================================================================
 
   /**
-   * LM.ui.breadcrumbs([{ label, href?, onclick? }, …]) → <nav class="breadcrumbs">: „Poziom A1 › Czasy › Present Simple”.
-   * Ostatni element bez href to bieżąca strona (aria-current="page"). Poniżej 640 px (CSS) widać tylko „‹ rodzic”
-   * (przedostatni element; przy jednym elemencie — on sam). onclick (np. powrót do listy z przewinięciem) dostaje zdarzenie
-   * po preventDefault; href zostaje dla kliknięcia środkowym przyciskiem i dla czytników ekranu.
+   * LM.ui.breadcrumbs([{ label, href?, onclick? }, …]) → <nav class="breadcrumbs">: “Level A1 › Verbs › gustar”.
+   * The last item without href is the current page (aria-current="page"). Below 640 px (CSS) only “‹ parent” shows
+   * (the second to last item; with one item, that item). onclick (e.g. back to the list with its scroll position) gets the event
+   * after preventDefault; href stays for middle-click and for screen readers.
    */
   function breadcrumbs(items) {
     const nav = document.createElement("nav");
     nav.className = "breadcrumbs";
-    nav.setAttribute("aria-label", "Okruszki");
+    nav.setAttribute("aria-label", "Breadcrumbs");
     const ol = document.createElement("ol");
     const parentIndex = items.length > 1 ? items.length - 2 : 0;
     items.forEach(function (it, i) {
@@ -187,12 +187,12 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // LOGO: kompas w okręgu ze szlakiem w gradiencie marki (krainy A1 → C2)
+  // LOGO: a compass in a circle with a trail in the brand gradient (lands A1 → C2)
   // =====================================================================
 
   let gradientCounter = 0;
 
-  /** Gradient marki w <defs> (kolory z tokenów, więc działa w obu motywach). */
+  /** Brand gradient in <defs> (colours from the tokens, so it works in both themes). */
   function brandGradient(defs, id, x1, y1, x2, y2) {
     const g = svgEl("linearGradient", { id: id, x1: x1, y1: y1, x2: x2, y2: y2, gradientUnits: "userSpaceOnUse" });
     ["a1", "a2", "b1", "b2", "c1", "c2"].forEach(function (lvl, i) {
@@ -203,16 +203,16 @@ window.LM = window.LM || {};
     defs.appendChild(g);
   }
 
-  /** Sam znak (40 × 40). */
+  /** The mark alone (40 × 40). */
   function logoMark(size) {
     const svg = svgEl("svg", { class: "logo-mark", width: size || 34, height: size || 34, viewBox: "0 0 40 40", "aria-hidden": "true", focusable: "false" });
-    // Okrąg (granica mapy) i szlak kropkami od A1 (lewy dół) do C2 (prawa góra)
+    // Circle (edge of the map) and a dotted trail from A1 (bottom left) to C2 (top right)
     svg.appendChild(svgEl("circle", { cx: 20, cy: 20, r: 17, fill: "none", stroke: "currentColor", "stroke-width": 2.2 }));
     svg.appendChild(svgEl("path", {
       d: "M9.5 28.5c4-1.5 3.5-6.5 8-7.5s6.5 1.5 9.5-2.5 2.5-6 3.5-7.5",
       fill: "none", stroke: "currentColor", "stroke-width": 2.2, "stroke-linecap": "round", "stroke-dasharray": "0.1 4.2"
     }));
-    // Igła kompasu (północ w gradiencie, południe w kolorze linii)
+    // Compass needle (north in the gradient, south in the line colour)
     const needle = svgEl("g", { transform: "rotate(40 20 20)" });
     needle.appendChild(svgEl("path", { d: "M20 8.5 23.2 20h-6.4z", fill: "currentColor" }));
     needle.appendChild(svgEl("path", { d: "M20 31.5 16.8 20h6.4z", class: "logo-needle-s" }));
@@ -221,7 +221,7 @@ window.LM = window.LM || {};
     return svg;
   }
 
-  /** Znak + napis „English Levels Map” (font display). */
+  /** Mark + app name (display font). */
   function logo(opts) {
     opts = opts || {};
     const wrap = document.createElement("span");
@@ -235,15 +235,15 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // PIERŚCIEŃ POSTĘPU
+  // PROGRESS RING
   // =====================================================================
 
   /**
    * percent: 0–100. opts:
-   *   size (px, domyślnie 64), stroke (px, domyślnie 6),
-   *   brand: true → gradient marki zamiast koloru poziomu (--lvl),
-   *   label — opis dla czytników ekranu, text — tekst w środku (domyślnie „N%”), node — element zamiast tekstu
-   * Wypełnienie animuje się przez stroke-dashoffset (CSS, --dur-slow).
+   *   size (px, default 64), stroke (px, default 6),
+   *   brand: true → brand gradient instead of the level color (--lvl),
+   *   label — description for screen readers, text — text in the middle (default “N%”), node — an element instead of text
+   * The fill animates through stroke-dashoffset (CSS, --dur-slow).
    */
   function progressRing(percent, opts) {
     opts = opts || {};
@@ -256,7 +256,7 @@ window.LM = window.LM || {};
     wrap.setAttribute("aria-valuemin", "0");
     wrap.setAttribute("aria-valuemax", "100");
     wrap.setAttribute("aria-valuenow", String(p));
-    wrap.setAttribute("aria-label", opts.label || "Postęp");
+    wrap.setAttribute("aria-label", opts.label || "Progress");
     wrap.style.setProperty("--ring-size", size + "px");
     const svg = svgEl("svg", { width: size, height: size, viewBox: "0 0 " + size + " " + size, "aria-hidden": "true", focusable: "false" });
     let strokeRef = null;
@@ -273,22 +273,22 @@ window.LM = window.LM || {};
       "stroke-linecap": "round", "stroke-dasharray": c.toFixed(2), "stroke-dashoffset": c.toFixed(2),
       transform: "rotate(-90 " + size / 2 + " " + size / 2 + ")"
     });
-    if (strokeRef) arc.style.stroke = strokeRef; // styl inline: ważniejszy niż kolor poziomu z CSS
+    if (strokeRef) arc.style.stroke = strokeRef; // inline style: wins over the level colour from CSS
     svg.appendChild(arc);
     wrap.appendChild(svg);
     const txt = document.createElement("span");
     txt.className = "ring-text num";
-    if (opts.node) { txt.className = "ring-text ring-land"; txt.appendChild(opts.node); } // np. symbol krainy zamiast tekstu
+    if (opts.node) { txt.className = "ring-text ring-land"; txt.appendChild(opts.node); } // e.g. a land symbol instead of text
     else txt.textContent = opts.text !== undefined ? opts.text : p + "%";
     wrap.appendChild(txt);
-    // Animacja od zera (przejście CSS; przy prefers-reduced-motion natychmiast)
+    // Animates from zero (CSS transition; at once with prefers-reduced-motion)
     requestAnimationFrame(function () {
       requestAnimationFrame(function () { arc.setAttribute("stroke-dashoffset", (c * (1 - p / 100)).toFixed(2)); });
     });
     return wrap;
   }
 
-  /** Zmienia wartość istniejącego pierścienia (płynne przejście z poprzedniej wartości). */
+  /** Changes the value of an existing ring (smooth transition from the previous value). */
   function setRing(ring, percent, text) {
     const p = Math.max(0, Math.min(100, Math.round(percent)));
     const arc = ring.querySelector(".ring-fill");
@@ -299,9 +299,9 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // GSAP NA ŻĄDANIE (assets/vendor/gsap.min.js)
+  // GSAP ON DEMAND (assets/vendor/gsap.min.js)
   //   LM.loadGsap().then(function (gsap) { const mm = gsap.matchMedia(); … });
-  //   Zwykły <script> zamiast import(), bo moduły nie działają z file://.
+  //   A plain <script> instead of import(), because modules do not work from file://.
   // =====================================================================
 
   const loading = {};
@@ -312,7 +312,7 @@ window.LM = window.LM || {};
       const s = document.createElement("script");
       s.src = src;
       s.onload = resolve;
-      s.onerror = function () { delete loading[src]; reject(new Error("Nie udało się wczytać " + src)); };
+      s.onerror = function () { delete loading[src]; reject(new Error("Could not load " + src)); };
       document.head.appendChild(s);
     });
     return loading[src];
@@ -328,8 +328,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * GSAP + opcjonalne wtyczki, np. LM.loadGsap(["DrawSVGPlugin", "MotionPathPlugin"]).
-   * Wtyczki są rejestrowane raz. Zwraca Promise<gsap>.
+   * GSAP + optional plugins, e.g. LM.loadGsap(["DrawSVGPlugin", "MotionPathPlugin"]).
+   * Plugins are registered once. Returns Promise<gsap>.
    */
   function loadGsap(plugins) {
     return loadScript("assets/vendor/gsap.min.js").then(function () {
@@ -341,12 +341,12 @@ window.LM = window.LM || {};
     }).then(function () { return window.gsap; });
   }
 
-  /** Czy użytkownik prosi o ograniczenie ruchu (prefers-reduced-motion). */
+  /** Whether the user asks for less motion (prefers-reduced-motion). */
   function reducedMotion() {
     return !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
   }
 
-  /** Uzupełnia statyczny HTML: <span data-icon="menu"> → ikona, [data-logo] → logo. */
+  /** Completes the static HTML: <span data-icon="menu"> → icon, [data-logo] → logo. */
   function hydrate(root) {
     (root || document).querySelectorAll("[data-icon]").forEach(function (node) {
       node.replaceWith(icon(node.getAttribute("data-icon"), { size: Number(node.getAttribute("data-size")) || 18 }));
@@ -360,9 +360,9 @@ window.LM = window.LM || {};
   else hydrate();
 
   // =====================================================================
-  // TOAST — nienachalny komunikat u dołu ekranu (role="status"), opcjonalnie z przyciskiem
-  //   LM.ui.toast({ text, action: { label, onClick }, duration: 5000 })  albo  actions: [{ label, onClick }, …]
-  // Jeden naraz; najechanie myszą albo fokus wstrzymują znikanie.
+  // TOAST — an unobtrusive message at the bottom of the screen (role="status"), optionally with a button
+  //   LM.ui.toast({ text, action: { label, onClick }, duration: 5000 })  or  actions: [{ label, onClick }, …]
+  // One at a time; hover or focus pause the timer.
   // =====================================================================
 
   let toastBox = null, toastTimer = null;
@@ -380,14 +380,14 @@ window.LM = window.LM || {};
     const card = el("div", { class: "toast" }, [
       opts.icon ? el("span", { class: "toast-icon", "aria-hidden": "true" }, icon(opts.icon, { size: 18 })) : null,
       el("span", { class: "toast-text", text: opts.text }),
-      // jedna akcja (action) albo kilka (actions: [{ label, onClick }, …], np. „Dodaj znaczenie” i „Cofnij”)
+      // one action (action) or several (actions: [{ label, onClick }, …], e.g. “Add a meaning” and “Undo”)
       (opts.actions || (opts.action ? [opts.action] : [])).map(function (a) {
         return el("button", {
           type: "button", class: "btn btn-link btn-small toast-action",
           onclick: function () { hideToast(); a.onClick(); }
         }, a.label);
       }),
-      el("button", { type: "button", class: "icon-btn toast-close", "aria-label": "Zamknij komunikat", onclick: hideToast }, icon("x", { size: 16 }))
+      el("button", { type: "button", class: "icon-btn toast-close", "aria-label": "Close message", onclick: hideToast }, icon("x", { size: 16 }))
     ]);
     toastBox.replaceChildren(card);
     const duration = opts.duration || 5000;
@@ -408,18 +408,18 @@ window.LM = window.LM || {};
   LM.logo = logo;
   LM.loadGsap = loadGsap;
   LM.loadModule = loadModule;
-  LM.loadScript = loadScript; // dane ładowane na żądanie (np. ćwiczenia, Laboratorium czasów)
+  LM.loadScript = loadScript; // data loaded on demand (e.g. exercises, the lab)
   LM.reducedMotion = reducedMotion;
   /**
-   * Tryb gościa: uwaga „oglądasz bez profilu” z przyciskiem „Utwórz profil”. Zwraca null, gdy profil jest.
-   * what — co się nie zapisuje (np. „wyniki zadań”).
+   * Guest mode: a "you are browsing without a profile" note with a "Create a profile" button. Returns null when there is a profile.
+   * what — what is not saved, as a plural noun phrase (e.g. "your results").
    */
   function guestNote(what) {
     if (!LM.app || !LM.app.getActiveProfile || LM.app.getActiveProfile()) return null;
     const el = LM.utils.el;
     return el("p", { class: "tool-note guest-note", role: "note" }, [
-      "Oglądasz bez profilu, więc " + what + " się nie zapisują. ",
-      el("button", { type: "button", class: "btn btn-link btn-small", onclick: function () { LM.app.withProfile("", function () { LM.app.renderAll(); }); } }, "Utwórz profil")
+      "You are browsing without a profile, so " + what + " are not saved. ",
+      el("button", { type: "button", class: "btn btn-link btn-small", onclick: function () { LM.app.withProfile("", function () { LM.app.renderAll(); }); } }, "Create a profile")
     ]);
   }
 

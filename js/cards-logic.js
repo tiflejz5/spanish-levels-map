@@ -1,28 +1,28 @@
 /*
- * cards-logic.js — czysta logika fiszek (spec 10): bez DOM i localStorage, testy w tools/tests.js.
- * Harmonogram jest osobno: js/cards-schedule.js.
+ * cards-logic.js — pure flashcard logic (spec 10): no DOM and no localStorage, tests in tools/tests.js.
+ * The schedule is separate: js/cards-schedule.js.
  *
- *   normalize(s)                       porównanie odpowiedzi (2.1): małe litery, spacje, ’ → ', bez interpunkcji na brzegach
+ *   normalize(s)                       answer comparison (2.1): lower case, spaces, ’ → ', no punctuation at the edges
  *   levenshtein(a, b)
  *   checkAnswer(input, accepted)       { result: exact|typo|wrong|empty, suggested: good|hard|again, expected }
- *   parseCloze(text)                   { ok, before, answers, after, error } — dokładnie jedna luka {{a|b}}
+ *   parseCloze(text)                   { ok, before, answers, after, error } — exactly one gap {{a|b}}
  *   fromAnki(text), toAnki(text, hint) {{c1::x}} ↔ {{x}}
  *   answersOf(card), frontText(card)
- *   studyDay(ms, hour?)                „RRRR-MM-DD” dnia nauki (granica o 04:00 czasu lokalnego)
- *   dayStart(day, hour?)               ms początku dnia nauki
- *   buildQueue(opts)                   kolejka sesji (3.4): nauka → powtórki (limit) → nowe (limit)
- *   pickNext(pool, queue, now)         następna karta w sesji (nauka z terminem ≤ 20 min wraca)
+ *   studyDay(ms, hour?)                "YYYY-MM-DD" of the study day (the boundary is 04:00 local time)
+ *   dayStart(day, hour?)               ms of the start of a study day
+ *   buildQueue(opts)                   session queue (3.4): learning → reviews (limit) → new (limit)
+ *   pickNext(pool, queue, now)         the next card in a session (learning due within 20 min comes back)
  *   deckStats(cards, stateMap, now)    { new, learning, mastered, review, suspended, total }
- *   parseDelimited(text)               wiersze TSV/CSV (separator tab albo „;”, cudzysłowy RFC 4180)
- *   importCards(text, opts)            { cards, rejected: [{ line, reason }], total } — podgląd importu
- *   exportTsv(cards)                   TSV zgodny z importem Anki (przód, tył, tagi; cloze jako {{c1::…}})
- *   extractSentence(blok, zaznaczenie) zdanie kontekstu (≤ 220 znaków); makeCloze(zdanie, słowo) → zdanie z {{słowo}} albo null
- *   wordFromSelection(tekst), isPolish(tekst), wordKey(słowo), makeWordCard({ selection, sentence, hint, source, day })
- *   sanitizeWordFields(karta)          word, source, addedAt, examples przy zapisie i imporcie (spec v6 14)
- *   exportWordsCsv(karty)              „Moje słowa” do CSV: słowo; znaczenie; zdanie; źródło
- *   sanitizeState(raw)                 stan z localStorage / importu → poprawny stan albo wyjątek
+ *   parseDelimited(text)               TSV/CSV rows (tab or ";" separator, RFC 4180 quotes)
+ *   importCards(text, opts)            { cards, rejected: [{ line, reason }], total } — import preview
+ *   exportTsv(cards)                   TSV compatible with the Anki import (front, back, tags; cloze as {{c1::…}})
+ *   extractSentence(block, selection)  context sentence (≤ 220 characters); makeCloze(sentence, word) → sentence with {{word}} or null
+ *   wordFromSelection(text), isPolish(text), wordKey(word), makeWordCard({ selection, sentence, hint, source, day })
+ *   sanitizeWordFields(card)           word, source, addedAt, examples on saving and import (spec v6 14)
+ *   exportWordsCsv(cards)              "My words" to CSV: word; meaning; sentence; source
+ *   sanitizeState(raw)                 state from localStorage / import → a valid state or an exception
  *   emptyState(), pruneDaily(daily, keep?)
- *   daily: { <dzień>: { new, reviews (powtórki kart w stanie review), again, good (Dobrze+Łatwe), answers (wszystkie oceny), minutes } }
+ *   daily: { <day>: { new, reviews (reviews of cards in the review state), again, good (Good+Easy), answers (all ratings), minutes } }
  */
 window.LM = window.LM || {};
 
@@ -32,14 +32,14 @@ window.LM = window.LM || {};
   const VERSION = 1;
   const MAX_FIELD = 500;
   const MAX_IMPORT = 2000;
-  const DAY_HOUR = 4;           // granica dnia nauki
-  const LEARN_AHEAD = 20 * 60000; // karty w nauce z terminem w ciągu 20 min mogą wrócić w sesji
+  const DAY_HOUR = 4;           // boundary of the study day
+  const LEARN_AHEAD = 20 * 60000; // learning cards due within 20 min may come back in the session
   const TYPES = ["basic", "cloze", "typed"];
   const STATES = ["new", "learning", "review", "relearning"];
   const DEFAULT_SETTINGS = { newPerDay: 10, reviewsPerDay: 100, typeAnswerFirst: false, enabledDecks: ["czasowniki-frazowe", "kolokacje"], fuzz: true, autoAddMistakes: false, randomDecks: [] };
 
   // =====================================================================
-  // ODPOWIEDZI
+  // ANSWERS
   // =====================================================================
 
   function normalize(s) {
@@ -68,7 +68,7 @@ window.LM = window.LM || {};
     return prev[b.length];
   }
 
-  /** Ocena wpisanej odpowiedzi (2.1). accepted — lista akceptowanych (pierwsza wzorcowa). */
+  /** Rating of a typed answer (2.1). accepted — the list of accepted answers (the first is the model). */
   function checkAnswer(input, accepted) {
     const list = (accepted || []).filter(function (a) { return normalize(a); });
     const expected = list[0] || "";
@@ -84,12 +84,12 @@ window.LM = window.LM || {};
   // CLOZE
   // =====================================================================
 
-  /** {{c1::x}} / {{c2::x::podpowiedź}} (Anki) → {{x}}. */
+  /** {{c1::x}} / {{c2::x::hint}} (Anki) → {{x}}. */
   function fromAnki(text) {
     return String(text == null ? "" : text).replace(/\{\{c\d+::([^{}]*?)(?:::[^{}]*)?\}\}/g, "{{$1}}");
   }
 
-  /** {{a|b}} → {{c1::a}} (pierwsza alternatywa, opcjonalna podpowiedź Anki). */
+  /** {{a|b}} → {{c1::a}} (the first alternative, an optional Anki hint). */
   function toAnki(text, hint) {
     return String(text).replace(/\{\{([^{}]+)\}\}/g, function (_, inner) {
       return "{{c1::" + inner.split("|")[0].trim() + (hint ? "::" + String(hint).replace(/[{}]/g, "") : "") + "}}";
@@ -99,48 +99,48 @@ window.LM = window.LM || {};
   function parseCloze(text) {
     const t = String(text == null ? "" : text);
     const all = t.match(/\{\{[^{}]*\}\}/g) || [];
-    if (!all.length) return { ok: false, error: "Brak luki. Zaznacz odpowiedź w {{podwójnych nawiasach}}." };
-    if (all.length > 1) return { ok: false, error: "Karta może mieć tylko jedną lukę {{…}}." };
-    if (/\{\{|\}\}/.test(t.replace(all[0], ""))) return { ok: false, error: "Niedomknięte nawiasy {{ }}." };
+    if (!all.length) return { ok: false, error: "No gap. Mark the answer in {{double braces}}." };
+    if (all.length > 1) return { ok: false, error: "A card can have only one gap {{…}}." };
+    if (/\{\{|\}\}/.test(t.replace(all[0], ""))) return { ok: false, error: "Unclosed braces {{ }}." };
     const inner = all[0].slice(2, -2);
     const answers = inner.split("|").map(function (x) { return x.trim(); });
-    if (!answers.length || answers.some(function (x) { return !x; })) return { ok: false, error: "Luka i każda alternatywa (a|b) muszą mieć treść." };
+    if (!answers.length || answers.some(function (x) { return !x; })) return { ok: false, error: "The gap and every alternative (a|b) need text." };
     const i = t.indexOf(all[0]);
     return { ok: true, before: t.slice(0, i), answers: answers, after: t.slice(i + all[0].length) };
   }
 
-  /** Akceptowane odpowiedzi karty (pierwsza = wzorcowa). */
+  /** Accepted answers of a card (the first = the model). */
   function answersOf(card) {
     if (card.type === "cloze") { const c = parseCloze(card.text); return c.ok ? c.answers : []; }
     if (card.type === "typed") return (card.accepted && card.accepted.length ? card.accepted : [card.back]).filter(Boolean);
     return [card.back].filter(Boolean);
   }
 
-  /** Tekst przodu (do list i wyszukiwania): cloze z „_____”. */
+  /** Text of the front (for lists and search): cloze with "_____". */
   function frontText(card) {
     if (card.type === "cloze") { const c = parseCloze(card.text); return c.ok ? c.before + "_____" + c.after : String(card.text || ""); }
     return String(card.front || "");
   }
 
   // =====================================================================
-  // DZIEŃ NAUKI I KOLEJKA
+  // STUDY DAY AND QUEUE
   // =====================================================================
 
   function pad(n) { return String(n).padStart(2, "0"); }
 
-  /** Dzień nauki dla chwili ms (czas lokalny; noc do 04:00 należy do poprzedniego dnia). */
+  /** Study day of moment ms (local time; the night until 04:00 belongs to the previous day). */
   function studyDay(ms, hour) {
     const d = new Date(ms - (hour == null ? DAY_HOUR : hour) * 3600000);
     return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   }
 
-  /** Początek dnia nauki „RRRR-MM-DD” (lokalnie, o 04:00). */
+  /** Start of the study day "YYYY-MM-DD" (local, at 04:00). */
   function dayStart(day, hour) {
     const p = String(day).split("-").map(Number);
     return new Date(p[0], p[1] - 1, p[2], hour == null ? DAY_HOUR : hour, 0, 0, 0).getTime();
   }
 
-  /** Koniec bieżącego dnia nauki (początek następnego). */
+  /** End of the current study day (the start of the next one). */
   function dayEnd(now, hour) {
     const p = studyDay(now, hour).split("-").map(Number);
     return new Date(p[0], p[1] - 1, p[2] + 1, hour == null ? DAY_HOUR : hour, 0, 0, 0).getTime();
@@ -151,16 +151,16 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Kolejka sesji (3.4). opts:
-   *   cards     karty włączonych talii w kolejności talii ([{ id, deck, … }])
-   *   state     mapa stanów { id: stan } (brak = nowa)
+   * Session queue (3.4). opts:
+   *   cards     cards of the enabled decks in deck order ([{ id, deck, … }])
+   *   state     state map { id: state } (missing = new)
    *   now       ms
-   *   settings  { newPerDay, reviewsPerDay, randomDecks: [id talii z losową kolejnością nowych] }
-   *   today     { new, reviews } — już zrobione dziś (daily)
-   *   extraNew  dodatkowe nowe ponad limit (np. „Dodaj kolejne 5 nowych kart”)
-   *   random    () => [0, 1) — do tasowania nowych w taliach z opcją „losowo”
-   * Zwraca { learning: [id], review: [id], fresh: [id], queue: [id] } (queue = review + fresh;
-   * karty w nauce dobiera pickNext).
+   *   settings  { newPerDay, reviewsPerDay, randomDecks: [ids of decks with random order of new cards] }
+   *   today     { new, reviews } — already done today (daily)
+   *   extraNew  extra new cards over the limit (e.g. "Add 5 more new cards")
+   *   random    () => [0, 1) — for shuffling new cards in decks set to "random"
+   * Returns { learning: [id], review: [id], fresh: [id], queue: [id] } (queue = review + fresh;
+   * pickNext picks the learning cards).
    */
   function buildQueue(opts) {
     const now = opts.now, st = opts.state || {}, s = Object.assign({}, DEFAULT_SETTINGS, opts.settings || {});
@@ -175,10 +175,10 @@ window.LM = window.LM || {};
       else if (x.state === "review" && x.due < end) review.push(c);
     });
     learning.sort(function (a, b) { return st[a.id].due - st[b.id].due; });
-    review.sort(function (a, b) { return st[a.id].due - st[b.id].due; }); // najbardziej zaległe najpierw
+    review.sort(function (a, b) { return st[a.id].due - st[b.id].due; }); // most overdue first
     const reviewLeft = Math.max(0, s.reviewsPerDay - (today.reviews || 0));
     const newLeft = Math.max(0, s.newPerDay - (today.new || 0)) + (opts.extraNew || 0);
-    // Nowe: w kolejności talii; talie z opcją „losowo” tasowane wewnątrz (bez zmiany kolejności talii)
+    // New: in deck order; decks set to "random" are shuffled inside (deck order unchanged)
     let freshOrdered = fresh;
     const random = opts.random || Math.random;
     if ((s.randomDecks || []).length) {
@@ -202,9 +202,9 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Następna karta sesji: (1) w nauce z terminem ≤ now, (2) pierwsza z kolejki, (3) w nauce
-   * z terminem w ciągu 20 min (wraca w tej samej sesji). pool — ids kart w nauce w sesji.
-   * Zwraca { id, from: "learning"|"queue"|"ahead" } albo null.
+   * Next card of a session: (1) learning due ≤ now, (2) the first in the queue, (3) learning
+   * due within 20 min (comes back in the same session). pool — ids of learning cards in the session.
+   * Returns { id, from: "learning"|"queue"|"ahead" } or null.
    */
   function pickNext(pool, queue, state, now) {
     const due = pool.filter(function (id) { return state[id] && state[id].due <= now; })
@@ -216,7 +216,7 @@ window.LM = window.LM || {};
     return ahead.length ? { id: ahead[0], from: "ahead" } : null;
   }
 
-  /** Liczby do pasków talii: nowe / w nauce / opanowane (interwał ≥ 21 d) / reszta powtórek / zawieszone. */
+  /** Numbers for the deck bars: new / learning / mastered (interval ≥ 21 d) / other reviews / suspended. */
   function deckStats(cards, state, now) {
     const out = { total: 0, new: 0, learning: 0, review: 0, mastered: 0, suspended: 0, due: 0, later: 0 };
     (cards || []).forEach(function (c) {
@@ -227,7 +227,7 @@ window.LM = window.LM || {};
       else if (x.state === "learning" || x.state === "relearning") out.learning++;
       else if (x.interval >= 21) out.mastered++;
       else out.review++;
-      if (x && x.state !== "new" && !isHidden(x, now)) { if (x.due < dayEnd(now)) out.due++; else out.later++; } // „na później”: terminy po dzisiejszym dniu nauki
+      if (x && x.state !== "new" && !isHidden(x, now)) { if (x.due < dayEnd(now)) out.due++; else out.later++; } // "later": due after today's study day
     });
     return out;
   }
@@ -236,7 +236,7 @@ window.LM = window.LM || {};
   // TSV / CSV
   // =====================================================================
 
-  /** Wiersze z tekstu: separator tab albo „;” (wykrywany z pierwszej linii), cudzysłowy RFC 4180. */
+  /** Rows from text: tab or ";" separator (detected from the first line), RFC 4180 quotes. */
   function parseDelimited(text) {
     const t = String(text == null ? "" : text).replace(/^﻿/, "").replace(/\r\n?/g, "\n");
     const firstLine = t.split("\n")[0];
@@ -261,7 +261,7 @@ window.LM = window.LM || {};
     return { separator: sep, rows: rows.filter(function (r) { return r.cells.some(function (c) { return c.trim() !== ""; }); }) };
   }
 
-  const TYPE_ALIASES = { basic: "basic", podstawowa: "basic", cloze: "cloze", luka: "cloze", typed: "typed", wpisz: "typed", wpisywana: "typed" };
+  const TYPE_ALIASES = { basic: "basic", cloze: "cloze", typed: "typed" };
 
   function splitTags(s) {
     return String(s || "").split(/[\s,]+/).map(function (x) { return x.trim().toLowerCase(); })
@@ -269,16 +269,16 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Karta z pól (formularz albo import) → { card } albo { error }.
+   * A card from fields (form or import) → { card } or { error }.
    * fields: { type, front, back, hint, example, note, tags }
    */
   function makeCard(fields) {
     const type = TYPE_ALIASES[String(fields.type || "").trim().toLowerCase()];
-    if (!type) return { error: "Nieznany typ karty (dozwolone: basic, cloze, typed)." };
+    if (!type) return { error: "Unknown card type (allowed: basic, cloze, typed)." };
     const f = {};
     for (const k of ["front", "back", "hint", "example", "note"]) {
       const v = String(fields[k] == null ? "" : fields[k]).trim();
-      if (v.length > MAX_FIELD) return { error: "Pole „" + k + "” jest dłuższe niż " + MAX_FIELD + " znaków." };
+      if (v.length > MAX_FIELD) return { error: "The field “" + k + "” is longer than " + MAX_FIELD + " characters." };
       f[k] = v;
     }
     const card = { type: type, tags: Array.isArray(fields.tags) ? fields.tags.slice(0, 10) : splitTags(fields.tags) };
@@ -289,7 +289,7 @@ window.LM = window.LM || {};
       card.text = text;
       if (f.back) card.note = f.back;
     } else {
-      if (!f.front || !f.back) return { error: "Karta potrzebuje przodu i tyłu." };
+      if (!f.front || !f.back) return { error: "A card needs a front and a back." };
       card.front = f.front;
       card.back = f.back;
       if (type === "typed") {
@@ -304,21 +304,21 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Podgląd importu: kolumny „typ; przód; tył; podpowiedź; przykład; notatka; tagi”
-   * albo format Anki (przód, tył, tagi — typ wykrywany: {{c1::…}} = cloze, inaczej basic).
-   * Nagłówek (pierwsza komórka „typ”/„type”/„przód”/„front”) jest pomijany. Limit 2000 kart.
+   * Import preview: columns "type; front; back; hint; example; note; tags"
+   * or the Anki format (front, back, tags — type detected: {{c1::…}} = cloze, otherwise basic).
+   * A header row (first cell "type" or "front") is skipped. Limit 2000 cards.
    */
   function importCards(text, opts) {
     const limit = (opts && opts.limit) || MAX_IMPORT;
     const parsed = parseDelimited(text);
     const cards = [], rejected = [];
-    // Format całego pliku: z kolumną typu (nagłówek „typ” albo znany typ w pierwszej kolumnie) albo Anki
+    // Format of the whole file: with a type column (header "type" or a known type in the first column) or Anki
     const first = function (r) { return String(r.cells[0] || "").trim().toLowerCase(); };
-    const typed = parsed.rows.some(function (r, i) { return (i === 0 && /^(typ|type)$/.test(first(r))) || TYPE_ALIASES[first(r)]; });
+    const typed = parsed.rows.some(function (r, i) { return (i === 0 && /^type$/.test(first(r))) || TYPE_ALIASES[first(r)]; });
     parsed.rows.forEach(function (r, idx) {
       const cells = r.cells.map(function (c) { return c.trim(); });
-      if (idx === 0 && /^(typ|type|przód|przod|front)$/i.test(cells[0])) return;
-      if (cards.length >= limit) { rejected.push({ line: r.line, reason: "Ponad limit " + limit + " kart w jednym imporcie." }); return; }
+      if (idx === 0 && /^(type|front)$/i.test(cells[0])) return;
+      if (cards.length >= limit) { rejected.push({ line: r.line, reason: "Over the limit of " + limit + " cards in one import." }); return; }
       let fields;
       if (typed) {
         fields = { type: cells[0], front: cells[1], back: cells[2], hint: cells[3], example: cells[4], note: cells[5], tags: cells[6] };
@@ -337,7 +337,7 @@ window.LM = window.LM || {};
     return /[\t\n"]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
   }
 
-  /** TSV zgodny z importem Anki: przód, tył, tagi (cloze: {{c1::…}}, tył = podpowiedź i notatka). */
+  /** TSV compatible with the Anki import: front, back, tags (cloze: {{c1::…}}, back = hint and note). */
   function exportTsv(cards) {
     return (cards || []).map(function (c) {
       let front, back;
@@ -353,24 +353,24 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // MOJE SŁOWA (paczka v6, spec 14): zaznaczenie → zdanie kontekstu → karta z luką
+  // MY WORDS (pack v6, spec 14): selection → context sentence → card with a gap
   // =====================================================================
 
-  const WORD_MAX = 60;       // znaków w zapisanym słowie / wyrażeniu
-  const WORD_WORDS = 6;      // słów w zaznaczeniu
-  const SENTENCE_MAX = 220;  // znaków w zdaniu kontekstu i w przykładzie
-  const EXAMPLES_MAX = 3;    // dopisanych przykładów
+  const WORD_MAX = 60;       // characters in a saved word / phrase
+  const WORD_WORDS = 6;      // words in a selection
+  const SENTENCE_MAX = 220;  // characters in the context sentence and in an example
+  const EXAMPLES_MAX = 3;    // added examples
   const ABBREVIATIONS = ["e.g", "i.e", "etc", "mr", "mrs", "ms", "dr", "prof", "vs", "st", "fig", "approx", "inc", "ltd", "jr", "sr", "cf", "viz", "al"];
 
-  /** Apostrofy typograficzne → ' (ta sama długość, więc indeksy w tekście się zgadzają). */
+  /** Typographic apostrophes → ' (same length, so indexes in the text still match). */
   function foldApostrophes(s) { return String(s).replace(/[’‘ʼ`´]/g, "'"); }
 
-  /** Czy tekst ma polskie znaki (ą, ć, ę, ł, ń, ó, ś, ź, ż) — wtedy „Do Moich słów” jest niedostępne (spec 14, 3.4). */
+  /** Whether a text has Polish letters — then "Add to My words" is not offered (spec 14, 3.4). Stage 3 replaces this with LM.lang.isTarget. */
   function isPolish(text) { return /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(String(text == null ? "" : text)); }
 
   /**
-   * Zaznaczenie → słowo / wyrażenie do zapisania albo "" (za długie: > 60 znaków albo > 6 słów, bez liter).
-   * Znaki przestankowe na brzegach i {}| są usuwane.
+   * Selection → word / phrase to save, or "" (too long: > 60 characters or > 6 words, no letters).
+   * Punctuation at the edges and {}| are removed.
    */
   function wordFromSelection(text) {
     let t = String(text == null ? "" : text).replace(/\s+/g, " ").trim();
@@ -380,7 +380,7 @@ window.LM = window.LM || {};
     return t.split(" ").length > WORD_WORDS ? "" : t;
   }
 
-  /** Indeks pierwszego wystąpienia wyrażenia w tekście (bez względu na wielkość liter, z granicami słów) albo -1. */
+  /** Index of the first occurrence of a phrase in a text (case-insensitive, with word boundaries), or -1. */
   function findWord(text, word) {
     const w = String(word == null ? "" : word).trim();
     if (!w) return -1;
@@ -389,7 +389,7 @@ window.LM = window.LM || {};
     return m ? m.index : -1;
   }
 
-  /** Zakresy zdań: koniec po . ! ? i spacji przed wielką literą; bez dzielenia na skrótach (e.g., Mr.), inicjałach i liczbach (3.5). */
+  /** Sentence ranges: an end after . ! ? and a space before a capital letter; no split at abbreviations (e.g., Mr.), initials or numbers (3.5). */
   function splitSentences(text) {
     const out = [];
     let start = 0;
@@ -408,7 +408,7 @@ window.LM = window.LM || {};
     return out;
   }
 
-  /** Zdanie dłuższe niż SENTENCE_MAX → okno wokół słowa z „…” po obu stronach (łącznie ≤ SENTENCE_MAX znaków). */
+  /** A sentence longer than SENTENCE_MAX → a window around the word with "…" on both sides (≤ SENTENCE_MAX characters in total). */
   function windowAround(s, word) {
     const w = String(word).trim();
     const j = findWord(s, w);
@@ -416,19 +416,19 @@ window.LM = window.LM || {};
       const cut = s.slice(0, SENTENCE_MAX - 1);
       return cut.slice(0, Math.max(cut.lastIndexOf(" "), 40)).trim() + "…";
     }
-    const budget = SENTENCE_MAX - 2; // miejsce na dwa „…”
+    const budget = SENTENCE_MAX - 2; // room for two "…"
     let from = Math.max(0, j - Math.floor((budget - w.length) / 2));
     let to = Math.min(s.length, from + budget);
-    from = Math.max(0, to - budget); // krótsza prawa strona → okno przesuwa się w lewo
-    // granice słów: nie tniemy wewnątrz słowa
+    from = Math.max(0, to - budget); // a shorter right side → the window moves left
+    // word boundaries: never cut inside a word
     if (from > 0) { const sp = s.indexOf(" ", from); if (sp !== -1 && sp < j) from = sp + 1; }
     if (to < s.length) { const sp = s.lastIndexOf(" ", to); if (sp > j + w.length) to = sp; }
     return (from > 0 ? "…" : "") + s.slice(from, to).trim() + (to < s.length ? "…" : "");
   }
 
   /**
-   * Zdanie kontekstu: tekst bloku (p, li, td, blockquote, dd) → zdanie zawierające zaznaczenie, najwyżej 220 znaków
-   * (dłuższe z „…” wokół słowa). Gdy zaznaczenia nie ma w tekście — pierwsze zdanie bloku.
+   * Context sentence: text of the block (p, li, td, blockquote, dd) → the sentence that contains the selection, at most 220 characters
+   * (longer ones with "…" around the word). When the selection is not in the text — the block's first sentence.
    */
   function extractSentence(blockText, selection) {
     const text = String(blockText == null ? "" : blockText).replace(/\s+/g, " ").trim();
@@ -442,7 +442,7 @@ window.LM = window.LM || {};
     return s.length <= SENTENCE_MAX ? s : windowAround(s, sel);
   }
 
-  /** Zdanie z luką {{słowo}} (pierwsze wystąpienie, zapis z tekstu zachowany) albo null, gdy zaznaczenia w zdaniu nie ma. */
+  /** Sentence with a {{word}} gap (the first occurrence, spelling from the text kept), or null when the selection is not in the sentence. */
   function makeCloze(sentence, selection) {
     const s = String(sentence == null ? "" : sentence).replace(/[{}]/g, "");
     const w = String(selection == null ? "" : selection).trim();
@@ -453,7 +453,7 @@ window.LM = window.LM || {};
     return s.slice(0, i) + "{{" + s.slice(i, i + len) + "}}" + s.slice(i + len);
   }
 
-  /** Klucz deduplikacji słowa: to samo słowo z innego zdania to ten sam klucz (normalize: wielkość liter, spacje, apostrofy). */
+  /** Deduplication key of a word: the same word from another sentence has the same key (normalize: case, spaces, apostrophes). */
   function wordKey(word) { return normalize(word); }
 
   function isDay(s) {
@@ -462,8 +462,8 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Nowe pola karty z „Moich słów”, bezpieczne przy zapisie i imporcie: word ≤ 60, source { route (#/…, ≤ 200), title ≤ 120 },
-   * addedAt RRRR-MM-DD, examples ≤ 3 × 220 znaków. Brakujące albo złe pola są pomijane (stary plik działa).
+   * New card fields from "My words", safe on saving and import: word ≤ 60, source { route (#/…, ≤ 200), title ≤ 120 },
+   * addedAt YYYY-MM-DD, examples ≤ 3 × 220 characters. Missing or bad fields are dropped (an old file still works).
    */
   function sanitizeWordFields(x) {
     const out = {};
@@ -484,12 +484,12 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Karta „Moje słowa” z zaznaczenia: { selection, sentence, hint?, source?, day? } → { card } albo { error }.
-   * Luka {{słowo}} w zdaniu (cloze); bez zdania albo bez wystąpienia słowa — zwykła karta (przód = słowo, tył = zdanie).
+   * A "My words" card from a selection: { selection, sentence, hint?, source?, day? } → { card } or { error }.
+   * A {{word}} gap in the sentence (cloze); without a sentence or without the word in it — a plain card (front = word, back = sentence).
    */
   function makeWordCard(o) {
     const word = wordFromSelection(o && o.selection);
-    if (!word) return { error: "Zaznacz od 1 do 6 słów (najwyżej " + WORD_MAX + " znaków)." };
+    if (!word) return { error: "Select 1 to 6 words (at most " + WORD_MAX + " characters)." };
     const sentence = String((o && o.sentence) || "").replace(/\s+/g, " ").trim().slice(0, SENTENCE_MAX);
     const hint = String((o && o.hint) || "").trim().slice(0, MAX_FIELD);
     const cloze = sentence ? makeCloze(sentence, word) : null;
@@ -501,10 +501,10 @@ window.LM = window.LM || {};
     return { card: Object.assign(res.card, extra) };
   }
 
-  /** Eksport „Moich słów” do CSV (separator „;”, cudzysłowy RFC 4180): słowo; znaczenie; zdanie; źródło. */
+  /** "My words" to CSV (";" separator, RFC 4180 quotes): word; meaning; sentence; source. */
   function exportWordsCsv(cards) {
     const cell = function (s) { const v = String(s == null ? "" : s); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
-    const lines = [["słowo", "znaczenie", "zdanie", "źródło"].join(";")];
+    const lines = [["word", "meaning", "sentence", "source"].join(";")];
     (cards || []).forEach(function (c) {
       let sentence = "";
       if (c.type === "cloze") { const p = parseCloze(c.text); sentence = p.ok ? p.before + p.answers[0] + p.after : String(c.text || ""); }
@@ -516,7 +516,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // STAN (localStorage, eksport / import)
+  // STATE (localStorage, export / import)
   // =====================================================================
 
   function emptyState() {
@@ -524,7 +524,7 @@ window.LM = window.LM || {};
   }
 
   const ID = /^[a-z0-9][a-z0-9-]{0,80}$/;
-  const EX_KEY = /^ex:[a-z0-9][a-z0-9-]{0,99}$/; // stan zadania ze słabych punktów (paczka v8, spec 20 R1)
+  const EX_KEY = /^ex:[a-z0-9][a-z0-9-]{0,99}$/; // state of a weak-spot item (pack v8, spec 20 R1)
   const DAY_RE = /^\d{4}-\d{2}-\d{2}$/;
 
   function num(v, min, max) { return typeof v === "number" && isFinite(v) && v >= min && v <= max; }
@@ -559,7 +559,7 @@ window.LM = window.LM || {};
     if (x.type === "cloze" && x.note) card.note = cut(x.note);
     if (typeof x.sourceItemId === "string" && x.sourceItemId) card.sourceItemId = x.sourceItemId.slice(0, 200);
     if (typeof x.createdAt === "string") card.createdAt = x.createdAt.slice(0, 30);
-    return Object.assign(card, sanitizeWordFields(x)); // „Moje słowa”: word, source, addedAt, examples (opcjonalne)
+    return Object.assign(card, sanitizeWordFields(x)); // "My words": word, source, addedAt, examples (optional)
   }
 
   function pruneDaily(daily, keep) {
@@ -569,10 +569,10 @@ window.LM = window.LM || {};
     return out;
   }
 
-  /** Stan z localStorage albo importu → poprawny stan; nieznana wersja / zły format → wyjątek. */
+  /** State from localStorage or an import → a valid state; an unknown version / a wrong format → an exception. */
   function sanitizeState(raw) {
-    if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("Nieprawidłowy format danych fiszek.");
-    if (raw.version !== VERSION) throw new Error("Nieobsługiwana wersja danych fiszek (" + raw.version + ").");
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) throw new Error("Wrong flashcard data format.");
+    if (raw.version !== VERSION) throw new Error("Unsupported flashcard data version (" + raw.version + ").");
     const out = emptyState();
     const cards = raw.cards && typeof raw.cards === "object" ? raw.cards : {};
     Object.keys(cards).slice(0, 20000).forEach(function (id) {
@@ -606,51 +606,48 @@ window.LM = window.LM || {};
       out.daily[d] = { new: num(x.new, 0, 1e5) ? Math.floor(x.new) : 0, reviews: num(x.reviews, 0, 1e5) ? Math.floor(x.reviews) : 0,
         again: num(x.again, 0, 1e5) ? Math.floor(x.again) : 0, good: num(x.good, 0, 1e5) ? Math.floor(x.good) : 0,
         answers: num(x.answers, 0, 1e5) ? Math.floor(x.answers) : 0, minutes: num(x.minutes, 0, 1440) ? Math.round(x.minutes) : 0 };
-      if (num(x.exNew, 1, 1e3)) out.daily[d].exNew = Math.floor(x.exNew); // nowe zadania ze słabych punktów danego dnia (limit 3)
+      if (num(x.exNew, 1, 1e3)) out.daily[d].exNew = Math.floor(x.exNew); // new weak-spot items of that day (limit 3)
     });
     out.daily = pruneDaily(out.daily, 400);
     return out;
   }
 
   // =====================================================================
-  // EGZAMINY Z TAGÓW KARTY (paczka v6, spec 15, sekcja 3) — bez nowego pola
+  // EXAMS FROM CARD TAGS (pack v6, spec 15, section 3) — no new field; the codes come from the exam registry (spec 06 E8)
   // =====================================================================
 
-  const EXAMS = [
-    { code: "e8", short: "E8", name: "egzamin ósmoklasisty" },
-    { code: "mp", short: "MP", name: "matura podstawowa" },
-    { code: "mr", short: "MR", name: "matura rozszerzona" },
-    { code: "b2", short: "B2", name: "egzamin B2 First" },
-    { code: "c1", short: "C1", name: "egzamin C1 Advanced" }
-  ];
+  /** Exams of the registry as tag codes: [{ code: "<code in lower case>", short: "<code>", name: "<label>" }] (registry order). */
+  function examList() {
+    const list = (LM.EXAM_REGISTRY && LM.EXAM_REGISTRY.exams) || [];
+    return list.map(function (e) { return { code: String(e.code || "").toLowerCase(), short: String(e.code || ""), name: e.label || "" }; }).filter(function (e) { return e.code; });
+  }
 
-  /** Kody egzaminów z tagów karty: e8, mp, mr, b2, c1; „matura” = mp + mr. Kolejność stała, bez powtórzeń. */
+  /** Exams of a card from its tags (a tag equal to an exam code, any case). Registry order, no repeats. */
   function examsOf(card) {
     const tags = ((card && card.tags) || []).map(function (t) { return String(t).toLowerCase(); });
-    const has = function (c) { return tags.indexOf(c) !== -1 || (/^m[pr]$/.test(c) && tags.indexOf("matura") !== -1); };
-    return EXAMS.filter(function (e) { return has(e.code); });
+    return examList().filter(function (e) { return tags.indexOf(e.code) !== -1; });
   }
 
   // =====================================================================
-  // DZIENNIK BŁĘDÓW → KARTY „MOJE BŁĘDY” (paczka v8, spec 20 R1)
+  // MISTAKE LOG → "MY MISTAKES" CARDS (pack v8, spec 20 R1)
   // =====================================================================
 
   const MISTAKES_DECK = "u-moje-bledy";
   const MASTERED_INTERVAL = 21;
   const DAY_MS = 86400000;
 
-  /** Klucz, po którym wpis dziennika rozpoznaje swoją kartę (jak dotąd: ref zadania albo journal:<id>). */
+  /** Key by which a log entry finds its card (as before: the item's ref or journal:<id>). */
   function journalSource(e) { return e.ref ? String(e.ref) : "journal:" + e.id; }
 
-  /** Stały id karty wpisu (migracja i nowe wpisy dają to samo, więc druga migracja nic nie dubluje). */
+  /** Fixed id of an entry's card (old and new entries give the same one, so nothing is duplicated). */
   function journalCardId(e) { return "u-mb-" + String(e.id || "x").toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 50); }
 
 
   function cleanAnswer(s) { return String(s == null ? "" : s).replace(/[{}|]/g, " ").replace(/\s+/g, " ").trim(); }
 
   /**
-   * Akceptowane odpowiedzi luki z pola „correct” wpisu: „A – make” → „A – make”, „make”, „A”; pełne zdanie wzorcowe
-   * (transformacja z silnika zadań: „przed odpowiedź po”) → sama odpowiedź bez tekstu przed i po luką.
+   * Accepted answers of the gap from the entry's "correct" field: "A – make" → "A – make", "make", "A"; a full model sentence
+   * (transformation from the exercise engine: "before answer after") → only the answer, without the text before and after the gap.
    */
   function gapAnswers(line, correct) {
     let c = cleanAnswer(correct).slice(0, 200);
@@ -669,10 +666,10 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Karta z wpisu dziennika. Przód pokazuje CAŁY kontekst wpisu (wszystkie linie, z podziałem na wiersze): zdanie z luką,
-   * ale też opcje A–D, słowo bazowe, słowo kluczowe transformacji i formę w nawiasie, czyli to, co jest podpowiedzią zadania.
-   * Z luką ___ → cloze (luka w swojej linii; akceptowane odpowiedzi z pola „correct”), bez luki → zwykła karta
-   * (przód = kontekst, tył = poprawna odpowiedź). Reguła wpisu idzie do „Uwaga” po odsłonięciu.
+   * A card from a log entry. The front shows the WHOLE context of the entry (all lines, split into rows): the sentence with a gap,
+   * and also options A–D, the base word, the transformation key word and the form in brackets, i.e. the item's hints.
+   * With a ___ gap → cloze (the gap in its own line; accepted answers from the "correct" field), without a gap → a plain card
+   * (front = context, back = right answer). The entry's rule goes to "Note" after revealing.
    */
   function journalCard(e) {
     const rule = String(e.rule || "").slice(0, 500);
@@ -690,7 +687,7 @@ window.LM = window.LM || {};
           if (!res.error) return res.card;
           break;
         }
-        // za długi kontekst: ucinamy od końca linie spoza luki (podpowiedzi krótkie, zwykle wcześniej niż długi tekst)
+        // context too long: cut lines outside the gap from the end (hints are short, usually before a long text)
         let cut = -1;
         for (let i = work.length - 1; i >= 0; i--) if (i !== gi) { cut = i; break; }
         if (cut === -1) break;
@@ -711,14 +708,14 @@ window.LM = window.LM || {};
     return { state: "review", step: 0, ease: 2.5, interval: interval, pendingInterval: 0, lapses: 0, reps: reps, due: due };
   }
 
-  /** Stan nowej karty wpisu: pierwsza powtórka jutro (jak dawny etap 0). */
+  /** State of a new entry card: the first review tomorrow (like the old stage 0). */
   function newJournalState(now) { return reviewState(1, dayEnd(now), 0); }
 
 
   function ensureMistakesDeck(state) {
     let d = state.userDecks.find(function (x) { return x.id === MISTAKES_DECK; });
     if (!d) {
-      d = { id: MISTAKES_DECK, title: "Moje błędy", createdAt: new Date(0).toISOString(), system: "mistakes" };
+      d = { id: MISTAKES_DECK, title: "My mistakes", createdAt: new Date(0).toISOString(), system: "mistakes" };
       state.userDecks.push(d);
       if (state.settings.enabledDecks.indexOf(MISTAKES_DECK) === -1) state.settings.enabledDecks.push(MISTAKES_DECK);
     }
@@ -732,15 +729,15 @@ window.LM = window.LM || {};
 
 
   /**
-   * Scalanie stanu z pamięci tej karty przeglądarki z zapisem w localStorage (druga karta mogła zapisać nowsze oceny):
-   * karta z większą liczbą powtórek (reps) wygrywa, talie i własne karty są dopisywane, dzienne liczniki to maksimum.
-   * Zmienia mem; zwraca true, gdy coś przejęto z zapisu. Bez tego zapis ze starszej karty przeglądarki cofał oceny (karta wracała jako nowa).
+   * Merges the state in this browser tab's memory with what is in localStorage (another tab may have saved newer ratings):
+   * the card with more reviews (reps) wins, decks and own cards are added, daily counters take the maximum.
+   * Changes mem; returns true when something was taken over. Without this a save from an older tab undid ratings (the card came back as new).
    */
   function mergeStates(mem, stored) {
     let changed = false;
     Object.keys(stored.cards || {}).forEach(function (id) {
       const a = mem.cards[id], b = stored.cards[id];
-      if ((b.reps || 0) > (a ? (a.reps || 0) : 0)) { mem.cards[id] = b; changed = true; } // karta bez powtórek (np. zawieszona nowa) nie jest „nowsza”
+      if ((b.reps || 0) > (a ? (a.reps || 0) : 0)) { mem.cards[id] = b; changed = true; } // a card without reviews (e.g. a suspended new one) is not "newer"
     });
     Object.keys(stored.daily || {}).forEach(function (day) {
       const s = stored.daily[day], m = mem.daily[day] || (mem.daily[day] = { new: 0, reviews: 0, again: 0, good: 0, answers: 0, minutes: 0 });
@@ -757,7 +754,7 @@ window.LM = window.LM || {};
     newJournalState: newJournalState, ensureMistakesDeck: ensureMistakesDeck,
     hasJournalCard: hasJournalCard,
     gapAnswers: gapAnswers,
-    EXAMS: EXAMS, examsOf: examsOf,
+    examList: examList, examsOf: examsOf,
     VERSION: VERSION, MAX_FIELD: MAX_FIELD, MAX_IMPORT: MAX_IMPORT, DAY_HOUR: DAY_HOUR, TYPES: TYPES, DEFAULT_SETTINGS: DEFAULT_SETTINGS,
     normalize: normalize, levenshtein: levenshtein, checkAnswer: checkAnswer,
     parseCloze: parseCloze, fromAnki: fromAnki, toAnki: toAnki, answersOf: answersOf, frontText: frontText,

@@ -1,15 +1,15 @@
 /*
- * motion.js — animacje GSAP w jednym miejscu (DESIGN.md, sekcja 4).
+ * motion.js — GSAP animations in one place (DESIGN.md, section 4).
  *
  *   LM.motion.run(plugins, setup)
- *     Ładuje GSAP (i wtyczki) na żądanie, a potem wywołuje setup(gsap, reduce)
- *     wewnątrz gsap.matchMedia(): przy prefers-reduced-motion reduce = true
- *     i animacje ruchu trzeba pominąć. Poprzednia animacja jest sprzątana
- *     (mm.revert()) przy kolejnym run() i przy zmianie strony (cleanup()).
- *     Gdy GSAP nie da się wczytać albo ruch jest ograniczony, setup dostaje
- *     gsap = null — widok ma wtedy od razu stan końcowy.
+ *     Loads GSAP (and plugins) on demand, then calls setup(gsap, reduce)
+ *     inside gsap.matchMedia(): with prefers-reduced-motion reduce = true
+ *     and motion must be skipped. The previous animation is cleaned up
+ *     (mm.revert()) on the next run() and on a page change (cleanup()).
+ *     When GSAP cannot load or motion is reduced, setup gets
+ *     gsap = null — the view then shows its end state at once.
  *
- *   LM.motion.countUp(gsap, el, to)  — liczba odliczana od zera (tabular-nums)
+ *   LM.motion.countUp(gsap, el, to)  — a number counting up from zero (tabular-nums)
  */
 window.LM = window.LM || {};
 
@@ -29,7 +29,7 @@ window.LM = window.LM || {};
     current = token;
     if (LM.reducedMotion && LM.reducedMotion()) { setup(null, true); return Promise.resolve(); }
     return LM.loadGsap(plugins).then(function (gsap) {
-      if (current !== token) return; // w międzyczasie zmieniła się strona
+      if (current !== token) return; // the page changed in the meantime
       const mm = gsap.matchMedia();
       token.mm = mm;
       mm.add({ reduce: "(prefers-reduced-motion: reduce)", ok: "(prefers-reduced-motion: no-preference)" }, function (ctx) {
@@ -40,7 +40,7 @@ window.LM = window.LM || {};
     });
   }
 
-  /** Odlicza liczbę w elemencie od 0 do „to” (tekst końcowy jest już w HTML). */
+  /** Counts the number in an element from 0 up to "to" (the final text is already in the HTML). */
   function countUp(gsap, el, to, duration) {
     if (!gsap || !el || !to) return null;
     const proxy = { v: 0 };

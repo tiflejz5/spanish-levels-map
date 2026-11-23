@@ -142,7 +142,7 @@ async function main() {
       await visit(s.page, r, 600);
       const t = await viewText(s.page);
       ok(t.length > 40, r + ": empty");
-      ok(!/Ta strona potrzebuje profilu/.test(t), r + ": welcome card on a public page");
+      ok(!/This page needs a profile/.test(t), r + ": welcome card on a public page");
     }
     ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
     await s.ctx.close();

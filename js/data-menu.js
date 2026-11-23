@@ -67,9 +67,9 @@ window.LM = window.LM || {};
     if (parsed.journal) Object.keys(parsed.journal.profiles).forEach(function (pid) { entries += parsed.journal.profiles[pid].entries.length; });
     return LM.dialogs.confirm({
       title: "Replace the data in this browser?",
-      message: "The file contains " + profiles.length + " profile" + (profiles.length === 1 ? "" : "s") +
+      message: "The file contains " + LM.plural(profiles.length, "profile") +
         (profiles.length ? " (" + profiles.map(function (p) { return p.name; }).join(", ") + ")" : "") +
-        " and " + entries + " mistake log entr" + (entries === 1 ? "y" : "ies") + ".\n\n" +
+        " and " + LM.plural(entries, "mistake log entry", "mistake log entries") + ".\n\n" +
         "All profiles, their progress, flashcards and other learning data in this browser will be replaced.",
       confirmLabel: "Import and replace"
     }).then(function (ok) {

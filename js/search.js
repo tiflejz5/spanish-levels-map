@@ -1,19 +1,19 @@
 /*
- * search.js — wyszukiwarka po całej aplikacji (spec 04, część A.3).
+ * search.js — search across the whole app (spec 04, part A.3).
  *
- * Otwieranie:
- *   - lupa w górnym pasku (obok motywu),
- *   - klawisz „/” (gdy fokus nie jest w polu tekstowym) i Ctrl/Cmd + K,
- *   - najechanie myszą na górną krawędź obszaru treści (strefa 12 px, ok. 50% szerokości,
- *     opóźnienie 400 ms; tylko urządzenia z myszą). Pole otwarte „z najechania” chowa się
- *     po wyjściu myszy, gdy zapytanie jest puste.
- * Pasek to combobox (role="combobox" + listbox z grupami), strzałki / Enter / Esc / Tab.
+ * Opening:
+ *   - the magnifier in the top bar (next to the theme),
+ *   - the "/" key (when focus is not in a text field) and Ctrl/Cmd + K,
+ *   - hovering the top edge of the content area (a 12 px band, about 50% of the width,
+ *     400 ms delay; mouse devices only). A field opened "by hover" hides
+ *     when the mouse leaves and the query is empty.
+ * The bar is a combobox (role="combobox" + a listbox with groups), arrows / Enter / Esc / Tab.
  *
- * Indeks: dane/szukaj-indeks.js (tools/zbuduj-szukaj.js) ładowany przy pierwszym otwarciu.
- * Notatki i Dziennik błędów aktywnego profilu dokładamy w przeglądarce (są prywatne).
- * Ostatnie wyszukiwania: slm.search-recent { version: 1, items: [...] } — na urządzeniu,
- * poza eksportem (jak slm.sidebar), czyszczone przez „Resetuj dane”.
- * Wszystkie teksty trafiają do strony przez textContent (bez innerHTML).
+ * Index: data/search-index.js (tools/build/search.js), loaded on first open.
+ * Notes and the mistake log of the active profile are added in the browser (they are private).
+ * Recent searches: slm.search-recent { version: 1, items: [...] } — on the device,
+ * not exported (like slm.sidebar), cleared by "Reset data".
+ * All texts go into the page through textContent (no innerHTML).
  */
 window.LM = window.LM || {};
 
@@ -24,22 +24,22 @@ window.LM = window.LM || {};
   const el = U.el;
   function recentKey() { return LM.storage.key("search-recent"); } // device-wide, cleared by reset (registry in js/profile-data.js)
   const GROUPS = ["pages", "exams", "exercises", "lab", "notes", "journal"];
-  const GROUP_LABEL = { pages: "Strony", exams: "Egzaminy", exercises: "Ćwiczenia", lab: "Laboratorium czasów", notes: "Moje notatki", journal: "Mój dziennik błędów" };
+  const GROUP_LABEL = { pages: "Pages", exams: "Exams", exercises: "Practice", lab: LM.APP.lab.title, notes: "My notes", journal: "My mistake log" };
   const SHORTCUTS = [
-    { title: "Szlak", route: "#/trail", icon: "route" },
-    { title: "Dziś", route: "#/today", icon: "sunrise" },
-    { title: "Lab czasów", route: "#/lab", icon: "flask-conical" },
-    { title: "Ćwiczenia", route: "#/practice", icon: "dumbbell" },
-    { title: "Fiszki i błędy", route: "#/review", icon: "layers" },
-    { title: "Moje błędy", route: "#/review/mistakes", icon: "notebook-pen" }
+    { title: "Trail", route: "#/trail", icon: "route" },
+    { title: "Today", route: "#/today", icon: "sunrise" },
+    { title: LM.APP.lab.title, route: "#/lab", icon: "flask-conical" },
+    { title: "Practice", route: "#/practice", icon: "dumbbell" },
+    { title: "Review", route: "#/review", icon: "layers" },
+    { title: "My mistakes", route: "#/review/mistakes", icon: "notebook-pen" }
   ];
   const HOVER_DELAY = 400;
 
   function S() { return LM.searchLogic; }
 
   let panel, input, list, status, btn, hoverZone;
-  let publicIndex = null;      // przygotowany indeks z pliku
-  let index = null;            // + prywatne rekordy (notatki, dziennik)
+  let publicIndex = null;      // the prepared index from the file
+  let index = null;            // + private records (notes, mistake log)
   let openedBy = null;         // "hover" | "key" | "button"
   let returnFocus = null;
   let options = [];            // [{ node, kind, data }]
@@ -47,7 +47,7 @@ window.LM = window.LM || {};
   let expanded = {};
   let timer = null, hoverTimer = null, leaveTimer = null;
 
-  // ---------- Ostatnie wyszukiwania (urządzenie) ----------
+  // ---------- Recent searches (device) ----------
 
   function recent() {
     try {
@@ -60,12 +60,12 @@ window.LM = window.LM || {};
     q = String(q || "").trim().slice(0, 80);
     if (q.length < 2) return;
     const items = [q].concat(recent().filter(function (x) { return x.toLocaleLowerCase("pl") !== q.toLocaleLowerCase("pl"); })).slice(0, 5);
-    try { localStorage.setItem(recentKey(), JSON.stringify({ version: 1, items: items })); } catch (e) { /* bez dostępu — trudno */ }
+    try { localStorage.setItem(recentKey(), JSON.stringify({ version: 1, items: items })); } catch (e) { /* no access — nothing to do */ }
   }
 
   function clearRecent() { try { localStorage.removeItem(recentKey()); } catch (e) { /* nic */ } }
 
-  // ---------- Indeks ----------
+  // ---------- Index ----------
 
   function loadIndex() {
     if (publicIndex) return Promise.resolve(publicIndex);
@@ -75,13 +75,13 @@ window.LM = window.LM || {};
     }, function () { publicIndex = []; return publicIndex; });
   }
 
-  /** Notatki i dziennik aktywnego profilu jako rekordy (budowane przy każdym otwarciu). */
+  /** Notes and mistake log of the active profile as records (built on every open). */
   function privateRecords() {
     const pd = LM.profileData;
     if (!pd || !LM.app.getActiveProfile()) return [];
     const out = [];
     pd.noteList().forEach(function (n) {
-      out.push({ id: "note:" + n.key, group: "notes", title: n.title || "Notatka", headings: [], summary: "", text: n.text, route: n.route || "#/notes" });
+      out.push({ id: "note:" + n.key, group: "notes", title: n.title || "Note", headings: [], summary: "", text: n.text, route: n.route || "#/notes" });
     });
     pd.entries().forEach(function (e) {
       out.push({ id: "err:" + e.id, group: "journal", title: e.context.split("\n")[0].slice(0, 90), headings: [], summary: e.correct, text: [e.context, e.correct, e.rule].join(" "), category: e.category, route: "#/review/mistakes" });
@@ -89,29 +89,29 @@ window.LM = window.LM || {};
     return out;
   }
 
-  // ---------- Budowa DOM ----------
+  // ---------- Building the DOM ----------
 
   function build() {
-    btn = el("button", { type: "button", class: "icon-btn search-btn", id: "search-btn", "aria-label": "Szukaj (skrót: /)", "data-tooltip": "Szukaj ( / )", "aria-expanded": "false", "aria-controls": "search-panel", onclick: function () { toggle("button"); } }, LM.icon("search", { size: 20 }));
+    btn = el("button", { type: "button", class: "icon-btn search-btn", id: "search-btn", "aria-label": "Search (shortcut: /)", "data-tooltip": "Search ( / )", "aria-expanded": "false", "aria-controls": "search-panel", onclick: function () { toggle("button"); } }, LM.icon("search", { size: 20 }));
     const theme = document.getElementById("theme-btn");
     if (theme && theme.parentNode) theme.parentNode.insertBefore(btn, theme);
 
     input = el("input", {
       type: "text", id: "search-input", class: "search-input", role: "combobox", autocomplete: "off", spellcheck: "false",
       "aria-autocomplete": "list", "aria-expanded": "false", "aria-controls": "search-list", "aria-describedby": "search-status",
-      placeholder: "Szukaj: tematy, czasy, ćwiczenia, notatki…",
+      placeholder: "Search: topics, tenses, practice, notes…",
       oninput: function () { clearTimeout(timer); timer = setTimeout(run, 80); },
       onkeydown: onKey
     });
-    list = el("div", { id: "search-list", class: "search-list", role: "listbox", "aria-label": "Wyniki wyszukiwania" });
+    list = el("div", { id: "search-list", class: "search-list", role: "listbox", "aria-label": "Search results" });
     status = el("p", { id: "search-status", class: "search-status", role: "status", "aria-live": "polite" });
     panel = el("div", { id: "search-panel", class: "search-panel", hidden: true, role: "search" }, [
       el("div", { class: "search-bar" }, [
         el("span", { class: "search-bar-icon", "aria-hidden": "true" }, LM.icon("search", { size: 20 })),
-        el("label", { class: "visually-hidden", for: "search-input", text: "Szukaj w aplikacji" }),
+        el("label", { class: "visually-hidden", for: "search-input", text: "Search the app" }),
         input,
         el("kbd", { class: "search-kbd", "aria-hidden": "true", text: "Esc" }),
-        el("button", { type: "button", class: "icon-btn search-close", "aria-label": "Zamknij wyszukiwarkę", onclick: function () { close(true); } }, LM.icon("x", { size: 18 }))
+        el("button", { type: "button", class: "icon-btn search-close", "aria-label": "Close search", onclick: function () { close(true); } }, LM.icon("x", { size: 18 }))
       ]),
       el("div", { class: "search-body" }, [status, list])
     ]);
@@ -122,12 +122,12 @@ window.LM = window.LM || {};
     panel.addEventListener("mouseenter", function () { clearTimeout(leaveTimer); });
     document.body.appendChild(panel);
 
-    // Strefa najechania przy górnej krawędzi treści (tylko mysz)
+    // Hover band at the top edge of the content (mouse only)
     const main = document.getElementById("main");
     if (main && window.matchMedia && window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
       hoverZone = el("div", { class: "search-hover-zone", "aria-hidden": "true" });
       document.body.appendChild(hoverZone);
-      // Strefa: środkowe 50% szerokości obszaru treści (bez lewego panelu i przycisków po prawej)
+      // Band: the middle 50% of the content area (without the left panel and the buttons on the right)
       const place = function () {
         const r = main.getBoundingClientRect();
         hoverZone.style.left = Math.round(r.left + r.width * 0.25) + "px";
@@ -157,7 +157,7 @@ window.LM = window.LM || {};
     window.addEventListener("hashchange", function () { if (!panel.hidden) close(false); });
   }
 
-  // ---------- Otwieranie i zamykanie ----------
+  // ---------- Opening and closing ----------
 
   function open(by) {
     if (!panel.hidden) { input.focus(); return; }
@@ -170,7 +170,7 @@ window.LM = window.LM || {};
     input.setAttribute("aria-expanded", "true");
     input.value = "";
     input.focus();
-    status.textContent = "Wczytuję indeks…";
+    status.textContent = "Loading the index…";
     loadIndex().then(function (pub) {
       index = pub.concat(S().prepare(privateRecords()));
       run();
@@ -190,14 +190,14 @@ window.LM = window.LM || {};
 
   function toggle(by) { if (panel.hidden) open(by); else close(true); }
 
-  // ---------- Wyniki ----------
+  // ---------- Results ----------
 
   let optSeq = 0;
 
   function option(kind, data, children, extraClass) {
     const id = "search-opt-" + (++optSeq);
     const node = el("div", { id: id, class: "search-opt" + (extraClass ? " " + extraClass : ""), role: "option", "aria-selected": "false",
-      onmousedown: function (e) { e.preventDefault(); }, // fokus zostaje w polu
+      onmousedown: function (e) { e.preventDefault(); }, // focus stays in the field
       onclick: function () { activate(options.findIndex(function (o) { return o.node === node; })); }
     }, children);
     options.push({ node: node, kind: kind, data: data });
@@ -227,12 +227,12 @@ window.LM = window.LM || {};
     if (!res.total) {
       status.textContent = "";
       list.appendChild(el("div", { class: "search-empty", role: "presentation" }, [
-        LM.ui.emptyState({ art: "brak-wynikow", title: "Brak wyników", class: "es-inline" }),
-        el("p", { class: "search-empty-title", text: "Nic nie znalazłem dla „" + q + "”." }),
-        el("p", { class: "tool-note", text: "Spróbuj krótszego hasła albo bez polskich znaków. Ćwiczenia do wszystkich tematów są w Centrum ćwiczeń." }),
-        el("p", null, el("a", { class: "btn btn-secondary btn-small", href: "#/practice", onclick: function () { close(false); } }, LM.ui.withIcon("dumbbell", "Centrum ćwiczeń")))
+        LM.ui.emptyState({ art: "no-results", title: "No results", class: "es-inline" }),
+        el("p", { class: "search-empty-title", text: "Nothing found for “" + q + "”." }),
+        el("p", { class: "tool-note", text: "Try a shorter word, or leave out the accents. Practice for every topic is on the Practice page." }),
+        el("p", null, el("a", { class: "btn btn-secondary btn-small", href: "#/practice", onclick: function () { close(false); } }, LM.ui.withIcon("dumbbell", "Go to Practice")))
       ]));
-      status.textContent = "Brak wyników.";
+      status.textContent = "No results.";
       return;
     }
     res.groups.forEach(function (g) {
@@ -242,33 +242,32 @@ window.LM = window.LM || {};
         const snip = r.summary && S().snippet(r.summary, q).some(function (p) { return p.hit; }) ? S().snippet(r.summary, q) : S().snippet(r.text, q);
         return option("result", { route: r.route, anchor: h.anchor, query: q }, [
           el("span", { class: "search-opt-title" }, marked(S().highlight(r.title, q))),
-          meta || h.anchor ? el("span", { class: "search-opt-meta" }, [meta, h.anchor ? (meta ? " · " : "") + "„" + h.anchor + "”" : ""].join("")) : null,
+          meta || h.anchor ? el("span", { class: "search-opt-meta" }, [meta, h.anchor ? (meta ? " · " : "") + "“" + h.anchor + "”" : ""].join("")) : null,
           el("span", { class: "search-opt-snippet" }, marked(snip))
         ]);
       });
       if (g.total > g.results.length) {
-        nodes.push(option("more", { group: g.group }, [el("span", { class: "search-opt-more", text: "Pokaż więcej (" + (g.total - g.results.length) + ")" })], "is-more"));
+        nodes.push(option("more", { group: g.group }, [el("span", { class: "search-opt-more", text: "Show more (" + (g.total - g.results.length) + ")" })], "is-more"));
       }
       list.appendChild(group(GROUP_LABEL[g.group] || g.group, nodes));
     });
-    status.textContent = res.total + " " + plural(res.total, "wynik", "wyniki", "wyników") + ". Strzałki wybierają, Enter otwiera.";
+    status.textContent = LM.plural(res.total, "result") + ". Arrows choose, Enter opens.";
     move(0);
   }
 
   function renderStart() {
     const rec = recent();
     if (rec.length) {
-      list.appendChild(group("Ostatnie wyszukiwania", rec.map(function (q) {
+      list.appendChild(group("Recent searches", rec.map(function (q) {
         return option("query", { query: q }, [el("span", { class: "search-opt-title" }, [LM.icon("clock", { size: 16 }), " " + q])]);
       })));
     }
-    list.appendChild(group("Skróty", SHORTCUTS.map(function (s) {
+    list.appendChild(group("Shortcuts", SHORTCUTS.map(function (s) {
       return option("result", { route: s.route }, [el("span", { class: "search-opt-title" }, [LM.icon(s.icon, { size: 16 }), " " + s.title])]);
     })));
-    status.textContent = "Wpisz hasło – polskie znaki są opcjonalne.";
+    status.textContent = "Type a word – accents are optional.";
   }
 
-  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
 
   function move(i) {
     if (!options.length) return;
@@ -295,7 +294,7 @@ window.LM = window.LM || {};
     else setTimeout(function () { const m = document.getElementById("main"); if (m) m.focus({ preventScroll: true }); }, 50);
   }
 
-  /** Przewija do nagłówka o podanym tekście (wynik z dopasowaniem w nagłówku). */
+  /** Scrolls to the heading with the given text (a result that matched in a heading). */
   function scrollToHeading(text) {
     const want = S().fold(text).trim();
     const h = Array.prototype.find.call(document.querySelectorAll("#view h2, #view h3, #view p.md-subhead"), function (n) {

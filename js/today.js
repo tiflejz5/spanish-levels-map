@@ -1,16 +1,16 @@
 /*
- * today.js — strona „Dziś” (#/today) jako kokpit (układ bento, DESIGN.md sekcja 3.2):
- *   hero (powitanie, pierścień „Twoja mapa”, jedna propozycja), powtórki,
- *   seria (płomień + ostatnie 7 dni), egzamin C1 (gdy data jest ustawiona),
- *   szlak A1→C2 (SVG ze stacjami-linkami i znacznikiem „Tu jesteś”),
- *   „Kontynuuj” i „Dodaj błąd”.
+ * today.js — the "Today" page (#/today) as a dashboard (bento layout, DESIGN.md section 3.2):
+ *   the map card (greeting, "Map covered" bar, the trail, one suggestion), reviews,
+ *   streak (flame + last 7 days), my nearest exam (when a date is set),
+ *   the A1→C2 trail (SVG with station links and a "You are here" marker),
+ *   shortcuts.
  *
- * Animacje (js/motion.js, GSAP na żądanie): kafelki kolejno, liczby od zera,
- * ścieżka szlaku „rysuje się” (DrawSVG), znacznik dojeżdża do stacji
- * (MotionPath). Przy kolejnych wejściach tylko krótkie odświeżenie. Przy
- * prefers-reduced-motion — od razu stan końcowy.
+ * Animations (js/motion.js, GSAP on demand): tiles one by one, numbers from zero,
+ * the trail path "draws itself" (DrawSVG), the marker travels to its station
+ * (MotionPath). On later visits only a short refresh. With
+ * prefers-reduced-motion — the end state at once.
  *
- * Seria liczona jest z listy dni aktywności profilu (LM.learn.streak).
+ * The streak is computed from the profile's list of activity days (LM.learn.streak).
  */
 window.LM = window.LM || {};
 
@@ -22,16 +22,13 @@ window.LM = window.LM || {};
   const SVG_NS = "http://www.w3.org/2000/svg";
 
   const HASH = "#/today";
-  const DAY_NAMES = ["niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"];
-  const DAY_SHORT = ["Nd", "Pn", "Wt", "Śr", "Cz", "Pt", "So"];
-  const MONTHS = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"];
 
-  let visitedThisSession = false; // pełna animacja tylko przy pierwszym wejściu
+  let visitedThisSession = false; // full animation only on the first visit
   let trailObserver = null;
 
   function pd() { return LM.profileData; }
   function learn() { return LM.learn; }
-  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
+  function plural(n, one, other) { return LM.plural(n, one, other); }
 
   function parseRoute(hash) {
     return /^#\/today\/?$/.test(hash || "") ? { kind: "today" } : null;
@@ -47,7 +44,7 @@ window.LM = window.LM || {};
     return new Date(Number(day.slice(0, 4)), Number(day.slice(5, 7)) - 1, Number(day.slice(8, 10)), 12);
   }
 
-  /** Liczba, która przy wejściu odlicza się od zera (data-count czyta js/motion.js). */
+  /** A number that counts up from zero on entry (js/motion.js reads data-count). */
   function bigNumber(value, cls) {
     return el("span", { class: "num today-number" + (cls ? " " + cls : ""), "data-count": String(value), text: String(value) });
   }
@@ -57,24 +54,24 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // STAN: postęp, stacja „tu jesteś”, propozycja
+  // STATE: progress, the "you are here" station, the suggestion
   // =====================================================================
 
   /**
-   * Stan krain na mapie. Postęp krainy = zaliczone przystanki Szlaku / wszystkie (spec v7 13, 3.3: na mapie szlak,
-   * na stronie poziomu checklista „Umiem”). Bez danych Szlaku: jak dotąd punkty „Umiem”. skipped: kraina przed punktem startu.
+   * State of the lands on the map. Land progress = passed trail stops / all stops (spec v7 13, 3.3: the trail on the map,
+   * the "I know this" checklist on the level page). Without trail data: topics marked "I know this". skipped: a land before the start.
    */
   function levelStats() {
     return LM.LEVEL_IDS.map(function (id) {
       const s = Object.assign({ id: id, soon: !LM.syl.isAvailable(id) }, LM.app.getLevelStats(id));
       const li = LM.trail && LM.trail.ready() ? LM.trail.levelInfo(id) : null;
-      return li ? Object.assign(s, { done: li.done, total: li.total, percent: li.percent, skipped: li.skipped, szlak: true }) : s;
+      return li ? Object.assign(s, { done: li.done, total: li.total, percent: li.percent, skipped: li.skipped, trail: true }) : s;
     });
   }
 
-  /** Pierwsza stacja z postępem poniżej 100% (gdy wszystko zrobione — ostatnia). */
+  /** The first station below 100% (when everything is done — the last one). */
   function currentIndex(stats) {
-    const sz = LM.trail && LM.trail.ready() ? LM.trail.current() : null; // Szlak: kraina bieżącego przystanku (po teście C1 = C1)
+    const sz = LM.trail && LM.trail.ready() ? LM.trail.current() : null; // trail: the land of the current stop (after a C1 placement result = C1)
     if (sz) { const k = stats.findIndex(function (s) { return s.id === sz.level && !s.soon; }); if (k !== -1) return k; }
     // "soon" levels never become the current land (spec 06 E1)
     const i = stats.findIndex(function (s) { return !s.soon && s.total && s.percent < 100; });
@@ -96,22 +93,20 @@ window.LM = window.LM || {};
 
   function greetingWord() {
     const h = new Date().getHours();
-    if (h >= 5 && h < 12) return "Dzień dobry";
-    if (h >= 12 && h < 18) return "Miłego popołudnia";
-    return "Dobry wieczór";
+    if (h >= 5 && h < 12) return "Good morning";
+    if (h >= 12 && h < 18) return "Good afternoon";
+    return "Good evening";
   }
 
-  /** Miejscownik krainy: „na Wzgórzach”, „w Lesie” (do zdania „Następny przystanek …”). */
-  const LOCATIVE = { A1: "na Polanie", A2: "w Lesie", B1: "na Wzgórzach", B2: "nad Jeziorem", C1: "w Górach", C2: "na Szczycie" };
 
-  /** Opis paska „Przebyta mapa” dla czytnika ekranu: „Przebyta mapa: 41%. A1 100%, A2 100%, …”. */
+  /** Description of the "Map covered" bar for screen readers: "Map covered: 41%. A1 100%, A2 100%, …". */
   function mapSummary(mp) {
-    return "Przebyta mapa: " + mp.percent + "%. " + mp.segments.map(function (s) { return s.id + " " + Math.round(s.percent) + "%"; }).join(", ") + ".";
+    return "Map covered: " + mp.percent + "%. " + mp.segments.map(function (s) { return s.id + " " + Math.round(s.percent) + "%"; }).join(", ") + ".";
   }
 
   /**
-   * Stopka karty mapy: „Następny przystanek na Wzgórzach: Past Perfect · do końca krainy 16 punktów” i przycisk.
-   * Poziom ukończony: „Zrób test końcowy B1” (gdy niezaliczony) albo „Zacznij krainę A2”.
+   * Footer of the map card: "Next stop in A1 · Meadow: gustar · 16 stops left in this land" and a button.
+   * Level done: "Take the B1 final test" (when not passed) or "Start A2".
    */
   function mapFooter(stats) {
     const idx = currentIndex(stats);
@@ -122,35 +117,35 @@ window.LM = window.LM || {};
     const ready = LM.final ? LM.final.readyLevel(stats) : null;
     let text, cta = null, extra = null;
     if (next) {
-      text = ["Następny przystanek " + LOCATIVE[cur.id] + ": ", el("strong", { text: next.text }), " · do końca krainy " + remaining + " " + (sz ? plural(remaining, "przystanek", "przystanki", "przystanków") : plural(remaining, "punkt", "punkty", "punktów"))];
-      cta = { href: next.href, label: "Idź dalej szlakiem" };
+      text = ["Next stop in " + LM.ui.landLabel(cur.id) + ": ", el("strong", { text: next.text }), " · " + (sz ? plural(remaining, "stop") : plural(remaining, "topic")) + " left in this land"];
+      cta = { href: next.href, label: "Continue the trail" };
       if (ready) extra = ready;
     } else {
       const passed = pd().passedLevels()[cur.id];
       const following = LM.LEVEL_IDS[idx + 1];
       if (!passed && LM.final) {
-        text = ["Cała kraina " + cur.id + " ma „Umiem”. Czas na test końcowy poziomu."];
-        cta = { href: LM.final.testHash(cur.id), label: "Zrób test końcowy " + cur.id };
+        text = ["You know every topic of " + cur.id + ". Time for the level final test."];
+        cta = { href: LM.final.testHash(cur.id), label: "Take the " + cur.id + " final test" };
       } else if (following) {
-        text = ["Kraina " + cur.id + " przebyta. Dalej: ", el("strong", { text: LM.ui.landLabel(following) }), "."];
-        cta = { href: LM.app.levelHash(following), label: "Zacznij krainę " + following };
+        text = [cur.id + " is done. Next: ", el("strong", { text: LM.ui.landLabel(following) }), "."];
+        cta = { href: LM.app.levelHash(following), label: "Start " + following };
       } else {
-        text = ["Cała mapa przebyta. Powtórki i ćwiczenia pomogą utrzymać formę."];
+        text = ["The whole map is covered. Reviews and practice keep you in shape."];
       }
     }
     return el("footer", { class: "map-foot" }, [
       el("div", { class: "map-foot-text" }, [
         el("p", { class: "map-next" }, text),
-        sz ? el("p", { class: "map-unit num" }, "Odcinek " + sz.unit.index + " · " + sz.unit.title + " · " + sz.unit.done + "/" + sz.unit.total) : null,
-        extra ? el("a", { class: "btn-link map-ready", href: LM.final.testHash(extra.id) }, "Gotowy na test końcowy " + extra.id + "? Zrób test") : null
+        sz ? el("p", { class: "map-unit num" }, "Unit " + sz.unit.index + " · " + sz.unit.title + " · " + sz.unit.done + "/" + sz.unit.total) : null,
+        extra ? el("a", { class: "btn-link map-ready", href: LM.final.testHash(extra.id) }, "Ready for the " + extra.id + " final test? Take the test") : null
       ]),
       cta ? el("a", { class: "btn btn-secondary map-cta", href: cta.href }, [cta.label, LM.icon("chevron-right", { size: 18 })]) : null
     ]);
   }
 
   /**
-   * Karta mapy (zastępuje hero i osobny Szlak): data i kraina, powitanie, „Przebyta mapa” z paskiem 6 odcinków,
-   * Szlak topograficzny w środku karty, stopka z następnym przystankiem. Zwraca element; ._stage to kontener Szlaku.
+   * Map card (replaces the hero and a separate trail): date and land, greeting, "Map covered" with a bar of the levels,
+   * the topographic trail in the middle, a footer with the next stop. Returns the element; ._stage holds the trail.
    */
   function mapCard(stats) {
     const p = LM.app.getActiveProfile();
@@ -161,11 +156,11 @@ window.LM = window.LM || {};
     const card = el("section", { class: "card bento-tile map-card", "aria-labelledby": "today-title" }, [
       el("div", { class: "map-top" }, [
         el("div", { class: "map-hello" }, [
-          el("p", { class: "today-date" }, [DAY_NAMES[d.getDay()] + ", " + d.getDate() + " " + MONTHS[d.getMonth()] + " · kraina ", el("strong", { class: "map-land lvl-" + cur.id, text: LM.ui.landLabel(cur.id) })]),
+          el("p", { class: "today-date" }, [LM.fmt.weekday(d) + ", " + LM.fmt.dayMonth(d) + " · land ", el("strong", { class: "map-land lvl-" + cur.id, text: LM.ui.landLabel(cur.id) })]),
           el("h1", { class: "hero-title", id: "today-title", text: greetingWord() + (p ? ", " + p.name : "") })
         ]),
         el("div", { class: "map-progress" }, [
-          el("div", { class: "map-progress-row" }, [el("span", { class: "map-progress-label", text: "Przebyta mapa" }), el("span", { class: "map-progress-pct num", text: mp.percent + "%" })]),
+          el("div", { class: "map-progress-row" }, [el("span", { class: "map-progress-label", text: "Map covered" }), el("span", { class: "map-progress-pct num", text: mp.percent + "%" })]),
           el("div", { class: "map-segments", role: "img", "aria-label": mapSummary(mp) }, mp.segments.map(function (seg) {
             return el("span", { class: "map-seg lvl-" + seg.id, "aria-hidden": "true" }, el("span", { class: "map-seg-fill", style: "width:" + seg.percent + "%" }));
           }))
@@ -179,16 +174,16 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // KAFELKI
+  // TILES
   // =====================================================================
 
   function streakMessage(s) {
-    if (s.activeToday) return s.current > 1 ? "Dzisiejszy dzień zaliczony. Seria rośnie." : "Dzisiejszy dzień zaliczony.";
-    if (s.current > 0) return "Seria trwa. Jedna krótka aktywność dziś ją przedłuży.";
-    return "Liczy się każdy dzień z jedną aktywnością: „Umiem”, ćwiczenie albo powtórka.";
+    if (s.activeToday) return s.current > 1 ? "Today counts. The streak grows." : "Today counts.";
+    if (s.current > 0) return "Streak continues. One short activity today keeps it going.";
+    return "Every day with one activity counts: “I know this”, an exercise or a review.";
   }
 
-  /** Seria: „Seria · 6 dni”, podpis i 7 kropek ostatnich dni (z opisami dla czytnika ekranu). */
+  /** Streak: "Streak · 6 days", a caption and 7 dots for the last days (with descriptions for screen readers). */
   function streakTile() {
     const today = learn().today();
     const days = pd().activityDays();
@@ -196,21 +191,21 @@ window.LM = window.LM || {};
     const week = learn().lastDays(days, today, 7);
     return el("section", { class: "card bento-tile streak-card", "aria-labelledby": "streak-title" }, [
       el("div", { class: "streak-main" }, [
-        el("h2", { class: "tile-title", id: "streak-title", text: "Seria · " + s.current + " " + plural(s.current, "dzień", "dni", "dni") }),
-        el("p", { class: "tool-note", text: s.current ? "każdy dzień nauki to krok na szlaku" : streakMessage(s) })
+        el("h2", { class: "tile-title", id: "streak-title", text: "Streak · " + plural(s.current, "day") }),
+        el("p", { class: "tool-note", text: s.current ? "every study day is a step on the trail" : streakMessage(s) })
       ]),
-      el("ol", { class: "week-dots", "aria-label": "Ostatnie 7 dni" }, week.map(function (d) {
+      el("ol", { class: "week-dots", "aria-label": "Last 7 days" }, week.map(function (d) {
         const js = dateOf(d.day);
         const isToday = d.day === today;
         return el("li", { class: "week-day" + (d.active ? " is-active" : "") + (isToday ? " is-today" : "") }, [
           el("span", { class: "week-dot", "aria-hidden": "true" }, d.active ? LM.icon("check", { size: 12 }) : null),
-          el("span", { class: "visually-hidden", text: (isToday ? "dziś, " : "") + DAY_NAMES[js.getDay()] + " " + d.day.slice(8, 10) + "." + d.day.slice(5, 7) + ": " + (d.active ? "dzień nauki" : "bez aktywności") })
+          el("span", { class: "visually-hidden", text: (isToday ? "today, " : "") + LM.fmt.weekday(js) + " " + LM.fmt.dayMonth(js) + ": " + (d.active ? "study day" : "no activity") })
         ]);
       }))
     ]);
   }
 
-  /** Wiersz listy „Na skróty”: ikona, tytuł, opis, chevron. Element to <a> albo <button>. */
+  /** Row of the "Shortcuts" list: icon, title, description, chevron. The element is an <a> or a <button>. */
   function shortcutRow(tag, attrs, icon, title, desc) {
     return el("li", null, el(tag, Object.assign({ class: "row" }, attrs), [
       el("span", { class: "row-icon", "aria-hidden": "true" }, LM.icon(icon, { size: 20 })),
@@ -222,22 +217,22 @@ window.LM = window.LM || {};
     ]));
   }
 
-  /** „Na skróty” (gdy nie ma moich egzaminów): Test poziomu i Statystyki. */
+  /** "Shortcuts" (when there are no exams of mine): Placement test and Stats. */
   function shortcutsTile() {
     const rows = [];
-    if (LM.placement) rows.push(shortcutRow("a", { href: LM.placement.HASH }, "target", "Test poziomu", "12 pytań, ok. 6 minut – sprawdź, od czego zacząć."));
-    rows.push(shortcutRow("a", { href: "#/stats" }, "chart-column", "Statystyki", "Trafność, najsłabsze tematy i aktywność."));
-    return tile("bento-shortcuts", "Na skróty", [
-      el("h2", { class: "tile-title" }, ["Na skróty"]),
+    if (LM.placement) rows.push(shortcutRow("a", { href: LM.placement.HASH }, "target", "Placement test", "12 questions, about 6 minutes – find out where to start."));
+    rows.push(shortcutRow("a", { href: "#/stats" }, "chart-column", "Stats", "Accuracy, weakest topics and activity."));
+    return tile("bento-shortcuts", "Shortcuts", [
+      el("h2", { class: "tile-title" }, ["Shortcuts"]),
       el("ul", { class: "row-list" }, rows)
     ]);
   }
 
   // =====================================================================
-  // SZLAK A1 → C2
+  // TRAIL A1 → C2
   // =====================================================================
 
-  /** Punkty stacji w układzie poziomym (viewBox 1000 × 280) albo pionowym (220 × 6·104). */
+  /** Station points in the horizontal layout (viewBox 1000 × 280) or the vertical one (220 × 6·104). */
   function geometry(vertical) {
     if (vertical) {
       const pts = [0, 1, 2, 3, 4, 5].map(function (i) { return [i % 2 ? 132 : 60, 52 + i * 104]; });
@@ -247,7 +242,7 @@ window.LM = window.LM || {};
     return { w: 1000, h: 280, pts: pts };
   }
 
-  /** Zamknięta, lekko nieregularna warstwica (deterministyczna; gładka krzywa przez 12 punktów) — logika blob z gen_krainy.py. */
+  /** A closed, slightly irregular contour line (deterministic; a smooth curve through 12 points) — blob logic from gen_krainy.py. */
   function blobPath(cx, cy, rx, ry, seed, k) {
     const pts = [];
     for (let i = 0; i < 12; i++) {
@@ -267,7 +262,7 @@ window.LM = window.LM || {};
     return d + "Z";
   }
 
-  /** Teren: plama --lvl-x-soft + warstwice --lvl-x; liczba warstwic rośnie od A1 (3) do C2 (8). */
+  /** Terrain: a --lvl-x-soft patch + --lvl-x contour lines; the number of lines grows from A1 (3) to C2 (8). */
   function terrainGroup(g, vertical) {
     const group = svgEl("g", { class: "trail-terrain" });
     const rx = vertical ? 58 : 80, ry = vertical ? 46 : 64;
@@ -288,7 +283,7 @@ window.LM = window.LM || {};
     return group;
   }
 
-  /** Róża wiatrów w wolnym rogu mapy. */
+  /** Compass rose in a free corner of the map. */
   function windRose() {
     const rose = svgEl("g", { class: "trail-rose", transform: "translate(44 48)" });
     rose.appendChild(svgEl("circle", { r: 16 }));
@@ -300,7 +295,7 @@ window.LM = window.LM || {};
     return rose;
   }
 
-  /** Gładka ścieżka przez punkty (Catmull-Rom → krzywe Béziera). */
+  /** Smooth path through the points (Catmull-Rom → Bézier curves). */
   function smoothPath(pts) {
     let d = "M" + pts[0][0] + " " + pts[0][1];
     for (let i = 0; i < pts.length - 1; i++) {
@@ -313,10 +308,10 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Długość ścieżki od startu do stacji nr i (do rysowania postępu i ruchu znacznika).
-   * Stacje są końcami kolejnych odcinków „C” z smoothPath, więc wystarczy zmierzyć
-   * ścieżkę przyciętą do i odcinków — jedno getTotalLength() zamiast setek
-   * getPointAtLength() (przy CPU 4× to było ~650 ms na każdy render „Dziś”).
+   * Path length from the start to station i (to draw progress and move the marker).
+   * Stations are the ends of the "C" segments from smoothPath, so it is enough to measure
+   * the path cut to i segments — one getTotalLength() instead of hundreds of
+   * getPointAtLength() calls (with 4× CPU that was ~650 ms on every render of "Today").
    */
   function lengthTo(path, d, i) {
     if (i <= 0) return 0;
@@ -328,13 +323,13 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Szlak w wariancie kompaktowym (strona główna, nad tabelą „Poziomy w skrócie”): bez nagłówka karty i róży wiatrów.
-   * Zwraca element; rysuje się, gdy dostanie szerokość (ResizeObserver), i przerysowuje przy zmianie układu poziomy/pionowy.
+   * The compact trail (home page, above the "Levels at a glance" table): no card header and no compass rose.
+   * Returns the element; it draws once it has a width (ResizeObserver) and redraws when the layout switches horizontal/vertical.
    */
   function compactTrail() {
     const stats = levelStats();
     const stage = el("div", { class: "trail-stage" });
-    const wrap = el("section", { class: "trail-compact", "aria-label": "Szlak A1 → C2: postęp w krainach" }, stage);
+    const wrap = el("section", { class: "trail-compact", "aria-label": "Trail A1 → C2: progress in the lands" }, stage);
     let last = null;
     function draw() {
       if (!stage.clientWidth) return;
@@ -348,7 +343,7 @@ window.LM = window.LM || {};
     return wrap;
   }
 
-  /** Rysuje szlak w kontenerze (po wstawieniu do DOM — potrzebna szerokość). opts.compact: bez róży wiatrów (strona główna). */
+  /** Draws the trail in its container (after it is in the DOM — it needs a width). opts.compact: no compass rose (home page). */
   function drawTrail(stage, stats, opts) {
     opts = opts || {};
     const vertical = stage.clientWidth < 480;
@@ -367,45 +362,45 @@ window.LM = window.LM || {};
     svg.appendChild(base);
     svg.appendChild(done);
     if (!vertical && !opts.compact) svg.appendChild(windRose());
-    // Znacznik „tu jesteś” (pinezka mapy)
-    // Zewnętrzna grupa jedzie po ścieżce (x, y = punkt ścieżki), wewnętrzna unosi pinezkę nad stację
+    // The "you are here" marker (a map pin)
+    // The outer group travels along the path (x, y = a point on the path), the inner one lifts the pin above the station
     const marker = svgEl("g", { class: "trail-marker" });
-    // Pinezka w stałych pikselach ekranu: 32 px nad środkiem stacji, bez względu na skalę viewBoxa
+    // The pin in fixed screen pixels: 32 px above the station centre, whatever the viewBox scale
     const k = vertical ? 1 : g.w / Math.max(1, stage.clientWidth);
     const lift = svgEl("g", { transform: "translate(0 " + (-32 * k).toFixed(2) + ") scale(" + k.toFixed(3) + ")" });
     lift.appendChild(svgEl("path", { d: "M0 0c-7-8-11-13-11-19a11 11 0 0 1 22 0c0 6-4 11-11 19Z", class: "trail-marker-pin" }));
     lift.appendChild(svgEl("circle", { cx: 0, cy: -19, r: 4.2, class: "trail-marker-dot" }));
     marker.appendChild(lift);
     stage.appendChild(svg);
-    // Znacznik na osobnej warstwie NAD stacjami (ten sam viewBox), przezroczystej dla kliknięć
+    // The marker on its own layer ABOVE the stations (same viewBox), transparent to clicks
     const overlay = svgEl("svg", { class: "trail-svg trail-overlay", viewBox: "0 0 " + g.w + " " + g.h, "aria-hidden": "true", focusable: "false" });
     overlay.appendChild(marker);
 
-    // Stacje: linki do stron poziomów (HTML nad SVG, pozycja w % viewBoxa)
+    // Stations: links to the level pages (HTML above the SVG, position in % of the viewBox)
     const list = el("ol", { class: "trail-stations" });
     stats.forEach(function (s, i) {
       const pt = g.pts[i];
       const name = levelName(s.id);
       const here = i === cur;
-      const passed = LM.final ? LM.final.passedText(s.id) : null; // „A1 zaliczony 12.11.2026” (test końcowy)
+      const passed = LM.final ? LM.final.passedText(s.id) : null; // "A1 passed Nov 12, 2026" (final test)
       list.appendChild(el("li", {
         class: "trail-station lvl-" + s.id + (here ? " is-current" : "") + (s.percent >= 100 ? " is-done" : "") + (s.skipped ? " is-skipped" : "") + (s.soon ? " is-soon" : ""),
         style: vertical ? "left:" + pt[0] + "px;top:" + pt[1] + "px" : "left:" + (pt[0] / g.w * 100) + "%;top:" + (pt[1] / g.h * 100) + "%"
       }, el("a", {
         class: "trail-link",
         href: LM.app.levelHash(s.id),
-        "aria-label": s.soon ? "Level " + s.id + (name ? ", " + name : "") + ": coming soon" : "Poziom " + s.id + (name ? ", " + name : "") + ": " + (s.skipped ? "pominięte testem poziomu" : s.percent + (s.szlak ? "% przystanków szlaku" : "% punktów „Umiem”")) + (here ? " – tu jesteś" : "") + (passed ? ". " + passed : "")
+        "aria-label": "Level " + s.id + (name ? ", " + name : "") + ": " + (s.soon ? "coming soon" : s.skipped ? "skipped by the placement test" : s.percent + (s.trail ? "% of the trail stops" : "% of the topics known")) + (here ? " – you are here" : "") + (passed ? ". " + passed : "")
       }, [
         el("span", { class: "trail-ring" }, [
           LM.ui.progressRing(s.skipped ? 100 : s.percent, { size: 56, stroke: 5, node: LM.ui.landIcon(s.id, { size: 26 }) }),
-          s.skipped ? el("span", { class: "trail-skip-badge", "aria-hidden": "true" }, LM.icon("arrow-right", { size: 14 })) : null, // pominięte: strzałka zamiast znaczka
-          passed && !s.skipped ? LM.ui.stamp(s.id, { size: 20 }) : null // pieczątka ✓ w kolorze krainy (tekst „Zaliczony …” obok)
+          s.skipped ? el("span", { class: "trail-skip-badge", "aria-hidden": "true" }, LM.icon("arrow-right", { size: 14 })) : null, // skipped: an arrow instead of a stamp
+          passed && !s.skipped ? LM.ui.stamp(s.id, { size: 20 }) : null // ✓ stamp in the land colour ("Passed …" text next to it)
         ]),
         el("span", { class: "trail-label", "aria-hidden": "true" }, [
           el("span", { class: "trail-name", text: LM.ui.landLabel(s.id) }),
-          el("span", { class: "trail-pct num", text: s.soon ? "soon" : s.skipped ? "pominięte" : s.percent + "%" }),
-          passed ? el("span", { class: "trail-passed", text: "Zaliczony " + LM.final.fmtDate(LM.final.passedAt(s.id)) }) : null,
-          here ? el("span", { class: "trail-here", text: "Tu jesteś" }) : null
+          el("span", { class: "trail-pct num", text: s.soon ? "soon" : s.skipped ? "skipped" : s.percent + "%" }),
+          passed ? el("span", { class: "trail-passed", text: "Passed " + LM.final.fmtDate(LM.final.passedAt(s.id)) }) : null,
+          here ? el("span", { class: "trail-here", text: "You are here" }) : null
         ])
       ])));
     });
@@ -413,7 +408,7 @@ window.LM = window.LM || {};
     stage.appendChild(overlay);
     list.querySelectorAll(".ring").forEach(function (r) { r.setAttribute("aria-hidden", "true"); r.removeAttribute("role"); });
 
-    // Stan końcowy bez animacji: ścieżka przebyta do bieżącej stacji, znacznik na stacji
+    // End state without animation: the path covered up to the current station, the marker on the station
     const total = base.getTotalLength();
     const reach = lengthTo(done, d, cur);
     const frac = total ? reach / total : 0;
@@ -423,7 +418,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // WIDOK
+  // VIEW
   // =====================================================================
 
   function render() {
@@ -431,21 +426,21 @@ window.LM = window.LM || {};
     const keepScroll = view.dataset.file === HASH ? U.getScroll() : 0;
     const stats = levelStats();
     const map = mapCard(stats);
-    const exam = LM.examCover ? LM.examCover.todayTiles()[0] : null; // mój egzamin z najbliższą datą (mini okładka)
+    const exam = LM.examCover ? LM.examCover.todayTiles()[0] : null; // my exam with the nearest date (mini cover)
 
     view.className = "view tool-view today-view";
     view.dataset.file = HASH;
     view.replaceChildren(el("div", { class: "today-stack" }, [
       map,
-      LM.review ? LM.review.todayCard() : null, // „Fiszki i błędy”: stan z liczbą albo niska karta zerowa
+      LM.review ? LM.review.todayCard() : null, // "Review": state with a number or a low zero card
       el("div", { class: "today-row" }, [streakTile(), exam || shortcutsTile()])
     ]));
-    document.title = "Dziś · " + LM.APP.appTitle;
+    document.title = "Today · " + LM.APP.appTitle;
     U.setScroll(keepScroll);
 
     const stage = map._stage;
     let parts = drawTrail(stage, stats);
-    // Szlak poziomy ↔ pionowy przy zmianie szerokości
+    // Trail horizontal ↔ vertical when the width changes
     if (trailObserver) trailObserver.disconnect();
     if (window.ResizeObserver) {
       let lastVertical = parts.vertical;
@@ -458,7 +453,7 @@ window.LM = window.LM || {};
     animate(view, parts);
   }
 
-  /** Animacje wejścia (GSAP na żądanie; przy ograniczonym ruchu — nic). */
+  /** Entrance animations (GSAP on demand; with reduced motion — nothing). */
   function animate(view, parts) {
     const first = !visitedThisSession;
     visitedThisSession = true;
@@ -466,14 +461,14 @@ window.LM = window.LM || {};
       if (!gsap || reduce) return;
       const tiles = view.querySelectorAll(".bento-tile");
       if (!first) {
-        // Kolejne wejścia: krótkie odświeżenie
+        // Later visits: a short refresh
         gsap.from(tiles, { autoAlpha: 0, y: 6, duration: 0.25, stagger: 0.03, ease: "power2.out", clearProps: "all" });
         return;
       }
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
       tl.from(tiles, { autoAlpha: 0, y: 16, duration: 0.45, stagger: 0.06, clearProps: "transform,opacity,visibility" });
       view.querySelectorAll("[data-count]").forEach(function (n) { tl.add(LM.motion.countUp(gsap, n, Number(n.getAttribute("data-count"))), 0.15); });
-      // Ścieżka przebyta „rysuje się”, potem znacznik dojeżdża do stacji
+      // The covered path "draws itself", then the marker travels to its station
       parts.done.style.removeProperty("stroke-dasharray");
       tl.fromTo(parts.done, { drawSVG: "0% 0%" }, { drawSVG: "0% " + (parts.frac * 100).toFixed(2) + "%", duration: 1.1, ease: "power2.inOut" }, 0.3);
       tl.fromTo(parts.marker, { autoAlpha: 0 }, {

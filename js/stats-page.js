@@ -1,15 +1,15 @@
 /*
- * stats-page.js — „Statystyki” (#/stats, spec 03, sekcja 3).
+ * stats-page.js — "Stats" (#/stats, spec 03, section 3).
  *
- * Dane: dziennik podejść (slm.attempts), wyniki zestawów, Dziennik błędów
- * i dni aktywności — wszystko z LM.profileData; liczenie w js/learning-stats.js.
+ * Data: the attempts log (slm.attempts), set results, the mistake log
+ * and activity days — all from LM.profileData; computed in js/learning-stats.js.
  *
- * Zasady (DESIGN.md 3.11 i skill dataviz):
- *   - przy < 5 próbach nie pokazujemy procentu jako oceny, tylko „za mało danych”;
- *   - bez porównań z innymi i rankingów;
- *   - słupki w kolorze poziomu + kod poziomu w etykiecie (kolor nigdy sam),
- *     tekst zawsze w kolorach tekstu, nie w kolorze danych;
- *   - wykresy mają opis tekstowy / tabelę (role="img" + <details> z tabelą).
+ * Rules (DESIGN.md 3.11 and the dataviz skill):
+ *   - with < 5 attempts no percentage as a judgement, only "not enough data";
+ *   - no comparisons with others and no rankings;
+ *   - bars in the level colour + the level code in the label (never colour alone),
+ *     text always in text colours, not in the data colour;
+ *   - charts have a text description / table (role="img" + <details> with a table).
  */
 window.LM = window.LM || {};
 
@@ -21,10 +21,10 @@ window.LM = window.LM || {};
   const HASH = "#/stats";
   const SVG_NS = "http://www.w3.org/2000/svg";
   const TYPE_LABEL = {
-    "multiple-choice": "Wybór odpowiedzi", "reorder": "Ułóż zdanie", "find-error": "Znajdź błąd", "short-answer": "Krótka odpowiedź",
-    "gap-fill": "Luki do wpisania", "match": "Dopasuj pary", "transformation": "Transformacje zdań", "translate": "Tłumaczenie zdań", "dictation": "Dyktando"
+    "multiple-choice": "Multiple choice", "reorder": "Put in order", "find-error": "Find the mistake", "short-answer": "Short answer",
+    "gap-fill": "Fill the gaps", "match": "Match pairs", "transformation": "Rewrite the sentence", "translate": "Translate", "dictation": "Dictation", "paradigm": "Fill the table"
   };
-  const WEEKDAYS = ["Pn", "Wt", "Śr", "Cz", "Pt", "Sb", "Nd"];
+  const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
   function pd() { return LM.profileData; }
   function learn() { return LM.learn; }
@@ -32,8 +32,8 @@ window.LM = window.LM || {};
 
   function parseRoute(hash) { return /^#\/stats\/?$/.test(hash || "") ? { kind: "stats" } : null; }
 
-  function plural(n, one, few, many) { return LM.plural(n, one, few, many); }
-  function tries(n) { return n + " " + plural(n, "próba", "próby", "prób"); }
+  function plural(n, one, other) { return LM.plural(n, one, other); }
+  function tries(n) { return plural(n, "attempt"); }
   function pct(x) { return Math.round(x * 100) + "%"; }
   function topic(id) { return (LM.exercises && LM.exercises.topicInfo(id)) || null; }
 
@@ -52,7 +52,7 @@ window.LM = window.LM || {};
 
   function emptyNote(text) { return el("p", { class: "st-empty", text: text }); }
 
-  // ---------- 1. Podsumowanie (kafle liczb) ----------
+  // ---------- 1. Summary (number tiles) ----------
 
   function summaryTile(rec, today) {
     const s = S().summary(rec, today);
@@ -65,22 +65,22 @@ window.LM = window.LM || {};
         note ? el("p", { class: "st-stat-note", text: note }) : null
       ]);
     };
-    return tile("Podsumowanie", "st-sum", [
+    return tile("Summary", "st-sum", [
       el("div", { class: "st-stats" }, [
-        stat("Odpowiedzi w 7 dni", String(s.n7)),
-        stat("Odpowiedzi w 30 dni", String(s.n30)),
-        stat("Odpowiedzi łącznie", String(s.n)),
-        stat("Trafność ogółem", s.acc === null ? "—" : pct(s.acc), s.acc === null ? "za mało danych" : null),
-        stat("Trafność z 7 dni", s.acc7 === null ? "—" : pct(s.acc7), s.acc7 === null ? "za mało danych" : null),
-        stat("Rozwiązane zestawy", String(pd().solvedSetCount())),
-        stat("Dni nauki w tym miesiącu", String(days))
+        stat("Answers in 7 days", String(s.n7)),
+        stat("Answers in 30 days", String(s.n30)),
+        stat("Answers in total", String(s.n)),
+        stat("Overall accuracy", s.acc === null ? "—" : pct(s.acc), s.acc === null ? "not enough data" : null),
+        stat("Accuracy in 7 days", s.acc7 === null ? "—" : pct(s.acc7), s.acc7 === null ? "not enough data" : null),
+        stat("Sets done", String(pd().solvedSetCount())),
+        stat("Study days this month", String(days))
       ])
     ], "st-wide");
   }
 
-  // ---------- Poziome paski (trafność) ----------
+  // ---------- Horizontal bars (accuracy) ----------
 
-  /** Wiersz paska: etykieta (opcjonalnie link), tor 0–100% z wypełnieniem, wartość i liczba prób. */
+  /** Bar row: label (optionally a link), a 0–100% track with a fill, the value and the number of attempts. */
   function barRow(o) {
     const enough = o.acc !== null;
     const label = o.href ? el("a", { class: "st-bar-label", href: o.href }, o.label) : el("span", { class: "st-bar-label" }, o.label);
@@ -90,7 +90,7 @@ window.LM = window.LM || {};
         label,
         el("span", { class: "st-bar-value" }, enough
           ? [el("strong", { class: "num", text: pct(o.acc) }), " · " + tries(o.n)]
-          : "za mało danych · " + tries(o.n))
+          : "not enough data · " + tries(o.n))
       ]),
       enough ? el("div", { class: "st-track", "aria-hidden": "true" }, el("div", { class: "st-fill", style: "width:" + Math.max(2, Math.round(o.acc * 100)) + "%" })) : null
     ]);
@@ -100,13 +100,13 @@ window.LM = window.LM || {};
     const agg = S().aggregate(rec, "topic");
     const rows = S().ranked(rec, "topic");
     const small = Object.keys(agg).filter(function (k) { return agg[k].n < S().MIN_SAMPLE; }).length;
-    return tile("Trafność wg tematu", "st-topics", [
-      el("p", { class: "tool-note", text: "Od najsłabszych. Tylko tematy z co najmniej 5 próbami – kliknij temat, żeby do niego wrócić." }),
+    return tile("Accuracy by topic", "st-topics", [
+      el("p", { class: "tool-note", text: "Weakest first. Only topics with at least 5 attempts – select a topic to go back to it." }),
       rows.length ? el("ul", { class: "st-bars" }, rows.map(function (r) {
         const t = topic(r.key);
         return barRow({ label: t ? t.title : r.key, href: t ? t.href : null, level: t ? t.level : null, acc: r.acc, n: r.n });
-      })) : emptyNote("Za mało danych. Rozwiąż co najmniej 5 zadań z jednego tematu."),
-      small ? el("p", { class: "st-small-note", text: "Tematy z mniej niż 5 próbami: " + small + " – jeszcze za mało, żeby oceniać." }) : null
+      })) : emptyNote("Not enough data. Answer at least 5 items of one topic."),
+      small ? el("p", { class: "st-small-note", text: "Topics with fewer than 5 attempts: " + small + " – too few to judge yet." }) : null
     ], "st-wide");
   }
 
@@ -116,18 +116,18 @@ window.LM = window.LM || {};
     const row = function (g, extra) { return Object.assign({ acc: S().accuracy(g), n: g ? g.n : 0 }, extra); };
     const types = Object.keys(TYPE_LABEL).filter(function (t) { return byType[t]; });
     const levels = learn().LEVELS.filter(function (l) { return byLevel[l]; });
-    return tile("Wg typu zadania i poziomu", "st-types", [
-      el("h3", { class: "st-sub", text: "Typ zadania" }),
-      types.length ? el("ul", { class: "st-bars" }, types.map(function (t) { return barRow(row(byType[t], { label: TYPE_LABEL[t] })); })) : emptyNote("Brak odpowiedzi."),
-      el("h3", { class: "st-sub", text: "Poziom" }),
-      levels.length ? el("ul", { class: "st-bars" }, levels.map(function (l) { return barRow(row(byLevel[l], { label: "Poziom " + l, level: l })); })) : emptyNote("Brak odpowiedzi.")
+    return tile("By item type and level", "st-types", [
+      el("h3", { class: "st-sub", text: "Item type" }),
+      types.length ? el("ul", { class: "st-bars" }, types.map(function (t) { return barRow(row(byType[t], { label: TYPE_LABEL[t] })); })) : emptyNote("No answers yet."),
+      el("h3", { class: "st-sub", text: "Level" }),
+      levels.length ? el("ul", { class: "st-bars" }, levels.map(function (l) { return barRow(row(byLevel[l], { label: "Level " + l, level: l })); })) : emptyNote("No answers yet.")
     ]);
   }
 
   function weakTile(rec) {
     const rows = S().ranked(rec, "topic").slice(0, 5);
     const weak = S().weakTopics(rec);
-    return tile("Najsłabsze miejsca", "st-weak", [
+    return tile("Weak spots", "st-weak", [
       rows.length ? el("ol", { class: "st-weak-list" }, rows.map(function (r) {
         const t = topic(r.key);
         return el("li", { class: "st-weak-row" + (t ? " lvl-" + t.level : "") }, [
@@ -135,14 +135,14 @@ window.LM = window.LM || {};
             t ? el("a", { href: t.href, text: t.title }) : el("span", { text: r.key }),
             el("span", { class: "st-weak-meta" }, [el("strong", { class: "num", text: pct(r.acc) }), " · " + tries(r.n)])
           ]),
-          el("a", { class: "btn btn-secondary btn-small", href: "#/practice/weak/" + r.key, "aria-label": "Ćwicz: " + (t ? t.title : r.key) }, LM.ui.withIcon("dumbbell", "Ćwicz"))
+          el("a", { class: "btn btn-secondary btn-small", href: "#/practice/weak/" + r.key, "aria-label": "Practice: " + (t ? t.title : r.key) }, LM.ui.withIcon("dumbbell", "Practice"))
         ]);
-      })) : emptyNote("Na razie nie widzę słabych punktów. Zrób kilka zestawów, a podpowiem, nad czym popracować."),
-      weak.length ? el("p", { class: "st-weak-cta" }, el("a", { class: "btn btn-primary", href: "#/practice/weak" }, LM.ui.withIcon("target", "Trening słabych punktów"))) : null
+      })) : emptyNote("No weak spots so far. Do a few sets and you will see what to work on."),
+      weak.length ? el("p", { class: "st-weak-cta" }, el("a", { class: "btn btn-primary", href: "#/practice/weak" }, LM.ui.withIcon("target", "Practice weak spots"))) : null
     ]);
   }
 
-  // ---------- 5. Trend tygodniowy (kolumny + liczba prób) ----------
+  // ---------- 5. Weekly trend (columns + number of attempts) ----------
 
   function trendTile(rec, today) {
     const weeks = S().weekly(rec, today, 12);
@@ -151,7 +151,7 @@ window.LM = window.LM || {};
     const step = (right - left) / weeks.length;
     const bw = Math.min(24, step - 8);
     const yOf = function (v) { return base - v * (base - top); };
-    const fmt = function (day) { return day.slice(8, 10) + "." + day.slice(5, 7); };
+    const fmt = function (day) { return LM.fmt.dayMonth(day); };
     const grid = [0, 0.5, 1].map(function (v) {
       return svg("g", { class: "st-grid" }, [
         svg("line", { x1: left, x2: right, y1: yOf(v), y2: yOf(v) }),
@@ -160,7 +160,7 @@ window.LM = window.LM || {};
     });
     const cols = weeks.map(function (w, i) {
       const x = left + step * i + (step - bw) / 2;
-      const label = "Tydzień od " + fmt(w.start) + ": " + (w.n ? (w.acc === null ? "za mało danych, " + tries(w.n) : pct(w.acc) + " trafnych, " + tries(w.n)) : "brak odpowiedzi");
+      const label = "Week of " + fmt(w.start) + ": " + (w.n ? (w.acc === null ? "not enough data, " + tries(w.n) : pct(w.acc) + " right, " + tries(w.n)) : "no answers");
       const g = svg("g", { class: "st-col" + (w.acc === null ? " is-small" : ""), tabindex: w.n ? "0" : null, role: w.n ? "img" : null, "aria-label": w.n ? label : null }, [
         svg("title", null, [label]),
         svg("rect", { x: x - 4, y: top, width: bw + 8, height: base - top, class: "st-hit" })
@@ -168,32 +168,32 @@ window.LM = window.LM || {};
       if (w.n) {
         const v = w.acc === null ? w.ok / w.n : w.acc;
         const h = Math.max(4, base - yOf(v));
-        // 4 px zaokrąglenie tylko na górnym końcu (kwadrat przy osi)
+        // 4 px rounding only at the top end (square at the axis)
         g.appendChild(svg("path", { class: "st-bar", d: "M" + x + " " + base + "V" + (base - h + 4) + "Q" + x + " " + (base - h) + " " + (x + 4) + " " + (base - h) + "H" + (x + bw - 4) + "Q" + (x + bw) + " " + (base - h) + " " + (x + bw) + " " + (base - h + 4) + "V" + base + "Z" }));
       }
       g.appendChild(svg("text", { x: x + bw / 2, y: base + 16, "text-anchor": "middle", class: "st-axis" }, [fmt(w.start)]));
       g.appendChild(svg("text", { x: x + bw / 2, y: base + 32, "text-anchor": "middle", class: "st-axis st-n" }, [w.n ? "n=" + w.n : ""]));
       return g;
     });
-    const chart = svg("svg", { class: "st-chart", viewBox: "0 0 " + W + " " + H, role: "group", "aria-label": "Trafność tygodniowa z ostatnich 12 tygodni" },
+    const chart = svg("svg", { class: "st-chart", viewBox: "0 0 " + W + " " + H, role: "group", "aria-label": "Weekly accuracy over the last 12 weeks" },
       grid.concat([svg("line", { x1: left, x2: right, y1: base, y2: base, class: "st-baseline" })]).concat(cols));
     const table = el("details", { class: "st-table" }, [
-      el("summary", null, "Pokaż jako tabelę"),
+      el("summary", null, "Show as a table"),
       el("div", { class: "md-table" }, el("div", { class: "md-table-wrap" }, el("table", null, [
-        el("thead", null, el("tr", null, [el("th", { text: "Tydzień od" }), el("th", { text: "Próby" }), el("th", { text: "Trafność" })])),
+        el("thead", null, el("tr", null, [el("th", { text: "Week of" }), el("th", { text: "Attempts" }), el("th", { text: "Accuracy" })])),
         el("tbody", null, weeks.map(function (w) {
-          return el("tr", null, [el("td", { text: fmt(w.start) }), el("td", { class: "num", text: String(w.n) }), el("td", { text: w.n ? (w.acc === null ? "za mało danych" : pct(w.acc)) : "—" })]);
+          return el("tr", null, [el("td", { text: fmt(w.start) }), el("td", { class: "num", text: String(w.n) }), el("td", { text: w.n ? (w.acc === null ? "not enough data" : pct(w.acc)) : "—" })]);
         }))
       ])))
     ]);
-    return tile("Trend z 12 tygodni", "st-trend", any ? [
-      el("p", { class: "tool-note", text: "Trafność w kolejnych tygodniach. Pod kolumną liczba prób (n) – jaśniejsza kolumna to mniej niż 5 prób, więc wynik jest tylko orientacyjny." }),
+    return tile("12-week trend", "st-trend", any ? [
+      el("p", { class: "tool-note", text: "Accuracy week by week. Under each column, the number of attempts (n) – a lighter column means fewer than 5 attempts, so the result is only approximate." }),
       el("div", { class: "st-chart-wrap" }, chart),
       table
-    ] : [emptyNote("Brak odpowiedzi w ostatnich 12 tygodniach.")], "st-wide");
+    ] : [emptyNote("No answers in the last 12 weeks.")], "st-wide");
   }
 
-  // ---------- 6. Aktywność (mapa cieplna) ----------
+  // ---------- 6. Activity (heat map) ----------
 
   function activityTile(today) {
     const days = pd().activityDays();
@@ -201,37 +201,37 @@ window.LM = window.LM || {};
     const active = grid.reduce(function (s, col) { return s + col.filter(function (c) { return c.active; }).length; }, 0);
     const st = learn().streak(days, today);
     const streak = st.current;
-    const cells = el("div", { class: "st-heat", role: "img", "aria-label": "Mapa aktywności z 12 tygodni: dni nauki " + active + " z " + (12 * 7) + "." });
+    const cells = el("div", { class: "st-heat", role: "img", "aria-label": "Activity map of 12 weeks: " + active + " study days of " + (12 * 7) + "." });
     WEEKDAYS.forEach(function (d, r) {
       cells.appendChild(el("span", { class: "st-heat-day", style: "grid-row:" + (r + 1), "aria-hidden": "true", text: r % 2 === 0 ? d : "" }));
     });
     grid.forEach(function (col, c) {
       col.forEach(function (cell, r) {
-        const label = cell.day.slice(8, 10) + "." + cell.day.slice(5, 7) + (cell.future ? "" : cell.active ? " – dzień nauki" : " – bez nauki");
+        const label = LM.fmt.dayMonth(cell.day) + (cell.future ? "" : cell.active ? " – study day" : " – no study");
         cells.appendChild(el("span", {
           class: "st-cell" + (cell.active ? " is-on" : "") + (cell.future ? " is-future" : "") + (cell.day === today ? " is-today" : ""),
           style: "grid-row:" + (r + 1) + ";grid-column:" + (c + 2), title: label, "aria-hidden": "true"
         }));
       });
     });
-    return tile("Aktywność", "st-activity", [
+    return tile("Activity", "st-activity", [
       el("p", { class: "st-activity-sum" }, [
-        el("strong", { class: "num", text: String(active) }), " " + plural(active, "dzień", "dni", "dni") + " nauki w ostatnich 12 tygodniach",
-        streak ? " · seria: " + streak + " " + plural(streak, "dzień", "dni", "dni") : "",
-        st.longest > 1 ? " · najdłuższa: " + st.longest + " " + plural(st.longest, "dzień", "dni", "dni") : ""
+        el("strong", { class: "num", text: String(active) }), " study " + (active === 1 ? "day" : "days") + " in the last 12 weeks",
+        streak ? " · streak: " + plural(streak, "day") : "",
+        st.longest > 1 ? " · longest streak: " + plural(st.longest, "day") : ""
       ]),
       el("div", { class: "st-heat-wrap" }, cells),
       el("p", { class: "st-legend", "aria-hidden": "true" }, [
-        el("span", { class: "st-cell is-on" }), " dzień nauki ", el("span", { class: "st-cell" }), " bez nauki"
+        el("span", { class: "st-cell is-on" }), " study day ", el("span", { class: "st-cell" }), " no study"
       ])
     ]);
   }
 
-  // ---------- 7. Dziennik błędów ----------
+  // ---------- 7. Mistake log ----------
 
   function journalTile(today) {
     const all = pd().entries();
-    // Stan z kart „Moje błędy” (harmonogram fiszek), nie ze starego pola review
+    // State from the "My mistakes" cards (flashcard schedule), not from the old review field
     const isMastered = function (e) { const i = LM.cards ? LM.cards.mistakeInfo(e) : null; return !!(i && i.mastered); };
     const active = all.filter(function (e) { return !isMastered(e); });
     const due = LM.reviewQueue ? LM.reviewQueue.breakdown().due.mistake : 0;
@@ -245,15 +245,15 @@ window.LM = window.LM || {};
     const stat = function (label, n, href) {
       return el("div", { class: "st-stat" }, [el("p", { class: "st-stat-label", text: label }), href && n ? el("a", { class: "st-stat-value", href: href, text: String(n) }) : el("p", { class: "st-stat-value", text: String(n) })]);
     };
-    return tile("Dziennik błędów", "st-journal", all.length ? [
-      el("div", { class: "st-stats is-three" }, [stat("Aktywne", active.length), stat("Do powtórki dziś", due, "#/review/session?only=mistakes"), stat("Opanowane", mastered)]),
-      cats.length ? el("p", { class: "st-tops" }, [el("span", { class: "review-label", text: "Najczęstsze kategorie: " }), cats.map(function (c) { return c.k + " (" + c.n + ")"; }).join(", ")]) : null,
-      topics.length ? el("p", { class: "st-tops" }, [el("span", { class: "review-label", text: "Najczęstsze tematy: " })].concat(topics.map(function (t, i) {
+    return tile("Mistake log", "st-journal", all.length ? [
+      el("div", { class: "st-stats is-three" }, [stat("Active", active.length), stat("Due today", due, "#/review/session?only=mistakes"), stat("Mastered", mastered)]),
+      cats.length ? el("p", { class: "st-tops" }, [el("span", { class: "review-label", text: "Most common categories: " }), cats.map(function (c) { return c.k + " (" + c.n + ")"; }).join(", ")]) : null,
+      topics.length ? el("p", { class: "st-tops" }, [el("span", { class: "review-label", text: "Most common topics: " })].concat(topics.map(function (t, i) {
         const info = topic(t.k);
         return [i ? ", " : "", info ? el("a", { href: info.href, text: info.title }) : t.k, " (" + t.n + ")"];
       }))) : null,
-      el("p", null, el("a", { class: "btn btn-secondary btn-small", href: "#/review/mistakes" }, "Otwórz Moje błędy"))
-    ] : [emptyNote("Dziennik jest pusty. Błędy z zadań trafiają tu same – możesz to wyłączyć w menu profilu.")]);
+      el("p", null, el("a", { class: "btn btn-secondary btn-small", href: "#/review/mistakes" }, "Open My mistakes"))
+    ] : [emptyNote("The log is empty. Mistakes from exercises land here by themselves – you can turn this off in the profile menu.")]);
   }
 
   // =====================================================================
@@ -265,13 +265,13 @@ window.LM = window.LM || {};
     view.className = "view tool-view st-view";
     view.dataset.file = HASH;
     view.replaceChildren();
-    document.title = "Statystyki · " + LM.APP.appTitle;
+    document.title = "Stats · " + LM.APP.appTitle;
     const hasData = rec.items.length || Object.keys(rec.aggregates).length;
-    view.appendChild(LM.ui.pageHead({ eyebrow: "Twoje postępy · Statystyki", title: "Statystyki", lead: "Twoje odpowiedzi w zadaniach, trafność i aktywność. Liczymy tylko Twoje dane – bez porównań z innymi." }));
+    view.appendChild(LM.ui.pageHead({ eyebrow: "Your progress · Stats", title: "Stats", lead: "Your answers in exercises, accuracy and activity. Only your own data – no comparisons with others." }));
     if (!hasData) {
       view.appendChild(LM.ui.emptyState({
-        art: "pusty-dziennik", title: "Tu pojawią się Twoje statystyki", hint: "Rozwiąż pierwszy zestaw zadań – każda odpowiedź się liczy. Po kilku zestawach zobaczysz, które tematy idą Ci najlepiej, a które warto powtórzyć.",
-        action: el("a", { class: "btn btn-primary", href: "#/practice" }, LM.ui.withIcon("dumbbell", "Przejdź do ćwiczeń"))
+        art: "empty-log", title: "Your stats will show up here", hint: "Do your first exercise set – every answer counts. After a few sets you will see which topics go best and which are worth reviewing.",
+        action: el("a", { class: "btn btn-primary", href: "#/practice" }, LM.ui.withIcon("dumbbell", "Go to Practice"))
       }));
     }
     const grid = el("div", { class: "st-grid-layout" });
@@ -284,8 +284,8 @@ window.LM = window.LM || {};
     }
     grid.appendChild(activityTile(today));
     grid.appendChild(journalTile(today));
-    if (LM.cards) { const f = LM.cards.statsTile(); if (f) grid.appendChild(f); } // sekcja „Fiszki” (spec 10, 5.5)
-    if (LM.trail) { const z = LM.trail.statsTile(); if (z) grid.appendChild(z); } // sekcja „Szlak” (spec v7 13, 4.2)
+    if (LM.cards) { const f = LM.cards.statsTile(); if (f) grid.appendChild(f); } // "Flashcards" section (spec 10, 5.5)
+    if (LM.trail) { const z = LM.trail.statsTile(); if (z) grid.appendChild(z); } // "Trail" section (spec v7 13, 4.2)
     view.appendChild(grid);
     U.setScroll(0);
   }

@@ -1,0 +1,13 @@
+# check-lang allow list: <path glob> <regex>. Each entry says why and until when.
+# Search folding still maps the Polish ł (tests depend on it); stage 3 moves folding into LM.lang.fold.
+js/search-logic.js const FOLD = \{
+# Sentence normalization strips „ and other quote marks from answers; stage 3 moves normalizeSentence into LM.lang.
+js/exercise-logic.js \.replace\(/\[,\.!\?;:
+# isPolish() still detects Polish letters to hide "Add to My words"; stage 3 replaces it with LM.lang.isTarget.
+js/cards-logic.js function isPolish\(text\)
+# Trimming punctuation of answers and selections includes „; stage 3 moves this into LM.lang.
+js/cards-logic.js replace\(/\^\[\\s\.,;:
+# The e2e test checks that the routes of the reference app (Polish slugs) show "Page not found" and never redirect.
+tools/e2e.js "#/dzis", "#/szlak", "#/powtorki"
+# The isPolish() test feeds Polish words to the function above; stage 3 replaces both with LM.lang.isTarget.
+tools/tests.js \["za.+, "ŻÓŁW",

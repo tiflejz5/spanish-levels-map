@@ -1,5 +1,5 @@
 /*
- * quizzes.js — trail stop quizzes (quiz part of the reference tools/zbuduj-szlak.js).
+ * quizzes.js — trail stop quizzes (quiz part of the reference trail builder).
  *
  *   content/quizzes/<level>/<topic id>.json → data/quizzes-<level>.js   LM.QUIZZES[<topic id>] = quiz   (lazy)
  *

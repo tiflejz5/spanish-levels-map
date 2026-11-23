@@ -1,12 +1,12 @@
 /*
- * exam-logic.js — czysta logika egzaminów (bez DOM; testy w tools/tests.js).
- * Specyfikacja: docs/rozbudowa-v2/spec/05-egzaminy-i-egzamin-osmoklasisty.md, 5.1–5.2.
+ * exam-logic.js — pure exam logic (no DOM; tests in tools/tests.js).
+ * Exams are generic: everything exam-specific comes from the registry and the exam config (spec 12).
  *
- *   countWordsE8(text, opening)   liczba wyrazów wg reguł egzaminu ósmoklasisty:
- *       wyrazy oddzielone spacją; skróty (don't), wyrazy z dywizem, liczby, adresy e-mail,
- *       numery telefonów = 1 wyraz; emotikony i podpis „XYZ” się nie liczą; podany początek
- *       (opening) też nie, jeśli użytkownik go przepisał
- *   writingZone(n, T)             strefa licznika: low (< warnBelow), warn (< min), ok, over (> max)
+ *   countWords(text, opening, skip)  word count for the writing trainer:
+ *       words are separated by white space; contractions, hyphenated words, numbers, e-mail addresses
+ *       and phone numbers = 1 word; emoticons and symbols do not count; neither do the placeholder words
+ *       in skip (e.g. a signature placeholder from the exam config) nor the given opening, if the user copied it
+ *   writingZone(n, T)             counter zone: low (< warnBelow), warn (< min), ok, over (> max)
  */
 window.LM = window.LM || {};
 
@@ -15,13 +15,13 @@ window.LM = window.LM || {};
 
   const HAS_WORD_CHAR = /[\p{L}\p{N}]/u;
 
-  function countWordsE8(text, opening) {
+  function countWords(text, opening, skip) {
     let t = String(text || "").replace(/\r\n/g, "\n").trim();
     const open = String(opening || "").trim();
     if (open && t.slice(0, open.length).toLowerCase() === open.toLowerCase()) t = t.slice(open.length);
     return t.split(/\s+/).filter(function (w) {
-      if (!w || !HAS_WORD_CHAR.test(w)) return false;                      // emotikony, same znaki
-      if (w.replace(/[^\p{L}\p{N}]/gu, "") === "XYZ") return false;        // podpis
+      if (!w || !HAS_WORD_CHAR.test(w)) return false;                      // emoticons, symbols only
+      if (skip && skip.indexOf(w.replace(/[^\p{L}\p{N}]/gu, "")) !== -1) return false; // placeholder words
       return true;
     }).length;
   }
@@ -36,22 +36,22 @@ window.LM = window.LM || {};
   }
 
   /**
-   * A8: przed którą sekcją artykułu wstawić ramki „Na egzaminie …”. titles = nagłówki ## po kolei.
-   * Pierwsza z: Życie i egzamin, Typowe błędy Polaków, Ćwiczenie; gdy żadnej nie ma — przed sekcją
-   * z odpowiedziami; gdy i jej nie ma — -1 (na koniec artykułu).
+   * A8: before which section of a topic page to insert the "In the exam …" boxes. titles = the ## headings in order.
+   * The first of: Real life vs exam, Common mistakes, Practice; when there is none — before the answers
+   * section; when that is missing too — -1 (at the end of the page).
    */
   function examBoxAnchorIndex(titles) {
     const norm = titles.map(function (s) { return String(s || "").trim().toLowerCase(); });
-    const before = ["życie i egzamin", "typowe błędy polaków", "ćwiczenie"];
+    const before = ["real life vs exam", String((LM.APP && LM.APP.mistakesHeading) || "Common mistakes").toLowerCase(), "practice"];
     for (let i = 0; i < norm.length; i++) if (before.indexOf(norm[i]) !== -1) return i;
-    for (let i = 0; i < norm.length; i++) if (norm[i] === "odpowiedzi" || norm[i] === "przykładowe odpowiedzi") return i;
+    for (let i = 0; i < norm.length; i++) if (norm[i] === "answers" || norm[i] === "model answers") return i;
     return -1;
   }
 
-  // ---------- B1/B2: daty i „Moje egzaminy” ----------
+  // ---------- B1/B2: dates and "My exams" ----------
 
-  const MONTHS_GEN = ["stycznia", "lutego", "marca", "kwietnia", "maja", "czerwca", "lipca", "sierpnia", "września", "października", "listopada", "grudnia"];
-  const WEEKDAYS = ["niedziela", "poniedziałek", "wtorek", "środa", "czwartek", "piątek", "sobota"];
+  const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  const WEEKDAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const DAY = /^(\d{4})-(\d{2})-(\d{2})$/;
 
   function dayNumber(day) {
@@ -64,18 +64,18 @@ window.LM = window.LM || {};
     return n.getFullYear() + "-" + String(n.getMonth() + 1).padStart(2, "0") + "-" + String(n.getDate()).padStart(2, "0");
   }
 
-  /** Liczba dni od today do day ("RRRR-MM-DD"); ujemna = data minęła; null przy złej dacie. */
+  /** Number of days from today to day ("YYYY-MM-DD"); negative = the date has passed; null for a bad date. */
   function daysBetween(day, today) {
     const a = dayNumber(day), b = dayNumber(today || localToday());
     return a === null || b === null ? null : a - b;
   }
 
-  /** "2027-05-06" → "czwartek, 6 maja 2027" (bez zależności od ICU przeglądarki). */
-  function formatDatePl(day) {
+  /** "2027-05-06" → "Thursday, May 6, 2027" (no dependence on the browser's ICU data). */
+  function formatDateLong(day) {
     const m = DAY.exec(day || "");
     if (!m) return "";
     const wd = new Date(Date.UTC(Number(m[1]), Number(m[2]) - 1, Number(m[3]))).getUTCDay();
-    return WEEKDAYS[wd] + ", " + Number(m[3]) + " " + MONTHS_GEN[Number(m[2]) - 1] + " " + m[1];
+    return WEEKDAYS[wd] + ", " + MONTHS[Number(m[2]) - 1] + " " + Number(m[3]) + ", " + m[1];
   }
 
   /**
@@ -96,9 +96,9 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Egzaminy „moje”: ustawiona data albo ukończony zestaw (i nie odpięty ręcznie), albo ręcznie przypięte.
-   * state = examMyState(...). Zwraca [{ id, reason: "date"|"sets"|"pinned", days }] — najpierw najbliższe daty
-   * (dziś i przyszłe rosnąco), potem miniony termin (najświeższy pierwszy), na końcu bez daty (kolejność rejestru).
+   * "My" exams: a date is set or a set is done (and not unpinned by hand), or pinned by hand.
+   * state = examMyState(...). Returns [{ id, reason: "date"|"sets"|"pinned", days }] — nearest dates first
+   * (today and future, ascending), then past dates (most recent first), last the ones without a date (registry order).
    */
   function myExams(state, registry, today) {
     const out = [];
@@ -127,9 +127,9 @@ window.LM = window.LM || {};
   }
 
   /**
-   * Podział egzaminów w pasku: { shown, hidden } (id w kolejności rejestru dla hidden, w kolejności „moich” dla shown).
-   * mineIds = id z myExams; currentId = egzamin otwarty na ekranie (zostaje w pasku, choćby nie był „mój”).
-   * Brak moich → wszystkie jak dawniej, bez „+N”.
+   * Split of exams in the bar: { shown, hidden } (ids in registry order for hidden, in "my" order for shown).
+   * mineIds = ids from myExams; currentId = the exam open on screen (stays in the bar even when it is not "mine").
+   * No "my" exams → all of them as before, without "+N".
    */
   function navSplit(registry, mineIds, currentId) {
     const all = ((registry && registry.exams) || []).map(function (e) { return e.id; });
@@ -141,7 +141,7 @@ window.LM = window.LM || {};
 
   LM.examLogic = {
     navSplit: navSplit,
-    countWordsE8: countWordsE8, writingZone: writingZone, examBoxAnchorIndex: examBoxAnchorIndex,
-    daysBetween: daysBetween, formatDatePl: formatDatePl, localToday: localToday, examMyState: examMyState, myExams: myExams
+    countWords: countWords, writingZone: writingZone, examBoxAnchorIndex: examBoxAnchorIndex,
+    daysBetween: daysBetween, formatDateLong: formatDateLong, localToday: localToday, examMyState: examMyState, myExams: myExams
   };
 })(window.LM);
