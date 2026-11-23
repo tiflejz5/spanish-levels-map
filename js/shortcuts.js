@@ -2,8 +2,8 @@
  * shortcuts.js — the keyboard shortcuts panel ("?") and shared sentence playback (pack v8, S5).
  *
  *   LM.shortcuts.open()        panel with the shortcuts of the current view (exercises, review session, topic pages)
- *   LM.shortcuts.speak(text)   reads a sentence aloud (stage 3 moves voice choice into LM.speech); a second call while
- *                              reading stops it
+ *   LM.shortcuts.speak(text)   reads a target-language sentence aloud (LM.speech, with a message when there is no voice);
+ *                              a second call while reading stops it. S on a topic page reads the focused example (data-listen).
  *
  * Shortcuts do not work in text fields (except Enter, which each view handles itself).
  * Exercises: js/exercise-engine.js, review session: js/cards.js, topic pages: js/handbook.js; here: "?".
@@ -26,6 +26,7 @@ window.LM = window.LM || {};
         ["Tab", "next gap"],
         ["Backspace", "undo the last word (Put in order)"],
         ["Ctrl + Enter", "Check in a multi-line field"],
+        ["Alt + letter", "in an answer field: a letter with its mark (Alt + U twice: the next form); Alt + Shift: a capital"],
         ["?", "this list"]
       ]
     },
@@ -35,6 +36,7 @@ window.LM = window.LM || {};
         ["Space", "show the answer, then “Good”"],
         ["1–4", "ratings: Again, Hard, Good, Easy"],
         ["S", "play the sentence on the card (the gap is a pause)"],
+        ["Alt + letter", "in the answer field: a letter with its mark (again: the next form)"],
         ["Z", "undo the last rating"],
         ["W", "suspend the card"],
         ["B", "put the card off until tomorrow"],
@@ -47,6 +49,7 @@ window.LM = window.LM || {};
       rows: [
         ["[", "previous topic of the level"],
         ["]", "next topic of the level"],
+        ["S", "play the focused example (Tab to its listen button)"],
         ["/", "search"],
         ["Ctrl + K", "search"],
         ["?", "this list"]
@@ -95,43 +98,42 @@ window.LM = window.LM || {};
 
   // ---------- playback ----------
 
-  let current = null;
-
-  function enVoice() {
-    const all = window.speechSynthesis.getVoices();
-    return all.filter(function (v) { return /^en[-_]GB/i.test(v.lang); })[0]
-      || all.filter(function (v) { return /^en[-_]US/i.test(v.lang); })[0]
-      || all.filter(function (v) { return /^en/i.test(v.lang); })[0] || null;
-  }
-
-  /** Reads a sentence aloud; true when it started (false: no synthesizer or no voice — then a message). S again stops it. */
+  /**
+   * Reads a target-language sentence aloud through LM.speech; S again stops it. Returns true when it started or stopped
+   * (false: no synthesizer or no voice — then a message).
+   */
   function speak(text, rate) {
-    const s = window.speechSynthesis;
-    if (!s || typeof window.SpeechSynthesisUtterance !== "function") {
+    if (!LM.speech.supported()) {
       if (LM.ui) LM.ui.toast({ text: "This browser has no speech synthesizer.", icon: "volume-x" });
       return false;
     }
-    if (current) { s.cancel(); current = null; return true; }
-    const voice = enVoice();
-    const all = s.getVoices();
-    if (all.length && !voice) {
+    if (!LM.speech.available()) {
       if (LM.ui) LM.ui.toast({ text: "This browser has no " + LM.APP.language + " voice.", icon: "volume-x" });
       return false;
     }
-    const u = new window.SpeechSynthesisUtterance(text);
-    if (voice) u.voice = voice;
-    u.lang = voice ? voice.lang : "en-GB";
-    u.rate = rate || 0.95;
-    u.onend = u.onerror = function () { current = null; };
-    current = u;
-    s.speak(u);
-    return true;
+    if (LM.speech.speaking()) { LM.speech.stop(); return true; }
+    return LM.speech.speak(text, { rate: rate });
+  }
+
+  /** The example around the focus (a row or a quote with a listen button, spec 06 E5): its target-language text, or "". */
+  function focusedExample() {
+    const a = document.activeElement;
+    const host = a && a.closest && a.closest("[data-listen]");
+    return host ? host.getAttribute("data-listen") : "";
   }
 
   document.addEventListener("keydown", function (e) {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     if (typing(e.target) || dialogOpen()) return;
-    if (e.key === "?") { e.preventDefault(); open(); }
+    if (e.key === "?") { e.preventDefault(); open(); return; }
+    // S on a topic page: reads the focused example (exercises and review sessions handle S themselves)
+    if ((e.key === "s" || e.key === "S") && !e.shiftKey && contextNow() !== "exercises" && contextNow() !== "review") {
+      const text = focusedExample();
+      if (!text) return;
+      e.preventDefault();
+      if (/\n/.test(text) && LM.speech.available() && !LM.speech.speaking()) LM.speech.speakScript(text); // a dialogue: two voices
+      else speak(text);
+    }
   });
 
   LM.shortcuts = { open: open, speak: speak, contextNow: contextNow, CONTEXTS: CONTEXTS };

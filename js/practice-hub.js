@@ -132,7 +132,7 @@ window.LM = window.LM || {};
     const types = {};
     Object.keys(index.sets).forEach(function (id) { Object.keys(index.sets[id].types).forEach(function (t) { types[t] = true; }); });
     // Dictation only with a voice in the browser
-    if (ex().noEnglishVoice()) delete types.dictation;
+    if (!LM.speech.available()) delete types.dictation;
     return LM.exLogic.TYPES.filter(function (t) { return types[t]; });
   }
 
