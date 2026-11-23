@@ -1,6 +1,8 @@
 /*
  * e2e.js — browser smoke tests: routes, level status, trail from the syllabus, generic exams (stage 1B), the language layer
- * (stage 3), every exercise item type with the Spanish content sets and the paradigm view (stage 4).
+ * (stage 3), every exercise item type with the Spanish content sets and the paradigm view (stage 4), the learning loop
+ * (stage 5: first run → placement → trail stop → quiz; set → mistake log → review session; export → reset → import; a
+ * foreign backup refused; E12 report links) with the owner's other app's data (elm_* keys) in the same origin.
  *
  *   node tools/e2e.js            (or: npm run e2e)
  *
@@ -64,6 +66,14 @@ async function test(name, fn) {
 function ok(cond, msg) { if (!cond) throw new Error(msg); }
 
 const PROFILE_KEY = "slm.profiles";
+/** Data of the owner's English app on the same origin (GitHub Pages): it must stay untouched and be ignored. */
+const ELM_DATA = {
+  elm_profiles_v1: JSON.stringify({ version: 1, activeId: "p1", profiles: [{ id: "p1", name: "English profile", progress: { "a1-czasy-present-simple": true } }] }),
+  "elm.p1.fiszki": JSON.stringify({ version: 1, cards: { x: { due: "2026-01-01" } }, userCards: [] }),
+  elm_journal_v1: JSON.stringify({ version: 1, profiles: { p1: { entries: [{ id: "j1", context: "She ___ in a bank", correct: "works" }] } } }),
+  elm_activity_v1: JSON.stringify({ version: 1, profiles: { p1: { days: ["2026-11-20"] } } }),
+  elm_theme_v1: "dark"
+};
 const PROFILE = { version: 1, activeId: "p_e2e", profiles: [{ id: "p_e2e", name: "Test Claude", progress: {} }] };
 
 /** The fixture exam as in-memory data files (same code as the build). */
@@ -94,7 +104,8 @@ async function main() {
       if (localStorage.getItem("e2e_seeded")) return;
       localStorage.setItem("e2e_seeded", "1");
       if (args.profile) localStorage.setItem(args.key, JSON.stringify(args.profile));
-    }, { key: PROFILE_KEY, profile: withProfile ? PROFILE : null });
+      Object.keys(args.extra).forEach(function (k) { localStorage.setItem(k, args.extra[k]); });
+    }, { key: PROFILE_KEY, profile: withProfile ? PROFILE : null, extra: opts.elm ? ELM_DATA : {} });
     if (opts.exams) {
       const files = examFixture();
       await ctx.route("**/data/**", function (route) {
@@ -538,12 +549,253 @@ async function main() {
     await s.ctx.close();
   });
 
+  // ---------- Stage 5: the learning loop ----------
+  /** Paths where two JSON values differ (for messages). */
+  function jsonDiff(a, b, at) {
+    if (JSON.stringify(a) === JSON.stringify(b)) return [];
+    if (!a || !b || typeof a !== "object" || typeof b !== "object") return [at + " " + JSON.stringify(a) + " → " + JSON.stringify(b)];
+    return Object.keys(Object.assign({}, a, b)).reduce(function (out, k) { return out.concat(jsonDiff(a[k], b[k], at + "." + k)); }, []).slice(0, 8);
+  }
+  const elmUntouched = function (page) {
+    return page.evaluate(function (E) { return Object.keys(E).filter(function (k) { return localStorage.getItem(k) !== E[k]; }); }, ELM_DATA);
+  };
+  const slmDump = function (page) {
+    return page.evaluate(function () { const o = {}; Object.keys(localStorage).filter(function (k) { return /^slm\./.test(k); }).forEach(function (k) { o[k] = localStorage.getItem(k); }); return o; });
+  };
+  /** Every item of a session answered from its key (right) or wrong, up to the result screen. */
+  async function runItems(page, right) {
+    for (let i = 0; i < 40; i++) {
+      if (!(await page.$(".ex-check"))) break;
+      const it = await page.evaluate(function () { return LM.exercises.currentItem(); });
+      await answerItem(page, it, typeof right === "function" ? right(i, it) : right);
+      const next = await page.$(".ex-next");
+      if (next) { await next.click(); await page.waitForTimeout(120); }
+    }
+    await page.waitForTimeout(400);
+  }
+
+  console.log("\nLearning loop (stage 5, spec 13 §1 Flows and Storage; elm_* data of the English app present)");
+  await test("first run → placement → trail stop → quiz (no profile at start; elm_* keys untouched)", async function () {
+    const s = await session(1280, 860, false, { elm: true });
+    await withVoices(s.ctx, true);
+    const p = s.page;
+    await visit(p, "#/today", 800);
+    ok(/This page needs a profile/.test(await viewText(p)), "no welcome card on Today");
+    ok(!/English profile/.test(await p.innerText("body")), "the English app's profile is shown");
+    await p.fill("#welcome-name", "Learner");
+    await p.click(".welcome-form button.btn-primary");
+    await p.waitForTimeout(800);
+    ok(/#\/trail$/.test(await p.evaluate(function () { return location.hash; })), "the first visit does not go to the trail");
+    ok(await p.locator(".sz-first").count() === 1, "no first-run card (placement test or start at A1)");
+    ok(await p.locator(".sz-first button:has-text('Start at A1')").count() === 1, "no Start at A1");
+    await p.click(".sz-first a.btn-primary");
+    await p.waitForTimeout(500);
+    await p.click(".lt-card .btn-primary");
+    for (let i = 0; i < 12; i++) {
+      await p.waitForSelector(".lt-option");
+      const q = await p.evaluate(function () {
+        const n = document.getElementById("lt-question");
+        const x = LM.PLACEMENT.questions.find(function (y) { return y.question === n.textContent; });
+        return { correct: x.correct, lang: n.getAttribute("lang"), optLang: document.querySelector(".lt-option-text").getAttribute("lang") };
+      });
+      ok(q.lang === "es" && q.optLang === "es", "placement question without lang: " + JSON.stringify(q));
+      await p.locator(".lt-option").nth(q.correct).click();
+      await p.click(".lt-next");
+    }
+    await p.waitForSelector(".lt-result");
+    const level = (await p.innerText(".lt-result-code")).trim();
+    const startAt = await p.evaluate(function (l) { return LM.syl.startLevelFor(l); }, level);
+    ok(startAt === "A1", "start level " + startAt + " for result " + level + " (only A1 is available)");
+    const btn = (await p.textContent(".lt-result a.btn-primary")).trim();
+    ok(btn === "Start the trail at " + startAt, "button: " + btn);
+    if (level !== "A1") ok(/is on its way/.test(await p.textContent(".lt-result")), "no soon note for " + level);
+    await p.click(".lt-result a.btn-primary");
+    await p.waitForTimeout(1200);
+    ok(await p.locator(".sz-first").count() === 0, "first-run card after the placement test");
+    if (level !== "A1") ok(new RegExp(level + " is on its way, so the trail starts at A1").test(await p.innerText(".sz-start-note")), "start note");
+    await p.click('.sz-node[data-stop="a1-verbs-gustar"] button');
+    await p.waitForSelector("dialog[open]");
+    await p.click("dialog[open] button:has-text('Quiz')");
+    for (let i = 0; i < 4; i++) {
+      await p.waitForSelector(".ex-option");
+      const idx = await p.evaluate(function () {
+        const it = LM.exercises.currentItem();
+        return [].slice.call(document.querySelectorAll(".ex-option .ex-option-text")).map(function (b) { return b.innerText.trim(); }).indexOf(it.options[it.correct].trim());
+      });
+      await p.locator(".ex-option").nth(idx).click();
+      await p.click(".ex-check");
+      await p.click(".ex-next");
+      await p.waitForTimeout(150);
+    }
+    await p.waitForSelector(".sz-result.is-passed");
+    const href = await p.getAttribute(".sz-result .report-link a", "href");
+    ok(href && href.indexOf(encodeURIComponent("a1-verbs-gustar: ")) !== -1, "report link: " + href);
+    const pid = await p.evaluate(function () { return LM.app.getActiveProfile().id; });
+    const st = await p.evaluate(function (k) { return JSON.parse(localStorage.getItem(k)); }, "slm.trail." + pid);
+    ok(st.stops["a1-verbs-gustar"] && st.stops["a1-verbs-gustar"].best === 4 && st.start && st.start.source === "test", "trail state: " + JSON.stringify(st));
+    ok(!(await elmUntouched(p)).length, "elm_* keys changed: " + (await elmUntouched(p)).join(", "));
+    ok(!(await p.evaluate(function () { return Object.keys(localStorage).filter(function (k) { return !/^(slm\.|elm|e2e_)/.test(k); }); })).length, "a key outside slm.");
+    ok(!p.errs.length, "JS errors: " + p.errs[0]);
+    await s.ctx.close();
+  });
+
+  await test("set → mistakes logged → review session two days later (lang, listen buttons, original task)", async function () {
+    const s = await session(1280, 860, true, { elm: true });
+    await withVoices(s.ctx, true);
+    const p = s.page;
+    await visit(p, "#/practice/set/a1-verbs-gustar-1", 900);
+    await p.click("[data-fk='start']");
+    await runItems(p, false);
+    ok(await p.locator(".ex-result").count() === 1, "no set result");
+    ok(/a1-verbs-gustar%3A%20/.test(await p.getAttribute(".ex-result .report-link a", "href")), "no report link on the set result");
+    const n = await p.evaluate(function () { return LM.profileData.entries().length; });
+    ok(n >= 8, "mistakes logged: " + n);
+    const dump = await slmDump(p);
+    await s.ctx.close();
+    // Two days later the mistakes are due (the first review is tomorrow)
+    const t = await session(1280, 860, false);
+    await withVoices(t.ctx, true);
+    await t.ctx.addInitScript(function (d) { if (localStorage.getItem("e2e_dump")) return; localStorage.setItem("e2e_dump", "1"); Object.keys(d).forEach(function (k) { localStorage.setItem(k, d[k]); }); }, dump);
+    const q = t.page;
+    await q.clock.install({ time: new Date(Date.now() + 2 * 864e5) });
+    await visit(q, "#/review/mistakes", 900);
+    const rows = await q.$$eval(".journal-entry", function (list) {
+      return list.map(function (e) { const r = e.querySelector(".journal-row.is-right"); return { lang: r.querySelector("dd").getAttribute("lang"), listen: !!r.querySelector(".listen-btn") }; });
+    });
+    ok(rows.length === n, "log shows " + rows.length + " of " + n);
+    ok(rows.every(function (r) { return r.lang === "es" && r.listen; }), "right answers without lang or listen button");
+    await visit(q, "#/review", 900);
+    ok(new RegExp("Mistakes from the log " + n).test(await viewText(q)), "review page: " + (await viewText(q)).slice(0, 300));
+    await visit(q, "#/review/session?only=mistakes", 1500);
+    ok(/1 of \d+ · My mistakes/.test(await viewText(q)), "session header: " + (await viewText(q)).slice(0, 120));
+    const it = await q.evaluate(function () { return LM.exercises.currentItem(); });
+    ok(it && it.id && /^a1-verbs-gustar-1-/.test(it.id), "the mistake is not shown as its original task");
+    await answerItem(q, it, true);
+    ok(await q.locator(".ex-feedback.is-correct, .ex-verdict.is-ok, .is-correct").count() > 0, "right answer not accepted in the review session");
+    ok(!q.errs.length, "JS errors: " + q.errs[0]);
+    await t.ctx.close();
+  });
+
+  await test("flashcards: the A1 deck from content is on for a new profile; the back has lang, a listen button and a report link", async function () {
+    const s = await session(1280, 860, true);
+    await withVoices(s.ctx, true);
+    const p = s.page;
+    await visit(p, "#/review/session?only=decks", 1200);
+    ok(/Food, drink and shopping/.test(await viewText(p)), "the enabled A1 deck is not studied");
+    if (await p.$(".fc-reveal")) await p.click(".fc-reveal");
+    else { await p.fill(".fc-input", "zzz"); await p.keyboard.press("Enter"); }
+    await p.waitForSelector(".fc-backside");
+    const back = await p.evaluate(function () {
+      const b = document.querySelector(".fc-backside");
+      return { lang: (b.querySelector(".fc-text") || {}).lang, listen: !!b.querySelector(".listen-btn"), report: (b.querySelector(".report-link a") || {}).href || "" };
+    });
+    ok(back.lang === "es" && back.listen && /vocab-a1-food-shopping-\d+%3A/.test(back.report), JSON.stringify(back));
+    await visit(p, "#/a1", 800);
+    ok(await p.locator('.ess-decks a[href="#/review/decks/topics/a1"]').count() === 1, "no deck link on the level page");
+    ok(!p.errs.length, "JS errors: " + p.errs[0]);
+    await s.ctx.close();
+  });
+
+  await test("export → reset → import: the same slm.* data comes back; elm_* keys untouched", async function () {
+    const s = await session(1280, 860, true, { elm: true });
+    await withVoices(s.ctx, true);
+    const p = s.page;
+    await visit(p, "#/a1", 800);
+    await p.locator('li[data-topic="a1-verbs-gustar"] input').check({ force: true });
+    await visit(p, "#/practice/set/a1-verbs-gustar-2", 900);
+    await p.click("[data-fk='start']");
+    await runItems(p, function (i) { return i % 2 === 0; });
+    await p.waitForTimeout(500); // the set result and the mistake cards are saved
+    await p.click("#profile-btn");
+    const [dl] = await Promise.all([p.waitForEvent("download"), p.click("button.menu-action:has-text('Export data')")]);
+    const before = await slmDump(p);
+    const file = path.join(os.tmpdir(), "slm-e2e-" + process.pid + ".json");
+    await dl.saveAs(file);
+    const text = fs.readFileSync(file, "utf8");
+    fs.unlinkSync(file);
+    ok(/^spanish-levels-map-\d{4}-\d{2}-\d{2}\.json$/.test(dl.suggestedFilename()), "file name " + dl.suggestedFilename());
+    ok(!/elm_|English profile/.test(text), "the export contains the English app's data");
+    await p.click("#profile-btn");
+    await p.click("button.menu-action:has-text('Reset data')");
+    await p.click("dialog[open] button:has-text('Continue')");
+    await p.click("dialog[open] button:has-text('Yes, delete')");
+    await p.waitForTimeout(400);
+    const left = await p.evaluate(function () { return Object.keys(localStorage).filter(function (k) { return /^slm\./.test(k) && k !== "slm.theme" && k !== "slm.sidebar"; }); });
+    ok(!left.length, "after reset: " + left.join(", "));
+    ok(!(await elmUntouched(p)).length, "reset touched elm_* keys");
+    p.evaluate(function (t) { LM.dataMenu.importText(t); }, text);
+    await p.waitForSelector("dialog[open]");
+    ok(/1 profile \(Test Claude\)/.test(await p.innerText("dialog[open]")), "import summary: " + await p.innerText("dialog[open]"));
+    await p.click("dialog[open] button:has-text('Import and replace')");
+    await p.waitForTimeout(300);
+    await p.click("dialog[open] .btn");
+    const after = await slmDump(p);
+    const lost = Object.keys(before).filter(function (k) { return k !== "slm.ui" && (!(k in after) || jsonDiff(JSON.parse(before[k]), JSON.parse(after[k]), "").length); }); // same data, key order may differ
+    ok(!lost.length, "changed after the round trip: " + lost.map(function (k) { return k + ": " + (k in after ? jsonDiff(JSON.parse(before[k]), JSON.parse(after[k]), "").join(", ") : "missing"); }).join("; "));
+    ok(!(await elmUntouched(p)).length, "import touched elm_* keys");
+    ok(!p.errs.length, "JS errors: " + p.errs[0]);
+    await s.ctx.close();
+  });
+
+  await test("a backup of another app (english-levels-map), elm_* keys or broken JSON is refused and changes nothing", async function () {
+    const s = await session(1280, 860, true, { elm: true });
+    const p = s.page;
+    await visit(p, "#/today", 800);
+    const before = await slmDump(p);
+    const files = [
+      [JSON.stringify({ app: "english-levels-map", kind: "backup", version: 1, data: { profiles: { version: 1, activeId: null, profiles: [] } } }), /comes from "english-levels-map"/],
+      [JSON.stringify(ELM_DATA), /not a Spanish Levels Map backup/],
+      ["{ not json", /not a valid JSON file/]
+    ];
+    for (const f of files) {
+      p.evaluate(function (t) { LM.dataMenu.importText(t); }, f[0]);
+      await p.waitForSelector("dialog[open]");
+      const msg = await p.innerText("dialog[open]");
+      ok(/Cannot import the data/.test(msg) && f[1].test(msg), "message: " + msg);
+      await p.click("dialog[open] .btn");
+      await p.waitForTimeout(150);
+    }
+    const after = await slmDump(p);
+    ok(JSON.stringify(before) === JSON.stringify(after), "a refused file changed the data");
+    ok(!(await elmUntouched(p)).length, "elm_* keys changed");
+    await s.ctx.close();
+  });
+
+  await test("E12: report links on the topic page; home footer with version, privacy sentence and source link", async function () {
+    const s = await session(1280, 860, false);
+    const p = s.page;
+    await visit(p, "#/a1/verbs-gustar", 800);
+    ok(/a1-verbs-gustar%3A%20$/.test(await p.getAttribute("#view > .report-link a", "href")), "topic page report link");
+    await visit(p, "#/", 800);
+    const foot = await p.innerText(".home-foot");
+    ok(/No accounts\. Your progress stays in this browser\./.test(foot) && /Version \d+/.test(foot) && /Source code/.test(foot), "footer: " + foot);
+    await s.ctx.close();
+  });
+
+  await test("storage blocked (private mode): the warning, and the app works in memory until the tab closes", async function () {
+    const ctx = await browser.newContext({ viewport: { width: 1280, height: 860 } });
+    await ctx.addInitScript(function () { Object.defineProperty(window, "localStorage", { get: function () { throw new Error("SecurityError"); } }); });
+    const p = await ctx.newPage();
+    const errs = [];
+    p.on("pageerror", function (e) { errs.push(e.message); });
+    await p.goto(URL + "#/today"); await p.waitForTimeout(800);
+    ok(/storage \(localStorage\) is not available/.test(await p.innerText("body")), "no storage warning");
+    await p.fill("#welcome-name", "Private");
+    await p.click(".welcome-form button.btn-primary");
+    await p.goto(URL + "#/a1"); await p.waitForTimeout(600);
+    await p.locator('li[data-topic="a1-verbs-gustar"] input').check({ force: true });
+    ok(await p.evaluate(function () { return LM.state.progress["a1-verbs-gustar"] === true; }), "the tick is not kept in memory");
+    ok(!errs.length, "JS errors: " + errs[0]);
+    await ctx.close();
+  });
+
   console.log("\nLayout");
   await test("no horizontal scroll at 320 px on the main routes", async function () {
 
     const s = await session(320, 740, true);
     const bad = [];
-    for (const r of ["#/", "#/today", "#/a1", "#/a2", "#/a1/verbs-gustar", "#/a1/verbs-ser", "#/trail", "#/nope"]) {
+    for (const r of ["#/", "#/today", "#/a1", "#/a2", "#/a1/verbs-gustar", "#/a1/verbs-ser", "#/trail", "#/placement", "#/review", "#/review/mistakes",
+      "#/review/words", "#/review/decks", "#/review/decks/topics/a1", "#/a1/test", "#/practice/weak", "#/stats", "#/notes", "#/nope"]) {
       await s.page.goto(URL + r); await s.page.waitForTimeout(500);
       const d = await s.page.evaluate(function () { return [document.documentElement.scrollWidth, document.documentElement.clientWidth]; });
       if (d[0] > d[1]) bad.push(r + " (" + d[0] + ">" + d[1] + ")");
