@@ -1,5 +1,5 @@
 /*
- * search.js — search index (port of the reference tools/zbuduj-szukaj.js) → data/search-index.js
+ * search.js — search index (port of the reference search index builder) → data/search-index.js
  *   LM.SEARCH_INDEX = { version, records: [{ id, group, title, headings, summary, text, level, category, route }] }   (lazy)
  *
  * Indexed: topic pages, summaries and cheat sheets of AVAILABLE levels only (spec 06 E1), exercise sets, mixes,

@@ -220,7 +220,7 @@ window.LM = window.LM || {};
   /** Mini: a "My exams" tile (home, Today). */
   function coverMini(e) {
     const i = info(e.id);
-    const progress = i.total ? "zestawy " + i.done + "/" + i.total : null;
+    const progress = i.total ? "sets " + i.done + "/" + i.total : null;
     return el("a", { class: "card exam-cover is-mini", href: href(e), "data-exam-cover": e.id, "data-variant": "mini", style: colorStyle(e) }, [
       el("span", { class: "exam-cover-bar", "aria-hidden": "true" }),
       el("span", { class: "exam-cover-code", "aria-hidden": "true", text: e.code }),

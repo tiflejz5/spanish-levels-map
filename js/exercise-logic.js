@@ -1,7 +1,7 @@
 /*
  * exercise-logic.js — pure logic of the exercise engine (no DOM), tested
  * in tools/tests.js. Specification of the reference app: docs/rozbudowa-v2/spec/01-typy-zadan.md
- * and 02-laboratorium-czasow-i-mieszane.md (the mixed-set algorithm).
+ * and pack v2 spec 02 (the mixed-set algorithm).
  *
  *   normalize(str)                    answer comparison (section 4 of spec 01)
  *   shuffle(list, rng)                Fisher–Yates shuffle (a copy of the list)
@@ -16,7 +16,7 @@
  *   wordDiff(model, got)              word-by-word comparison (missing / extra / replaced)
  *   prepareMatch(item, rng)           the right column of Match pairs (always shuffled)
  *
- * Types of pack v6 (spec docs/rozbudowa-v6/spec/12-nowe-typy-zadan.md): gap-fill, match,
+ * Types of pack v6 (new item types): gap-fill, match,
  * transformation, translate, dictation. Answers: { texts: […] }, { pairs: { leftIndex: rightText } },
  * { text }, { text }, { text } or { skipped: true } (dictation without a voice).
  *   pickMix(pool, opts, rng)          drawing a mixed set

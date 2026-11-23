@@ -1,8 +1,8 @@
 /*
  * exercise-engine.js — the exercise engine: a set session (Learn / Exam mode),
  * the item types, the result screen, and the "Check yourself" section on topic pages.
- * Specification of the reference app: docs/rozbudowa-v2/spec/01-typy-zadan.md; types gap-fill, match,
- * transformation, translate, dictation and points: docs/rozbudowa-v6/spec/12-nowe-typy-zadan.md.
+ * Specification of the reference app: pack v2 (item types); the types gap-fill, match,
+ * transformation, translate, dictation and points: pack v6 (new item types).
  *
  * Routes:
  *   #/practice[/mixes]               Practice (js/practice-hub.js)
@@ -251,7 +251,7 @@ window.LM = window.LM || {};
     pd().addAttempt({
       itemId: p.item.id, setId: p.item.setId || null, topic: p.item.topic, level: p.item.level,
       // Listening read from the transcript (no voice) — marked, left out of the listening stats
-      type: p.item.type, tags: p.st.readMode ? (p.item.tags || []).concat("czytane") : p.item.tags,
+      type: p.item.type, tags: p.st.readMode ? (p.item.tags || []).concat("read") : p.item.tags,
       correct: !!p.res.correct, mode: attemptMode(), answer: userAnswer(p),
       // Items worth several points: points as well (optional fields; the stats count by correct)
       points: p.res.max > 1 ? p.res.points : undefined, max: p.res.max > 1 ? p.res.max : undefined
@@ -531,7 +531,7 @@ window.LM = window.LM || {};
     const st = p.st, done = !!p.res, item = p.item;
     const chosenText = st.chosen !== null ? p.choice.options[st.chosen].text : "";
     const gap = function () {
-      if (!done) return el("span", { class: "ex-gap" + (chosenText ? " is-filled" : "") }, chosenText || el("span", { class: "visually-hidden", text: "luka" }));
+      if (!done) return el("span", { class: "ex-gap" + (chosenText ? " is-filled" : "") }, chosenText || el("span", { class: "visually-hidden", text: "gap" }));
       const ok = p.res.correct;
       return el("span", { class: "ex-gap is-filled " + (ok ? "is-ok" : "is-bad") }, [
         el("span", { class: "ex-gap-mark", "aria-hidden": "true" }, LM.icon(ok ? "check" : "x", { size: 14 })),
@@ -1018,7 +1018,7 @@ window.LM = window.LM || {};
     ops.forEach(function (o, k) {
       if (k) nodes.push(" ");
       if (o.op === "same") nodes.push(el("span", { class: "ex-diff-w", text: show(o.word) }));
-      else if (o.op === "missing") nodes.push(el("span", { class: "ex-diff-w is-missing" }, [el("span", { class: "visually-hidden", text: "(brakuje: " }), el("span", { "aria-hidden": "true", text: "+" }), show(o.word), el("span", { class: "visually-hidden", text: ")" })]));
+      else if (o.op === "missing") nodes.push(el("span", { class: "ex-diff-w is-missing" }, [el("span", { class: "visually-hidden", text: "(missing: " }), el("span", { "aria-hidden": "true", text: "+" }), show(o.word), el("span", { class: "visually-hidden", text: ")" })]));
       else if (o.op === "extra") nodes.push(el("span", { class: "ex-diff-w is-extra" }, [el("span", { class: "visually-hidden", text: "(extra: " }), el("s", { text: show(o.got) }), el("span", { class: "visually-hidden", text: ")" })]));
       else nodes.push(el("span", { class: "ex-diff-w is-replace" }, [el("span", { class: "visually-hidden", text: "(instead of " }), el("s", { text: show(o.got) }), el("span", { class: "visually-hidden", text: " it should be " }), " ", el("strong", { text: show(o.word) }), el("span", { class: "visually-hidden", text: ")" })]));
     });

@@ -161,7 +161,7 @@ window.LM = window.LM || {};
     if (card.type === "cloze") {
       const c = clozeParts(card);
       nodes.push(el("p", { class: "fc-text", lang: "en" }, c.ok
-        ? [document.createTextNode(c.before), el("span", { class: "fc-blank", "aria-label": "luka" }, "_____"), document.createTextNode(c.after)]
+        ? [document.createTextNode(c.before), el("span", { class: "fc-blank", "aria-label": "gap" }, "_____"), document.createTextNode(c.after)]
         : [document.createTextNode(card.text)]));
     } else {
       nodes.push(el("p", { class: "fc-text", text: card.front }));
@@ -318,7 +318,7 @@ window.LM = window.LM || {};
     if (!hasProfile()) return;
     LM.dialogs.prompt({ title: "New deck", label: "Deck name", confirmLabel: "Create" }).then(function (name) {
       if (!name) return;
-      const d = { id: "u-" + U.uid("talia").toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 40), title: name.trim().slice(0, 80), createdAt: new Date().toISOString() };
+      const d = { id: "u-" + U.uid("deck").toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 40), title: name.trim().slice(0, 80), createdAt: new Date().toISOString() };
       st().userDecks.push(d);
       st().settings.enabledDecks.push(d.id);
       saveState();

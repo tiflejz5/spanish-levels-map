@@ -6,7 +6,7 @@
  *       words are separated by white space; contractions, hyphenated words, numbers, e-mail addresses
  *       and phone numbers = 1 word; emoticons and symbols do not count; neither do the placeholder words
  *       in skip (e.g. a signature placeholder from the exam config) nor the given opening, if the user copied it
- *   writingZone(n, T)             strefa licznika: low (< warnBelow), warn (< min), ok, over (> max)
+ *   writingZone(n, T)             counter zone: low (< warnBelow), warn (< min), ok, over (> max)
  */
 window.LM = window.LM || {};
 

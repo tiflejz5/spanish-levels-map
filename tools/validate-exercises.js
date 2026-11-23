@@ -1,6 +1,6 @@
 /*
  * validate-exercises.js — validator of exercise sets, the topic → sets map, mixes and level final tests
- * (port of the reference tools/waliduj-cwiczenia.js, spec 03). Run by `npm run validate` and `npm run build`;
+ * (port of the reference exercise validator, spec 03). Run by `npm run validate` and `npm run build`;
  * errors stop the build (exit code 1).
  *
  * Kept from the reference: every per-item rule (all item types, ids unique across the bank, explanation,

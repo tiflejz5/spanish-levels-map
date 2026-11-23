@@ -1,6 +1,6 @@
 /*
  * final-logic.js — pure logic of the level final tests (no DOM, tests in tools/tests.js).
- * Specification of the reference app: docs/rozbudowa-v6/spec/13-test-poziomu-i-testy-koncowe.md, section 2.
+ * Specification of the reference app: pack v6 spec 13 (placement and final tests), section 2.
  *
  *   drawItems(pool, draw, categoryOf, rng)   draws "draw" items from the pool; every category is represented
  *                                            in proportion to its share of the pool (at least 1), items

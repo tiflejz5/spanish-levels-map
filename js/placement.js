@@ -10,7 +10,7 @@
  * (at least A1); 12 questions without repeats; when a level's pool runs out —
  * a question from the next level. From a level's pool first the questions outside the previous
  * attempt, and among them the skill seen least so far (grammar / vocabulary / reading,
- * spec docs/rozbudowa-v6/spec/13 section 1.3 of the reference app). Result: the average level of the last
+ * pack v6 spec 13 section 1.3 of the reference app). Result: the average level of the last
  * 6 questions, rounded down.
  * The "level of a question" in the algorithm is the TARGET level (the one the test wanted
  * to ask about). When a level's pool is empty and a question comes from the next

@@ -63,7 +63,7 @@
   --inverse-bg: #1d2433;      /* e.g. the key word in exercises */
   --inverse-text: #fffdf9;
 
-  /* Tekst */
+  /* Text */
   --ink: #1d2433;             /* atrament mapy */
   --ink-muted: #545d6e;       /* secondary (≥ 4.5:1 also on surface-2) */
   --ink-faint: #69707f;       /* placeholdery */
@@ -136,7 +136,7 @@
   --topo-color: #1d2433;
   --topo-opacity: 0.05;
 
-  /* Pasek przewijania */
+  /* Scrollbar */
   --scrollbar: rgba(29, 36, 51, 0.22);
   --scrollbar-hover: rgba(29, 36, 51, 0.38);
 }
@@ -340,7 +340,7 @@ h4 { font-weight: 600; }
 
 button, input, textarea, select { font: inherit; color: inherit; }
 
-/* Widoczny fokus klawiatury */
+/* Visible keyboard focus */
 :focus-visible {
   outline: 2px solid var(--focus-color);
   outline-offset: 2px;
@@ -625,7 +625,7 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
   opacity: 0;
   transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-base) var(--ease-spring);
 }
-/* Zaznaczone: kolor krainy (poza poziomem — kolor sukcesu) */
+/* Checked: the land color (outside a level — the success color) */
 .known-check input:checked { background: var(--lvl, var(--success-fill)); border-color: var(--lvl, var(--success-fill)); }
 .known-check input:checked::after { opacity: 1; transform: rotate(-45deg) translate(1px, -1px) scale(1); }
 /* C3: a checked "I know this" = a round stamp in the land color; the "bounce" only when the user checks it (.is-fresh) */
@@ -1529,7 +1529,7 @@ textarea.field { overflow: auto; }
 .ring.is-brand .ring-text { color: var(--ink); }
 .ring.is-brand .ring-track { stroke: var(--surface-3); }
 
-/* Subtelny pasek przewijania */
+/* A subtle scrollbar */
 * { scrollbar-width: thin; scrollbar-color: var(--scrollbar) transparent; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -2081,7 +2081,7 @@ html.focus-mode .c1-writing-area { box-shadow: 0 0 0 4px var(--accent-soft); }
 .tool-eyebrow a:not(.crumb) { color: var(--accent); text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px; }
 .ex-loading { padding: 24px 0; }
 
-/* Ekran startowy */
+/* Start screen */
 .ex-intro { padding: 24px 28px; }
 .ex-intro-count { font-size: var(--fs-md); margin-bottom: 8px; }
 .ex-intro-count strong { font-family: var(--font-display); font-size: var(--fs-xl); }
@@ -2254,7 +2254,7 @@ html.focus-mode .c1-writing-area { box-shadow: 0 0 0 4px var(--accent-soft); }
 .ex-diff-w.is-replace strong { color: var(--success); }
 .ex-diff-legend { margin: 0; font-size: var(--fs-sm); }
 
-/* Informacja zwrotna */
+/* Feedback */
 .ex-status:empty { display: none; }
 .ex-status.is-hint { margin: 0 0 14px; padding: 10px 14px; border-radius: var(--radius); background: var(--info-bg); font-size: var(--fs-sm-plus); }
 .ex-spelling { color: var(--warning); font-weight: 600; }
@@ -2385,7 +2385,7 @@ a.lab-tile:hover { border-color: var(--line-strong); box-shadow: var(--shadow); 
 .lab-tile-ex { margin-top: auto; font-size: var(--fs-sm-plus); font-style: italic; color: var(--ink); }
 .lab-forms { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
 
-/* Karta czasu */
+/* Tense card */
 .lab-card { display: flex; flex-direction: column; gap: 18px; }
 .lab-card-head { padding: 24px; border-bottom: 1px solid var(--line); background: var(--surface); }
 .lab-card-eyebrow { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); }
@@ -2433,7 +2433,7 @@ a.lab-tile:hover { border-color: var(--line-strong); box-shadow: var(--shadow); 
 .lab-contrast .btn, .lab-result .btn { min-height: 44px; }
 .lab-practice-links { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; }
 
-/* Dobierz czas */
+/* Pick the tense */
 .lab-pick { max-width: 760px; padding: 24px 28px; }
 .lab-path { list-style: none; display: flex; flex-wrap: wrap; gap: 4px 6px; margin: 0 0 16px; padding: 0; font-size: var(--fs-sm); color: var(--ink-muted); }
 .lab-path li + li::before { content: "→"; margin-right: 6px; }
@@ -2569,7 +2569,7 @@ a.lab-tile:hover { border-color: var(--line-strong); box-shadow: var(--shadow); 
 .st-hero-empty { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; padding: 20px 22px; max-width: 760px; }
 .st-hero-title { margin: 0 0 4px; font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 600; }
 
-/* Kafle liczb */
+/* Number tiles */
 .st-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 10px; }
 .st-stats.is-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .st-stat { padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); }
@@ -2732,7 +2732,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .notes-item-text { margin: 0 0 10px; white-space: pre-wrap; overflow-wrap: anywhere; }
 
 @media (max-width: 760px) {
-  /* Dolna szuflada */
+  /* Bottom drawer */
   .notes-panel { top: auto; left: 0; right: 0; bottom: 0; width: 100%; height: min(70vh, 520px); border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-width: 1px 0 0; animation-name: notes-up; }
   @keyframes notes-up { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
   .page-view .page-head .notes-btn span:not(.notes-dot) { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
@@ -2997,7 +2997,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .fc-check input { width: 20px; height: 20px; accent-color: var(--accent); }
 .fc-check .tool-note { grid-column: 2; margin: 0; }
 
-/* Sesja nauki */
+/* Study session */
 .fc-session { max-width: 760px; }
 .fc-session-top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; margin-bottom: 14px; }
 .fc-back { margin: 0; }

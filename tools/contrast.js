@@ -43,43 +43,43 @@ function ratio(a, b) { const la = lum(a), lb = lum(b); return (Math.max(la, lb) 
 // [foreground, background, (base under a semi-transparent background), minimum, description]
 const pairs = [];
 ["bg", "surface", "surface-2", "surface-3", "empty-bg"].forEach(function (bg) {
-  pairs.push(["ink", bg, null, 4.5, "tekst / " + bg]);
+  pairs.push(["ink", bg, null, 4.5, "text / " + bg]);
   pairs.push(["ink-muted", bg, null, 4.5, "secondary text / " + bg]);
 });
 ["uoe", "reading", "writing", "listening", "speaking", "grammar", "vocab", "other"].forEach(function (c) {
-  pairs.push(["cat-" + c, "surface", null, 3, "pasek kategorii dziennika (" + c + ") / karta"]);
+  pairs.push(["cat-" + c, "surface", null, 3, "mistake log category bar (" + c + ") / card"]);
 });
 pairs.push(
   ["ink-faint", "surface", null, 4.5, "placeholder / pole"],
-  ["accent", "surface", null, 4.5, "link / karta"],
+  ["accent", "surface", null, 4.5, "link / card"],
   ["accent", "bg", null, 4.5, "link / background"],
   ["accent", "surface-2", null, 4.5, "link / panel"],
   ["accent", "info-bg", "surface", 4.5, "link / ramka informacyjna"],
   ["accent", "accent-soft", "surface", 4.5, "link / accent highlight"],
-  ["ink", "info-bg", "surface", 4.5, "tekst / ramka informacyjna"],
+  ["ink", "info-bg", "surface", 4.5, "text / info box"],
   ["ink", "accent-soft", "surface", 4.5, "text / active profile"],
-  ["ink", "hover", "surface-2", 4.5, "tekst / najechanie w panelu"],
+  ["ink", "hover", "surface-2", 4.5, "text / hover in the panel"],
   ["on-accent", "accent-bg", null, 4.5, "primary button text"],
   ["on-accent", "accent-hover", null, 4.5, "primary button text (hover)"],
   ["on-accent", "danger-bg", null, 4.5, "\"delete\" button text"],
   ["on-accent", "danger-hover", null, 4.5, "\"delete\" button text (hover)"],
-  ["on-accent", "success-fill", null, 3, "znacznik ✓ / zaznaczone pole"],
+  ["on-accent", "success-fill", null, 3, "✓ mark / checked box"],
   ["danger", "surface", null, 4.5, "error / card"],
   ["danger", "danger-soft", "surface", 4.5, "error / error background"],
-  ["success", "surface", null, 4.5, "sukces / karta"],
+  ["success", "surface", null, 4.5, "success / card"],
   ["success", "success-soft", "surface", 4.5, "success / success background"],
   ["warning", "surface", null, 4.5, "warning / card"],
   ["ink", "warning-soft", "surface", 4.5, "text / warning banner"],
   ["inverse-text", "inverse-bg", null, 4.5, "key word"],
-  ["line-control", "surface", null, 3, "obramowanie pola / karta"],
+  ["line-control", "surface", null, 3, "field border / card"],
   ["line-control", "bg", null, 3, "field border / background"],
-  ["line-control", "surface-2", null, 3, "obramowanie pola / panel"],
+  ["line-control", "surface-2", null, 3, "field border / panel"],
   ["success-fill", "surface", null, 3, "checked \"I know this\" / card"],
   ["focus-color", "surface", null, 3, "focus ring / card"],
   ["focus-color", "bg", null, 3, "focus ring / background"],
   ["focus-color", "surface-2", null, 3, "focus ring / panel"],
   ["accent-bg", "bg", null, 3, "primary button / background"],
-  ["danger-bg", "surface", null, 3, "znacznik ✗ / karta"],
+  ["danger-bg", "surface", null, 3, "✗ mark / card"],
   ["c1-gold", "c1-navy", null, 4.5, "exam chip: gold text / navy"],
   ["c1-edge", "surface-2", null, 3, "exam chip: edge / panel"],
   ["c1-ink", "c1-soft", "surface-2", 4.5, "active exam chip: text / background"],
@@ -87,7 +87,7 @@ pairs.push(
   ["on-accent", "accent-bg", null, 4.5, "reviews badge / background"],
   ["on-accent", "success-fill", null, 4.5, "\"Good\", the \"Correct\" label / background"],
   ["on-accent", "danger-bg", null, 4.5, "the \"Your answer\" label / background"],
-  ["c1-gold", "c1-navy", null, 4.5, "kafel egzaminu: liczba / granat"],
+  ["c1-gold", "c1-navy", null, 4.5, "exam tile: number / navy"],
   ["ink", "c1-soft", "surface", 4.5, "\"In the exam\" callout: text / background"],
   ["c1-ink", "c1-soft", "surface", 4.5, "\"In the exam\" callout: link / background"],
   ["c1-ink", "surface", null, 4.5, "exam part chip / card"],
@@ -97,7 +97,7 @@ pairs.push(
   ["ink", "surface-3", null, 4.5, "exam chip on hover: text / background"],
   ["ink-muted", "surface", null, 4.5, "card on a phone: column label / background"],
   ["warning", "surface", null, 3, "warning icon / icon background"],
-  ["c1-cream", "c1-navy", null, 4.5, "kafel egzaminu: tekst / granat"],
+  ["c1-cream", "c1-navy", null, 4.5, "exam tile: text / navy"],
   ["c1-cream-muted", "c1-navy", null, 4.5, "kafel egzaminu: data / granat"],
   ["tense-past", "surface", null, 3, "timeline: past / card"],
   ["tense-present", "surface", null, 3, "timeline: present / card"],
@@ -111,7 +111,7 @@ pairs.push(
   ["warning", "danger-soft", "surface", 4.5, "\"Watch the spelling\" / wrong answer background"],
   ["success", "danger-soft", "surface", 4.5, "\"Correct: …\" / wrong answer background"],
   ["accent", "surface-3", null, 3, "stats: study day / day without study"],
-  ["accent", "surface", null, 3, "statystyki: kolumna trendu / karta"],
+  ["accent", "surface", null, 3, "stats: trend column / card"],
   ["accent", "accent-soft", "surface", 3, "stats: accuracy bar / track"],
   ["inverse-text", "inverse-bg", null, 4.5, "toast: text / background"],
   // Exam covers (B3), full and compact: --accent-soft background on the section --bg
@@ -136,14 +136,14 @@ pairs.push(
   const L = l.toUpperCase();
   pairs.push(
     ["lvl-" + l + "-ink", "lvl-" + l + "-soft", null, 4.5, "level text " + L + " / background " + L],
-    ["lvl-" + l + "-ink", "surface", null, 4.5, "tekst poziomu " + L + " / karta"],
+    ["lvl-" + l + "-ink", "surface", null, 4.5, "level text " + L + " / card"],
     ["lvl-" + l, "lvl-" + l + "-soft", null, 3, "pasek " + L + " / tor"],
-    ["lvl-" + l, "surface", null, 3, "znacznik " + L + " / karta"],
+    ["lvl-" + l, "surface", null, 3, "marker " + L + " / card"],
     ["lvl-" + l, "bg", null, 3, "marker " + L + " / background"],
     ["on-accent", "lvl-" + l, null, 3, "\"I know this\" tick / fill " + L],
     ["lvl-" + l + "-ink", "bg", null, 4.5, "land label " + L + " above the heading / background"],
     ["ink", "lvl-" + l + "-glow", "surface", 4.5, "key-word marker " + L + " / item card"],
-    ["lvl-" + l, "lvl-" + l + "-soft", null, 3, "symbol krainy " + L + " / plama na Szlaku"],
+    ["lvl-" + l, "lvl-" + l + "-soft", null, 3, "land symbol " + L + " / patch on the Trail"],
     ["lvl-" + l + "-ink", "surface", null, 4.5, "Today: name of the current land " + L + " / map card"]
   );
 });

@@ -336,7 +336,7 @@ window.LM = window.LM || {};
       const ctx = { rec: rec, repaint: repaint };
       paintItem(panel, unit, item, ctx);
       if (rec) panel.appendChild(rec.node);
-      panel.appendChild(selfAssessment(D, unit.type === "simple" ? "karta" : unit.tab, unit.part, false, onSaved));
+      panel.appendChild(selfAssessment(D, unit.type === "simple" ? "card" : unit.tab, unit.part, false, onSaved));
     }
 
     // ---------- card content by type ----------
