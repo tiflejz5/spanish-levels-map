@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "id": "a1-verbs-gustar-2",
+  "topic": "a1-verbs-gustar",
+  "level": "A1",
+  "title": "gustar: write it yourself",
+  "intro": "10 tasks: type the missing word, rewrite sentences, write what you hear and build a question.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-gustar-2-01",
+      "type": "short-answer",
+      "tags": ["gustar", "agreement"],
+      "prompt": "A Lucía le ___ los gatos. (gustar)",
+      "accepted": ["gustan"],
+      "explanation": "Los gatos is plural, so the verb is gustan. The verb agrees with the thing you like, not with Lucía."
+    },
+    {
+      "id": "a1-verbs-gustar-2-02",
+      "type": "short-answer",
+      "tags": ["gustar", "pronouns"],
+      "prompt": "(a nosotros) ___ gusta mucho la playa.",
+      "accepted": ["nos"],
+      "explanation": "For nosotros and nosotras the pronoun is nos: Nos gusta mucho la playa."
+    },
+    {
+      "id": "a1-verbs-gustar-2-03",
+      "type": "short-answer",
+      "tags": ["gustar", "how-much"],
+      "prompt": "—¿A Mateo le gusta el fútbol?\n—No, no le gusta ___. (not at all)",
+      "accepted": ["nada", "para nada"],
+      "explanation": "No … nada means “not at all”: No le gusta nada. No le gusta para nada says the same."
+    },
+    {
+      "id": "a1-verbs-gustar-2-04",
+      "type": "transformation",
+      "tags": ["gustar", "a-mi"],
+      "source": "Me gusta bailar.",
+      "keyword": "mí",
+      "before": "A",
+      "after": "bailar.",
+      "answers": ["mí me gusta"],
+      "wordLimit": [2, 4],
+      "explanation": "A mí adds emphasis but does not replace the pronoun: A mí me gusta bailar."
+    },
+    {
+      "id": "a1-verbs-gustar-2-05",
+      "type": "transformation",
+      "tags": ["gustar", "word-order"],
+      "source": "Le gusta el cine a Sofía.",
+      "keyword": "Sofía",
+      "before": "A",
+      "after": "el cine.",
+      "answers": ["Sofía le gusta"],
+      "wordLimit": [2, 4],
+      "explanation": "A + the person can go first or last; le stays before the verb: A Sofía le gusta el cine."
+    },
+    {
+      "id": "a1-verbs-gustar-2-06",
+      "type": "dictation",
+      "tags": ["gustar", "encantar", "listening"],
+      "text": "A mi hermana le encantan los gatos, pero a mí no.",
+      "accepted": [],
+      "explanation": "Encantan agrees with los gatos; a mí no is a short way to say “I don't”."
+    },
+    {
+      "id": "a1-verbs-gustar-2-07",
+      "type": "dictation",
+      "tags": ["gustar", "questions", "listening"],
+      "text": "¿Te gusta cocinar los domingos?",
+      "accepted": [],
+      "explanation": "A question keeps the word order of a statement; only the ¿ ? and the intonation change."
+    },
+    {
+      "id": "a1-verbs-gustar-2-08",
+      "type": "gap-fill",
+      "tags": ["gustar", "pronouns", "agreement"],
+      "context": "Javier and Camila like dogs.",
+      "text": "A Javier y a Camila {{1}} {{2}} los perros.",
+      "gaps": [{ "accepted": ["les"] }, { "accepted": ["gustan"], "hint": "(gustar)" }],
+      "explanation": "Two people → les. Los perros is plural → gustan."
+    },
+    {
+      "id": "a1-verbs-gustar-2-09",
+      "type": "multiple-choice",
+      "kind": "function",
+      "tags": ["gustar", "reactions"],
+      "prompt": "—Me encanta esta canción.\n—¡A mí ___! (Me too!)",
+      "options": ["también", "tampoco", "sí", "mucho"],
+      "correct": 0,
+      "explanation": "To agree with a positive sentence, say a mí también.",
+      "optionNotes": [null, "Tampoco agrees with a negative sentence.", "A mí sí disagrees with a negative sentence.", "Mucho says how much, not that you agree."]
+    },
+    {
+      "id": "a1-verbs-gustar-2-10",
+      "type": "reorder",
+      "tags": ["gustar", "questions", "word-order"],
+      "context": "Do you like Mexican food? (to a friend)",
+      "answers": ["¿Te gusta la comida mexicana?", "¿La comida mexicana te gusta?"],
+      "explanation": "Te for a friend, gusta for one thing, and the article la before comida."
+    }
+  ]
+}

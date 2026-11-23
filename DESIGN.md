@@ -670,8 +670,15 @@ Ograniczenie: audyt automatyczny nie zastępuje testu z czytnikiem ekranu (NVDA 
 - **Settings** (profile menu, "Learning settings"): two new switches (accept answers without accents; auto-play the Spanish side of a flashcard) and a "Voice" radio group (`.menu-radio`, `role="radiogroup"`; the chosen option has a filled dot, so colour is not the only signal). Without a Spanish voice the group is replaced by a note.
 - **Stats:** answers accepted without accents appear as a note under "Overall accuracy" ("incl. N answers accepted without accents").
 
+### 3.17 Exercises with Spanish data (Spanish Levels Map, stage 4)
+
+- **Fill the table** (`paradigm`, spec 06 E6, `.ex-para`): the lemma in bold (`lang="es"`) with the English gloss in `--ink-muted`, the prompt, then a two-column grid (label | field), `display: contents` rows, so Tab goes down the cells. Under 480 px one column (label above its field, field full width). Fields: 44 px high, `--font`, `--fs-md`. A given cell is a read-only field with a dashed border on `--surface-2`, "example" next to it, outside the tab order. After checking: ✓ / ✗ icon per cell, a wrong field struck through on `--danger-soft` with the right form next to it (`.ex-gap-model`), the per-cell near-miss hints in the status box ("tú: Almost. Check the accents: …"). The character bar sits under the grid; the status box is `aria-live="polite"`.
+- **Put in order with ¿ ? / ¡ !**: the opening and the end mark are never tiles; they are shown around the answer line (`.ex-line-frame`, `.ex-line-mark` in Fraunces, `--ink-muted`, `aria-hidden`; the hidden prompt says "It is a question."). The first tile keeps its capital only when it is a name.
+- **Set result** is in points ("12/14 points"); "pkt" chips became "points".
+
 ## 10. Dziennik zmian
 
+- **Stage 4 (exercises, Spanish Levels Map).** The `paradigm` item type (view in 3.17), every item type checked end to end with Spanish data (frame marks in Put in order, names keep their capital, no English contractions or "I" fix-ups, model answers with `lang`), placement and final tests on syllabus categories, `tools/validate-content.js` (validate_plan.py rules + E11 heuristics), `tools/strip-keys.js`. CSS after "Fill the gaps" in `css/style.css`; only existing tokens, contrast unchanged.
 - **Stage 3 (language layer, Spanish Levels Map).** `LM.lang`, `LM.exLogic.match` (accents / ending / typo hints, lenient mode), `LM.speech` (one voice module, voice variant, no-voice paths), `lang` markup and listen buttons, the special-character bar, `LM.lang.fold` in search. CSS at the end of `css/style.css` ("LANGUAGE LAYER"); contrast unchanged (only existing tokens).
 
 - **Etap 1 (fundament).**
