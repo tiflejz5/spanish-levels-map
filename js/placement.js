@@ -242,7 +242,7 @@ window.LM = window.LM || {};
 
     view.appendChild(el("section", { class: "card lt-card lt-result lvl-" + level, "aria-live": "polite" }, [
       el("p", { class: "lt-result-label", text: "Estimated level:" }),
-      el("p", { class: "lt-result-level" }, [el("strong", { class: "lt-result-code", text: level }), el("span", { class: "lt-result-note", text: "orientacyjnie" })]),
+      el("p", { class: "lt-result-level" }, [el("strong", { class: "lt-result-code", text: level }), el("span", { class: "lt-result-note", text: "approximate" })]),
       desc ? el("p", { class: "tool-lead" }, U.formatText(desc)) : null,
       LM.syl.isAvailable(level) ? null : el("p", { class: "lt-result-soon", role: "note", text: level + " is on its way, so its pages are not written yet. Until then, the trail starts from the highest available level, and the " + level + " page shows what it will cover." }),
       skillBreakdown(saved.answers),

@@ -413,13 +413,13 @@ window.LM = window.LM || {};
       panel.appendChild(list);
       panel.appendChild(el("div", { class: "sp-actions" }, [more, el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(lines[Math.max(0, shown - 1)]); } }, LM.ui.withIcon("play", "Play the line"))]));
       panel.appendChild(mainTimer(ctx, P.seconds, "Conversation (approximate)").node);
-      panel.appendChild(phrasesBox(c.usefulPhrases));
+      U.appendChildren(panel, phrasesBox(c.usefulPhrases));
     }
 
     function paintPicture(panel, P, c, ctx) {
       panel.appendChild(el("figure", { class: "sp-picture sp-picture-wide" }, [el("span", { class: "sp-picture-mark", "aria-hidden": "true", text: "Photo" }), el("figcaption", null, [el("span", { class: "review-label", text: "Imagine a photo: " }), el("span", { lang: "en", text: c.description })])]));
       panel.appendChild(el("div", { class: "sp-part-body" }, [questionStepper(c.questions), mainTimer(ctx, P.seconds, "Description and answers (approximate)").node]));
-      panel.appendChild(phrasesBox(c.usefulPhrases));
+      U.appendChildren(panel, phrasesBox(c.usefulPhrases));
     }
 
     function paintChoice(panel, P, c, ctx) {
@@ -434,7 +434,7 @@ window.LM = window.LM || {};
     function paintSimple(panel, c, ctx) {
       panel.appendChild(el("p", { class: "sp-situation" }, [el("span", { class: "chip", text: c.topic }), " ", el("strong", { text: c.task })]));
       panel.appendChild(el("div", { class: "sp-part-body" }, [questionStepper(c.questions), mainTimer(ctx, c.seconds || 60, "Time").node]));
-      panel.appendChild(phrasesBox(c.usefulPhrases));
+      U.appendChildren(panel, phrasesBox(c.usefulPhrases));
     }
 
     // ---------- Part 2 (two situations) and Part 3 (a task with five options) ----------

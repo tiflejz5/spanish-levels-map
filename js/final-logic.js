@@ -67,7 +67,7 @@ window.LM = window.LM || {};
   function drawItems(pool, draw, categoryOf, rng) {
     const byCat = {};
     pool.forEach(function (it) {
-      const c = categoryOf(it) || "inne";
+      const c = categoryOf(it) || "other";
       (byCat[c] = byCat[c] || []).push(it);
     });
     const counts = {};
@@ -99,7 +99,7 @@ window.LM = window.LM || {};
       const max = r.res ? r.res.max : X().maxPoints(r.item);
       if (!max) return;
       const pts = r.res ? r.res.points || 0 : 0;
-      const c = categoryOf(r.item) || "inne";
+      const c = categoryOf(r.item) || "other";
       if (!byCat[c]) { byCat[c] = { key: c, score: 0, total: 0 }; cats.push(byCat[c]); }
       byCat[c].score += pts;
       byCat[c].total += max;

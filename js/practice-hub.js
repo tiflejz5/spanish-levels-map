@@ -66,7 +66,7 @@ window.LM = window.LM || {};
     Object.keys(index.topics).forEach(function (t) {
       const meta = topicMeta(t);
       const level = meta ? meta.level : "A1";
-      const cat = meta ? meta.category : "inne";
+      const cat = meta ? meta.category : "other";
       index.topics[t].forEach(function (id) {
         const set = index.sets[id];
         if (!set) return;

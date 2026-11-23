@@ -671,7 +671,7 @@ window.LM = window.LM || {};
           "aria-label": g.label + " – next review in " + when + (isSug ? " (suggested rating)" : ""),
           onclick: function () { grade(g.id); }
         }, [el("span", { class: "fc-grade-label", text: g.label }), el("span", { class: "fc-grade-when", text: when }),
-          el("span", { class: "fc-grade-key", "aria-hidden": "true", text: g.key }), isSug ? el("span", { class: "fc-grade-sug", "aria-hidden": "true", text: "sugerowana" }) : null]);
+          el("span", { class: "fc-grade-key", "aria-hidden": "true", text: g.key }), isSug ? el("span", { class: "fc-grade-sug", "aria-hidden": "true", text: "suggested" }) : null]);
       })));
     } else if (!typedMode) {
       root.appendChild(el("div", { class: "fc-reveal-row" }, el("button", { type: "button", class: "btn btn-primary btn-large fc-reveal", onclick: reveal }, "Show answer")));
