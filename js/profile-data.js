@@ -12,13 +12,15 @@
  *                      best / last = { score, total, date }; recent — fractions of the last 5 results
  *                      ("I know this" suggestion); lastMix — items of the last mixed session;
  *                      dismissed: { <setId>: "YYYY-MM-DD" } — "I know this" suggestion refused
- *   slm.attempts  { version: 1, profiles: { <id>: { items: [attempt…], aggregates: { <itemId>: { n, ok, topic, type, level } } } } }
+ *   slm.attempts  { version: 1, profiles: { <id>: { items: [attempt…], aggregates: { <itemId>: { n, ok, lenient?, topic, type, level } } } } }
  *                    — attempts log: every answer in exercises (buffer of 3000, older ones in aggregates; js/learning-stats.js)
  *   slm.autojournal { version: 1, profiles: { <id>: { items: { <itemId>: { entryId, created, wrongCount, lastWrongAt, returned } } } } }
  *                    — mistake log entries added automatically from items (slm.journal format unchanged;
  *                      the entry is linked by ref = "ex:<itemId>")
- *   slm.prefs { version: 1, profiles: { <id>: { autoJournal: true|false, selectionMenu: true|false, highlightWords: true|false } } } — learning settings
- *                    (selectionMenu and highlightWords — "My words", pack v6; a missing field = the default value)
+ *   slm.prefs { version: 1, profiles: { <id>: { autoJournal: true|false, selectionMenu: true|false, highlightWords: true|false,
+ *                    lenientAccents: true|false, voiceVariant: <LM.APP.speech.variants id> | "", autoPlayCards: true|false } } } — learning settings
+ *                    (selectionMenu and highlightWords — "My words", pack v6; lenientAccents, voiceVariant, autoPlayCards — spec 06 E4, E5;
+ *                    a missing field = the default value)
  *   slm.notes     { version: 1, profiles: { <id>: { items: { <page key>: { text, updatedAt, title, route } } } } }
  *                    — your own notes (plain text, at most 10,000 characters)
  *   slm.exams     { version: 1, profiles: { <id>: { exams: { <examId>: { examDate, drafts: { <task>: text }, tasks: { <page>: { <n>: true } },
@@ -136,7 +138,7 @@ window.LM = window.LM || {};
     if (kind === "exercises") return { sets: {}, lastMix: [], dismissed: {} };
     if (kind === "attempts") return { items: [], aggregates: {} };
     if (kind === "autojournal") return { items: {} };
-    if (kind === "prefs") return { autoJournal: true, selectionMenu: true, highlightWords: false };
+    if (kind === "prefs") return { autoJournal: true, selectionMenu: true, highlightWords: false, lenientAccents: false, voiceVariant: "", autoPlayCards: false };
     if (kind === "notes") return { items: {} };
     if (kind === "exams") return { exams: {} };
     if (kind === "speaking") return { sessions: [] };
@@ -255,6 +257,7 @@ window.LM = window.LM || {};
         const g = raw.aggregates[id];
         if (!EX_ID.test(id) || !U.isPlainObject(g) || !Number.isInteger(g.n) || !Number.isInteger(g.ok) || g.n < 1 || g.ok < 0 || g.ok > g.n) return;
         aggregates[id] = { n: g.n, ok: g.ok, topic: optId(g.topic), type: ATTEMPT_TYPES.indexOf(g.type) !== -1 ? g.type : null, level: learn().LEVELS.indexOf(g.level) !== -1 ? g.level : null };
+        if (Number.isInteger(g.lenient) && g.lenient > 0 && g.lenient <= g.ok) aggregates[id].lenient = g.lenient;
       });
       return { items: items, aggregates: aggregates };
     }
@@ -294,7 +297,10 @@ window.LM = window.LM || {};
       });
       return { starred: starred };
     }
-    if (kind === "prefs") return { autoJournal: raw.autoJournal !== false, selectionMenu: raw.selectionMenu !== false, highlightWords: raw.highlightWords === true };
+    if (kind === "prefs") {
+      return { autoJournal: raw.autoJournal !== false, selectionMenu: raw.selectionMenu !== false, highlightWords: raw.highlightWords === true,
+        lenientAccents: raw.lenientAccents === true, voiceVariant: voiceVariantOf(raw.voiceVariant), autoPlayCards: raw.autoPlayCards === true };
+    }
     if (kind === "speaking") {
       const out = { sessions: (Array.isArray(raw.sessions) ? raw.sessions : []).slice(-SPEAKING_MAX).map(normalizeSpeakingSession).filter(Boolean) };
       const seen = normalizeSeen(raw.seen);
@@ -397,6 +403,12 @@ window.LM = window.LM || {};
     return session;
   }
 
+  /** A voice variant id from LM.APP.speech.variants, or "" (the default: the first variant). */
+  function voiceVariantOf(v) {
+    const list = (LM.APP && LM.APP.speech && LM.APP.speech.variants) || [];
+    return typeof v === "string" && list.some(function (x) { return x.id === v; }) ? v : "";
+  }
+
   /** An attempt (attempts log), or null for a wrong format. */
   function normalizeAttempt(raw) {
     if (!U.isPlainObject(raw) || !EX_ID.test(raw.itemId || "") || !learn().isDay(raw.day)) return null;
@@ -418,6 +430,8 @@ window.LM = window.LM || {};
       out.points = raw.points;
       out.max = raw.max;
     }
+    // Optional (spec 06 E4): counted as correct only because the preference lenientAccents accepts answers without accents
+    if (raw.lenient === true && out.correct) out.lenient = true;
     return out;
   }
 
@@ -720,6 +734,9 @@ window.LM = window.LM || {};
     if (key === "autoJournal") rec.autoJournal = value !== false;
     if (key === "selectionMenu") rec.selectionMenu = value !== false;   // menu on text selection (My words), on by default
     if (key === "highlightWords") rec.highlightWords = value === true;  // underlining saved words, off by default
+    if (key === "lenientAccents") rec.lenientAccents = value === true;  // accents-only answers count (spec 06 E4), off by default
+    if (key === "voiceVariant") rec.voiceVariant = voiceVariantOf(value); // speech voice variant (spec 06 E5), "" = the first one
+    if (key === "autoPlayCards") rec.autoPlayCards = value === true;    // play the target side of a flashcard (spec 06 E5), off by default
     save("prefs");
   }
 

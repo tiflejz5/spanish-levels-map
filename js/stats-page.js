@@ -70,7 +70,8 @@ window.LM = window.LM || {};
         stat("Answers in 7 days", String(s.n7)),
         stat("Answers in 30 days", String(s.n30)),
         stat("Answers in total", String(s.n)),
-        stat("Overall accuracy", s.acc === null ? "—" : pct(s.acc), s.acc === null ? "not enough data" : null),
+        stat("Overall accuracy", s.acc === null ? "—" : pct(s.acc), s.acc === null ? "not enough data"
+          : s.lenient ? "incl. " + LM.plural(s.lenient, "answer") + " accepted without accents" : null),
         stat("Accuracy in 7 days", s.acc7 === null ? "—" : pct(s.acc7), s.acc7 === null ? "not enough data" : null),
         stat("Sets done", String(pd().solvedSetCount())),
         stat("Study days this month", String(days))
