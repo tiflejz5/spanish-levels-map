@@ -37,7 +37,16 @@ window.LM = window.LM || {};
   function plural(n, one, other) { return LM.plural(n, one, other); }
 
   function categoryLabel(key) { return LM.syl.categoryName(key); }
-  function categoryOf(item) { return item.category || "grammar"; }
+  /** Category of an item (spec 06 E10): the syllabus category of its topic; the build copies it into item.category as well. */
+  function categoryOf(item) {
+    const t = item.topic && LM.syl ? LM.syl.topic(item.topic) : null;
+    return (t && t.category) || item.category || "other";
+  }
+  /** Position of a category in the syllabus (the result lists categories in that order). */
+  function categoryRank(key) {
+    const i = LM.syl ? LM.syl.categories().map(function (c) { return c.id; }).indexOf(key) : -1;
+    return i === -1 ? 99 : i;
+  }
 
   // =====================================================================
   // LEVEL STAMP (trail, panel, level header)
@@ -205,7 +214,8 @@ window.LM = window.LM || {};
     ]));
 
     const wrong = run.items.filter(api.isWrong);
-    const catRows = fin.breakdown.categories.map(function (c) {
+    const catRows = fin.breakdown.categories.slice().sort(function (a, b) { return categoryRank(a.key) - categoryRank(b.key); }).map(function (c) {
+
       const showPct = c.total >= 3; // as in the placement test: no percentages with fewer than 3
       return el("li", { class: c.score === c.total ? "is-full" : "" }, [
         el("span", { class: "lf-cat-name", text: categoryLabel(c.key) }),

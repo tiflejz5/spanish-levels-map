@@ -1,5 +1,6 @@
 /*
- * e2e.js — browser smoke tests (stage 1B: routes, level status, trail from the syllabus, generic exams).
+ * e2e.js — browser smoke tests: routes, level status, trail from the syllabus, generic exams (stage 1B), the language layer
+ * (stage 3), every exercise item type with the Spanish content sets and the paradigm view (stage 4).
  *
  *   node tools/e2e.js            (or: npm run e2e)
  *
@@ -402,8 +403,144 @@ async function main() {
     await s.ctx.close();
   });
 
+  console.log("\nExercises with Spanish data (stage 4: every item type, paradigm E6)");
+  /** Answers the current item through the page as a learner would, with the model answer (right) or a wrong one. */
+  async function answerItem(page, it, right) {
+    const t = it.type;
+    if (t === "multiple-choice") {
+      const want = right ? it.options[it.correct] : it.options[(it.correct + 1) % it.options.length];
+      const i = await page.evaluate(function (w) { return Array.prototype.findIndex.call(document.querySelectorAll(".ex-option-text"), function (n) { return n.textContent === w; }); }, want);
+      await page.click(".ex-option >> nth=" + i);
+    } else if (t === "short-answer" || t === "transformation") {
+      await page.fill(".ex-body input[type=text]", right ? (it.accepted || it.answers)[0] : "zzz");
+    } else if (t === "translate" || t === "dictation") {
+      if (t === "dictation") await page.click("[data-fk='listen']");
+      await page.fill(".ex-body textarea", right ? (it.text || it.accepted[0]) : "zzz zzz");
+    } else if (t === "gap-fill") {
+      const inputs = await page.$$(".ex-body input.ex-gap-input");
+      for (let i = 0; i < inputs.length; i++) await inputs[i].fill(right ? it.gaps[i].accepted[0] : "zzz");
+    } else if (t === "paradigm") {
+      const inputs = await page.$$(".ex-body input.ex-para-input:not(.is-given)");
+      const open = it.cells.filter(function (c) { return !c.given; });
+      for (let i = 0; i < inputs.length; i++) await inputs[i].fill(right ? open[i].accepted[0] : "zzz");
+    } else if (t === "reorder") {
+      const words = await page.evaluate(function (x) { return LM.exLogic.answerTokens(x.answers[0], x.answers.slice(1)); }, it);
+      const order = right ? words : words.slice().reverse();
+      for (const w of order) {
+        const i = await page.evaluate(function (word) { return Array.prototype.findIndex.call(document.querySelectorAll(".ex-pool .ex-token"), function (n) { return n.textContent === word; }); }, w);
+        await page.click(".ex-pool .ex-token >> nth=" + i);
+      }
+    } else if (t === "find-error") {
+      if (it.noError) { if (right) await page.click(".ex-tools .btn"); else await page.click(".ex-word >> nth=0"); }
+      else {
+        await page.click(".ex-word >> nth=" + it.errorRange[0]);
+        if (it.errorRange[1] !== it.errorRange[0]) await page.click(".ex-word >> nth=" + it.errorRange[1]);
+        await page.fill("#ex-fix", right ? it.fixes[0] : "zzz");
+      }
+    } else if (t === "match") {
+      for (let i = 0; i < it.pairs.length; i++) {
+        const want = right ? it.pairs[i][1] : it.pairs[(i + 1) % it.pairs.length][1];
+        await page.click("[data-fk='" + (i === 0 ? "first" : "L" + i) + "']");
+        const j = await page.evaluate(function (w) { return Array.prototype.findIndex.call(document.querySelectorAll(".ex-match-col:nth-child(2) .ex-match-text"), function (n) { return n.textContent === w; }); }, want);
+        const btns = await page.$$(".ex-match-col:nth-child(2) .ex-match-item");
+        await btns[j].click();
+      }
+    }
+    await page.click(".ex-check");
+    await page.waitForTimeout(250);
+  }
+  /** Every item of the content sets (the real Spanish data), each solved right and wrong in the page. */
+  const contentItems = [];
+  fs.readdirSync(path.join(ROOT, "content", "exercises")).filter(function (f) { return /\.json$/.test(f) && f !== "topics.json" && f !== "mixes.json"; }).forEach(function (f) {
+    const set = JSON.parse(fs.readFileSync(path.join(ROOT, "content", "exercises", f), "utf8"));
+    set.items.forEach(function (it) { contentItems.push(Object.assign({ topic: set.topic, level: set.level, setId: set.id }, it)); });
+  });
+  await test("every item type with Spanish data: the model answer is Right, a wrong answer is not; no JS errors", async function () {
+    const s = await session(1280, 800, true);
+    await withVoices(s.ctx, true);
+    await visit(s.page, "#/practice", 600);
+    const types = {};
+    for (const it of contentItems) {
+      for (const right of [true, false]) {
+        await startItem(s.page, it);
+        await answerItem(s.page, it, right);
+        const v = await s.page.innerText(".ex-status .lt-verdict");
+        if (right) ok(/Right!/.test(v), it.id + " model answer: " + v);
+        else ok(!/Right!/.test(v), it.id + " wrong answer counted as right: " + v);
+      }
+      types[it.type] = true;
+    }
+    ok(Object.keys(types).length === 10, "types covered: " + Object.keys(types).join(", "));
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+  await test("paradigm: Tab moves down the cells, Enter checks, wrong cells show the right form, character bar, live status", async function () {
+    const s = await session(1280, 800, true);
+    await visit(s.page, "#/practice", 600);
+    const it = bankItem("fx-ser-estar-1-07");
+    await startItem(s.page, it);
+    const r = await s.page.evaluate(function () {
+      return { bar: !!document.querySelector(".ex-body[data-charbar] .charbar-key, .ex-body + .charbar .charbar-key") || document.querySelectorAll(".charbar-key").length > 0,
+        given: document.querySelectorAll(".ex-para-input.is-given[readonly]").length, live: document.querySelector(".ex-status").getAttribute("aria-live"), lang: document.querySelector(".ex-para-label").getAttribute("lang") === LM.APP.targetLang };
+    });
+    ok(r.bar && r.given === 1 && r.live === "polite" && r.lang === true, JSON.stringify(r));
+    ok(await s.page.getAttribute("#ex-cell-1", "data-fk") === "first", "the first cell to fill takes the focus at the start");
+    await s.page.click("#ex-cell-1");
+    const open = it.cells.filter(function (c) { return !c.given; });
+    for (let i = 0; i < open.length; i++) {
+      await s.page.keyboard.type(i === 1 ? "zzz" : open[i].accepted[0]);
+      if (i < open.length - 1) await s.page.keyboard.press("Tab");
+    }
+    ok(await s.page.evaluate(function () { return document.activeElement.id; }) === "ex-cell-" + (it.cells.length - 1), "Tab did not move down the cells");
+    await s.page.keyboard.press("Enter");
+    await s.page.waitForTimeout(300);
+    const t = await s.page.innerText(".ex-status");
+    ok(/Partly right/.test(t) && /4 \/ 5 points/.test(t), "verdict: " + t);
+    const model = await s.page.innerText(".ex-para-row.is-bad .ex-gap-model");
+    ok(model.indexOf(open[1].accepted[0]) !== -1, "right form next to the wrong cell: " + model);
+    ok(await s.page.$$eval(".ex-para-row.is-ok", function (n) { return n.length; }) === 4, "four right cells");
+    const last = await s.page.evaluate(function () { const a = LM.profileData.attempts().items; return a[a.length - 1]; });
+    ok(last.type === "paradigm" && last.points === 4 && last.max === 5 && !last.correct, "attempt: " + JSON.stringify(last));
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+  await test("paradigm on a phone (320 px): one column, targets ≥ 44 px, no horizontal scroll", async function () {
+    const s = await session(320, 740, true);
+    await visit(s.page, "#/practice", 600);
+    await startItem(s.page, bankItem("fx-ser-estar-1-07"));
+    const r = await s.page.evaluate(function () {
+      const inputs = Array.prototype.slice.call(document.querySelectorAll(".ex-para-input"));
+      const lefts = inputs.map(function (n) { return Math.round(n.getBoundingClientRect().left); });
+      return { cols: new Set(lefts).size, minH: Math.min.apply(null, inputs.map(function (n) { return n.getBoundingClientRect().height; })),
+        scroll: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+    });
+    ok(r.cols === 1 && r.minH >= 44 && r.scroll <= 0, JSON.stringify(r));
+    await s.ctx.close();
+  });
+  await test("hub filters and the generator list Fill the table; a set result is in points", async function () {
+    const s = await session(1280, 800, true);
+    await withVoices(s.ctx, true);
+    await visit(s.page, "#/practice", 900);
+    const chips = await s.page.$$eval(".chip-filter [data-type]", function (n) { return n.map(function (x) { return x.dataset.type; }); });
+    ok(chips.indexOf("paradigm") !== -1, "type chips: " + chips.join(", "));
+    const setId = contentItems.find(function (it) { return it.type === "paradigm"; }).setId;
+    await visit(s.page, "#/practice/set/" + setId, 900);
+    await s.page.click("[data-fk='mode-exam']");
+    await s.page.click("[data-fk='start']");
+    for (let i = 0; i < 20; i++) {
+      if (!(await s.page.$(".ex-check"))) break;
+      await s.page.click(".ex-check");
+      await s.page.waitForTimeout(120);
+    }
+    const score = await s.page.innerText(".ex-result-score");
+    ok(/\d+\/\d+ points/.test(score), "result: " + score);
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+
   console.log("\nLayout");
   await test("no horizontal scroll at 320 px on the main routes", async function () {
+
     const s = await session(320, 740, true);
     const bad = [];
     for (const r of ["#/", "#/today", "#/a1", "#/a2", "#/a1/verbs-gustar", "#/a1/verbs-ser", "#/trail", "#/nope"]) {

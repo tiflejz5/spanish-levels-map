@@ -79,7 +79,7 @@ window.LM = window.LM || {};
   function journalCategoryOf(topicId) {
     const t = topicId && LM.syl ? LM.syl.topic(topicId) : null;
     if (!t) return CAT_OTHER;
-    return t.category === "vocabulary" ? CAT_VOCABULARY : t.category === "verbs" || t.category === "grammar" ? CAT_GRAMMAR : CAT_OTHER;
+    return t.category === "vocabulary" ? CAT_VOCABULARY : t.category === "verbs" || t.category === "grammar" || t.category === "cases" ? CAT_GRAMMAR : CAT_OTHER;
   }
 
   // Length limits (also on import)
@@ -344,7 +344,7 @@ window.LM = window.LM || {};
   const PHRASE_MAX = 500;
   const NOTE_KEY = /^[a-z0-9][a-z0-9:_-]{0,119}$/;
   const NOTE_MAX = 10000;
-  const ATTEMPT_TYPES = ["multiple-choice", "reorder", "find-error", "short-answer", "gap-fill", "match", "transformation", "translate", "dictation"];
+  const ATTEMPT_TYPES = ["multiple-choice", "reorder", "find-error", "short-answer", "gap-fill", "match", "transformation", "translate", "dictation", "paradigm"];
   const ATTEMPT_MODES = ["learn", "exam", "mix", "weak", "review"];
 
   /** Data of one exam: date, writing trainer drafts, ticked lists on pages, chosen tasks in choice groups. */

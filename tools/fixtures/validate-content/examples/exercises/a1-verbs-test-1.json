@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "id": "a1-verbs-test-1",
+  "topic": "a1-verbs-test",
+  "level": "A1",
+  "title": "Validator fixture: each item breaks one rule of spec 06 E11 (expected messages in tools/tests.js)",
+  "items": [
+    { "id": "a1-verbs-test-1-01", "type": "translate", "tags": ["t"], "source": "I am from Chile.", "accepted": ["Yo soy de Chile."], "explanation": "Pronoun rule." },
+    { "id": "a1-verbs-test-1-02", "type": "translate", "tags": ["t"], "source": "I am tired.", "accepted": ["Estoy cansado."], "explanation": "Gender rule." },
+    { "id": "a1-verbs-test-1-03", "type": "translate", "tags": ["t"], "source": "Where do you live? (you plural)", "accepted": ["¿Dónde vivís?", "¿Dónde vivís vosotros?"], "explanation": "Plural you rule." },
+    { "id": "a1-verbs-test-1-04", "type": "gap-fill", "tags": ["t"], "text": "Tengo un {{1}}.", "gaps": [{ "accepted": ["żółw"] }], "explanation": "Charset rule." },
+    { "id": "a1-verbs-test-1-05", "type": "multiple-choice", "tags": ["t"], "prompt": "Mi hermana ___ médica.", "options": ["es", "Es.", "son"], "correct": 0,
+      "optionNotes": [null, "x"], "explanation": "MC rule." },
+    { "id": "a1-verbs-test-1-06", "type": "multiple-choice", "tags": ["t"], "prompt": "Mi hermana ___ médica.", "options": ["es", "está"], "correct": 2, "explanation": "MC rule." },
+    { "id": "a1-verbs-test-1-07", "type": "paradigm", "tags": ["t"], "prompt": "Present tense", "lemma": "ser",
+      "cells": [{ "label": "yo", "accepted": ["soy"], "given": true }, { "label": "tú", "accepted": ["eres"], "given": true }, { "label": "él", "accepted": ["es"] }], "explanation": "Paradigm rule." },
+    { "id": "a1-verbs-test-1-08", "type": "translate", "tags": ["t"], "source": "I am tired. (a woman speaking)", "accepted": ["Estoy cansada.", "Yo estoy cansada."], "explanation": "Clean: note and both variants." },
+    { "id": "a1-verbs-test-1-09", "type": "translate", "tags": ["t"], "source": "Are you ready? (you plural)", "accepted": ["¿Estáis listos?", "¿Están listos?", "¿Estáis listas?", "¿Están listas?"], "explanation": "Clean: both plural forms and both genders." },
+    { "id": "a1-verbs-test-1-10", "type": "translate", "tags": ["t"], "source": "Where do you live? (you plural, Spain)", "accepted": ["¿Dónde vivís?"], "explanation": "Clean: region note." }
+  ]
+}

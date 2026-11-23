@@ -6,8 +6,9 @@
  * Kept from the reference: every per-item rule (all item types, ids unique across the bank, explanation,
  * passage / script for reading / listening), set fields, the map, mixes, final-test pool rules.
  * Dropped: the old English Tense Lab files, the old tense-picker tree, exam folders and the C1 format
- * (lab: stage 6; exams: stage E). Added: the item type `paradigm` (basic shape only; full rules in stage 4, spec 06 E6),
- * topics from content/syllabus.json, final tests required only for AVAILABLE levels (spec 06 E1).
+ * (lab: stage 6; exams: stage E). Added: the item type `paradigm` (spec 06 E6), topics from content/syllabus.json,
+ * final tests required only for AVAILABLE levels (spec 06 E1). Word counts use LM.lang.countWords (no English contractions).
+ * The rules of docs/plan/scripts/validate_plan.py and spec 06 E11 are in tools/validate-content.js.
  *
  * Usage: node tools/validate-exercises.js [root]
  */
@@ -15,6 +16,10 @@
 
 const fs = require("fs");
 const path = require("path");
+
+global.window = global.window || global;
+require(path.join(__dirname, "..", "js", "lang.js"));
+const LANG = global.LM.lang;
 
 const ROOT = process.argv[2] ? path.resolve(process.argv[2]) : path.join(__dirname, "..");
 const CONTENT = path.join(ROOT, "content");
@@ -42,9 +47,11 @@ const topicLevel = {}, topicCategory = {};
 });
 if (!topics.size) err("content/syllabus.json: no topics");
 
+/** Words of a sentence as the engine compares them (LM.lang.normalizeSentence: case, punctuation and opening marks dropped). */
 function words(sentence) {
-  return String(sentence).trim().split(/\s+/).map(function (w) { return w.replace(/[.,!?;]+$/, "").replace(/’/g, "'").toLowerCase(); }).filter(Boolean);
+  return LANG.normalizeSentence(sentence).split(" ").filter(Boolean);
 }
+
 function sameMultiset(a, b) { return a.slice().sort().join("\u0000") === b.slice().sort().join("\u0000"); }
 function nonEmpty(s) { return typeof s === "string" && s.trim() !== ""; }
 
@@ -110,27 +117,32 @@ function checkItem(it, where, set) {
   }
 }
 
-/** paradigm ("Fill the table", spec 06 E6): basic shape; stage 4 adds the full rules. */
+/**
+ * paradigm ("Fill the table", spec 06 E6): prompt and lemma, 3–8 cells with unique labels and accepted forms, at least two
+ * cells to fill, given only as true; a cell's accepted forms differ after normalisation; gloss and explanation are text.
+ */
 function checkParadigm(it, at) {
   if (!nonEmpty(it.prompt)) err(at + ": paradigm without a prompt");
   if (!nonEmpty(it.lemma)) err(at + ": paradigm without a lemma");
+  if (it.gloss != null && !nonEmpty(it.gloss)) err(at + ": gloss must be non-empty text");
   const cells = it.cells;
   if (!Array.isArray(cells) || cells.length < 3 || cells.length > 8) { err(at + ": cells — 3–8 cells"); return; }
+  const labels = new Set();
   cells.forEach(function (c, i) {
     if (!c || !nonEmpty(c.label)) err(at + ": cell " + (i + 1) + " without a label");
+    else if (labels.has(c.label.trim().toLowerCase())) err(at + ": duplicate cell label " + c.label);
+    else labels.add(c.label.trim().toLowerCase());
     if (!c || !Array.isArray(c.accepted) || !c.accepted.length || !c.accepted.every(nonEmpty)) err(at + ": cell " + (i + 1) + " — accepted must be a non-empty list");
+    else if (new Set(c.accepted.map(LANG.normalizeAnswer)).size !== c.accepted.length) err(at + ": cell " + (i + 1) + " — repeated accepted forms");
+    if (c && c.given != null && c.given !== true) err(at + ": cell " + (i + 1) + " — given must be true or left out");
   });
-  if (cells.every(function (c) { return c && c.given; })) err(at + ": all cells are given");
+  if (cells.filter(function (c) { return c && !c.given; }).length < 2) err(at + ": at least two cells to fill");
 }
 
 // ---------- Item types gap-fill, match, transformation, translate, dictation ----------
 const MATCH_MODES = ["definition", "halves", "translation", "response"];
-/** Word count of the reference app: a contraction (n't, 's, 're, 've, 'd, 'll, 'm) = two words, except let's. */
-function cambridgeWords(s) {
-  return String(s).replace(/’/g, "'").trim().split(/\s+/).filter(Boolean).reduce(function (n, w) {
-    return n + (/(n't|'s|'re|'ve|'d|'ll|'m)$/i.test(w) && w.toLowerCase() !== "let's" ? 2 : 1);
-  }, 0);
-}
+/** Word count of a transformation answer: LM.lang.countWords (the engine counts the same way, LM.exLogic.trTokens). */
+function answerWords(s) { return LANG.countWords(s); }
 function norm6(s) { return String(s).trim().replace(/\s+/g, " ").replace(/’/g, "'").replace(/[.,!?;]+$/, "").toLowerCase(); }
 function escapeRe(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); }
 
@@ -162,8 +174,8 @@ function checkV6Item(it, at) {
     if (!(Array.isArray(lim) && lim.length === 2 && lim[0] >= 1 && lim[0] <= lim[1])) { err(at + ": wordLimit must be [min, max]"); return; }
     if (!kw || !answers.length || !answers.every(nonEmpty)) err(at + ": transformation needs keyword and answers");
     answers.forEach(function (a) {
-      if (kw && !new RegExp("(^|[^\\w'])" + escapeRe(kw.toLowerCase()) + "(?!\\w)").test(String(a).toLowerCase())) err(at + ": the answer \"" + a + "\" does not contain the key word " + kw);
-      const n = cambridgeWords(a);
+      if (kw && !new RegExp("(^|[^\\p{L}\\p{N}'])" + escapeRe(kw.toLowerCase()) + "(?![\\p{L}\\p{N}])", "u").test(String(a).toLowerCase())) err(at + ": the answer \"" + a + "\" does not contain the key word " + kw);
+      const n = answerWords(a);
       if (n < lim[0] || n > lim[1]) err(at + ": the answer \"" + a + "\" has " + n + " words, limit " + lim[0] + "–" + lim[1]);
     });
     if (it.parts != null && (!Array.isArray(it.parts) || it.parts.length !== 2 || !it.parts.every(function (p) { return Array.isArray(p) && p.length && p.every(nonEmpty); }))) err(at + ": parts must have exactly 2 entries (lists of variants)");

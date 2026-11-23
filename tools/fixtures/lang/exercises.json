@@ -11,7 +11,11 @@
         { "id": "fx-ser-estar-1-03", "type": "gap-fill", "text": "Hoy {{1}} cansada, pero normalmente {{2}} muy activa.", "gaps": [{ "accepted": ["estoy"] }, { "accepted": ["soy"] }] },
         { "id": "fx-ser-estar-1-04", "type": "reorder", "answers": ["¿Dónde está la estación de tren?"] },
         { "id": "fx-ser-estar-1-05", "type": "find-error", "tokens": ["La", "fiesta", "está", "en", "mi", "casa."], "errorRange": [2, 2], "fixes": ["es"] },
-        { "id": "fx-ser-estar-1-06", "type": "translate", "source": "My parents are at home.", "accepted": ["Mis padres están en casa."] }
+        { "id": "fx-ser-estar-1-06", "type": "translate", "source": "My parents are at home.", "accepted": ["Mis padres están en casa."] },
+        { "id": "fx-ser-estar-1-07", "type": "paradigm", "prompt": "Present tense", "lemma": "estar", "gloss": "to be (state, place)",
+          "cells": [{ "label": "yo", "accepted": ["estoy"], "given": true }, { "label": "tú", "accepted": ["estás"] }, { "label": "él / ella / usted", "accepted": ["está"] },
+            { "label": "nosotros", "accepted": ["estamos"] }, { "label": "vosotros", "accepted": ["estáis"] }, { "label": "ellos / ustedes", "accepted": ["están"] }] },
+        { "id": "fx-ser-estar-1-08", "type": "reorder", "answers": ["Pedro está en la biblioteca.", "En la biblioteca está Pedro."] }
       ]
     },
     {
@@ -57,6 +61,22 @@
       "missing": { "text": "Ayer fui a trabajar.", "word": "no", "closest": 0 },
       "typo": { "text": "No fui a trabjar ayer.", "closest": 1 }
     },
-    "dictation": { "item": "fx-preterito-1-04", "ok": "el sábado pasado fuimos a la playa con unos amigos", "wrong": "el sabado pasado fuimos a la playa con amigos" }
+    "dictation": { "item": "fx-preterito-1-04", "ok": "el sábado pasado fuimos a la playa con unos amigos", "wrong": "el sabado pasado fuimos a la playa con amigos" },
+    "paradigm": { "item": "fx-ser-estar-1-07", "half": ["", "estás", "esta", "estamos", "estais", "estan"], "accents": ["", "estás", "está", "estamos", "estáis", "estan"],
+      "closest": "está", "caps": ["", "ESTÁS", "Está", "estamos", "estáis", "están"], "spoken": "yo: estoy. tú: estás." },
+    "frames": [["¿Dónde está la estación de tren?", "¿", "?"], ["¡Qué bien!", "¡", "!"], ["Me gusta.", "", "."]],
+    "tokens": [
+      { "sentence": "¿Dónde está la estación de tren?", "others": [], "words": ["dónde", "está", "la", "estación", "de", "tren"], "item": "fx-ser-estar-1-04" },
+      { "sentence": "A mi madre no le gusta el café.", "others": ["No le gusta el café a mi madre."], "words": ["a", "mi", "madre", "no", "le", "gusta", "el", "café"] }
+    ],
+    "name": { "item": "fx-ser-estar-1-08", "first": "Pedro", "secondFirst": "en" },
+    "speech": [
+      { "item": { "type": "short-answer", "prompt": "¿Dónde ___ (estar) las llaves?", "accepted": ["están"] }, "text": "¿Dónde están las llaves?" },
+      { "item": { "type": "multiple-choice", "prompt": "___ gusta el cine. (I like movies.)", "options": ["Yo", "Me"], "correct": 1 }, "text": "Me gusta el cine." },
+      { "item": "fx-preterito-1-06", "text": "Anoche cenamos en un restaurante y después dimos un paseo." }
+    ],
+    "transformationWords": { "item": { "type": "transformation", "source": "Es la casa de el profesor.", "keyword": "DEL", "before": "Es la casa", "after": ".", "answers": ["del profesor"], "wordLimit": [2, 3] },
+      "ok": "del profesor", "noKeyword": "de el profesor" }
+
   }
 }

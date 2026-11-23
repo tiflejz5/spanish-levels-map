@@ -1,0 +1,116 @@
+{
+  "version": 1,
+  "id": "a1-verbs-gustar-3",
+  "topic": "a1-verbs-gustar",
+  "level": "A1",
+  "title": "gustar: agree, disagree and say how much",
+  "intro": "10 tasks: listen and write, rewrite, find the mistake, match reactions and fill a table with encantar.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-gustar-3-01",
+      "type": "dictation",
+      "tags": ["gustar", "reactions", "listening"],
+      "text": "—No me gusta el invierno. —A mí tampoco.",
+      "accepted": [],
+      "explanation": "Tampoco agrees with a negative sentence: a mí tampoco = me neither."
+    },
+    {
+      "id": "a1-verbs-gustar-3-02",
+      "type": "dictation",
+      "tags": ["gustar", "infinitive", "listening"],
+      "text": "A Diego le gusta mucho jugar al fútbol con sus amigos.",
+      "accepted": [],
+      "explanation": "An action you like is an infinitive after gusta; mucho comes after the verb. Jugar al fútbol: a + el = al."
+    },
+    {
+      "id": "a1-verbs-gustar-3-03",
+      "type": "transformation",
+      "tags": ["gustar", "pronouns", "infinitive"],
+      "source": "A mi padre y a mi madre les gusta pasear.",
+      "keyword": "padres",
+      "before": "A mis",
+      "after": "pasear.",
+      "answers": ["padres les gusta"],
+      "wordLimit": [2, 4],
+      "explanation": "Mis padres are two people → les. Pasear is an action (infinitive), so the verb stays gusta."
+    },
+    {
+      "id": "a1-verbs-gustar-3-04",
+      "type": "transformation",
+      "tags": ["gustar", "negative", "word-order"],
+      "source": "La música clásica no me gusta.",
+      "keyword": "no",
+      "before": "",
+      "after": "la música clásica.",
+      "answers": ["No me gusta", "A mí no me gusta"],
+      "wordLimit": [2, 5],
+      "explanation": "No goes before the pronoun, and the thing you like can come at the end: No me gusta la música clásica."
+    },
+    {
+      "id": "a1-verbs-gustar-3-05",
+      "type": "short-answer",
+      "tags": ["gustar", "pronouns", "usted"],
+      "prompt": "¿A ustedes ___ gusta viajar en tren?",
+      "accepted": ["les"],
+      "explanation": "For ellos, ellas and ustedes the pronoun is les."
+    },
+    {
+      "id": "a1-verbs-gustar-3-06",
+      "type": "short-answer",
+      "tags": ["gustar", "reactions"],
+      "prompt": "—A mí me gusta mucho el verano.\n—A mí ___. (Me too.)",
+      "accepted": ["también"],
+      "explanation": "To agree with a positive sentence, say a mí también."
+    },
+    {
+      "id": "a1-verbs-gustar-3-07",
+      "type": "short-answer",
+      "tags": ["encantar", "agreement"],
+      "prompt": "A mi abuela le ___ las flores. (encantar)",
+      "accepted": ["encantan"],
+      "explanation": "Encantar works like gustar: las flores is plural, so the verb is encantan."
+    },
+    {
+      "id": "a1-verbs-gustar-3-08",
+      "type": "find-error",
+      "tags": ["gustar", "a-person"],
+      "tokens": ["Valentina", "le", "gusta", "mucho", "pintar."],
+      "errorRange": [0, 0],
+      "fixes": ["A Valentina"],
+      "explanation": "The person who likes something needs a: A Valentina le gusta mucho pintar."
+    },
+    {
+      "id": "a1-verbs-gustar-3-09",
+      "type": "match",
+      "tags": ["gustar", "reactions", "how-much"],
+      "mode": "translation",
+      "prompt": "Match each Spanish phrase with its English meaning.",
+      "pairs": [
+        ["Me encanta.", "I love it."],
+        ["Me gusta mucho.", "I like it a lot."],
+        ["No me gusta nada.", "I don't like it at all."],
+        ["A mí también.", "Me too."],
+        ["A mí tampoco.", "Me neither."]
+      ],
+      "explanation": "Encanta is stronger than gusta mucho; no … nada means “not at all”. También answers a positive sentence, tampoco a negative one."
+    },
+    {
+      "id": "a1-verbs-gustar-3-10",
+      "type": "paradigm",
+      "tags": ["encantar", "pronouns"],
+      "prompt": "Who loves animals? Write the pronoun and the verb.",
+      "lemma": "encantar + los animales",
+      "gloss": "to love animals",
+      "cells": [
+        { "label": "a mí", "accepted": ["me encantan"], "given": true },
+        { "label": "a ti", "accepted": ["te encantan"] },
+        { "label": "a él", "accepted": ["le encantan"] },
+        { "label": "a nosotras", "accepted": ["nos encantan"] },
+        { "label": "a vosotros (Spain)", "accepted": ["os encantan"] },
+        { "label": "a ellos", "accepted": ["les encantan"] }
+      ],
+      "explanation": "Only the pronoun changes: me, te, le, nos, os, les. The verb stays encantan because los animales is plural."
+    }
+  ]
+}

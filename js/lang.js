@@ -16,6 +16,12 @@
  *   functionWords            frequent short words used by isTarget
  *   sentenceOpeners          punctuation that may open a sentence before its capital letter (¿ ¡)
  *   keyBase(char)            the plain key of a special character (á → a, ¿ → ?), for the character bar and Alt + key
+ *   content                  facts for the content validators (tools/validate-content.js, spec 06 E11):
+ *     alphabet               letters and marks of the target language beyond ASCII (anything else in a target field is an error)
+ *     subjectPronouns        a typed answer that starts with one of them should also be accepted without it
+ *     genderLinks            words after which an -o / -a adjective shows the gender of the speaker or the listener
+ *     genderTwin(word)       the other-gender form of an adjective (cansado ↔ cansada) or null
+ *     youPlural(answer)      "informal" (a vosotros form) or "formal" (ustedes) — a "you (plural)" task needs both
  */
 (function (root) {
   "use strict";
@@ -96,7 +102,26 @@
   /** The plain key of a special character (character bar, Alt + key): á → a, Ñ → n, ¿ → ?; other characters unchanged. */
   function keyBase(c) { return OPENER_KEYS[c] || stripMarks(c).toLowerCase(); }
 
+  /** Facts for the content validators (spec 06 E11); nothing in the app reads them. */
+  const CONTENT = {
+    alphabet: "áéíóúüñÁÉÍÓÚÜÑ¿¡«»",
+    subjectPronouns: ["yo", "tú", "él", "ella", "usted", "nosotros", "nosotras", "vosotros", "vosotras", "ellos", "ellas", "ustedes"],
+    genderLinks: ["estoy", "soy", "estás", "eres"],
+    genderTwin: function (word) {
+      const m = /^(\p{L}{2,})([oa])(s?)$/u.exec(str(word));
+      return m ? m[1] + (m[2] === "o" ? "a" : "o") + m[3] : null;
+    },
+    youPluralNames: { informal: "vosotros", formal: "ustedes" },
+    youPlural: function (answer) {
+      const t = " " + normalizeSentence(answer) + " ";
+      // vosotros / vosotras, os, vuestro…, or a vosotros verb ending (-áis, -éis, -ís after a consonant: vivís, not país)
+      return / (vosotros|vosotras|os|vuestro|vuestra|vuestros|vuestras) /.test(t) || /\p{L}(áis|éis) /u.test(t) || /[^\saeiouáéíóú]ís /u.test(t) ? "informal" : "formal";
+    }
+  };
+
   LM.lang = {
+    content: CONTENT,
+
     keyBase: keyBase,
     stripMarks: stripMarks,
     fold: fold,
