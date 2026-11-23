@@ -182,8 +182,19 @@
       return null;
     },
 
-    /** Skill of a question (without a skill field — grammar). */
-    skillOf: function (q) { return q.skill || "grammar"; },
+    /**
+     * Skill of a question (spec 06 E10): grammar, vocabulary or reading. A syllabus category in the skill field counts as its
+     * skill (verbs and cases are grammar, functions are vocabulary); without a skill, the category of the question's topic
+     * (LM.syl, when loaded); otherwise grammar.
+     */
+    skillOf: function (q) {
+      const s = learn.SKILL_OF[q && q.skill];
+      if (s) return s;
+      const t = q && q.topicId && root.LM && root.LM.syl ? root.LM.syl.topic(q.topicId) : null;
+      return (t && learn.SKILL_OF[t.category]) || "grammar";
+    },
+    SKILL_OF: { grammar: "grammar", verbs: "grammar", cases: "grammar", vocabulary: "vocabulary", functions: "vocabulary", reading: "reading" },
+
 
     /** Choice from the level's pool: first without questions of the previous attempt, then the rarest skill. */
     pickBalanced: function (pool, opts, rnd) {

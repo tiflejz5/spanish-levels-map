@@ -40,7 +40,7 @@ function withToday(day, fn) {
   try { fn(); } finally { L.today = original; }
 }
 
-console.log("Daty");
+console.log("Dates");
 test("today() returns the local day YYYY-MM-DD", function () {
   assert.match(L.today(), /^\d{4}-\d{2}-\d{2}$/);
   assert.ok(L.isDay(L.today()));
@@ -311,6 +311,7 @@ function modelAnswerOf(it) {
   if (it.type === "match") { const p = {}; it.pairs.forEach(function (x, i) { p[i] = x[1]; }); return { pairs: p }; }
   if (it.type === "transformation") return { text: it.answers[0] };
   if (it.type === "dictation") return { text: it.text };
+  if (it.type === "paradigm") return { texts: it.cells.map(function (c) { return c.given ? "" : c.accepted[0]; }) };
   return { text: it.accepted[0] };
 }
 
@@ -332,8 +333,9 @@ test("reorderTokens: never in the right order at once, the same set of words, no
   const items = allItems.filter(function (it) { return it.type === "reorder"; });
   assert.ok(items.length >= 2);
   items.forEach(function (it) {
-    const words = X.answerTokens(it.answers[0]);
-    assert.ok(/^\p{Ll}/u.test(words[0]) && /\p{L}$/u.test(words[words.length - 1]), it.id + ": " + words.join(" "));
+    const words = X.answerTokens(it.answers[0], it.answers.slice(1));
+    const name = it.answers.slice(1).some(function (o) { return o.split(" ").slice(1).join(" ").indexOf(words[0]) !== -1; });
+    assert.ok((name || /^\p{Ll}/u.test(words[0])) && /\p{L}$/u.test(words[words.length - 1]), it.id + ": " + words.join(" "));
     for (let s = 1; s < 40; s++) {
       const t = X.reorderTokens(it, seeded(s)).map(function (x) { return x.text; });
       assert.ok(!X.evaluate(it, { words: t }).correct, it.id + " given in the right order");
@@ -361,7 +363,112 @@ test("evaluate: the model answer of every item in content/exercises gives full p
   });
   assert.ok(n > 0);
 });
+test("every engine type has Spanish test data in content/exercises (stage 4, step 6)", function () {
+  const dir = path.join(__dirname, "..", "content", "exercises");
+  const seen = {};
+  fs.readdirSync(dir).filter(function (f) { return /\.json$/.test(f) && f !== "topics.json" && f !== "mixes.json"; }).forEach(function (f) {
+    (JSON.parse(fs.readFileSync(path.join(dir, f), "utf8")).items || []).forEach(function (it) { seen[it.type] = true; });
+  });
+  assert.deepStrictEqual(X.TYPES.filter(function (t) { return !seen[t]; }), []);
+});
+
+console.log("\nparadigm: Fill the table (spec 06 E6)");
+test("paradigm: a point per cell to fill, a given cell gives none; maxPoints counts only open cells", function () {
+  const it = bankItem("fx-ser-estar-1-07");
+  assert.strictEqual(X.maxPoints(it), 5);
+  assert.deepStrictEqual(X.paradigmCells(it), [1, 2, 3, 4, 5]);
+  const full = X.evaluate(it, modelAnswerOf(it));
+  assert.ok(full.correct && full.points === 5 && full.max === 5 && full.cells[0] === null, JSON.stringify(full));
+  assert.strictEqual(X.sessionScore([{ item: it, res: full }]).total, 5);
+});
+test("paradigm: every cell is checked with match — case free, accents-only is wrong with the hint; correct = all cells right", function () {
+  const c = BANK.cases.paradigm, it = bankItem(c.item);
+  const half = X.evaluate(it, { texts: c.half });
+  assert.ok(!half.correct && half.points === 2 && half.answered, JSON.stringify(half));
+  assert.strictEqual(half.cells[2].near, "accents");
+  assert.strictEqual(half.cells[2].closest, c.closest);
+  assert.ok(X.evaluate(it, { texts: c.caps }).correct);
+  assert.ok(!X.evaluate(it, { texts: [] }).answered);
+});
+test("paradigm: lenientAccents counts accents-only cells as right and marks the result lenient", function () {
+  const c = BANK.cases.paradigm, it = bankItem(c.item);
+  const strict = X.evaluate(it, { texts: c.accents });
+  assert.ok(!strict.correct && strict.points === 4);
+  const lenient = X.evaluate(it, { texts: c.accents }, { lenientAccents: true });
+  assert.ok(lenient.correct && lenient.points === 5 && lenient.lenient === true && lenient.cells[5].near === "accents");
+});
+test("paradigm: S reads nothing before checking, every cell with its form after", function () {
+  const c = BANK.cases.paradigm, it = bankItem(c.item);
+  assert.strictEqual(X.speechText(it, false), "");
+  assert.strictEqual(X.speechText(it, true).indexOf(c.spoken), 0);
+});
+
+console.log("\nSpanish in the engine (stage 4, step 1)");
+test("reorder: opening and closing marks are never tiles; sentenceFrame gives them back around the line", function () {
+  BANK.cases.frames.forEach(function (f) { assert.deepStrictEqual(X.sentenceFrame(f[0]), { open: f[1], close: f[2] }, f[0]); });
+  BANK.cases.tokens.forEach(function (c) {
+    const words = X.answerTokens(c.sentence, c.others);
+    assert.deepStrictEqual(words, c.words);
+    if (c.item) assert.ok(X.evaluate(bankItem(c.item), { words: words }).correct);
+  });
+});
+test("reorder: the first word goes to lower case unless another order shows it with a capital inside (a name)", function () {
+  const c = BANK.cases.name, it = bankItem(c.item);
+  assert.strictEqual(X.answerTokens(it.answers[0], it.answers.slice(1))[0], c.first);
+  assert.strictEqual(X.answerTokens(it.answers[1], it.answers.slice(0, 1))[0], c.secondFirst);
+  for (let s = 1; s < 10; s++) {
+    const toks = X.reorderTokens(it, seeded(s)).map(function (t) { return t.text; });
+    assert.ok(toks.indexOf(c.first) !== -1 && toks.indexOf(c.first.toLowerCase()) === -1, toks.join(" "));
+  }
+});
+test("speechText: hints and English glosses in brackets are not read; the gap is the model answer after checking", function () {
+  BANK.cases.speech.forEach(function (c) {
+    const it = typeof c.item === "string" ? bankItem(c.item) : c.item;
+    assert.strictEqual(X.speechText(it, true), c.text);
+  });
+});
+test("transformation: the word count is plain words (a contraction counts once), the key word must stay unchanged", function () {
+  const c = BANK.cases.transformationWords;
+  assert.ok(X.evaluate(c.item, { text: c.ok }).correct);
+  assert.strictEqual(X.evaluate(c.item, { text: c.noKeyword }).msg, "Use the key word without changing it (" + c.item.keyword + ").");
+});
+
+console.log("\nTests use syllabus categories (spec 06 E10)");
+test("placement skillOf: verbs and cases count as grammar, functions as vocabulary; no skill → grammar", function () {
+  assert.strictEqual(L.skillOf({ skill: "grammar" }), "grammar");
+  assert.strictEqual(L.skillOf({ skill: "verbs" }), "grammar");
+  assert.strictEqual(L.skillOf({ skill: "cases" }), "grammar");
+  assert.strictEqual(L.skillOf({ skill: "functions" }), "vocabulary");
+  assert.strictEqual(L.skillOf({ skill: "reading" }), "reading");
+  assert.strictEqual(L.skillOf({}), "grammar");
+});
+test("placement skillOf: without a skill, the category of the question's topic (LM.syl)", function () {
+  const before = global.LM.syl;
+  global.LM.syl = { topic: function (id) { return id === "a1-vocabulary-food" ? { category: "vocabulary" } : id === "a1-verbs-ser" ? { category: "verbs" } : null; } };
+  try {
+    assert.strictEqual(L.skillOf({ topicId: "a1-vocabulary-food" }), "vocabulary");
+    assert.strictEqual(L.skillOf({ topicId: "a1-verbs-ser" }), "grammar");
+    assert.strictEqual(L.skillOf({ topicId: "a1-unknown" }), "grammar");
+  } finally { global.LM.syl = before; }
+});
+test("final test draw: every syllabus category of the pool is represented in proportion; at most two paradigm items in a valid pool", function () {
+  const F = global.LM.finalLogic;
+  const cats = { verbs: 10, grammar: 9, functions: 5, vocabulary: 6 };
+  const pool = [];
+  Object.keys(cats).forEach(function (c) {
+    for (let i = 0; i < cats[c]; i++) pool.push({ id: c + i, topic: c + "-t" + (i % 4), type: i === 0 && c === "verbs" ? "paradigm" : "multiple-choice", category: c });
+  });
+  for (let s = 1; s < 20; s++) {
+    const got = F.drawItems(pool, 20, function (it) { return it.category; }, seeded(s));
+    const per = {};
+    got.forEach(function (it) { per[it.category] = (per[it.category] || 0) + 1; });
+    assert.strictEqual(got.length, 20);
+    Object.keys(cats).forEach(function (c) { assert.ok(Math.abs(per[c] - 20 * cats[c] / 30) <= 1, c + ": " + per[c]); });
+  }
+});
+
 test("evaluate: find-error tells a wrong fragment from a wrong fix; the fix uses match", function () {
+
   const it = bankItem("fx-ser-estar-1-05");
   assert.strictEqual(X.evaluate(it, { range: [0, 0], fix: it.fixes[0] }).rangeOk, false);
   const r = X.evaluate(it, { range: it.errorRange.slice(), fix: "zzz" });

@@ -23,7 +23,7 @@ window.LM = window.LM || {};
         ["1–4 or A–D", "choose an answer (with options A–H: the option's letter)"],
         ["Enter", "Check, then Next"],
         ["S", "play the sentence (before checking, the gap is a pause)"],
-        ["Tab", "next gap"],
+        ["Tab", "next gap or table cell"],
         ["Backspace", "undo the last word (Put in order)"],
         ["Ctrl + Enter", "Check in a multi-line field"],
         ["Alt + letter", "in an answer field: a letter with its mark (Alt + U twice: the next form); Alt + Shift: a capital"],

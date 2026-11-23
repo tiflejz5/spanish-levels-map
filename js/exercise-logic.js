@@ -17,10 +17,12 @@
  *   matchesSentence(answer, accepted) whether a sentence matches one of the accepted ones exactly
  *   wordDiff(model, got)              word-by-word comparison (missing / extra / replaced)
  *   prepareMatch(item, rng)           the right column of Match pairs (always shuffled)
+ *   sentenceFrame(sentence)           punctuation around a sentence ({ open, close }: an opening mark and the end mark), shown around Put in order
+ *   paradigmCells(item)               indexes of the cells to fill in a paradigm item (not the given ones)
  *
  * Types of pack v6 (new item types): gap-fill, match,
- * transformation, translate, dictation. Answers: { texts: […] }, { pairs: { leftIndex: rightText } },
- * { text }, { text }, { text } or { skipped: true } (dictation without a voice).
+ * transformation, translate, dictation; paradigm (spec 06 E6). Answers: { texts: […] }, { pairs: { leftIndex: rightText } },
+ * { text }, { text }, { text } or { skipped: true } (dictation without a voice), { texts: [one per cell] } (paradigm).
  *   pickMix(pool, opts, rng)          drawing a mixed set
  */
 window.LM = window.LM || {};
@@ -28,7 +30,7 @@ window.LM = window.LM || {};
 (function (LM) {
   "use strict";
 
-  const TYPES = ["multiple-choice", "reorder", "find-error", "short-answer", "gap-fill", "match", "transformation", "translate", "dictation"];
+  const TYPES = ["multiple-choice", "reorder", "find-error", "short-answer", "gap-fill", "match", "transformation", "translate", "dictation", "paradigm"];
 
   function lang() { return LM.lang; }
 
@@ -73,11 +75,32 @@ window.LM = window.LM || {};
     return { options: order, correct: order.findIndex(function (o) { return o.original === item.correct; }) };
   }
 
-  /** Words of the model sentence without the punctuation around it (the first word in lower case, so it does not give the start away). */
-  function answerTokens(sentence) {
+  /**
+   * Words of the model sentence without the punctuation around it (opening marks of LM.lang.sentenceOpeners included).
+   * The first word goes to lower case, so it does not give the start away, unless another accepted order shows it
+   * with a capital inside the sentence (a name that starts one order and ends the other).
+   */
+  function answerTokens(sentence, others) {
     const words = String(sentence).trim().replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "").split(/\s+/).filter(Boolean);
-    if (words.length) words[0] = words[0].charAt(0).toLowerCase() + words[0].slice(1);
+    if (words.length && !keepsCapital(words[0], others || [])) words[0] = words[0].charAt(0).toLowerCase() + words[0].slice(1);
     return words;
+  }
+
+  /** Whether a word is written with its capital inside one of the other sentences (not as their first word). */
+  function keepsCapital(word, others) {
+    const bare = String(word).replace(/[^\p{L}\p{N}'-]/gu, "");
+    if (!bare || bare.charAt(0) === bare.charAt(0).toLowerCase()) return false;
+    return others.some(function (o) {
+      return String(o).trim().split(/\s+/).slice(1).some(function (w) { return w.replace(/[^\p{L}\p{N}'-]/gu, "") === bare; });
+    });
+  }
+
+  /** Punctuation around a sentence: { open: the opening mark or "", close: "?" / "!" / "." / "" } (Put in order shows it around the line). */
+  function sentenceFrame(sentence) {
+    const t = String(sentence || "").trim();
+    const open = /^[^\p{L}\p{N}]+/u.exec(t);
+    const close = /[^\p{L}\p{N}]+$/u.exec(t);
+    return { open: open ? open[0].replace(/\s+/g, "") : "", close: close ? close[0].replace(/\s+/g, "") : "" };
   }
 
   /**
@@ -85,7 +108,7 @@ window.LM = window.LM || {};
    * it is NOT the right sentence straight away.
    */
   function reorderTokens(item, rng) {
-    const words = answerTokens(item.answers[0]).concat(item.extraTokens || []);
+    const words = answerTokens(item.answers[0], item.answers.slice(1)).concat(item.extraTokens || []);
     const tokens = words.map(function (text, i) { return { id: "t" + i, text: text }; });
     if (tokens.length < 2) return tokens;
     let out = shuffle(tokens, rng);
@@ -101,7 +124,7 @@ window.LM = window.LM || {};
 
   /** Index of the first word of the answer that differs from the model (or -1). */
   function firstDifference(item, words) {
-    const model = answerTokens(item.answers[0]).map(lang().normalizeSentence);
+    const model = answerTokens(item.answers[0], item.answers.slice(1)).map(lang().normalizeSentence);
     const got = words.map(lang().normalizeSentence);
     for (let i = 0; i < Math.max(model.length, got.length); i++) {
       if (model[i] !== got[i]) return i;
@@ -115,6 +138,7 @@ window.LM = window.LM || {};
    *   reorder:         { words: [text…] }
    *   find-error:      { noError: true } or { range: [from, to], fix: "…" }
    *   short-answer:    { text: "…" }
+   *   paradigm:        { texts: [one per cell; given cells are ignored] }
    * opts.lenientAccents: an answer that differs only in accents counts as correct (lenient: true; the reminder stays: near "accents").
    */
   function evaluate(item, answer, opts) {
@@ -124,9 +148,17 @@ window.LM = window.LM || {};
     return res;
   }
 
-  /** Maximum points of an item: gaps and pairs — a point each, transformation with parts — 2, others — 1. */
+  /** Indexes of the cells to fill (a given cell is shown filled in and gives no points). */
+  function paradigmCells(item) {
+    const out = [];
+    (item.cells || []).forEach(function (c, i) { if (!c.given) out.push(i); });
+    return out;
+  }
+
+  /** Maximum points of an item: gaps, pairs and cells to fill — a point each, transformation with parts — 2, others — 1. */
   function maxPoints(item) {
     if (item.type === "gap-fill") return (item.gaps || []).length || 1;
+    if (item.type === "paradigm") return paradigmCells(item).length || 1;
     if (item.type === "match") return (item.pairs || []).length || 1;
     if (item.type === "transformation") return item.parts ? 2 : 1;
     return 1;
@@ -172,6 +204,15 @@ window.LM = window.LM || {};
       const points = gaps.filter(function (g) { return g.correct; }).length;
       return { correct: points === gaps.length, answered: gaps.some(function (g) { return g.answered; }), points: points, max: gaps.length, gaps: gaps,
         lenient: gaps.some(function (g) { return g.lenient; }) };
+    }
+    if (item.type === "paradigm") {
+      // Every cell is checked on its own with match (spec 06 E6); given cells: null, no points
+      const texts = answer.texts || [];
+      const cells = (item.cells || []).map(function (c, i) { return c.given ? null : shortAnswer(c.accepted, texts[i], opts); });
+      const open = cells.filter(Boolean);
+      const points = open.filter(function (c) { return c.correct; }).length;
+      return { correct: open.length > 0 && points === open.length, answered: open.some(function (c) { return c.answered; }), points: points, max: open.length || 1,
+        cells: cells, lenient: open.some(function (c) { return c.lenient; }) };
     }
     if (item.type === "match") {
       const chosen = answer.pairs || {};
@@ -552,7 +593,8 @@ window.LM = window.LM || {};
    */
   function speechText(item, answered) {
     const PAUSE = " … ";
-    const tidy = function (t) { return String(t).replace(/\s+/g, " ").replace(/\s+([,.;!?])/g, "$1").trim(); };
+    // Brackets hold hints and English glosses ("(estar)", "(I like movies.)"): never read out
+    const tidy = function (t) { return String(t).replace(/\s*\([^)]*\)/g, "").replace(/\s+/g, " ").replace(/\s+([,.;!?])/g, "$1").trim(); };
     const lines = function (t) { return String(t || "").split("\n").map(function (l) { return l.replace(SPEAKER, ""); }).join(" "); };
     if (!item) return "";
     switch (item.type) {
@@ -577,6 +619,10 @@ window.LM = window.LM || {};
         return answered ? tidy(item.accepted[0]) : "";
       case "find-error":
         return tidy((item.tokens || []).join(" "));
+      case "paradigm":
+        // After checking: every cell with its form ("label: form. label: form.")
+
+        return answered ? tidy((item.cells || []).map(function (c) { return c.label + ": " + c.accepted[0] + "."; }).join(" ")) : "";
       default:
         return "";
     }
@@ -609,6 +655,8 @@ window.LM = window.LM || {};
     matchesSentence: matchesSentence,
     wordDiff: wordDiff,
     prepareMatch: prepareMatch,
+    sentenceFrame: sentenceFrame,
+    paradigmCells: paradigmCells,
     pickMix: pickMix,
     weightedOrder: weightedOrder,
     limitRuns: limitRuns
