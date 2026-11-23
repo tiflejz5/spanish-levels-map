@@ -1,19 +1,18 @@
 /*
- * lab.js — „Laboratorium czasów” (spec 02, część A).
+ * lab.js — the Tense & Mood Lab (spec 02, part A). Its title comes from LM.APP.lab.title.
  *
- * Adresy (zakładki):
- *   #/lab                     Mapa czasów
- *   #/lab/<idCzasu>           Karta czasu
- *   #/lab/dobierz             Dobierz czas (drzewo pytań, reguły — nie AI)
- *   #/lab/porownaj[/<a>/<b>]  Porównaj dwa czasy
+ * Addresses (tabs):
+ *   #/lab                     Tense map
+ *   #/lab/<tense id>          Tense card
+ *   #/lab/pick                Pick the tense (a question tree, rules — not AI)
+ *   #/lab/compare[/<a>/<b>]   Compare two tenses
  *
- * Dane: dane/lab-dane.js (LM.LAB = { tenses, tree }) — generowane z
- * dane/lab-czasow.json i dane/lab-wybor-czasu.json przez tools/zbuduj-cwiczenia.js,
- * wczytywane dopiero po wejściu do Labu.
+ * Data: data/lab.js (LM.LAB = { tenses, tree }) — generated from the lab sources by the build,
+ * loaded only when the Lab is opened.
  *
- * Oś czasu: SVG, współrzędne -1 (daleka przeszłość) … 0 (teraz) … 1 (przyszłość).
- * role="img" + aria-label = opis sceny, ten sam opis jako tekst pod osią.
- * Animacja GSAP (DrawSVG) przy wejściu i zmianie sceny, przy ograniczonym ruchu bez.
+ * Timeline: SVG, coordinates -1 (distant past) … 0 (now) … 1 (future).
+ * role="img" + aria-label = description of the scene; the same description as text under the axis.
+ * GSAP animation (DrawSVG) on entry and on scene change; none with reduced motion.
  */
 window.LM = window.LM || {};
 
@@ -26,9 +25,9 @@ window.LM = window.LM || {};
   const SVG_NS = "http://www.w3.org/2000/svg";
 
   const GROUPS = [
-    { id: "present", label: "Present", pl: "teraźniejszość" },
-    { id: "past", label: "Past", pl: "przeszłość" },
-    { id: "future", label: "Future", pl: "przyszłość" }
+    { id: "present", label: "Present" },
+    { id: "past", label: "Past" },
+    { id: "future", label: "Future" }
   ];
   const ASPECTS = [
     { id: "simple", label: "Simple" },
@@ -37,23 +36,23 @@ window.LM = window.LM || {};
     { id: "perfect-continuous", label: "Perfect Continuous" }
   ];
 
-  // Stan zakładek (w pamięci karty)
+  // Tab state (in memory of the tab)
   let lastTense = "present-simple";
-  const sceneOf = {};           // wybrana scena na karcie czasu: { idCzasu: idSceny }
-  let pathStack = [];           // „Dobierz czas”: [{ node, option }]
+  const sceneOf = {};           // chosen scene on a tense card: { tenseId: sceneId }
+  let pathStack = [];           // "Pick the tense": [{ node, option }]
 
-  /** Zastępuje dzieci węzła (null i false są pomijane — replaceChildren zamieniłby je na tekst „null”). */
+  /** Replaces the children of a node (null and false are skipped — replaceChildren would turn them into the text "null"). */
   function fill(node, list) { node.replaceChildren(); U.appendChildren(node, list); }
 
   function lab() { return LM.LAB || { tenses: [], tree: null }; }
   function tense(id) { return lab().tenses.find(function (t) { return t.id === id; }) || null; }
 
-  /** Formy przyszłe poza siatką: going to, Present Continuous / Simple o przyszłości. */
+  /** Future forms outside the grid: going to, Present Continuous / Simple about the future. */
   function isForm(t) { return t.aspect === "form" || (t.group === "future" && !/^future-/.test(t.id)); }
 
   function load() {
     if (LM.LAB) return Promise.resolve(LM.LAB);
-    return LM.loadModule("data/lab.js").then(function () { return LM.LAB; }, function (e) { console.warn(e.message + " — uruchom: npm run build"); return null; });
+    return LM.loadModule("data/lab.js").then(function () { return LM.LAB; }, function (e) { console.warn(e.message + " — run: npm run build"); return null; });
   }
 
   // =====================================================================
@@ -71,7 +70,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // ODSŁUCH (Web Speech API, en-GB, potem en-US)
+  // LISTENING (Web Speech API, en-GB, then en-US)
   // =====================================================================
 
   function canSpeak() { return "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function"; }
@@ -92,13 +91,13 @@ window.LM = window.LM || {};
   function speakButton(text) {
     if (!canSpeak()) return null;
     return el("button", {
-      type: "button", class: "btn btn-link lab-speak", "aria-label": "Posłuchaj: " + text, "data-tooltip": "Posłuchaj",
+      type: "button", class: "btn btn-link lab-speak", "aria-label": "Listen: " + text, "data-tooltip": "Listen",
       onclick: function () { speak(text); }
     }, LM.icon("volume-2", { size: 18 }));
   }
 
   // =====================================================================
-  // OŚ CZASU (SVG)
+  // TIMELINE (SVG)
   // =====================================================================
 
   function svg(tag, attrs, children) {
@@ -108,8 +107,8 @@ window.LM = window.LM || {};
     return n;
   }
 
-  // Szeroka oś (800 jednostek) albo zwarta (440) — na telefonie i w kolumnach „Porównaj”,
-  // żeby napisy nie były zbyt drobne po przeskalowaniu SVG
+  // Wide axis (800 units) or compact (440) — on a phone and in the "Compare" columns,
+  // so the labels are not too small once the SVG is scaled down
   const AXIS_Y = 120;
   let W = 800, LEFT = 46, RIGHT = 754;
   function setGeometry(compact) {
@@ -122,8 +121,8 @@ window.LM = window.LM || {};
   let gradientSeq = 0;
 
   /**
-   * Oś czasu sceny. Zwraca { node, parts } (parts — elementy do animacji).
-   * Etykiety nad osią w rzędach: przy kolizji kolejny rząd wyżej.
+   * Timeline of a scene. Returns { node, parts } (parts — elements to animate).
+   * Labels above the axis in rows: on a collision the next row goes higher.
    */
   function timeline(t, scene, compact) {
     setGeometry(compact);
@@ -178,7 +177,7 @@ window.LM = window.LM || {};
       if (g) { marks.appendChild(g); parts.marks.push(g); }
     });
 
-    // Etykiety: rzędy nad osią, bez nakładania (szerokość szacowana z liczby znaków)
+    // Labels: rows above the axis, no overlap (width estimated from the number of characters)
     const rows = [];
     const labelNodes = labels.sort(function (a, b) { return a.x - b.x; }).map(function (l) {
       const w = l.text.length * (compact ? 9.4 : 7.6) + 14;
@@ -189,7 +188,7 @@ window.LM = window.LM || {};
       const x = Math.max(LEFT + w / 2 - 30, Math.min(RIGHT - w / 2 + 30, l.x));
       return svg("text", { x: x, y: y, class: "tl-label" + (l.marker ? " is-marker" : ""), "text-anchor": "middle" }, [document.createTextNode(l.text)]);
     });
-    // Górna krawędź: tyle miejsca, ile zajmują rzędy etykiet (bez etykiet — tylko kreska „teraz”)
+    // Top edge: as much room as the label rows take (without labels — only the "now" line)
     const topY = rows.length ? AXIS_Y - 50 - (rows.length - 1) * 22 : AXIS_Y - 44;
     const H = AXIS_Y + 50;
 
@@ -197,11 +196,11 @@ window.LM = window.LM || {};
     parts.axis = axis;
     const now = svg("g", { class: "tl-now" }, [
       svg("line", { x1: xOf(0), x2: xOf(0), y1: topY + 4, y2: AXIS_Y + 18, class: "tl-now-line" }),
-      svg("text", { x: xOf(0), y: AXIS_Y + 38, "text-anchor": "middle", class: "tl-now-label" }, [document.createTextNode("teraz")])
+      svg("text", { x: xOf(0), y: AXIS_Y + 38, "text-anchor": "middle", class: "tl-now-label" }, [document.createTextNode("now")])
     ]);
     const ends = svg("g", { class: "tl-ends" }, [
-      svg("text", { x: LEFT - 20, y: AXIS_Y + 38, class: "tl-end" }, [document.createTextNode("przeszłość")]),
-      svg("text", { x: RIGHT + 20, y: AXIS_Y + 38, "text-anchor": "end", class: "tl-end" }, [document.createTextNode("przyszłość")])
+      svg("text", { x: LEFT - 20, y: AXIS_Y + 38, class: "tl-end" }, [document.createTextNode("past")]),
+      svg("text", { x: RIGHT + 20, y: AXIS_Y + 38, "text-anchor": "end", class: "tl-end" }, [document.createTextNode("future")])
     ]);
     const root = svg("svg", {
       class: "tl-svg" + (compact ? " is-compact" : ""), viewBox: "0 " + topY + " " + W + " " + (H - topY),
@@ -212,14 +211,14 @@ window.LM = window.LM || {};
     return { node: root, parts: parts };
   }
 
-  /** Oś z przełącznikiem scen i opisem tekstowym; animacja przy wejściu i zmianie sceny. */
+  /** Axis with a scene switcher and a text description; animation on entry and on scene change. */
   function timelineBlock(t, opts) {
     opts = opts || {};
     const box = el("div", { class: "tl-block lab-group-" + t.group });
     function paint(animateIt) {
       const scene = t.scenes.find(function (s) { return s.id === sceneOf[t.id]; }) || t.scenes[0];
       const tl = timeline(t, scene, !!opts.compact || window.innerWidth < 640);
-      const switcher = t.scenes.length > 1 && !opts.noSwitch ? el("div", { class: "tl-scenes", role: "group", "aria-label": "Sytuacje użycia" }, t.scenes.map(function (s) {
+      const switcher = t.scenes.length > 1 && !opts.noSwitch ? el("div", { class: "tl-scenes", role: "group", "aria-label": "Situations" }, t.scenes.map(function (s) {
         const on = s.id === scene.id;
         return el("button", {
           type: "button", class: "chip-btn" + (on ? " is-active" : ""), "aria-pressed": on ? "true" : "false",
@@ -260,12 +259,12 @@ window.LM = window.LM || {};
 
   function tabs(active, route) {
     const items = [
-      { id: "map", label: "Mapa czasów", icon: "layout-grid", href: BASE },
-      { id: "card", label: "Karta czasu", icon: "notebook-text", href: BASE + "/" + (route && route.tab === "card" ? route.id : lastTense) },
-      { id: "pick", label: "Dobierz czas", icon: "route", href: BASE + "/pick" },
-      { id: "compare", label: "Porównaj", icon: "arrow-left-right", href: BASE + "/compare" }
+      { id: "map", label: "Tense map", icon: "layout-grid", href: BASE },
+      { id: "card", label: "Tense card", icon: "notebook-text", href: BASE + "/" + (route && route.tab === "card" ? route.id : lastTense) },
+      { id: "pick", label: "Pick the tense", icon: "route", href: BASE + "/pick" },
+      { id: "compare", label: "Compare", icon: "arrow-left-right", href: BASE + "/compare" }
     ];
-    return el("nav", { class: "lab-tabs", "aria-label": "Zakładki Laboratorium czasów" }, el("ul", null, items.map(function (it) {
+    return el("nav", { class: "lab-tabs", "aria-label": LM.APP.lab.title + " tabs" }, el("ul", null, items.map(function (it) {
       const on = it.id === active;
       return el("li", null, el("a", { class: "lab-tab" + (on ? " is-active" : ""), href: it.href, "aria-current": on ? "page" : null }, [
         el("span", { "aria-hidden": "true" }, LM.icon(it.icon, { size: 18 })),
@@ -276,14 +275,14 @@ window.LM = window.LM || {};
 
   function header(active, route) {
     return [
-      LM.ui.pageHead({ eyebrow: "Nauka · Laboratorium czasów", title: "Laboratorium czasów", lead: "Zobacz czasy na osi, porównaj je i dobierz właściwy do sytuacji.", className: "lab-head" }),
+      LM.ui.pageHead({ eyebrow: "Learn · " + LM.APP.lab.title, title: LM.APP.lab.title, lead: "See the tenses on a timeline, compare them and pick the right one for the situation.", className: "lab-head" }),
       tabs(active, route)
     ];
   }
 
   function levelChip(level) { return el("span", { class: "chip is-level lvl-" + level, text: level }); }
 
-  /** Wzór budowy z wyróżnionymi elementami (operatory i końcówki). */
+  /** Formation pattern with highlighted parts (operators and endings). */
   function formula(text) {
     const re = /\b(am|is|are|was|were|do|does|did|don't|doesn't|didn't|have|has|had|hadn't|will|won't|been|be|going to|not)\b|-ing|-ed|\+/gi;
     const out = [];
@@ -301,12 +300,12 @@ window.LM = window.LM || {};
     const f = t.formation;
     const row = function (label, value) { return el("tr", null, [el("th", { scope: "row", text: label }), el("td", { lang: "en" }, formula(value))]); };
     return el("div", { class: "md-table" }, el("div", { class: "md-table-wrap" }, el("table", { class: "lab-formation" }, [
-      el("tbody", null, [row("Twierdzenie", f.affirmative), row("Przeczenie", f.negative), row("Pytanie", f.question)])
+      el("tbody", null, [row("Affirmative", f.affirmative), row("Negative", f.negative), row("Question", f.question)])
     ])));
   }
 
   // =====================================================================
-  // ZAKŁADKA: MAPA CZASÓW
+  // TAB: TENSE MAP
   // =====================================================================
 
   function tile(t) {
@@ -315,7 +314,7 @@ window.LM = window.LM || {};
         el("span", { class: "lab-tile-name", text: t.name }),
         levelChip(t.level)
       ]),
-      el("span", { class: "lab-tile-pl", text: t.namePl }),
+      el("span", { class: "lab-tile-note", text: t.namePl }),
       t.uses && t.uses[0] ? el("span", { class: "lab-tile-ex", lang: "en", text: t.uses[0].en }) : null
     ]);
   }
@@ -324,60 +323,60 @@ window.LM = window.LM || {};
     const all = lab().tenses;
     const grid = el("div", { class: "lab-grid" }, GROUPS.map(function (g) {
       return el("section", { class: "lab-col lab-group-" + g.id, "aria-labelledby": "lab-col-" + g.id }, [
-        el("h2", { class: "lab-col-title", id: "lab-col-" + g.id }, [g.label, el("span", { class: "lab-col-pl", text: " · " + g.pl })]),
+        el("h2", { class: "lab-col-title", id: "lab-col-" + g.id }, g.label),
         el("ol", { class: "lab-col-list" }, ASPECTS.map(function (a) {
           const t = all.find(function (x) { return x.group === g.id && x.aspect === a.id && !isForm(x); });
           return el("li", null, [
             el("span", { class: "lab-aspect", text: a.label }),
-            t ? tile(t) : el("span", { class: "lab-tile is-empty" }, [el("span", { class: "lab-tile-name", text: g.label + " " + a.label }), el("span", { class: "lab-tile-pl", text: "Rzadki – na razie bez karty." })])
+            t ? tile(t) : el("span", { class: "lab-tile is-empty" }, [el("span", { class: "lab-tile-name", text: g.label + " " + a.label }), el("span", { class: "lab-tile-note", text: "Rare – no card yet." })])
           ]);
         }))
       ]);
     }));
     const forms = all.filter(isForm);
     view.appendChild(el("section", { class: "lab-section", "aria-labelledby": "lab-map-title" }, [
-      el("h2", { class: "section-title", id: "lab-map-title", text: "Mapa czasów" }),
-      el("p", { class: "tool-note", text: "Kolumny to czas (Present, Past, Future), wiersze to aspekt. Kolor i kod oznaczają poziom, na którym czas się pojawia. Kliknij kafelek, żeby otworzyć kartę czasu." }),
+      el("h2", { class: "section-title", id: "lab-map-title", text: "Tense map" }),
+      el("p", { class: "tool-note", text: "Columns are time (Present, Past, Future), rows are aspect. The color and code show the level where the tense first appears. Click a tile to open the tense card." }),
       grid
     ]));
     if (forms.length) {
       view.appendChild(el("section", { class: "lab-section lab-group-future", "aria-labelledby": "lab-forms-title" }, [
-        el("h2", { class: "section-title", id: "lab-forms-title", text: "Formy przyszłe" }),
-        el("p", { class: "tool-note", text: "O przyszłości mówimy nie tylko przez will. Te formy też ją wyrażają:" }),
+        el("h2", { class: "section-title", id: "lab-forms-title", text: "Future forms" }),
+        el("p", { class: "tool-note", text: "We talk about the future not only with will. These forms express it too:" }),
         el("div", { class: "lab-forms" }, forms.map(tile))
       ]));
     }
   }
 
   // =====================================================================
-  // ZAKŁADKA: KARTA CZASU
+  // TAB: TENSE CARD
   // =====================================================================
 
   function renderCard(view, id) {
     const t = tense(id);
     if (!t) {
       view.appendChild(el("div", { class: "empty-state" }, [
-        el("p", { class: "empty-state-text", text: "Nie ma takiego czasu w Laboratorium." }),
-        el("p", null, el("a", { class: "btn btn-secondary", href: BASE }, "Wróć do mapy czasów"))
+        el("p", { class: "empty-state-text", text: "There is no such tense in the Lab." }),
+        el("p", null, el("a", { class: "btn btn-secondary", href: BASE }, "Back to the tense map"))
       ]));
       return;
     }
     lastTense = t.id;
-    document.title = t.name + " · Laboratorium czasów";
+    document.title = t.name + " · " + LM.APP.lab.title;
     const card = el("article", { class: "lab-card lvl-" + t.level + " lab-group-" + t.group, "aria-labelledby": "lab-card-title" });
     card.appendChild(el("header", { class: "card lab-card-head" }, [
       el("div", { class: "lab-card-top" }, [
-        el("p", { class: "lab-card-eyebrow" }, [levelChip(t.level), el("span", { text: GROUPS.find(function (g) { return g.id === t.group; }).label + (isForm(t) ? " · forma przyszła" : " · " + (ASPECTS.find(function (a) { return a.id === t.aspect; }) || { label: t.aspect }).label) })]),
-        LM.notes ? LM.notes.button("lab:" + t.id, { title: "Lab czasów · " + t.name, route: BASE + "/" + t.id }) : null
+        el("p", { class: "lab-card-eyebrow" }, [levelChip(t.level), el("span", { text: GROUPS.find(function (g) { return g.id === t.group; }).label + (isForm(t) ? " · future form" : " · " + (ASPECTS.find(function (a) { return a.id === t.aspect; }) || { label: t.aspect }).label) })]),
+        LM.notes ? LM.notes.button("lab:" + t.id, { title: LM.APP.lab.title + " · " + t.name, route: BASE + "/" + t.id }) : null
       ]),
       el("h2", { class: "lab-card-title", id: "lab-card-title", lang: "en", text: t.name }),
       el("p", { class: "lab-card-pl", text: t.namePl }),
       el("p", { class: "lab-card-summary", text: t.summary })
     ]));
 
-    card.appendChild(section("Oś czasu", timelineBlock(t)));
-    card.appendChild(section("Budowa", formationTable(t)));
-    card.appendChild(section("Zastosowania", el("ul", { class: "lab-uses" }, t.uses.map(function (u) {
+    card.appendChild(section("Timeline", timelineBlock(t)));
+    card.appendChild(section("Form", formationTable(t)));
+    card.appendChild(section("Uses", el("ul", { class: "lab-uses" }, t.uses.map(function (u) {
       return el("li", { class: "card lab-use" }, [
         el("p", { class: "lab-use-label", text: u.label }),
         el("p", { class: "lab-use-en" }, [el("span", { lang: "en", text: u.en }), speakButton(u.en)]),
@@ -385,29 +384,29 @@ window.LM = window.LM || {};
       ]);
     }))));
     if (t.signals && t.signals.length) {
-      card.appendChild(section("Słowa-sygnały", el("ul", { class: "lab-signals" }, t.signals.map(function (s) {
+      card.appendChild(section("Signal words", el("ul", { class: "lab-signals" }, t.signals.map(function (s) {
         return el("li", null, el("span", { class: "chip", lang: "en", text: s }));
       }))));
     }
     if (t.traps && t.traps.length) {
       card.appendChild(el("section", { class: "callout callout-trap lab-traps" }, [
-        el("h3", { class: "callout-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon("triangle-alert", { size: 20 })), "Pułapki Polaków"]),
+        el("h3", { class: "callout-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon("triangle-alert", { size: 20 })), LM.APP.mistakesHeading]),
         el("ul", null, t.traps.map(function (x) { return el("li", { text: x }); }))
       ]));
     }
     if (t.contrasts && t.contrasts.length) {
-      card.appendChild(section("Porównaj z…", el("ul", { class: "lab-contrasts" }, t.contrasts.map(function (c) {
+      card.appendChild(section("Compare with…", el("ul", { class: "lab-contrasts" }, t.contrasts.map(function (c) {
         const other = tense(c.with);
         return el("li", { class: "card lab-contrast" }, [
           el("p", { class: "lab-contrast-head" }, [el("strong", { lang: "en", text: t.name }), " vs ", el("strong", { lang: "en", text: other ? other.name : c.with })]),
           el("p", { text: c.rule }),
           c.examples && c.examples.length ? el("ul", { class: "lab-contrast-ex", lang: "en" }, c.examples.map(function (x) { return el("li", { text: x }); })) : null,
-          el("a", { class: "btn btn-secondary btn-small", href: BASE + "/compare/" + t.id + "/" + c.with }, LM.ui.withIcon("arrow-left-right", "Porównaj obok siebie"))
+          el("a", { class: "btn btn-secondary btn-small", href: BASE + "/compare/" + t.id + "/" + c.with }, LM.ui.withIcon("arrow-left-right", "Compare side by side"))
         ]);
       }))));
     }
-    const practice = el("div", { class: "lab-practice" }, el("p", { class: "tool-note", text: "Wczytuję zestawy…" }));
-    card.appendChild(section("Ćwicz", practice));
+    const practice = el("div", { class: "lab-practice" }, el("p", { class: "tool-note", text: "Loading sets…" }));
+    card.appendChild(section("Practice", practice));
     fillPractice(practice, t);
     view.appendChild(card);
   }
@@ -416,7 +415,7 @@ window.LM = window.LM || {};
     return el("section", { class: "lab-block" }, [el("h3", { class: "lab-block-title", text: title }), body]);
   }
 
-  /** Zestawy powiązane z czasem (po niezbednikIds), mixy z tymi tematami i strony tematów. */
+  /** Sets linked to the tense (by cheat sheet ids), mixed sets with those topics, and the topic pages. */
   function fillPractice(box, t) {
     if (!LM.exercises) { box.replaceChildren(); return; }
     LM.exercises.loadIndex().then(function (index) {
@@ -427,9 +426,9 @@ window.LM = window.LM || {};
       const pages = ids.map(LM.exercises.topicInfo).filter(Boolean);
       fill(box, [
         setIds.length ? el("div", { class: "ex-set-grid" }, setIds.map(function (s) { return index.sets[s]; }).filter(Boolean).map(LM.exercises.setCard))
-          : el("p", { class: "tool-note", text: "Zestawy zadań do tego czasu jeszcze powstają." }),
+          : el("p", { class: "tool-note", text: "Sets for this tense are still being written." }),
         mixes.length ? el("p", { class: "lab-practice-links" }, mixes.map(function (m) {
-          return el("a", { class: "btn btn-secondary", href: LM.exercises.BASE + "/mix/" + m.id }, LM.ui.withIcon("shuffle", "Zestaw mieszany: " + m.title));
+          return el("a", { class: "btn btn-secondary", href: LM.exercises.BASE + "/mix/" + m.id }, LM.ui.withIcon("shuffle", "Mixed set: " + m.title));
         })) : null,
         pages.length ? el("p", { class: "lab-practice-links" }, pages.map(function (p) {
           return el("a", { class: "wiki-link wiki-chip lvl-" + p.level, href: p.href }, [LM.icon("notebook-text", { size: 14 }), el("span", { class: "wiki-chip-level", text: p.level }), el("span", { class: "wiki-chip-text", text: p.title })]);
@@ -439,18 +438,18 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // ZAKŁADKA: DOBIERZ CZAS
+  // TAB: PICK THE TENSE
   // =====================================================================
 
   function renderPick(view) {
     const tree = lab().tree;
-    if (!tree) { view.appendChild(el("p", { class: "tool-note", text: "Brak drzewa wyboru (dane/lab-wybor-czasu.json)." })); return; }
+    if (!tree) { view.appendChild(el("p", { class: "tool-note", text: "The decision tree is missing (run: npm run build)." })); return; }
     const last = pathStack[pathStack.length - 1];
     const result = last && last.option.result ? last.option : null;
     const nodeId = result ? null : (last ? last.option.next : tree.start);
     const node = nodeId ? tree.nodes[nodeId] : null;
 
-    const crumbs = el("ol", { class: "lab-path", "aria-label": "Twoje wybory" }, [el("li", { text: "Start" })].concat(pathStack.map(function (s) {
+    const crumbs = el("ol", { class: "lab-path", "aria-label": "Your choices" }, [el("li", { text: "Start" })].concat(pathStack.map(function (s) {
       return el("li", { text: s.option.label });
     })));
 
@@ -466,23 +465,23 @@ window.LM = window.LM || {};
       })));
     } else {
       const list = result.result.map(tense).filter(Boolean);
-      body.push(el("h2", { class: "lab-question lab-result-title", tabindex: "-1", text: list.length > 1 ? "Pasują te czasy:" : "Pasuje: " + list[0].name }));
+      body.push(el("h2", { class: "lab-question lab-result-title", tabindex: "-1", text: list.length > 1 ? "These tenses fit:" : "This fits: " + list[0].name }));
       if (result.why) body.push(el("p", { class: "lab-why", text: result.why }));
       body.push(el("ul", { class: "lab-results" }, list.map(function (t) {
         return el("li", { class: "card lab-result lvl-" + t.level + " lab-group-" + t.group }, [
           el("p", { class: "lab-result-name" }, [el("strong", { lang: "en", text: t.name }), " ", levelChip(t.level)]),
           el("p", { text: t.summary }),
           t.uses[0] ? el("p", { class: "lab-use-en" }, [el("span", { lang: "en", text: t.uses[0].en }), speakButton(t.uses[0].en)]) : null,
-          el("a", { class: "btn btn-primary btn-small", href: BASE + "/" + t.id }, LM.ui.withIcon("arrow-right", "Zobacz kartę czasu"))
+          el("a", { class: "btn btn-primary btn-small", href: BASE + "/" + t.id }, LM.ui.withIcon("arrow-right", "Open the tense card"))
         ]);
       })));
     }
     body.push(el("div", { class: "tool-actions" }, [
-      pathStack.length ? el("button", { type: "button", class: "btn btn-secondary", onclick: function () { pathStack.pop(); renderAgain("#lab-q"); } }, LM.ui.withIcon("arrow-left", "Wstecz")) : null,
-      pathStack.length ? el("button", { type: "button", class: "btn btn-link", onclick: function () { pathStack = []; renderAgain("#lab-q"); } }, LM.ui.withIcon("rotate-ccw", "Zacznij od nowa")) : null
+      pathStack.length ? el("button", { type: "button", class: "btn btn-secondary", onclick: function () { pathStack.pop(); renderAgain("#lab-q"); } }, LM.ui.withIcon("arrow-left", "Back")) : null,
+      pathStack.length ? el("button", { type: "button", class: "btn btn-link", onclick: function () { pathStack = []; renderAgain("#lab-q"); } }, LM.ui.withIcon("rotate-ccw", "Start over")) : null
     ]));
     view.appendChild(el("section", { class: "card lab-pick", "aria-live": "polite" }, [crumbs].concat(body)));
-    view.appendChild(el("p", { class: "tool-note", text: "To reguły zapisane w danych, nie sztuczna inteligencja – ta sama ścieżka zawsze daje ten sam wynik." }));
+    view.appendChild(el("p", { class: "tool-note", text: "These are rules written in the data, not artificial intelligence – the same path always gives the same result." }));
   }
 
   function renderAgain(focusSel) {
@@ -491,7 +490,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // ZAKŁADKA: PORÓWNAJ
+  // TAB: COMPARE
   // =====================================================================
 
   function renderCompare(view, route) {
@@ -511,9 +510,9 @@ window.LM = window.LM || {};
     };
 
     view.appendChild(el("div", { class: "card lab-compare-pick" }, [
-      select("lab-a", a.id, "Pierwszy czas"),
+      select("lab-a", a.id, "First tense"),
       el("span", { class: "lab-vs", "aria-hidden": "true" }, LM.icon("arrow-left-right", { size: 20 })),
-      select("lab-b", b.id, "Drugi czas")
+      select("lab-b", b.id, "Second tense")
     ]));
 
     const column = function (t) {
@@ -521,11 +520,11 @@ window.LM = window.LM || {};
         el("h2", { class: "lab-card-title", id: "cmp-" + t.id, lang: "en" }, [t.name, " ", levelChip(t.level)]),
         el("p", { class: "lab-card-pl", text: t.namePl + " – " + t.summary }),
         timelineBlock(t, { noSwitch: true, animate: false, compact: true }),
-        el("h3", { class: "lab-block-title", text: "Budowa" }),
+        el("h3", { class: "lab-block-title", text: "Form" }),
         formationTable(t),
-        el("h3", { class: "lab-block-title", text: "Kiedy używać" }),
+        el("h3", { class: "lab-block-title", text: "When to use it" }),
         el("ul", { class: "lab-when" }, t.uses.map(function (u) { return el("li", null, [el("strong", { text: u.label + ": " }), el("span", { lang: "en", text: u.en })]); })),
-        t.traps && t.traps.length ? el("h3", { class: "lab-block-title", text: "Pułapki" }) : null,
+        t.traps && t.traps.length ? el("h3", { class: "lab-block-title", text: LM.APP.mistakesHeading }) : null,
         t.traps && t.traps.length ? el("ul", { class: "lab-when" }, t.traps.map(function (x) { return el("li", { text: x }); })) : null
       ]);
     };
@@ -535,15 +534,15 @@ window.LM = window.LM || {};
     (a.contrasts || []).forEach(function (c) { if (c.with === b.id) diffs.push({ from: a, c: c }); });
     (b.contrasts || []).forEach(function (c) { if (c.with === a.id) diffs.push({ from: b, c: c }); });
     view.appendChild(el("section", { class: "card lab-diff", "aria-labelledby": "lab-diff-title" }, [
-      el("h2", { class: "section-title", id: "lab-diff-title", text: "Różnice" }),
+      el("h2", { class: "section-title", id: "lab-diff-title", text: "Differences" }),
       diffs.length ? el("div", { class: "md-table" }, el("div", { class: "md-table-wrap" }, el("table", null, [
-        el("thead", null, el("tr", null, [el("th", { text: "Reguła" }), el("th", { text: "Przykłady" })])),
+        el("thead", null, el("tr", null, [el("th", { text: "Rule" }), el("th", { text: "Examples" })])),
         el("tbody", null, diffs.map(function (d) {
           return el("tr", null, [el("td", { text: d.c.rule }), el("td", { lang: "en" }, (d.c.examples || []).map(function (x) { return el("p", { class: "lab-diff-ex", text: x }); }))]);
         }))
-      ]))) : el("p", { class: "tool-note", text: "Dla tej pary nie ma jeszcze opisanej reguły. Porównaj osie czasu i budowę powyżej." })
+      ]))) : el("p", { class: "tool-note", text: "No rule is written for this pair yet. Compare the timelines and the forms above." })
     ]));
-    // Wspólna animacja obu osi
+    // Shared animation of both axes
     animateAll(view);
   }
 
@@ -564,12 +563,12 @@ window.LM = window.LM || {};
   // =====================================================================
 
   /**
-   * Szkielet widoku do czasu wczytania danych (data/lab.js): układ siatki Mapy czasów jest znany z góry
-   * (kolumny i aspekty), więc wiersze i kolumny rysują się od razu, a kafelki są pustymi placeholderami.
-   * Dla pozostałych zakładek: trzy paski. Czytnik ekranu dostaje jeden komunikat „Wczytuję…”.
+   * Skeleton of the view until the data (data/lab.js) is loaded: the Tense map grid layout is known in advance
+   * (columns and aspects), so rows and columns are drawn at once and the tiles are empty placeholders.
+   * Other tabs: three bars. A screen reader gets a single "Loading…" message.
    */
   function skeleton(tab) {
-    const status = el("p", { class: "visually-hidden", role: "status", text: "Wczytuję Laboratorium…" });
+    const status = el("p", { class: "visually-hidden", role: "status", text: "Loading the Lab…" });
     if (tab !== "map") {
       return el("div", { class: "lab-skeleton", "aria-busy": "true" }, [
         status,
@@ -580,10 +579,10 @@ window.LM = window.LM || {};
     }
     return el("section", { class: "lab-section lab-skeleton", "aria-busy": "true", "aria-labelledby": "lab-map-title" }, [
       status,
-      el("h2", { class: "section-title", id: "lab-map-title", text: "Mapa czasów" }),
+      el("h2", { class: "section-title", id: "lab-map-title", text: "Tense map" }),
       el("div", { class: "lab-grid", "aria-hidden": "true" }, GROUPS.map(function (g) {
         return el("div", { class: "lab-col lab-group-" + g.id }, [
-          el("p", { class: "lab-col-title" }, [g.label, el("span", { class: "lab-col-pl", text: " · " + g.pl })]),
+          el("p", { class: "lab-col-title" }, g.label),
           el("ol", { class: "lab-col-list" }, ASPECTS.map(function (a) {
             return el("li", null, [el("span", { class: "lab-aspect", text: a.label }), el("span", { class: "lab-tile is-skeleton" })]);
           }))
@@ -592,7 +591,7 @@ window.LM = window.LM || {};
     ]);
   }
 
-  /** Wczytuje dane Laboratorium z wyprzedzeniem (bezczynność przeglądarki, najechanie na link), bez rysowania. */
+  /** Preloads the Lab data ahead of time (browser idle, hovering a link), without drawing. */
   function prefetch() {
     if (LM.LAB) return;
     load();
@@ -602,7 +601,7 @@ window.LM = window.LM || {};
     const near = function (e) { const a = e.target && e.target.closest && e.target.closest('a[href^="' + BASE + '"]'); if (a) prefetch(); };
     ["pointerover", "focusin", "touchstart"].forEach(function (type) { document.addEventListener(type, near, { passive: true }); });
     const conn = navigator.connection;
-    if (conn && conn.saveData) return; // tryb oszczędzania danych: tylko na żądanie
+    if (conn && conn.saveData) return; // data saver mode: only on demand
     const idle = window.requestIdleCallback || function (fn) { return setTimeout(fn, 2500); };
     idle(prefetch, { timeout: 5000 });
   }
@@ -615,15 +614,15 @@ window.LM = window.LM || {};
     view.className = "view tool-view lab-view";
     view.dataset.file = BASE;
     view.replaceChildren();
-    document.title = "Laboratorium czasów · " + LM.APP.appTitle;
+    document.title = LM.APP.lab.title + " · " + LM.APP.appTitle;
     header(route.tab, route).forEach(function (n) { view.appendChild(n); });
     if (!LM.LAB) {
-      view.appendChild(skeleton(route.tab)); // szkielet układu zamiast samego napisu (spec v7 14, P4)
+      view.appendChild(skeleton(route.tab)); // layout skeleton instead of plain text (spec v7 14, P4)
       load().then(function (data) {
         if (!data) {
           const sk = view.querySelector(".lab-skeleton");
           if (sk) sk.remove();
-          view.appendChild(el("p", { class: "tool-note", text: "Nie udało się wczytać danych Laboratorium (data/lab.js)." }));
+          view.appendChild(el("p", { class: "tool-note", text: "Could not load the Lab data (data/lab.js)." }));
           return;
         }
         if (parseRoute(location.hash)) render(parseRoute(location.hash));
