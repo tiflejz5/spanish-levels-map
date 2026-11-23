@@ -27,6 +27,7 @@ window.LM = window.LM || {};
   let trailObserver = null;
 
   function pd() { return LM.profileData; }
+  function learn() { return LM.learn; }
   function plural(n, one, other) { return LM.plural(n, one, other); }
 
   function parseRoute(hash) {
