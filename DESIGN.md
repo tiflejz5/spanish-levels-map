@@ -676,8 +676,18 @@ Ograniczenie: audyt automatyczny nie zastępuje testu z czytnikiem ekranu (NVDA 
 - **Put in order with ¿ ? / ¡ !**: the opening and the end mark are never tiles; they are shown around the answer line (`.ex-line-frame`, `.ex-line-mark` in Fraunces, `--ink-muted`, `aria-hidden`; the hidden prompt says "It is a question."). The first tile keeps its capital only when it is a name.
 - **Set result** is in points ("12/14 points"); "pkt" chips became "points".
 
+### 3.18 Learning loop (Spanish Levels Map, stage 5)
+
+- **"Report a mistake"** (`.report-link`, `LM.ui.reportLink`, spec 06 E12): a quiet line in `--fs-sm`, `--ink-muted`, underlined link with the `flag` icon, 44 px high, `--accent` on hover / focus. It sits last: after the topic navigation on a topic page, under the actions of a quiz, checkpoint or set result, and at the bottom of the back of a built-in flashcard (`.fc-report`). Opens the issue form in a new tab with the title "<topic id>: " filled in; an "by e-mail" link follows when `LM.APP.reportMail` is set. Hidden in print.
+- **Home footer** (`.home-foot`): under the home article, 72ch wide, a `--line` rule above; the privacy sentence, "Version N · Source code", and the report link. `--fs-sm`, `--ink-muted`.
+- **Listen buttons** on the flashcard back (top right of `.fc-backside`, reads the same text as S) and next to the right answer in the mistake log (the context with its one gap filled, else the answer). Same `.listen-btn` as on topic pages; hidden without a voice.
+- **`lang` attributes** also on: placement questions, options and mistake list; the typed card's answer and "Also accepted"; a mistake card front that is Spanish; the mistake log (context line by line, my answer, right answer); model answers in result lists.
+- **Decks by level** (`#/review/decks/topics/<level>`): level chips only for levels with built-in decks; under the vocabulary topics of a level page a `.ess-decks` note "Flashcard decks: …" with the `layers` icon links there.
+- **Texts that depend on content:** the final test card, start screen and Today tip take the question count, pass mark and minutes from the pool; a placement result of a "soon" level says where the trail really starts ("Start the trail at A1", the toast and the trail start note).
+
 ## 10. Dziennik zmian
 
+- **Stage 5 (learning loop, Spanish Levels Map).** Report links and the home footer (E12), listen buttons and `lang` on flashcards, the mistake log and the placement test, decks by level, texts from the content (view in 3.18). CSS at the end of `css/style.css`; only existing tokens, contrast unchanged.
 - **Stage 4 (exercises, Spanish Levels Map).** The `paradigm` item type (view in 3.17), every item type checked end to end with Spanish data (frame marks in Put in order, names keep their capital, no English contractions or "I" fix-ups, model answers with `lang`), placement and final tests on syllabus categories, `tools/validate-content.js` (validate_plan.py rules + E11 heuristics), `tools/strip-keys.js`. CSS after "Fill the gaps" in `css/style.css`; only existing tokens, contrast unchanged.
 - **Stage 3 (language layer, Spanish Levels Map).** `LM.lang`, `LM.exLogic.match` (accents / ending / typo hints, lenient mode), `LM.speech` (one voice module, voice variant, no-voice paths), `lang` markup and listen buttons, the special-character bar, `LM.lang.fold` in search. CSS at the end of `css/style.css` ("LANGUAGE LAYER"); contrast unchanged (only existing tokens).
 
