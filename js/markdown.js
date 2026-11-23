@@ -11,6 +11,10 @@
  *   - [[id]] links (resolved by LM.markdown.resolveWiki),
  *   - task lists "- [ ] …" as checkboxes (input.md-task).
  *
+ * Target-language text gets lang = LM.APP.targetLang by three conventions (spec 05 §5): *italics*, every cell of a table
+ * column headed with the language name (LM.APP.language), and quotes (a final English "(gloss)" stays outside the span).
+ * Rows of such a table and quotes get a listen button (LM.speech, spec 06 E5) and data-listen for the S key.
+ *
  * SECURITY: the output is built from DOM elements and text nodes.
  * Raw HTML from a .md file is NOT interpreted (it shows as text).
  */
@@ -329,7 +333,8 @@ window.LM = window.LM || {};
 
   function toDom(nd) {
     if (nd.t === "text") return document.createTextNode(nd.v);
-    const node = el(nd.t);
+    // Convention 1 (spec 05 §5): *italics* = target-language text; English emphasis uses **bold**
+    const node = el(nd.t, nd.t === "em" ? { lang: target() } : null);
     nd.children.forEach(function (ch) { node.appendChild(toDom(ch)); });
     return node;
   }
@@ -345,6 +350,56 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
+  // TARGET-LANGUAGE MARKUP (spec 05 §5) AND LISTEN BUTTONS (spec 06 E5)
+  // =====================================================================
+
+  function target() { return LM.APP.targetLang; }
+
+  /**
+   * An English gloss in parentheses at the end of a line: "<text> (gloss)" → { main: "<text>", gloss: "(gloss)" }.
+   * A line that is only a parenthesis keeps it as the main text.
+   */
+  function splitGloss(line) {
+    const m = /^(.*\S)\s*(\([^()]*\))\s*$/.exec(String(line));
+    return m ? { main: m[1], gloss: m[2] } : { main: String(line), gloss: "" };
+  }
+
+  /** Target-language text with its gloss outside the lang span: [span[lang] main, " ", span.md-gloss]. */
+  function targetLine(line) {
+    const g = splitGloss(line);
+    const span = el("span", { class: "md-target", lang: target() }, inline(g.main));
+    return g.gloss ? [span, " ", el("span", { class: "md-gloss", text: g.gloss })] : [span];
+  }
+
+  /** A column whose header is the name of the target language (convention 2). */
+  function isTargetHeader(h) {
+    return String(h).replace(/[*_`]/g, "").trim().toLowerCase() === String(LM.APP.language).toLowerCase();
+  }
+
+  /**
+   * A listen button for text in the target language; hidden by CSS when there is no voice (html[data-voice="none"]).
+   * The host (a table row, a quote) carries data-listen, so S reads it when the focus is inside (js/shortcuts.js).
+   */
+  function listenButton(host, getText, label) {
+    if (!LM.speech || !LM.speech.supported()) return null;
+    return el("button", {
+      type: "button", class: "btn btn-link listen-btn", "aria-label": label, "data-tooltip": "Listen",
+      onclick: function () {
+        const text = getText();
+        if (/\n/.test(text)) LM.speech.speakScript(text, { force: true });
+        else LM.speech.speak(text);
+      },
+      onfocus: function () { host.setAttribute("data-listen", getText()); }
+    }, LM.icon ? LM.icon("volume-2", { size: 18 }) : "Listen");
+  }
+
+  /** Text for speech: the target-language spans of a node (never the glosses or other English). */
+  function targetText(node, sep) {
+    return Array.prototype.map.call(node.querySelectorAll(".md-target"), function (s) { return s.textContent.trim(); })
+      .filter(Boolean).join(sep || " ");
+  }
+
+  // =====================================================================
   // DRAWING BLOCKS
   // =====================================================================
 
@@ -354,8 +409,19 @@ window.LM = window.LM || {};
         return el("h" + b.level, null, inline(b.text));
       case "paragraph":
         return el("p", null, inlineLines(b.lines));
-      case "quote":
-        return el("blockquote", null, el("p", null, inlineLines(b.lines)));
+      case "quote": {
+        // Convention 3: a quote is target-language text or dialogue, one line per line; a final "(gloss)" stays English
+        const p = el("p");
+        b.lines.forEach(function (line, i) {
+          if (i > 0) p.appendChild(el("br"));
+          targetLine(line).forEach(function (n) { p.appendChild(typeof n === "string" ? document.createTextNode(n) : n); });
+        });
+        const quote = el("blockquote", { class: "md-quote" }, p);
+        const btn = listenButton(quote, function () { return targetText(quote, "\n"); }, "Listen to the quote");
+        if (btn) { quote.classList.add("has-listen"); quote.appendChild(btn); }
+        quote.setAttribute("data-listen", targetText(quote, "\n"));
+        return quote;
+      }
       case "hr":
         return el("hr");
       case "list": {
@@ -379,12 +445,23 @@ window.LM = window.LM || {};
       }
       case "table": {
         const cellAttrs = function (i) { return b.align[i] ? { style: "text-align:" + b.align[i] } : null; };
-        return el("div", { class: "md-table-wrap" }, el("table", null, [
+        // Convention 2: every cell of a column headed with the language name is target-language text, with a listen button
+        const tcol = b.header.findIndex(isTargetHeader);
+        return el("div", { class: "md-table-wrap" }, el("table", { class: tcol !== -1 ? "md-examples" : null }, [
           el("thead", null, el("tr", null, b.header.map(function (h, i) {
             return el("th", cellAttrs(i), inline(h));
           }))),
           el("tbody", null, b.rows.map(function (row) {
-            return el("tr", null, row.map(function (c, i) { return el("td", cellAttrs(i), inline(c)); }));
+            const tr = el("tr");
+            row.forEach(function (c, i) {
+              if (i !== tcol || !String(c).trim()) { tr.appendChild(el("td", cellAttrs(i), inline(c))); return; }
+              const td = el("td", Object.assign({ class: "md-target-cell" }, cellAttrs(i)), targetLine(c));
+              const btn = listenButton(tr, function () { return targetText(td); }, "Listen: " + splitGloss(c).main.replace(/[*_`]/g, ""));
+              if (btn) td.appendChild(btn);
+              tr.appendChild(td);
+            });
+            tr.setAttribute("data-listen", (function () { const t = tr.querySelector(".md-target"); return t ? t.textContent.trim() : ""; })());
+            return tr;
           }))
         ]));
       }
