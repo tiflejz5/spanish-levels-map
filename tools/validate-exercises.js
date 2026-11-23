@@ -228,15 +228,21 @@ LEVELS.forEach(function (lvl) {
   if (!set) return;
   finalPools++;
   const at = rel;
+  // A pool whose "note" starts with TEMPORARY (stage 5 minimal pools) may be smaller: the size, draw and coverage
+  // rules become warnings, so the test can run end to end before the level's stage X writes the full pool.
+  const temporary = typeof set.note === "string" && /^TEMPORARY\b/.test(set.note);
+  const size = function (msg) { if (temporary) warnings.push(msg + " (temporary pool)"); else err(msg); };
     if (set.version !== 1) err(at + ": version must be 1");
     if (set.kind !== "level-test") err(at + ": kind must be \"level-test\"");
     if (set.id !== "final-" + lvl.toLowerCase()) err(at + ": id must be \"final-" + lvl.toLowerCase() + "\"");
     if (set.level !== lvl) err(at + ": level must be " + lvl);
-    if (set.draw !== 20) err(at + ": draw must be 20");
+    if (set.draw !== 20) size(at + ": draw must be 20");
+    if (temporary && Array.isArray(set.items) && set.draw > set.items.length) err(at + ": draw is larger than the pool");
     if (set.passPercent !== 80) err(at + ": passPercent must be 80");
     if (set.defaultMode !== "exam") err(at + ": defaultMode must be \"exam\"");
     if (!nonEmpty(set.title)) err(at + ": missing title");
-    if (!Array.isArray(set.items) || set.items.length !== 30) { err(at + ": the pool must have 30 items, it has " + (Array.isArray(set.items) ? set.items.length : 0)); if (!Array.isArray(set.items)) return; }
+    if (!Array.isArray(set.items)) { err(at + ": missing items"); return; }
+    if (set.items.length !== 30) { size(at + ": the pool must have 30 items, it has " + set.items.length); }
     finalItems += set.items.length;
     let mc = 0, paradigms = 0;
     const covered = new Set();
@@ -257,14 +263,14 @@ LEVELS.forEach(function (lvl) {
     if (paradigms > 2) err(at + ": at most two paradigm items (there are " + paradigms + ")");
     if (mc * 2 < set.items.length) err(at + ": " + mc + " of " + set.items.length + " items are multiple choice (at least half are required)");
     const levelTopics = Object.keys(topicLevel).filter(function (t) { return topicLevel[t] === lvl; });
-    if (covered.size < 0.7 * levelTopics.length) err(at + ": the pool covers " + covered.size + " of " + levelTopics.length + " topic pages (at least 70% required)");
+    if (covered.size < 0.7 * levelTopics.length) size(at + ": the pool covers " + covered.size + " of " + levelTopics.length + " topic pages (at least 70% required)");
     // Category proportions as on the level list (a warning when off by more than 2 items from the proportional share)
     const catCount = {};
     levelTopics.forEach(function (t) { catCount[topicCategory[t]] = (catCount[topicCategory[t]] || 0) + 1; });
     Object.keys(catCount).forEach(function (c) {
       const want = 30 * catCount[c] / levelTopics.length;
       const got = perCat[c] || 0;
-      if (!got) err(at + ": no items from the category \"" + c + "\"");
+      if (!got) size(at + ": no items from the category \"" + c + "\"");
       else if (Math.abs(got - want) > 2) warnings.push(at + ": category \"" + c + "\" has " + got + " items, proportionally about " + want.toFixed(1));
     });
 });

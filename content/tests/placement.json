@@ -1,49 +1,18 @@
 {
   "version": 1,
-  "note": "Sample of 6 questions. The full pool has 10 per level: 5 grammar, 3 vocabulary, 2 reading.",
+  "note": "TEMPORARY minimal pool for stage 5 (12 questions, 2 per level) so the placement test runs end to end. The full pool (stage X of each level) has 10 per level: 5 grammar, 3 vocabulary, 2 reading.",
   "questions": [
-    {
-      "id": "a1-g-01", "level": "A1", "skill": "grammar", "type": "multiple-choice",
-      "question": "Mi hermana ___ profesora.",
-      "options": ["está", "es", "tiene", "hay"], "correct": 1,
-      "explanation": "Professions take ser: es profesora.",
-      "topicId": "a1-verbs-ser"
-    },
-    {
-      "id": "a1-r-01", "level": "A1", "skill": "reading", "type": "multiple-choice",
-      "passage": "¡Hola! Me llamo Diego y soy de Colombia, pero ahora vivo en Valencia con mi hermano. Trabajo en un restaurante. No tengo coche: voy al trabajo en bicicleta. Los domingos visito a mis amigos.",
-      "question": "¿Cómo va Diego al trabajo?",
-      "options": ["En coche", "En autobús", "En bicicleta", "A pie"], "correct": 2,
-      "explanation": "The text says: “voy al trabajo en bicicleta”. He has no car.",
-      "topicId": null
-    },
-    {
-      "id": "a2-g-01", "level": "A2", "skill": "grammar", "type": "multiple-choice",
-      "question": "Ayer nosotros ___ al cine y después cenamos en casa.",
-      "options": ["vamos", "íbamos", "hemos ido", "fuimos"], "correct": 3,
-      "explanation": "Ayer and a finished action: preterite, fuimos.",
-      "topicId": "a2-verbs-preterite-irregular"
-    },
-    {
-      "id": "b1-g-01", "level": "B1", "skill": "grammar", "type": "multiple-choice",
-      "question": "Espero que mañana ___ buen tiempo.",
-      "options": ["hace", "haga", "hará", "hacía"], "correct": 1,
-      "explanation": "Esperar que + subjunctive: haga.",
-      "topicId": "b1-verbs-subjunctive-wishes-requests"
-    },
-    {
-      "id": "b1-v-01", "level": "B1", "skill": "vocabulary", "type": "multiple-choice",
-      "question": "Vivo lejos de mi familia y la ___ mucho de menos.",
-      "options": ["echo", "hago", "tengo", "pongo"], "correct": 0,
-      "explanation": "Echar de menos = to miss someone.",
-      "topicId": "b1-vocabulary-life-events-relationships"
-    },
-    {
-      "id": "b2-g-01", "level": "B2", "skill": "grammar", "type": "multiple-choice",
-      "question": "Si ___ más tiempo, aprendería a tocar el piano.",
-      "options": ["tengo", "tendría", "tuviera", "tenga"], "correct": 2,
-      "explanation": "Unreal condition in the present: si + imperfect subjunctive, then conditional.",
-      "topicId": "b2-grammar-si-clauses-unreal"
-    }
+    {"id": "a1-g-01", "level": "A1", "skill": "grammar", "type": "multiple-choice", "question": "Mi hermana ___ profesora.", "options": ["está", "es", "tiene", "hay"], "correct": 1, "explanation": "Professions take ser: es profesora.", "topicId": "a1-verbs-ser"},
+    {"id": "a1-r-01", "level": "A1", "skill": "reading", "type": "multiple-choice", "passage": "¡Hola! Me llamo Diego y soy de Colombia, pero ahora vivo en Valencia con mi hermano. Trabajo en un restaurante. No tengo coche: voy al trabajo en bicicleta. Los domingos visito a mis amigos.", "question": "¿Cómo va Diego al trabajo?", "options": ["En coche", "En autobús", "En bicicleta", "A pie"], "correct": 2, "explanation": "The text says: “voy al trabajo en bicicleta”. He has no car.", "topicId": null},
+    {"id": "a2-g-01", "level": "A2", "skill": "grammar", "type": "multiple-choice", "question": "Ayer nosotros ___ al cine y después cenamos en casa.", "options": ["vamos", "íbamos", "hemos ido", "fuimos"], "correct": 3, "explanation": "Ayer and a finished action: preterite, fuimos.", "topicId": "a2-verbs-preterite-irregular"},
+    {"id": "a2-v-01", "level": "A2", "skill": "vocabulary", "type": "multiple-choice", "question": "Hace mucho frío. Ponte el ___ antes de salir.", "options": ["abrigo", "bañador", "ventilador", "billete"], "correct": 0, "explanation": "Abrigo = coat, the thing you wear when it is cold.", "topicId": "a2-vocabulary-shopping-clothes"},
+    {"id": "b1-g-01", "level": "B1", "skill": "grammar", "type": "multiple-choice", "question": "Espero que mañana ___ buen tiempo.", "options": ["hace", "haga", "hizo", "hacía"], "correct": 1, "explanation": "Esperar que + subjunctive: haga.", "topicId": "b1-verbs-subjunctive-wishes-requests"},
+    {"id": "b1-v-01", "level": "B1", "skill": "vocabulary", "type": "multiple-choice", "question": "Vivo lejos de mi familia y la ___ mucho de menos.", "options": ["echo", "hago", "tengo", "pongo"], "correct": 0, "explanation": "Echar de menos = to miss someone. Usual in Spain; in Latin America people mostly say extrañar.", "topicId": "b1-vocabulary-life-events-relationships"},
+    {"id": "b2-g-01", "level": "B2", "skill": "grammar", "type": "multiple-choice", "question": "Si ___ más tiempo, aprendería a tocar el piano.", "options": ["tengo", "tendría", "tuviera", "tenga"], "correct": 2, "explanation": "Unreal condition in the present: si + imperfect subjunctive (tuviera or tuviese), then conditional.", "topicId": "b2-grammar-si-clauses-unreal"},
+    {"id": "b2-v-01", "level": "B2", "skill": "vocabulary", "type": "multiple-choice", "question": "Me sentía tan ___ que no podía mirar a nadie a la cara.", "options": ["avergonzada", "embarazada", "excitada", "constipada"], "correct": 0, "explanation": "Avergonzada = embarrassed. Embarazada is a false friend: it means pregnant. Excitada usually means aroused, and constipada means having a cold.", "topicId": "b2-vocabulary-false-friends"},
+    {"id": "c1-g-01", "level": "C1", "skill": "grammar", "type": "multiple-choice", "question": "Te lo advierto: como no ___ antes de las diez, nos iremos sin ti.", "options": ["llegaras", "llegues", "llegarías", "llegando"], "correct": 1, "explanation": "Como at the start of a condition or warning (= if) takes the present subjunctive when the main clause is in the future: como no llegues.", "topicId": "c1-verbs-conditional-connectors"},
+    {"id": "c1-v-01", "level": "C1", "skill": "vocabulary", "type": "multiple-choice", "question": "La empresa ha decidido ___ medidas para reducir el consumo de energía.", "options": ["adoptar", "hacer", "cumplir", "dar"], "correct": 0, "explanation": "The collocation is adoptar (or tomar) medidas, not hacer, cumplir or dar medidas.", "topicId": "c1-vocabulary-precise-synonyms-collocations"},
+    {"id": "c2-g-01", "level": "C2", "skill": "grammar", "type": "multiple-choice", "question": "¿Pagar trescientos euros por una cena? ¡Ni que ___ millonarios!", "options": ["fuéramos", "éramos", "seamos", "seríamos"], "correct": 0, "explanation": "Ni que (= as if) takes the imperfect or pluperfect subjunctive: ni que fuéramos (or fuésemos) millonarios.", "topicId": "c2-grammar-control-under-pressure"},
+    {"id": "c2-v-01", "level": "C2", "skill": "vocabulary", "type": "multiple-choice", "question": "Ya no puedes cambiar lo que pasó. Como dice el refrán: a lo hecho, ___.", "options": ["pecho", "dicho", "techo", "derecho"], "correct": 0, "explanation": "The proverb is a lo hecho, pecho: accept the consequences of what is done.", "topicId": "c2-vocabulary-proverbs-culture-connotation"}
   ]
 }
