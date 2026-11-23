@@ -1086,7 +1086,7 @@ window.LM = window.LM || {};
     }
     const max = Math.max(1, Math.max.apply(null, per));
     const bars = el("div", { class: "fc-st-bars", role: "img", "aria-label": "Flashcard reviews in the last 30 days: " + total + " in total, at most " + Math.max.apply(null, per) + " in one day." },
-      per.map(function (n, i) { return el("span", { class: "fc-st-bar" + (n ? "" : " is-zero"), style: "height:" + Math.max(n ? 6 : 2, Math.round(100 * n / max)) + "%", title: days[i].slice(8, 10) + "." + days[i].slice(5, 7) + ": " + n, "aria-hidden": "true" }); }));
+      per.map(function (n, i) { return el("span", { class: "fc-st-bar" + (n ? "" : " is-zero"), style: "height:" + Math.max(n ? 6 : 2, Math.round(100 * n / max)) + "%", title: LM.fmt.date(days[i]) + ": " + n, "aria-hidden": "true" }); }));
     const stat = function (label, value, note) {
       return el("div", { class: "st-stat" }, [el("p", { class: "st-stat-label", text: label }), el("p", { class: "st-stat-value", text: value }), note ? el("p", { class: "st-stat-note tool-note", text: note }) : null]);
     };

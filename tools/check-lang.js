@@ -34,8 +34,8 @@ const STOP_WORDS = [
   // frequent words of Polish comments and messages written without diacritics
   "oraz", "jest", "tylko", "albo", "przez", "jako", "kiedy", "gdy", "czy", "teraz", "jeszcze", "wszystkie", "sie", "nie",
   "tak", "jesli", "zeby", "przy", "bez", "dla", "pusty", "pusta", "strona", "podstrona", "profil", "postep", "uwaga", "poprawn\\w*",
-  // found in stage 5: a Polish unit and the reference app's deck ids
-  "pkt", "czasowniki", "kolokacje"
+  // found in stage 5: a Polish unit, a Polish label and the reference app's deck ids
+  "pkt", "dodano", "dodany", "czasowniki", "kolokacje", "temat"
 ];
 const STOP = new RegExp("(^|[^\\p{L}\\p{N}_])(" + STOP_WORDS.join("|") + ")(?=$|[^\\p{L}\\p{N}_])", "iu");
 const LOCALE = /\b(en-GB|en-US|es-ES|es-MX|es-US|es-AR|es-CO|es-419|pl-PL)\b/;

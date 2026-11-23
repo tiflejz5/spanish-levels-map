@@ -1490,8 +1490,8 @@ window.LM = window.LM || {};
     view.appendChild(el("p", { class: "tool-note ex-loading", role: "status", text: text || "Loading the items…" }));
   }
 
-  function missing(view, text) {
-    view.appendChild(head("Set not found"));
+  function missing(view, text, title) {
+    view.appendChild(head(title || "Set not found"));
     view.appendChild(el("div", { class: "empty-state" }, [
       el("p", { class: "empty-state-text", text: text }),
       el("p", null, el("a", { class: "btn btn-secondary", href: BASE }, "Go to Practice"))
@@ -1544,7 +1544,7 @@ window.LM = window.LM || {};
     const profile = LM.app.getActiveProfile();
     const rec = pd().attempts();
     const topics = route.id ? [route.id] : LM.stats.weakTopics(rec).map(function (x) { return x.key; });
-    const none = function (text) { run = { key: key, missing: true, missingText: text, profileId: profile && profile.id }; if (location.hash === hash) render(); };
+    const none = function (text) { run = { key: key, missing: true, missingText: text, missingTitle: "Weak spots", profileId: profile && profile.id }; if (location.hash === hash) render(); };
     if (!topics.length) return none("No weak spots so far. Do a few sets and you will see what to work on.");
     const pick = function () {
       return loadTopicItems(topics).then(function (pool) {
@@ -1657,8 +1657,8 @@ window.LM = window.LM || {};
       missing(view, "This session has already ended or the page was reloaded. Draw a new set on the Practice page.");
       return;
     }
-    if (ready === null) return loading(view);
-    if (run.missing) return missing(view, run.missingText || "This set is not in the exercise bank.");
+    if (ready === null) return view.childNodes.length ? undefined : loading(view); // a synchronous answer may have drawn the view already
+    if (run.missing) return missing(view, run.missingText || "This set is not in the exercise bank.", run.missingTitle);
     document.title = run.title + " · " + LM.APP.appTitle;
     if (run.phase === "intro") renderIntro(view);
     else if (run.phase === "item") renderItem(view);

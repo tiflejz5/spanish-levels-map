@@ -296,7 +296,7 @@ window.LM = window.LM || {};
     }
 
     if (n.type === "review") {
-      parts.push(el("p", { text: (n.stop.size || 6) + " questions from the stops of this unit. The score never blocks the way on; wrong answers go to your mistake log." }));
+      parts.push(el("p", { text: "Up to " + (n.stop.size || 6) + " questions from the stops of this unit (fewer while its quizzes are being written). The score never blocks the way on; wrong answers go to your mistake log." }));
       const r = ST().data().reviews[n.id];
       if (r) parts.push(el("p", { class: "tool-note", text: "Best result: " + r.best + "/" + r.of + "." }));
       parts.push(el("div", { class: "sz-sheet-actions" }, [
