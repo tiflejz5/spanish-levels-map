@@ -247,6 +247,28 @@ window.LM = window.LM || {};
     return " cat-" + (map[category] || "other");
   }
 
+  function isTarget(text) { return !!(LM.lang && LM.lang.isTarget(text)); }
+
+  /** The context line by line, each with lang when it is target text (an English instruction above a Spanish table). */
+  function contextNodes(text) {
+    const out = [];
+    String(text || "").split("\n").forEach(function (line, i) {
+      if (i) out.push(document.createTextNode("\n"));
+      out.push(isTarget(line) ? el("span", { lang: LM.APP.targetLang, text: line }) : document.createTextNode(line));
+    });
+    return out;
+  }
+
+  /** "Right answer" row with a listen button (spec 06 E5): the context with its one gap filled, else the answer alone. */
+  function rightRow(e) {
+    const gaps = String(e.context || "").split("___").length - 1;
+    const spoken = gaps === 1 && isTarget(e.context) ? e.context.replace("___", e.correct) : e.correct;
+    const row = el("div", { class: "journal-row is-right" }, [el("dt", { text: "Right answer" }), el("dd", { lang: LM.APP.targetLang, text: e.correct })]);
+    const btn = LM.markdown && LM.markdown.listenButton ? LM.markdown.listenButton(row, function () { return spoken; }, "Listen: " + spoken) : null;
+    if (btn) { row.classList.add("has-listen"); row.setAttribute("data-listen", spoken); row.querySelector("dd").appendChild(btn); }
+    return row;
+  }
+
   function entryCard(e, rerender) {
     const status = reviewLabel(e);
     const link = itemLink(e.itemId);
@@ -260,10 +282,10 @@ window.LM = window.LM || {};
         el("span", { class: "journal-status " + status.cls, text: status.text }),
         e.source ? el("span", { class: "journal-source", text: e.source }) : null
       ]),
-      el("p", { class: "journal-context", text: e.context }),
+      el("p", { class: "journal-context" }, contextNodes(e.context)),
       el("dl", { class: "journal-answers" }, [
-        e.myAnswer ? el("div", { class: "journal-row is-wrong" }, [el("dt", { text: "My answer" }), el("dd", { text: e.myAnswer })]) : null,
-        el("div", { class: "journal-row is-right" }, [el("dt", { text: "Right answer" }), el("dd", { text: e.correct })]),
+        e.myAnswer ? el("div", { class: "journal-row is-wrong" }, [el("dt", { text: "My answer" }), el("dd", { lang: LM.APP.targetLang, text: e.myAnswer })]) : null,
+        rightRow(e),
         e.rule ? el("div", { class: "journal-row" }, [el("dt", { text: "Why" }), el("dd", { text: e.rule })]) : null,
         link ? el("div", { class: "journal-row" }, [el("dt", { text: "Handbook" }), el("dd", null, link)]) : null
       ]),

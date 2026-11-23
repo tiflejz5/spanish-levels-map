@@ -347,7 +347,9 @@ function checkSet(p, topics) {
   if (!topics[d.topic] && d.kind !== "level-test") err(w, "topic " + JSON.stringify(d.topic) + " not in syllabus");
   const level = d.level || (topics[d.topic] ? topics[d.topic].level : null);
   if (d.kind === "level-test") {
-    if ((d.items || []).length !== 30 || d.draw !== 20 || d.passPercent !== 80) err(w, "final test: 30 items, draw 20, passPercent 80");
+    if (d.passPercent !== 80) err(w, "final test: passPercent 80");
+    // A TEMPORARY pool (stage 5 minimal pools, see tools/validate-exercises.js) may be smaller until stage X
+    if ((d.items || []).length !== 30 || d.draw !== 20) (/^TEMPORARY\b/.test(str(d.note)) ? warn : err)(w, "final test: 30 items, draw 20" + (/^TEMPORARY\b/.test(str(d.note)) ? " (temporary pool)" : ""));
   } else {
     if (!new RegExp("^" + str(d.topic).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "-\\d+$").test(str(d.id))) err(w, "set id must be <topic id>-<n>");
     const n = (d.items || []).length;

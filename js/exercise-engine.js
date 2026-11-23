@@ -1340,7 +1340,8 @@ window.LM = window.LM || {};
       run.isMix ? topicBreakdown() : null,
       knownBanner(),
       journalSummary(),
-      el("div", { class: "tool-actions" }, actions)
+      el("div", { class: "tool-actions" }, actions),
+      run.isMix ? null : LM.ui.reportLink(run.topic || run.saveId) // E12
     ]));
 
     // Shared recording of the set: the transcript only after the end (spec 09, 3.2)
@@ -1355,7 +1356,7 @@ window.LM = window.LM || {};
         const mine = userAnswer(p);
         return el("li", null, [
           el("p", { class: "ex-wrong-q" }, [el("span", { class: "chip", text: TYPE_SHORT[p.item.type] }), p.res && p.res.max > 1 ? el("span", { class: "chip", text: p.res.points + "/" + p.res.max + " points" }) : null, " ", itemSummary(p.item)]),
-          el("p", { class: "journal-row is-wrong" }, [el("span", { class: "review-label", text: "Your answer: " }), el("span", { text: mine || "(none)" })]),
+          el("p", { class: "journal-row is-wrong" }, [el("span", { class: "review-label", text: "Your answer: " }), mine ? el("span", { lang: LM.APP.targetLang, text: mine }) : el("span", { text: "(none)" })]),
           el("p", { class: "journal-row is-right" }, [el("span", { class: "review-label", text: "Right answer: " }), el("strong", { lang: LM.APP.targetLang, text: modelAnswer(p.item) })]),
 
           p.item.explanation ? el("p", { class: "ex-wrong-expl", text: p.item.explanation }) : null,
@@ -1489,8 +1490,8 @@ window.LM = window.LM || {};
     view.appendChild(el("p", { class: "tool-note ex-loading", role: "status", text: text || "Loading the items…" }));
   }
 
-  function missing(view, text) {
-    view.appendChild(head("Set not found"));
+  function missing(view, text, title) {
+    view.appendChild(head(title || "Set not found"));
     view.appendChild(el("div", { class: "empty-state" }, [
       el("p", { class: "empty-state-text", text: text }),
       el("p", null, el("a", { class: "btn btn-secondary", href: BASE }, "Go to Practice"))
@@ -1543,7 +1544,7 @@ window.LM = window.LM || {};
     const profile = LM.app.getActiveProfile();
     const rec = pd().attempts();
     const topics = route.id ? [route.id] : LM.stats.weakTopics(rec).map(function (x) { return x.key; });
-    const none = function (text) { run = { key: key, missing: true, missingText: text, profileId: profile && profile.id }; if (location.hash === hash) render(); };
+    const none = function (text) { run = { key: key, missing: true, missingText: text, missingTitle: "Weak spots", profileId: profile && profile.id }; if (location.hash === hash) render(); };
     if (!topics.length) return none("No weak spots so far. Do a few sets and you will see what to work on.");
     const pick = function () {
       return loadTopicItems(topics).then(function (pool) {
@@ -1656,8 +1657,8 @@ window.LM = window.LM || {};
       missing(view, "This session has already ended or the page was reloaded. Draw a new set on the Practice page.");
       return;
     }
-    if (ready === null) return loading(view);
-    if (run.missing) return missing(view, run.missingText || "This set is not in the exercise bank.");
+    if (ready === null) return view.childNodes.length ? undefined : loading(view); // a synchronous answer may have drawn the view already
+    if (run.missing) return missing(view, run.missingText || "This set is not in the exercise bank.", run.missingTitle);
     document.title = run.title + " · " + LM.APP.appTitle;
     if (run.phase === "intro") renderIntro(view);
     else if (run.phase === "item") renderItem(view);

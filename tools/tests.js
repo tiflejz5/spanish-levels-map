@@ -1242,19 +1242,31 @@ test("sanitizeState: damaged data, an unknown version, too long fields, trimming
   for (let i = 0; i < 410; i++) daily[new Date(Date.UTC(2025, 0, 1 + i)).toISOString().slice(0, 10)] = { new: 1, reviews: 2, again: 0, minutes: 3 };
   const s = FL.sanitizeState({
     version: 1,
-    cards: { "kolokacje-001": { state: "review", ease: 9, interval: 5, due: 5 }, "bad id!": { state: "review" }, "x-001": { state: "weird" } },
+    cards: { "collocations-001": { state: "review", ease: 9, interval: 5, due: 5 }, "bad id!": { state: "review" }, "x-001": { state: "weird" } },
     userDecks: [{ id: "u-1", title: "Mine" }, { id: "bad id", title: "x" }],
     userCards: [{ id: "u-c1", deck: "u-1", type: "basic", front: "a".repeat(800), back: "b" }, { id: "u-c2", deck: "u-1", type: "magia", front: "a", back: "b" }, { id: "u-c3", deck: "u-9", type: "basic", front: "a", back: "b" }],
-    settings: { newPerDay: 5, enabledDecks: ["kolokacje", 7], typeAnswerFirst: "yes" },
+    settings: { newPerDay: 5, enabledDecks: ["collocations", 7], typeAnswerFirst: "yes" },
     daily: daily
   });
-  assert.deepStrictEqual(Object.keys(s.cards), ["kolokacje-001"]);
-  assert.strictEqual(s.cards["kolokacje-001"].ease, 2.5);
+  assert.deepStrictEqual(Object.keys(s.cards), ["collocations-001"]);
+  assert.strictEqual(s.cards["collocations-001"].ease, 2.5);
   assert.deepStrictEqual(s.userDecks.map(function (d) { return d.id; }), ["u-1"]);
   assert.deepStrictEqual([s.userCards.length, s.userCards[0].front.length], [1, 500]);
-  assert.deepStrictEqual([s.settings.newPerDay, s.settings.enabledDecks, s.settings.typeAnswerFirst], [5, ["kolokacje"], false]);
+  assert.deepStrictEqual([s.settings.newPerDay, s.settings.enabledDecks, s.settings.typeAnswerFirst], [5, ["collocations"], false]);
   assert.strictEqual(Object.keys(s.daily).length, 400);
   assert.strictEqual(Object.keys(s.daily)[0], "2025-01-11");
+});
+
+test("a new profile turns on the built-in decks marked enabled in content/decks/index.json, and no reference deck ids", function () {
+  const keep = global.LM.DECKS_INDEX;
+  try {
+    global.LM.DECKS_INDEX = { version: 1, decks: [{ id: "d-first", enabled: true }, { id: "d-other", enabled: false }, { id: "d-third" }] };
+    assert.deepStrictEqual(FL.emptyState().settings.enabledDecks, ["d-first"]);
+    assert.deepStrictEqual(FL.sanitizeState({ version: 1 }).settings.enabledDecks, ["d-first"], "a stored state without settings gets the defaults");
+    assert.deepStrictEqual(FL.sanitizeState({ version: 1, settings: { enabledDecks: [] } }).settings.enabledDecks, [], "a stored choice wins");
+    global.LM.DECKS_INDEX = undefined;
+    assert.deepStrictEqual(FL.emptyState().settings.enabledDecks, []);
+  } finally { global.LM.DECKS_INDEX = keep; }
 });
 
 console.log("\nOne-time enabling of exam decks");
@@ -2237,25 +2249,25 @@ console.log("\nFlashcards: scheduler and saving");
 
   test("saving from two browser tabs: an outdated tab does not undo ratings (mergeStates)", function () {
     const stored = FLg.sanitizeState(FLg.emptyState());     // saved after rating in tab A
-    stored.cards["kolokacje-001"] = rev(8, NOW + 8 * DAYMS, 2);
+    stored.cards["collocations-001"] = rev(8, NOW + 8 * DAYMS, 2);
     stored.daily["2026-11-10"] = { new: 1, reviews: 3, again: 0, good: 3, answers: 4, minutes: 2 };
     const stale = FLg.sanitizeState(FLg.emptyState());      // the memory of tab B before rating (the card still new)
     stale.daily["2026-11-10"] = { new: 0, reviews: 1, again: 1, good: 0, answers: 1, minutes: 0 };
     assert.strictEqual(FLg.mergeStates(stale, stored), true);
-    assert.strictEqual(stale.cards["kolokacje-001"].interval, 8, "the rating from tab A taken over");
+    assert.strictEqual(stale.cards["collocations-001"].interval, 8, "the rating from tab A taken over");
     assert.strictEqual(stale.daily["2026-11-10"].reviews, 3, "daily counter: the maximum");
     assert.strictEqual(stale.daily["2026-11-10"].again, 1);
     // memory newer than the saved state: it stays
     const fresh = FLg.sanitizeState(FLg.emptyState());
-    fresh.cards["kolokacje-001"] = rev(20, NOW + 20 * DAYMS, 5);
+    fresh.cards["collocations-001"] = rev(20, NOW + 20 * DAYMS, 5);
     fresh.daily["2026-11-10"] = Object.assign({}, stored.daily["2026-11-10"]);
     assert.strictEqual(FLg.mergeStates(fresh, stored), false);
-    assert.strictEqual(fresh.cards["kolokacje-001"].interval, 20);
+    assert.strictEqual(fresh.cards["collocations-001"].interval, 20);
     // a card without reviews (e.g. a suspended new one) in the saved state is not "newer" than no state
-    const s2 = FLg.sanitizeState(FLg.emptyState()); s2.cards["kolokacje-009"] = Object.assign(HM.newCard(), { suspended: true });
+    const s2 = FLg.sanitizeState(FLg.emptyState()); s2.cards["collocations-009"] = Object.assign(HM.newCard(), { suspended: true });
     const m2 = FLg.sanitizeState(FLg.emptyState());
     assert.strictEqual(FLg.mergeStates(m2, s2), false);
-    assert.strictEqual(m2.cards["kolokacje-009"], undefined);
+    assert.strictEqual(m2.cards["collocations-009"], undefined);
   });
   test("deckStats: \"for today\" and \"for later\" (after the 04:00 study-day boundary)", function () {
     const cards = ["a", "b", "c", "d", "e"].map(function (x) { return { id: x }; });
@@ -2441,6 +2453,15 @@ console.log("\nSyllabus: the only list of levels, units, categories and topics (
   const src = JSON.parse(fsS.readFileSync(path.join(root, "content", "syllabus.json"), "utf8"));
   const status = JSON.parse(fsS.readFileSync(path.join(root, "content", "levels.json"), "utf8")).levels;
 
+  test("startLevelFor: an available level itself, else the highest available level below it, else the first available", function () {
+    const keep = global.LM.LEVEL_STATUS;
+    try {
+      global.LM.LEVEL_STATUS = { A1: "available", A2: "available", B1: "soon", B2: "soon", C1: "available", C2: "soon" };
+      assert.deepStrictEqual(["A1", "A2", "B1", "B2", "C1", "C2"].map(S.startLevelFor), ["A1", "A2", "A2", "A2", "C1", "C1"]);
+      global.LM.LEVEL_STATUS = { A1: "soon", A2: "soon", B1: "available", B2: "soon", C1: "soon", C2: "soon" };
+      assert.deepStrictEqual(["A1", "B1", "C2"].map(S.startLevelFor), ["B1", "B1", "B1"]);
+    } finally { global.LM.LEVEL_STATUS = keep; }
+  });
   test("LEVEL_IDS come from the syllabus (A1 … C2, in order)", function () {
     assert.deepStrictEqual(global.LM.LEVEL_IDS, src.levels.map(function (l) { return l.id; }));
     assert.deepStrictEqual(global.LM.LEVEL_IDS, ["A1", "A2", "B1", "B2", "C1", "C2"]);

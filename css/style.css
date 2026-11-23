@@ -4019,3 +4019,16 @@ html[data-voice="none"] .md td.md-target-cell { padding-right: 14px; }
 .menu-radio-dot { position: relative; flex-shrink: 0; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--line-control); background: var(--surface); }
 .menu-radio[aria-checked="true"] .menu-radio-dot { border-color: var(--accent); }
 .menu-radio[aria-checked="true"] .menu-radio-dot::after { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent); }
+
+/* E12: "Report a mistake" (quiet link) and the home footer */
+.report-link { margin: var(--space-4) 0 0; font-size: var(--fs-sm); color: var(--ink-muted); }
+.report-link-a { display: inline-flex; align-items: center; gap: var(--space-1); min-height: 44px; color: var(--ink-muted); text-decoration: underline; text-underline-offset: 3px; }
+.report-link-a:hover, .report-link-a:focus-visible { color: var(--accent); }
+.fc-report { margin-top: var(--space-2); }
+.home-foot { max-width: 72ch; margin: var(--space-7) auto 0; padding-top: var(--space-4); border-top: 1px solid var(--line); font-size: var(--fs-sm); color: var(--ink-muted); }
+.home-foot p { margin: 0 0 var(--space-1); }
+.home-foot a { color: inherit; }
+@media print { .report-link, .home-foot { display: none; } }
+/* Listen buttons on flashcards and in the mistake log (spec 06 E5) */
+.fc-backside > .listen-btn { float: right; margin: -6px -6px 0 var(--space-2); }
+.journal-row.has-listen dd .listen-btn { margin: -10px 0 -10px var(--space-1); vertical-align: middle; }

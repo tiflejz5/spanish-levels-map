@@ -8,7 +8,7 @@ window.LM = window.LM || {};
 (function (LM) {
   "use strict";
 
-  LM.VERSION = "154"; // lm-version (rewritten by tools/build.js --bump; do not edit by hand)
+  LM.VERSION = "155"; // lm-version (rewritten by tools/build.js --bump; do not edit by hand)
 
   LM.APP = {
     id: "es",
@@ -34,6 +34,7 @@ window.LM = window.LM || {};
     mistakesHeading: "Common mistakes",
     lab: { title: "Tense & Mood Lab" },
     reportUrl: "https://github.com/tiflejz5/spanish-levels-map/issues/new?labels=content&title=",
-    reportMail: ""
+    reportMail: "",
+    sourceUrl: "https://github.com/tiflejz5/spanish-levels-map"
   };
 })(window.LM);

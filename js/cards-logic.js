@@ -36,7 +36,7 @@ window.LM = window.LM || {};
   const LEARN_AHEAD = 20 * 60000; // learning cards due within 20 min may come back in the session
   const TYPES = ["basic", "cloze", "typed"];
   const STATES = ["new", "learning", "review", "relearning"];
-  const DEFAULT_SETTINGS = { newPerDay: 10, reviewsPerDay: 100, typeAnswerFirst: false, enabledDecks: ["czasowniki-frazowe", "kolokacje"], fuzz: true, autoAddMistakes: false, randomDecks: [] };
+  const DEFAULT_SETTINGS = { newPerDay: 10, reviewsPerDay: 100, typeAnswerFirst: false, enabledDecks: [], fuzz: true, autoAddMistakes: false, randomDecks: [] };
 
   // =====================================================================
   // ANSWERS
@@ -556,8 +556,14 @@ window.LM = window.LM || {};
   // STATE (localStorage, export / import)
   // =====================================================================
 
+  /** Built-in decks on for a new profile: "enabled": true in content/decks/index.json (spec 07 §7: the first A1 deck). */
+  function defaultEnabledDecks() {
+    const idx = LM.DECKS_INDEX && Array.isArray(LM.DECKS_INDEX.decks) ? LM.DECKS_INDEX.decks : [];
+    return idx.filter(function (d) { return d && d.enabled === true && typeof d.id === "string"; }).map(function (d) { return d.id; });
+  }
+
   function emptyState() {
-    return { version: VERSION, cards: {}, userDecks: [], userCards: [], settings: Object.assign({}, DEFAULT_SETTINGS, { enabledDecks: DEFAULT_SETTINGS.enabledDecks.slice(), randomDecks: [] }), daily: {} };
+    return { version: VERSION, cards: {}, userDecks: [], userCards: [], settings: Object.assign({}, DEFAULT_SETTINGS, { enabledDecks: defaultEnabledDecks(), randomDecks: [] }), daily: {} };
   }
 
   const ID = /^[a-z0-9][a-z0-9-]{0,80}$/;

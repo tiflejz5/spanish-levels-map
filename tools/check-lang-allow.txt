@@ -5,3 +5,5 @@ tools/e2e.js "#/dzis", "#/szlak", "#/powtorki"
 js/today.js Catmull-Rom → Bézier curves
 # The test of LM.fmt (English dates) names its locale, like LM.fmt in js/utils.js.
 tools/tests.js fmt\.date / dayMonth / weekday / dateLong: en-US
+# The e2e storage tests seed the real localStorage key of the owner's English app (elm.<profile>.fiszki) to prove it stays untouched.
+tools/e2e.js "elm\.p1\.fiszki"

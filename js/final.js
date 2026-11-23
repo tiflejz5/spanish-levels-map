@@ -104,6 +104,21 @@ window.LM = window.LM || {};
   /** Points needed to pass for a given total of points (the pass mark in points). */
   function pointsNeeded(total, percent) { return Math.ceil(total * percent / 100); }
 
+  /** Size of one attempt: the pool's draw (never more than the pool), else DRAW; minutes scale with it. */
+  function facts(level) {
+    const set = LM.FINALS && LM.FINALS[level];
+    const n = set ? Math.min(set.draw || DRAW, (set.items || []).length || DRAW) : DRAW;
+    const pass = (set && set.passPercent) || PASS;
+    return { draw: n, minutes: Math.max(5, Math.round(MINUTES * n / DRAW)), pass: pass, need: pointsNeeded(n, pass) };
+  }
+
+  /** A text that depends on the pool size: drawn now, redrawn once the pool file is loaded (it loads on demand). */
+  function factsText(level, tag, attrs, make) {
+    const node = el(tag, Object.assign({}, attrs, { text: make(facts(level)) }));
+    if (!(LM.FINALS && LM.FINALS[level]) && LM.syl.isAvailable(level)) load(level).then(function (set) { if (set) node.textContent = make(facts(level)); });
+    return node;
+  }
+
   function percentOf(r) { return r.total ? Math.round(r.score / r.total * 100) : 0; }
 
   // =====================================================================
@@ -132,7 +147,7 @@ window.LM = window.LM || {};
     view.appendChild(el("header", { class: "tool-head" }, [
       el("p", { class: "tool-eyebrow" }, el("a", { href: levelHash(level) }, "Level " + level)),
       el("h1", { class: "tool-title", text: level + " final test" }),
-      el("p", { class: "tool-lead", text: DRAW + " questions from the whole of " + level + ", about " + MINUTES + " minutes. You pass with " + PASS + "% of the points (" + pointsNeeded(DRAW, PASS) + " of " + DRAW + ")." })
+      factsText(level, "p", { class: "tool-lead" }, function (f) { return f.draw + " questions from the whole of " + level + ", about " + f.minutes + " minutes. You pass with " + f.pass + "% of the points (" + f.need + " of " + f.draw + ")."; })
     ]));
     view.appendChild(el("section", { class: "card lf-card" }, [
       when ? el("p", { class: "lf-passed" }, [stamp(level, { hideText: true }), el("strong", { text: when })]) : null,
@@ -235,7 +250,7 @@ window.LM = window.LM || {};
 
     view.appendChild(el("section", { class: "card ex-result lf-result " + (passed ? "is-passed" : "is-failed"), "aria-live": "polite" }, [
       el("p", { class: "ex-result-score" }, [
-        el("strong", { class: "num", text: run.score + "/" + total + " pkt" }),
+        el("strong", { class: "num", text: run.score + "/" + total + " " + (total === 1 ? "point" : "points") }),
         el("span", { class: "ex-result-pct num", text: pct + "%" })
       ]),
       el("p", { class: "lf-verdict" }, [
@@ -284,7 +299,7 @@ window.LM = window.LM || {};
       wrong.length ? el("ol", { class: "ex-wrong" }, wrong.map(function (p) {
         const mine = api.userAnswer(p);
         return el("li", null, [
-          el("p", { class: "ex-wrong-q" }, [el("span", { class: "chip", text: api.typeShort[p.item.type] }), p.res && p.res.max > 1 ? el("span", { class: "chip", text: p.res.points + "/" + p.res.max + " pkt" }) : null, " ", api.itemSummary(p.item)]),
+          el("p", { class: "ex-wrong-q" }, [el("span", { class: "chip", text: api.typeShort[p.item.type] }), p.res && p.res.max > 1 ? el("span", { class: "chip", text: p.res.points + "/" + p.res.max + " points" }) : null, " ", api.itemSummary(p.item)]),
           el("p", { class: "journal-row is-wrong" }, [el("span", { class: "review-label", text: "Your answer: " }), el("span", { text: mine || "(none)" })]),
           el("p", { class: "journal-row is-right" }, [el("span", { class: "review-label", text: "Right answer: " }), el("strong", { text: api.modelAnswer(p.item) })]),
           p.item.explanation ? el("p", { class: "ex-wrong-expl", text: p.item.explanation }) : null,
@@ -306,7 +321,7 @@ window.LM = window.LM || {};
     return el("section", { class: "card lf-level-card lvl-" + level, "aria-labelledby": "lf-card-title" }, [
       el("div", { class: "lf-level-card-body" }, [
         el("h2", { class: "section-title", id: "lf-card-title" }, [el("span", { class: "callout-icon", "aria-hidden": "true" }, LM.icon("award", { size: 20 })), level + " final test"]),
-        el("p", { text: DRAW + " questions from the whole level, about " + MINUTES + " minutes. " + PASS + "% (" + pointsNeeded(DRAW, PASS) + " of " + DRAW + ") gives you the level stamp on the trail." }),
+        factsText(level, "p", {}, function (f) { return f.draw + " questions from the whole level, about " + f.minutes + " minutes. " + f.pass + "% (" + f.need + " of " + f.draw + ") gives you the level stamp on the trail."; }),
         when ? el("p", { class: "lf-passed" }, [stamp(level, { hideText: true }), el("strong", { text: when })]) : null,
         info ? el("p", { class: "tool-note", text: "Best result: " + info.best.score + "/" + info.best.total + " points (" + percentOf(info.best) + "%), last: " + info.last.score + "/" + info.last.total + " (" + fmtDate(info.last.date) + ")." })
           : el("p", { class: "tool-note", text: "The test is always open – you can take it without marking anything as “I know this”." })
@@ -337,7 +352,7 @@ window.LM = window.LM || {};
     return el("section", { class: "card bento-tile bento-tip lf-tip", "aria-label": s.id + " final test" }, [
       el("div", { class: "today-tip-body" }, [
         el("h2", { class: "tile-title", text: "Ready for the " + s.id + " final test?" }),
-        el("p", { class: "tool-note", text: "You already know " + s.percent + "% of the topics of " + s.id + ". " + DRAW + " questions, about " + MINUTES + " minutes, pass mark " + PASS + "%." })
+        factsText(s.id, "p", { class: "tool-note" }, function (f) { return "You already know " + s.percent + "% of the topics of " + s.id + ". " + f.draw + " questions, about " + f.minutes + " minutes, pass mark " + f.pass + "%."; })
       ]),
       el("a", { class: "btn btn-primary", href: testHash(s.id) }, LM.ui.withIcon("award", "Take the " + s.id + " final test"))
     ]);

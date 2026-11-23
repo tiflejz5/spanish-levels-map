@@ -219,7 +219,7 @@ window.LM = window.LM || {};
       knownBox,
       wrong.length ? el("div", { class: "sz-wrong" }, [
         el("h2", { class: "lf-h", text: "To review (" + wrong.length + ")" }),
-        el("ul", { class: "lf-topic-list" }, wrong.map(function (p) { return el("li", null, [api.itemSummary(p.item), el("span", { class: "tool-note", text: " → " + api.modelAnswer(p.item) })]); }))
+        el("ul", { class: "lf-topic-list" }, wrong.map(function (p) { return el("li", null, [api.itemSummary(p.item), el("span", { class: "tool-note" }, [" → ", el("span", { lang: LM.APP.targetLang, text: api.modelAnswer(p.item) })])]); }))
       ]) : el("p", { class: "tool-note", text: "No mistakes – well done!" }),
       api.journalSummary(),
       el("div", { class: "tool-actions" }, [
@@ -227,7 +227,8 @@ window.LM = window.LM || {};
         isQuiz && !fin.passed ? el("button", { type: "button", class: "btn btn-primary", onclick: function () { startQuiz(node); } }, LM.ui.withIcon("rotate-ccw", "Try again")) : null,
         isQuiz && !fin.passed ? el("a", { class: "btn btn-secondary", href: pageHref(node.stop) }, "Read the topic again") : null,
         el("a", { class: "btn btn-secondary", href: HASH }, "Back to the trail")
-      ])
+      ]),
+      LM.ui.reportLink(isQuiz ? (node.stop.items && node.stop.items[0]) || node.id : node.id) // E12
     ]));
   }
 
@@ -295,7 +296,7 @@ window.LM = window.LM || {};
     }
 
     if (n.type === "review") {
-      parts.push(el("p", { text: (n.stop.size || 6) + " questions from the stops of this unit. The score never blocks the way on; wrong answers go to your mistake log." }));
+      parts.push(el("p", { text: "Up to " + (n.stop.size || 6) + " questions from the stops of this unit (fewer while its quizzes are being written). The score never blocks the way on; wrong answers go to your mistake log." }));
       const r = ST().data().reviews[n.id];
       if (r) parts.push(el("p", { class: "tool-note", text: "Best result: " + r.best + "/" + r.of + "." }));
       parts.push(el("div", { class: "sz-sheet-actions" }, [
@@ -553,7 +554,8 @@ window.LM = window.LM || {};
       ])
     ];
     view.appendChild(el("section", { class: "card sz-now-card", "aria-label": "Current stop" }, bar));
-    view.appendChild(el("p", { class: "tool-note sz-start-note" }, "Start: " + LM.ui.landLabel(start.level) + " (" + startText + ")."));
+    view.appendChild(el("p", { class: "tool-note sz-start-note" }, "Start: " + LM.ui.landLabel(start.level) + " (" + startText + ")." +
+      (LM.syl.isAvailable(start.level) ? "" : " " + start.level + " is on its way, so the trail starts at " + LM.syl.startLevelFor(start.level) + ".")));
 
     const curLevel = cur ? cur.level : null;
     LM.TRAIL.levels.forEach(function (lv) { view.appendChild(levelSection(tr, lv, curLevel)); });
