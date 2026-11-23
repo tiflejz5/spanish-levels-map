@@ -2766,8 +2766,40 @@ console.log("\nValidators (spec 06 E11: tools/validate-content.js = validate_pla
   });
 })();
 
-console.log("\nResult: " + passed + " ok, " + failures.length + " failed");
+console.log("\nstrip-keys (spec 10 §4, step 4)");
+(function () {
+  const SK = require(path.join(__dirname, "strip-keys.js"));
+  const leaks = function (t) {
+    return SK.KEY_FIELDS.filter(function (k) { return k in t; })
+      .concat((t.gaps || []).some(function (g) { return "accepted" in g; }) ? ["gaps[].accepted"] : [])
+      .concat((t.cells || []).some(function (c) { return "accepted" in c; }) ? ["cells[].accepted"] : [])
+      .concat("pairs" in t ? ["pairs"] : []);
+  };
+  test("no key field survives, for every fixture item and every item of content/", function () {
+    allItems.forEach(function (it) { assert.deepStrictEqual(leaks(SK.stripItem(it)), [], it.id); });
+    const dir = path.join(__dirname, "..", "content");
+    ["exercises", "quizzes/a1", "tests"].forEach(function (sub) {
+      fs.readdirSync(path.join(dir, sub)).filter(function (f) { return /\.json$/.test(f) && f !== "topics.json" && f !== "mixes.json"; }).forEach(function (f) {
+        SK.stripFile(path.join(dir, sub, f)).forEach(function (t) { assert.deepStrictEqual(leaks(t), [], f + " " + t.id); });
+      });
+    });
+  });
+  test("reorder becomes tiles (the words of the first answer), match becomes two columns; the order is fixed per item", function () {
+    const r = bankItem("fx-ser-estar-1-08");
+    const a = SK.stripItem(r), b = SK.stripItem(r);
+    assert.deepStrictEqual(a.tiles, b.tiles);
+    assert.deepStrictEqual(a.tiles.slice().sort(), X.answerTokens(r.answers[0], r.answers.slice(1)).sort());
+    const m = SK.stripItem(bankItem("fx-gustar-1-01"));
+    assert.strictEqual(m.left.length, 3);
+    assert.strictEqual(m.right.length, 4); // the three answers + one extra
+  });
+  test("paradigm keeps the labels and the given forms only; gap hints stay", function () {
+    const p = SK.stripItem(bankItem("fx-ser-estar-1-07"));
+    assert.ok(p.cells[0].given && !p.cells[1].given && p.cells.every(function (c) { return c.label; }));
+  });
+})();
 
+console.log("\nResult: " + passed + " ok, " + failures.length + " failed");
 
 
 if (failures.length) process.exit(1);
