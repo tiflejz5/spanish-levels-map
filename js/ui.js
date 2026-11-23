@@ -423,5 +423,30 @@ window.LM = window.LM || {};
     ]);
   }
 
-  LM.ui = { guestNote: guestNote, breadcrumbs: breadcrumbs, icon: icon, withIcon: withIcon, emptyState: emptyState, landIcon: landIcon, stamp: stamp, landLabel: landLabel, LANDS: LANDS, pageHead: pageHead, logo: logo, logoMark: logoMark, progressRing: progressRing, setRing: setRing, toast: toast, hideToast: hideToast };
+  /**
+   * E12: a quiet "Report a mistake" link — LM.APP.reportUrl + a prefilled issue title ("<what>: "), and an e-mail
+   * alternative when LM.APP.reportMail is set. what — usually a topic id (a set id or card id where there is no topic).
+   * Returns null when neither address is configured.
+   */
+  function reportLink(what, opts) {
+    opts = opts || {};
+    const A = LM.APP || {};
+    if (!A.reportUrl && !A.reportMail) return null;
+    const el = LM.utils.el;
+    const title = what ? String(what) + ": " : "";
+    const parts = [];
+    if (A.reportUrl) {
+      parts.push(el("a", { class: "report-link-a", href: A.reportUrl + encodeURIComponent(title), target: "_blank", rel: "noopener noreferrer" },
+        withIcon("flag", opts.label || "Report a mistake")));
+    }
+    if (A.reportMail) {
+      if (parts.length) parts.push(" · ");
+      parts.push(el("a", { class: "report-link-a", href: "mailto:" + A.reportMail + "?subject=" + encodeURIComponent(title) },
+        parts.length ? "by e-mail" : withIcon("flag", opts.label || "Report a mistake")));
+    }
+    if (opts.lead) parts.unshift(opts.lead + " ");
+    return el("p", { class: "report-link" + (opts.className ? " " + opts.className : "") }, parts);
+  }
+
+  LM.ui = { reportLink: reportLink, guestNote: guestNote, breadcrumbs: breadcrumbs, icon: icon, withIcon: withIcon, emptyState: emptyState, landIcon: landIcon, stamp: stamp, landLabel: landLabel, LANDS: LANDS, pageHead: pageHead, logo: logo, logoMark: logoMark, progressRing: progressRing, setRing: setRing, toast: toast, hideToast: hideToast };
 })(window.LM);

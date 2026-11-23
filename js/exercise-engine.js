@@ -1340,7 +1340,8 @@ window.LM = window.LM || {};
       run.isMix ? topicBreakdown() : null,
       knownBanner(),
       journalSummary(),
-      el("div", { class: "tool-actions" }, actions)
+      el("div", { class: "tool-actions" }, actions),
+      run.isMix ? null : LM.ui.reportLink(run.topic || run.saveId) // E12
     ]));
 
     // Shared recording of the set: the transcript only after the end (spec 09, 3.2)
@@ -1355,7 +1356,7 @@ window.LM = window.LM || {};
         const mine = userAnswer(p);
         return el("li", null, [
           el("p", { class: "ex-wrong-q" }, [el("span", { class: "chip", text: TYPE_SHORT[p.item.type] }), p.res && p.res.max > 1 ? el("span", { class: "chip", text: p.res.points + "/" + p.res.max + " points" }) : null, " ", itemSummary(p.item)]),
-          el("p", { class: "journal-row is-wrong" }, [el("span", { class: "review-label", text: "Your answer: " }), el("span", { text: mine || "(none)" })]),
+          el("p", { class: "journal-row is-wrong" }, [el("span", { class: "review-label", text: "Your answer: " }), mine ? el("span", { lang: LM.APP.targetLang, text: mine }) : el("span", { text: "(none)" })]),
           el("p", { class: "journal-row is-right" }, [el("span", { class: "review-label", text: "Right answer: " }), el("strong", { lang: LM.APP.targetLang, text: modelAnswer(p.item) })]),
 
           p.item.explanation ? el("p", { class: "ex-wrong-expl", text: p.item.explanation }) : null,

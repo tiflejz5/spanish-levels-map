@@ -34,6 +34,7 @@ window.LM = window.LM || {};
     mistakesHeading: "Common mistakes",
     lab: { title: "Tense & Mood Lab" },
     reportUrl: "https://github.com/tiflejz5/spanish-levels-map/issues/new?labels=content&title=",
-    reportMail: ""
+    reportMail: "",
+    sourceUrl: "https://github.com/tiflejz5/spanish-levels-map"
   };
 })(window.LM);

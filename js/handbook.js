@@ -117,6 +117,8 @@ window.LM = window.LM || {};
     const trailBar = LM.trail ? LM.trail.barFor(topic.id) : null; // "Stop N of M" (trail)
     if (trailBar) view.appendChild(trailBar);
     view.appendChild(topicNav(topic));
+    const report = LM.ui.reportLink(topic.id); // E12
+    if (report) view.appendChild(report);
     document.title = title + " · " + appTitle();
     if (LM.profileData) LM.profileData.setLastPage(location.hash, levelId + " · " + title);
     U.setScroll(keepScroll);
@@ -286,7 +288,22 @@ window.LM = window.LM || {};
       if (levels) article.insertBefore(LM.today.compactTrail(), levels);
     }
     view.appendChild(article);
+    view.appendChild(homeFooter());
     U.setScroll(keepScroll);
+  }
+
+  /** E12: the home footer — version, the privacy sentence, the source repository and the report link. */
+  function homeFooter() {
+    const A = LM.APP;
+    return el("footer", { class: "home-foot" }, [
+      el("p", { text: "No accounts. Your progress stays in this browser." }),
+      el("p", { class: "home-foot-meta" }, [
+        el("span", { class: "num", text: "Version " + LM.VERSION }),
+        A.sourceUrl ? " · " : null,
+        A.sourceUrl ? el("a", { href: A.sourceUrl, target: "_blank", rel: "noopener noreferrer" }, "Source code") : null
+      ]),
+      LM.ui.reportLink("", { label: "Report a mistake or a problem" })
+    ]);
   }
 
   function levelsSection(root) {
