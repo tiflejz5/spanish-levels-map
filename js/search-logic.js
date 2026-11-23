@@ -1,7 +1,7 @@
 /*
  * search-logic.js — the search engine without DOM (spec 04, A.2; tests in tools/tests.js).
  *
- *   fold(str)               lower case without accents (á→a…), the same length as the input
+ *   fold(str)               LM.lang.fold: lower case without the marks of the target language, the same length as the input
  *   tokenize(str)           words after fold()
  *   prepare(records)        index: records + token sets of the fields
  *   search(index, query)    { groups: [{ group, results: [{ record, score, anchor }] }], total }
@@ -18,23 +18,15 @@ window.LM = window.LM || {};
 
   const WEIGHTS = { title: 10, headings: 5, summary: 3, text: 1 };
   const MATCH = { exact: 3, prefix: 2, fuzzy: 1 };
-  const FOLD = { "ł": "l", "Ł": "l", "ß": "s", "ø": "o", "Ø": "o", "’": "'", "‘": "'" };
+  // A token of folded text: letters, digits and the apostrophe (folding keeps the length, so match indexes are indexes of the original)
+  const TOKEN_SPLIT = /[^\p{L}\p{N}']+/u;
+  const TOKEN = /[\p{L}\p{N}']+/gu;
 
-  /** Character by character (same length — indexes match the original for highlighting). */
-  function fold(str) {
-    const s = String(str == null ? "" : str);
-    let out = "";
-    for (let i = 0; i < s.length; i++) {
-      const c = s[i];
-      if (FOLD[c]) { out += FOLD[c]; continue; }
-      const base = c.normalize("NFD")[0];
-      out += base.toLowerCase().length === 1 ? base.toLowerCase() : c.toLowerCase().slice(0, 1);
-    }
-    return out;
-  }
+  /** LM.lang.fold: lower case, no marks of the target language, unified quotes; the same length as the input. */
+  function fold(str) { return LM.lang.fold(str); }
 
   function tokenize(str) {
-    return fold(str).split(/[^a-z0-9']+/).map(function (t) { return t.replace(/^'+|'+$/g, ""); }).filter(Boolean);
+    return fold(str).split(TOKEN_SPLIT).map(function (t) { return t.replace(/^'+|'+$/g, ""); }).filter(Boolean);
   }
 
   function distance(a, b) {
@@ -138,7 +130,7 @@ window.LM = window.LM || {};
     if (!src || !q.length) return [{ text: src.slice(0, radius * 2), hit: false }];
     // Positions of the text words that match (as a prefix) one of the query words
     const ranges = [];
-    const re = /[a-z0-9']+/g;
+    const re = new RegExp(TOKEN.source, "gu");
     let m;
     while ((m = re.exec(f))) {
       const w = m[0];
@@ -171,7 +163,7 @@ window.LM = window.LM || {};
     const q = tokenize(query).filter(function (t) { return t.length > 0; });
     const parts = [];
     let pos = 0;
-    const re = /[a-z0-9']+/g;
+    const re = new RegExp(TOKEN.source, "gu");
     let m;
     while ((m = re.exec(f))) {
       const w = m[0];
