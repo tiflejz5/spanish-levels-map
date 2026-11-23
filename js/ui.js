@@ -54,8 +54,8 @@ window.LM = window.LM || {};
 
   /** Land symbol key per level in assets/lands.js. Land NAMES come from the syllabus (LM.syl.landName). */
   const LANDS = {
-    A1: { key: "kraina-a1" }, A2: { key: "kraina-a2" }, B1: { key: "kraina-b1" },
-    B2: { key: "kraina-b2" }, C1: { key: "kraina-c1" }, C2: { key: "kraina-c2" }
+    A1: { key: "land-a1" }, A2: { key: "land-a2" }, B1: { key: "land-b1" },
+    B2: { key: "land-b2" }, C1: { key: "land-c1" }, C2: { key: "land-c2" }
   };
 
   /** Land symbol of a level ("A1"…"C2"), stroke currentColor — the parent sets the colour (e.g. --lvl). */

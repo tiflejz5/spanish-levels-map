@@ -7,3 +7,5 @@ js/exercise-logic.js \.replace\(/\[,\.!\?;:
 js/cards-logic.js function isPolish\(text\)
 # Trimming punctuation of answers and selections includes „; stage 3 moves this into LM.lang.
 js/cards-logic.js replace\(/\^\[\\s\.,;:
+# The e2e test checks that the routes of the reference app (Polish slugs) show "Page not found" and never redirect.
+tools/e2e.js "#/dzis", "#/szlak", "#/powtorki"

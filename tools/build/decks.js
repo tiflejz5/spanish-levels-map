@@ -1,5 +1,5 @@
 /*
- * decks.js — built-in flashcard decks (port of the reference tools/zbuduj-fiszki.js).
+ * decks.js — built-in flashcard decks (port of the reference deck builder).
  *
  *   content/decks/index.json, content/decks/<deck id>.json
  *   → data/decks-index.js   LM.DECKS_INDEX = { version, decks: [{ id, title, description, level, count, enabled, file }] }

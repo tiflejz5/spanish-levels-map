@@ -1,19 +1,19 @@
 /*
- * build-assets.js — kopiuje zasoby z paczek npm do folderu assets/,
- * żeby strona działała BEZ node_modules (GitHub Pages, otwieranie z dysku).
+ * build-assets.js — copies assets from npm packages to the assets/ folder,
+ * so the site works WITHOUT node_modules (GitHub Pages, opening from disk).
  *
- * Użycie (z folderu projektu, po `npm install`):
- *   npm run zasoby        (albo: node tools/build-assets.js)
+ * Usage (from the project folder, after `npm install`):
+ *   npm run assets        (or: node tools/build-assets.js)
  *
- * Co trafia do assets/:
- *   fonts/   — Fraunces (display, osie wght + opsz) i Inter (tekst, oś wght),
- *              tylko podzbiory latin i latin-ext (polskie znaki), woff2
- *   icons.js — dane używanych ikon Lucide (LM.ICON_NODES), rysowane przez
- *              js/icons.js bez innerHTML; lista ikon: ICONS poniżej
- *   vendor/gsap.min.js — GSAP (ładowany na żądanie przez LM.loadGsap)
- *   vendor/DrawSVGPlugin.min.js, MotionPathPlugin.min.js — wtyczki GSAP (też na żądanie)
+ * What goes to assets/:
+ *   fonts/   — Fraunces (display, axes wght + opsz) and Inter (text, axis wght),
+ *              only the latin and latin-ext subsets (accented letters), woff2
+ *   icons.js — data of the Lucide icons in use (LM.ICON_NODES), drawn by
+ *              js/ui.js without innerHTML; the icon list: ICONS below
+ *   vendor/gsap.min.js — GSAP (loaded on demand by LM.loadGsap)
+ *   vendor/DrawSVGPlugin.min.js, MotionPathPlugin.min.js — GSAP plugins (also on demand)
  *
- * Dodanie ikony: dopisz jej nazwę (z lucide.dev) do ICONS i uruchom skrypt.
+ * To add an icon: add its name (from lucide.dev) to ICONS and run the script.
  */
 "use strict";
 
@@ -25,14 +25,14 @@ const NM = path.join(ROOT, "node_modules");
 const OUT = path.join(ROOT, "assets");
 
 const FONTS = [
-  // [paczka, plik w paczce/files, nazwa docelowa]
+  // [package, file in the package/files, target name]
   ["@fontsource-variable/fraunces", "fraunces-latin-opsz-normal.woff2", "fraunces-latin.woff2"],
   ["@fontsource-variable/fraunces", "fraunces-latin-ext-opsz-normal.woff2", "fraunces-latin-ext.woff2"],
   ["@fontsource-variable/inter", "inter-latin-wght-normal.woff2", "inter-latin.woff2"],
   ["@fontsource-variable/inter", "inter-latin-ext-wght-normal.woff2", "inter-latin-ext.woff2"]
 ];
 
-// Używane ikony Lucide (nazwy jak na lucide.dev)
+// Lucide icons in use (names as on lucide.dev)
 const ICONS = [
   "sunrise", "target", "notebook-pen", "award", "menu", "x", "pencil", "check", "plus",
   "chevron-right", "chevron-left", "chevron-down", "arrow-left", "arrow-right",
@@ -47,7 +47,7 @@ const ICONS = [
 
 function need(file) {
   if (!fs.existsSync(file)) {
-    console.error("BŁĄD: brak " + path.relative(ROOT, file) + ". Uruchom najpierw: npm install");
+    console.error("ERROR: missing " + path.relative(ROOT, file) + ". Run first: npm install");
     process.exit(1);
   }
   return file;
@@ -63,7 +63,7 @@ FONTS.forEach(function (f) {
   fs.copyFileSync(src, path.join(OUT, "fonts", f[2]));
   fontBytes += fs.statSync(src).size;
 });
-// Licencje fontów (SIL OFL) obok plików
+// Font licenses (SIL OFL) next to the files
 [["@fontsource-variable/fraunces", "Fraunces-LICENSE.txt"], ["@fontsource-variable/inter", "Inter-LICENSE.txt"]].forEach(function (l) {
   const src = path.join(NM, l[0], "LICENSE");
   if (fs.existsSync(src)) fs.copyFileSync(src, path.join(OUT, "fonts", l[1]));
@@ -78,26 +78,26 @@ ICONS.forEach(function (name) {
   else missing.push(name);
 });
 if (missing.length) {
-  console.error("BŁĄD: nie ma takich ikon w lucide-static: " + missing.join(", "));
+  console.error("ERROR: these icons are not in lucide-static: " + missing.join(", "));
   process.exit(1);
 }
 const lucideVersion = JSON.parse(fs.readFileSync(path.join(NM, "lucide-static", "package.json"), "utf8")).version;
 fs.writeFileSync(path.join(OUT, "icons.js"),
-  "/*\n * PLIK GENEROWANY AUTOMATYCZNIE — nie edytuj ręcznie.\n" +
-  " * Ikony Lucide " + lucideVersion + " (licencja ISC, https://lucide.dev), tylko używane.\n" +
-  " * Odśwież poleceniem: npm run zasoby\n */\n" +
+  "/*\n * GENERATED FILE — do not edit by hand.\n" +
+  " * Lucide icons " + lucideVersion + " (ISC license, https://lucide.dev), only the ones in use.\n" +
+  " * Refresh with: npm run assets\n */\n" +
   "window.LM = window.LM || {};\nwindow.LM.ICON_NODES = " + JSON.stringify(icons) + ";\n", "utf8");
 const lucideLicense = path.join(NM, "lucide-static", "LICENSE");
 if (fs.existsSync(lucideLicense)) fs.copyFileSync(lucideLicense, path.join(OUT, "Lucide-LICENSE.txt"));
 
 // ---------- GSAP ----------
 fs.copyFileSync(need(path.join(NM, "gsap", "dist", "gsap.min.js")), path.join(OUT, "vendor", "gsap.min.js"));
-// Wtyczki (od 3.13 darmowe): rysowanie ścieżki szlaku i ruch znacznika po ścieżce
+// Plugins (free since 3.13): drawing the trail path and moving the marker along it
 ["DrawSVGPlugin.min.js", "MotionPathPlugin.min.js"].forEach(function (f) {
   fs.copyFileSync(need(path.join(NM, "gsap", "dist", f)), path.join(OUT, "vendor", f));
 });
 const gsapVersion = JSON.parse(fs.readFileSync(path.join(NM, "gsap", "package.json"), "utf8")).version;
 
-console.log("Fonty: " + FONTS.length + " plików, " + Math.round(fontBytes / 1024) + " KB");
+console.log("Fonts: " + FONTS.length + " files, " + Math.round(fontBytes / 1024) + " KB");
 console.log("Ikony: " + Object.keys(icons).length + " (Lucide " + lucideVersion + ")");
-console.log("GSAP " + gsapVersion + ": assets/vendor/gsap.min.js (ładowany tylko na żądanie)");
+console.log("GSAP " + gsapVersion + ": assets/vendor/gsap.min.js (loaded on demand only)");
