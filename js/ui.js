@@ -1,8 +1,8 @@
 /*
  * ui.js — visual pieces shared by the whole app (see DESIGN.md):
- *   LM.icon(name, opts)          ikona Lucide (dane: assets/icons.js)
- *   LM.ui.withIcon(name, text)   [ikona, tekst] do przycisków i linków
- *   LM.logo(opts)                znak logo (kompas ze szlakiem) + napis
+ *   LM.icon(name, opts)          a Lucide icon (data: assets/icons.js)
+ *   LM.ui.withIcon(name, text)   [icon, text] for buttons and links
+ *   LM.logo(opts)                logo mark (a compass with a trail) + wordmark
  *   LM.ui.progressRing(…)        progress ring (SVG)
  *   LM.loadGsap()                GSAP, loaded only on demand
  *
@@ -22,14 +22,14 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // IKONY (Lucide, obrys 1.75 px, kolor z currentColor)
+  // ICONS (Lucide, 1.75 px stroke, color from currentColor)
   // =====================================================================
 
   /**
    * Icon as an <svg> element. opts:
    *   size  — size in px (default 20)
    *   label — text for screen readers (without it the icon is aria-hidden)
-   *   class — dodatkowa klasa
+   *   class — extra class
    */
   function icon(name, opts) {
     opts = opts || {};
@@ -203,7 +203,7 @@ window.LM = window.LM || {};
     defs.appendChild(g);
   }
 
-  /** Sam znak (40 × 40). */
+  /** The mark alone (40 × 40). */
   function logoMark(size) {
     const svg = svgEl("svg", { class: "logo-mark", width: size || 34, height: size || 34, viewBox: "0 0 40 40", "aria-hidden": "true", focusable: "false" });
     // Circle (edge of the map) and a dotted trail from A1 (bottom left) to C2 (top right)
@@ -241,7 +241,7 @@ window.LM = window.LM || {};
   /**
    * percent: 0–100. opts:
    *   size (px, default 64), stroke (px, default 6),
-   *   brand: true → gradient marki zamiast koloru poziomu (--lvl),
+   *   brand: true → brand gradient instead of the level color (--lvl),
    *   label — description for screen readers, text — text in the middle (default “N%”), node — an element instead of text
    * The fill animates through stroke-dashoffset (CSS, --dur-slow).
    */
@@ -278,7 +278,7 @@ window.LM = window.LM || {};
     wrap.appendChild(svg);
     const txt = document.createElement("span");
     txt.className = "ring-text num";
-    if (opts.node) { txt.className = "ring-text ring-land"; txt.appendChild(opts.node); } // np. symbol krainy zamiast tekstu
+    if (opts.node) { txt.className = "ring-text ring-land"; txt.appendChild(opts.node); } // e.g. a land symbol instead of text
     else txt.textContent = opts.text !== undefined ? opts.text : p + "%";
     wrap.appendChild(txt);
     // Animates from zero (CSS transition; at once with prefers-reduced-motion)
@@ -328,7 +328,7 @@ window.LM = window.LM || {};
   }
 
   /**
-   * GSAP + opcjonalne wtyczki, np. LM.loadGsap(["DrawSVGPlugin", "MotionPathPlugin"]).
+   * GSAP + optional plugins, e.g. LM.loadGsap(["DrawSVGPlugin", "MotionPathPlugin"]).
    * Plugins are registered once. Returns Promise<gsap>.
    */
   function loadGsap(plugins) {

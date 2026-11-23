@@ -116,7 +116,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // EKRANY
+  // SCREENS
   // =====================================================================
 
   const DISCLAIMER = "This is an approximate result. It is not an official test or certificate.";

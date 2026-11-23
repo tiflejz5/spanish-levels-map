@@ -39,7 +39,7 @@ window.LM = window.LM || {};
   const DEFAULT_SETTINGS = { newPerDay: 10, reviewsPerDay: 100, typeAnswerFirst: false, enabledDecks: ["czasowniki-frazowe", "kolokacje"], fuzz: true, autoAddMistakes: false, randomDecks: [] };
 
   // =====================================================================
-  // ODPOWIEDZI
+  // ANSWERS
   // =====================================================================
 
   function normalize(s) {
@@ -261,7 +261,7 @@ window.LM = window.LM || {};
     return { separator: sep, rows: rows.filter(function (r) { return r.cells.some(function (c) { return c.trim() !== ""; }); }) };
   }
 
-  const TYPE_ALIASES = { basic: "basic", podstawowa: "basic", cloze: "cloze", luka: "cloze", typed: "typed", wpisz: "typed", wpisywana: "typed" };
+  const TYPE_ALIASES = { basic: "basic", cloze: "cloze", typed: "typed" };
 
   function splitTags(s) {
     return String(s || "").split(/[\s,]+/).map(function (x) { return x.trim().toLowerCase(); })

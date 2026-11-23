@@ -41,7 +41,7 @@ window.LM = window.LM || {};
   const hoverQuery = window.matchMedia ? window.matchMedia("(hover: hover) and (pointer: fine)") : { matches: false };
 
   // =====================================================================
-  // NAZWY PROFILI
+  // PROFILE NAMES
   // =====================================================================
 
   /** Checks a name: trimmed spaces, at most 30 characters, no duplicates. */
@@ -321,7 +321,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // OTWIERANIE / ZAMYKANIE
+  // OPENING / CLOSING
   // =====================================================================
 
   function focusInMenu(selector) {

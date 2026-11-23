@@ -44,7 +44,7 @@ window.LM = window.LM || {};
   function clone(x) { return x === undefined ? undefined : JSON.parse(JSON.stringify(x)); }
 
   // =====================================================================
-  // TALIE I KARTY
+  // DECKS AND CARDS
   // =====================================================================
 
   function index() { return (LM.DECKS_INDEX && LM.DECKS_INDEX.decks) || []; }
@@ -355,7 +355,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // SESJA NAUKI
+  // STUDY SESSION
   // =====================================================================
 
   let session = null;
@@ -821,7 +821,7 @@ window.LM = window.LM || {};
   document.addEventListener("keydown", onKey);
 
   // =====================================================================
-  // TRASY I RYSOWANIE
+  // ROUTES AND DRAWING
   // =====================================================================
 
   function parseRoute(hash) {

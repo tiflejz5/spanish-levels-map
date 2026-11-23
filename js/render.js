@@ -17,7 +17,7 @@ window.LM = window.LM || {};
   function app() { return LM.app; }
 
   // =====================================================================
-  // ELEMENTY WSPÓLNE
+  // SHARED ELEMENTS
   // =====================================================================
 
   /** Bar fill as transform: scaleX (animates smoothly, without layout work). */
@@ -56,7 +56,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // LEWY PANEL
+  // LEFT PANEL
   // =====================================================================
 
   /**

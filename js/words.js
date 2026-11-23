@@ -83,7 +83,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // TALIA I DUPLIKATY
+  // DECK AND DUPLICATES
   // =====================================================================
 
   /** Cards of the "My words" deck. */
@@ -112,7 +112,7 @@ window.LM = window.LM || {};
   function say(text, extra) { LM.ui.toast(Object.assign({ text: text, icon: "layers" }, extra || {})); }
 
   // =====================================================================
-  // DODAWANIE
+  // ADDING
   // =====================================================================
 
   function refreshOpenView() { if (LM.state && LM.state.view === "cards" && LM.cards.render) LM.cards.render(); }

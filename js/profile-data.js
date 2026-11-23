@@ -546,7 +546,7 @@ window.LM = window.LM || {};
   function lastPage() { return record("activity", activeId()).lastPage; }
 
   // =====================================================================
-  // TEST POZIOMU
+  // PLACEMENT TEST
   // =====================================================================
 
   function lastTest() { return record("levelTest", activeId()).last; }
@@ -708,7 +708,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // USTAWIENIA NAUKI
+  // LEARNING SETTINGS
   // =====================================================================
 
   function prefs() { return Object.assign({}, record("prefs", activeId())); }

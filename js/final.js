@@ -81,7 +81,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // DANE
+  // DATA
   // =====================================================================
 
   /** Pool of the level (Promise → set, or null when there is no file). */
@@ -98,7 +98,7 @@ window.LM = window.LM || {};
   function percentOf(r) { return r.total ? Math.round(r.score / r.total * 100) : 0; }
 
   // =====================================================================
-  // EKRAN STARTOWY
+  // START SCREEN
   // =====================================================================
 
   function backTo(level) { return { href: levelHash(level), label: "Back to " + level }; }

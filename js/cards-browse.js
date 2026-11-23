@@ -51,7 +51,7 @@ window.LM = window.LM || {};
   function newDeckId() { return "u-" + U.uid("t").toLowerCase().replace(/[^a-z0-9-]/g, "-").slice(0, 50); }
 
   // =====================================================================
-  // LISTA KART TALII
+  // CARD LIST OF A DECK
   // =====================================================================
 
   function renderDeck(view, deckId) {

@@ -25,7 +25,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // DATA I STAN EGZAMINU
+  // EXAM DATE AND STATE
   // =====================================================================
 
   function getDate(e) {
@@ -69,7 +69,7 @@ window.LM = window.LM || {};
   function unpin(id) { if (pd() && pd().setExamMy(id, "hidden")) changed(); }
 
   // =====================================================================
-  // TEKSTY ODLICZANIA
+  // COUNTDOWN TEXTS
   // =====================================================================
 
   /** Tekst stanu bez dużej liczby: „Egzamin jutro”, „Egzamin był 3 dni temu”, „Ustaw datę…”. */
@@ -101,7 +101,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // KARTA DATY (B2)
+  // DATE CARD (B2)
   // =====================================================================
 
   /**
@@ -168,7 +168,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // OKŁADKI (B3)
+  // COVERS (B3)
   // =====================================================================
 
   /** Exam colours as CSS variables (from the registry; the app accent when an exam has none). */
@@ -256,7 +256,7 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // PRZYPINANIE (B1) I KAFLE
+  // PINNING (B1) AND TILES
   // =====================================================================
 
   /** „Przypnij do Dziś” / „Odepnij z Dziś i strony głównej” — stan wynika z myExams. */
