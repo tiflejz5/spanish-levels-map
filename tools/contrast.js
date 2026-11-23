@@ -1,10 +1,10 @@
 /*
- * contrast.js — sprawdza kontrast WCAG par tokenów w obu motywach
- * (css/style.css). Tekst: min. 4.5:1, komponenty, obramowania pól i paski: 3:1.
+ * contrast.js — checks the WCAG contrast of token pairs in both themes
+ * (css/style.css). Text: at least 4.5:1; components, field borders and bars: 3:1.
  *
- * Użycie (z folderu projektu):
+ * Usage (from the project folder):
  *   node tools/contrast.js
- * Kod wyjścia 1, gdy któraś para nie spełnia minimum.
+ * Exit code 1 when any pair is below the minimum.
  */
 "use strict";
 
@@ -15,7 +15,7 @@ const css = fs.readFileSync(path.join(__dirname, "..", "css", "style.css"), "utf
 
 function block(selectorStart) {
   const i = css.indexOf(selectorStart);
-  if (i === -1) throw new Error("Nie znaleziono bloku: " + selectorStart);
+  if (i === -1) throw new Error("Block not found: " + selectorStart);
   const open = css.indexOf("{", i), close = css.indexOf("}", open);
   const vars = {};
   css.slice(open + 1, close).replace(/--([\w-]+):\s*([^;]+);/g, function (_, k, v) { vars[k] = v.trim(); });
@@ -31,7 +31,7 @@ function parse(c) {
   if (m) return [parseInt(m[1].slice(0, 2), 16), parseInt(m[1].slice(2, 4), 16), parseInt(m[1].slice(4, 6), 16), 1];
   m = /^rgba?\(([^)]+)\)$/.exec(c);
   if (m) { const p = m[1].split(",").map(Number); return [p[0], p[1], p[2], p.length > 3 ? p[3] : 1]; }
-  throw new Error("Nieobsługiwany kolor: " + c);
+  throw new Error("Unsupported color: " + c);
 }
 function over(fg, bg) { const a = fg[3]; return [0, 1, 2].map(function (i) { return fg[i] * a + bg[i] * (1 - a); }).concat(1); }
 function lum(c) {
@@ -40,11 +40,11 @@ function lum(c) {
 }
 function ratio(a, b) { const la = lum(a), lb = lum(b); return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05); }
 
-// [przedni, tło, (podkład pod półprzezroczyste tło), minimum, opis]
+// [foreground, background, (base under a semi-transparent background), minimum, description]
 const pairs = [];
 ["bg", "surface", "surface-2", "surface-3", "empty-bg"].forEach(function (bg) {
   pairs.push(["ink", bg, null, 4.5, "tekst / " + bg]);
-  pairs.push(["ink-muted", bg, null, 4.5, "tekst drugorzędny / " + bg]);
+  pairs.push(["ink-muted", bg, null, 4.5, "secondary text / " + bg]);
 });
 ["uoe", "reading", "writing", "listening", "speaking", "grammar", "vocab", "other"].forEach(function (c) {
   pairs.push(["cat-" + c, "surface", null, 3, "pasek kategorii dziennika (" + c + ") / karta"]);
@@ -52,145 +52,145 @@ const pairs = [];
 pairs.push(
   ["ink-faint", "surface", null, 4.5, "placeholder / pole"],
   ["accent", "surface", null, 4.5, "link / karta"],
-  ["accent", "bg", null, 4.5, "link / tło"],
+  ["accent", "bg", null, 4.5, "link / background"],
   ["accent", "surface-2", null, 4.5, "link / panel"],
   ["accent", "info-bg", "surface", 4.5, "link / ramka informacyjna"],
-  ["accent", "accent-soft", "surface", 4.5, "link / wyróżnienie akcentem"],
+  ["accent", "accent-soft", "surface", 4.5, "link / accent highlight"],
   ["ink", "info-bg", "surface", 4.5, "tekst / ramka informacyjna"],
-  ["ink", "accent-soft", "surface", 4.5, "tekst / aktywny profil"],
+  ["ink", "accent-soft", "surface", 4.5, "text / active profile"],
   ["ink", "hover", "surface-2", 4.5, "tekst / najechanie w panelu"],
-  ["on-accent", "accent-bg", null, 4.5, "tekst przycisku głównego"],
-  ["on-accent", "accent-hover", null, 4.5, "tekst przycisku głównego (hover)"],
-  ["on-accent", "danger-bg", null, 4.5, "tekst przycisku „usuń”"],
-  ["on-accent", "danger-hover", null, 4.5, "tekst przycisku „usuń” (hover)"],
+  ["on-accent", "accent-bg", null, 4.5, "primary button text"],
+  ["on-accent", "accent-hover", null, 4.5, "primary button text (hover)"],
+  ["on-accent", "danger-bg", null, 4.5, "\"delete\" button text"],
+  ["on-accent", "danger-hover", null, 4.5, "\"delete\" button text (hover)"],
   ["on-accent", "success-fill", null, 3, "znacznik ✓ / zaznaczone pole"],
-  ["danger", "surface", null, 4.5, "błąd / karta"],
-  ["danger", "danger-soft", "surface", 4.5, "błąd / tło błędu"],
+  ["danger", "surface", null, 4.5, "error / card"],
+  ["danger", "danger-soft", "surface", 4.5, "error / error background"],
   ["success", "surface", null, 4.5, "sukces / karta"],
-  ["success", "success-soft", "surface", 4.5, "sukces / tło sukcesu"],
-  ["warning", "surface", null, 4.5, "ostrzeżenie / karta"],
-  ["ink", "warning-soft", "surface", 4.5, "tekst / baner ostrzeżenia"],
-  ["inverse-text", "inverse-bg", null, 4.5, "słowo kluczowe (Part 4)"],
+  ["success", "success-soft", "surface", 4.5, "success / success background"],
+  ["warning", "surface", null, 4.5, "warning / card"],
+  ["ink", "warning-soft", "surface", 4.5, "text / warning banner"],
+  ["inverse-text", "inverse-bg", null, 4.5, "key word"],
   ["line-control", "surface", null, 3, "obramowanie pola / karta"],
-  ["line-control", "bg", null, 3, "obramowanie pola / tło"],
+  ["line-control", "bg", null, 3, "field border / background"],
   ["line-control", "surface-2", null, 3, "obramowanie pola / panel"],
-  ["success-fill", "surface", null, 3, "zaznaczony „Umiem” / karta"],
-  ["focus-color", "surface", null, 3, "obwódka fokusu / karta"],
-  ["focus-color", "bg", null, 3, "obwódka fokusu / tło"],
-  ["focus-color", "surface-2", null, 3, "obwódka fokusu / panel"],
-  ["accent-bg", "bg", null, 3, "przycisk główny / tło"],
+  ["success-fill", "surface", null, 3, "checked \"I know this\" / card"],
+  ["focus-color", "surface", null, 3, "focus ring / card"],
+  ["focus-color", "bg", null, 3, "focus ring / background"],
+  ["focus-color", "surface-2", null, 3, "focus ring / panel"],
+  ["accent-bg", "bg", null, 3, "primary button / background"],
   ["danger-bg", "surface", null, 3, "znacznik ✗ / karta"],
-  ["c1-gold", "c1-navy", null, 4.5, "chip C1: złoty napis / granat"],
-  ["c1-edge", "surface-2", null, 3, "chip C1: krawędź / panel"],
-  ["c1-ink", "c1-soft", "surface-2", 4.5, "aktywny Certyfikat C1: tekst / tło"],
-  ["ink-muted", "lvl-a1-soft", null, 4.5, "licznik „X / Y umiem” / aktywny poziom (A1)"],
-  ["on-accent", "accent-bg", null, 4.5, "plakietka powtórek / tło"],
-  ["on-accent", "success-fill", null, 4.5, "„Wiedziałem(am)”, etykieta „Poprawna” / tło"],
-  ["on-accent", "danger-bg", null, 4.5, "etykieta „Twoja odpowiedź” / tło"],
+  ["c1-gold", "c1-navy", null, 4.5, "exam chip: gold text / navy"],
+  ["c1-edge", "surface-2", null, 3, "exam chip: edge / panel"],
+  ["c1-ink", "c1-soft", "surface-2", 4.5, "active exam chip: text / background"],
+  ["ink-muted", "lvl-a1-soft", null, 4.5, "counter \"X / Y known\" / active level (A1)"],
+  ["on-accent", "accent-bg", null, 4.5, "reviews badge / background"],
+  ["on-accent", "success-fill", null, 4.5, "\"Good\", the \"Correct\" label / background"],
+  ["on-accent", "danger-bg", null, 4.5, "the \"Your answer\" label / background"],
   ["c1-gold", "c1-navy", null, 4.5, "kafel egzaminu: liczba / granat"],
-  ["ink", "c1-soft", "surface", 4.5, "callout „Na egzaminie C1”: tekst / tło"],
-  ["c1-ink", "c1-soft", "surface", 4.5, "callout „Na egzaminie C1”: link / tło"],
-  ["c1-ink", "surface", null, 4.5, "chip części egzaminu / karta"],
-  ["ink", "info-bg", "surface", 4.5, "callout „Życie i egzamin”: tekst / tło"],
-  ["accent", "surface", null, 3, "callout „Życie i egzamin”: ikona / tło ikony"],
-  ["ink", "surface", null, 4.5, "chip egzaminu („Życie i egzamin”): tekst / tło"],
-  ["ink", "surface-3", null, 4.5, "chip egzaminu po najechaniu: tekst / tło"],
-  ["ink-muted", "surface", null, 4.5, "karta na telefonie: etykieta kolumny / tło"],
-  ["warning", "surface", null, 3, "ikona pułapki / tło ikony"],
+  ["ink", "c1-soft", "surface", 4.5, "\"In the exam\" callout: text / background"],
+  ["c1-ink", "c1-soft", "surface", 4.5, "\"In the exam\" callout: link / background"],
+  ["c1-ink", "surface", null, 4.5, "exam part chip / card"],
+  ["ink", "info-bg", "surface", 4.5, "\"Real life vs exam\" callout: text / background"],
+  ["accent", "surface", null, 3, "\"Real life vs exam\" callout: icon / icon background"],
+  ["ink", "surface", null, 4.5, "exam chip (\"Real life vs exam\"): text / background"],
+  ["ink", "surface-3", null, 4.5, "exam chip on hover: text / background"],
+  ["ink-muted", "surface", null, 4.5, "card on a phone: column label / background"],
+  ["warning", "surface", null, 3, "warning icon / icon background"],
   ["c1-cream", "c1-navy", null, 4.5, "kafel egzaminu: tekst / granat"],
   ["c1-cream-muted", "c1-navy", null, 4.5, "kafel egzaminu: data / granat"],
-  ["tense-past", "surface", null, 3, "oś czasu: przeszłość / karta"],
-  ["tense-present", "surface", null, 3, "oś czasu: teraźniejszość / karta"],
-  ["tense-future", "surface", null, 3, "oś czasu: przyszłość / karta"],
-  ["tense-past", "bg", null, 3, "oś czasu: przeszłość / tło"],
-  ["tense-future", "bg", null, 3, "oś czasu: przyszłość / tło"],
-  ["ink", "warning-soft", "surface", 4.5, "znajdź błąd: wyraz z błędem / tło"],
-  ["accent", "accent-soft", "surface", 4.5, "wybrana opcja / wyraz: tekst / tło"],
-  ["danger", "danger-soft", "surface", 4.5, "błędny wyraz / luka: tekst / tło"],
-  ["success", "success-soft", "surface", 4.5, "poprawna luka: tekst / tło"],
-  ["warning", "danger-soft", "surface", 4.5, "„Uwaga na pisownię” / tło błędnej odpowiedzi"],
-  ["success", "danger-soft", "surface", 4.5, "„Poprawnie: …” / tło błędnej odpowiedzi"],
-  ["accent", "surface-3", null, 3, "statystyki: dzień nauki / dzień bez nauki"],
+  ["tense-past", "surface", null, 3, "timeline: past / card"],
+  ["tense-present", "surface", null, 3, "timeline: present / card"],
+  ["tense-future", "surface", null, 3, "timeline: future / card"],
+  ["tense-past", "bg", null, 3, "timeline: past / background"],
+  ["tense-future", "bg", null, 3, "timeline: future / background"],
+  ["ink", "warning-soft", "surface", 4.5, "Find the mistake: the wrong word / background"],
+  ["accent", "accent-soft", "surface", 4.5, "chosen option / word: text / background"],
+  ["danger", "danger-soft", "surface", 4.5, "wrong word / gap: text / background"],
+  ["success", "success-soft", "surface", 4.5, "correct gap: text / background"],
+  ["warning", "danger-soft", "surface", 4.5, "\"Watch the spelling\" / wrong answer background"],
+  ["success", "danger-soft", "surface", 4.5, "\"Correct: …\" / wrong answer background"],
+  ["accent", "surface-3", null, 3, "stats: study day / day without study"],
   ["accent", "surface", null, 3, "statystyki: kolumna trendu / karta"],
-  ["accent", "accent-soft", "surface", 3, "statystyki: pasek trafności / tor"],
-  ["inverse-text", "inverse-bg", null, 4.5, "toast: tekst / tło"],
-  // Okładki egzaminów (B3), pełna i kompaktowa: tło --accent-soft na --bg sekcji
-  ["accent", "accent-soft", "bg", 4.5, "okładka egzaminu: kod / tło"],
-  ["ink", "accent-soft", "bg", 4.5, "okładka egzaminu: nazwa i data / tło"],
-  ["ink-muted", "accent-soft", "bg", 4.5, "okładka egzaminu: poziom i instytucja / tło"],
-  // Pasek v8: przycisk „+N” i popover
-  ["ink-muted", "surface-2", null, 4.5, "pasek: tekst „+N” i podpisy / tło panelu"],
-  ["line-control", "surface-2", null, 3, "pasek: przerywany obrys „+N” / tło panelu"],
-  ["ink", "surface", null, 4.5, "popover „+N”: nazwa egzaminu / tło"],
-  ["ink-muted", "surface", null, 4.5, "popover „+N”: poziom i instytucja / tło"],
-  // Fiszki i błędy (v8): zakładki, licznik w nagłówku, karta „Na dziś”
-  ["ink-muted", "bg", null, 4.5, "zakładki Fiszek i błędów: nieaktywna / tło"],
-  ["accent", "bg", null, 3, "zakładki: wskaźnik aktywnej / tło"],
-  ["accent", "accent-soft", "bg", 4.5, "licznik „N do powtórki” w nagłówku: tekst / tło"],
-  ["accent", "surface", null, 4.5, "karta „Na dziś”: linki „Talie”, „Moje błędy”, „+ Dodaj błąd” / karta"],
-  ["lvl-a2", "surface", null, 3, "karta „Na dziś”: znacznik fiszek / karta"],
-  ["lvl-b2", "surface", null, 3, "karta „Na dziś”: znacznik błędów / karta"],
-  ["lvl-c1", "surface", null, 3, "karta „Na dziś”: znacznik zadań / karta"]
+  ["accent", "accent-soft", "surface", 3, "stats: accuracy bar / track"],
+  ["inverse-text", "inverse-bg", null, 4.5, "toast: text / background"],
+  // Exam covers (B3), full and compact: --accent-soft background on the section --bg
+  ["accent", "accent-soft", "bg", 4.5, "exam cover: code / background"],
+  ["ink", "accent-soft", "bg", 4.5, "exam cover: name and date / background"],
+  ["ink-muted", "accent-soft", "bg", 4.5, "exam cover: level and institution / background"],
+  // Sidebar: the "+N" button and popover
+  ["ink-muted", "surface-2", null, 4.5, "sidebar: \"+N\" text and captions / panel background"],
+  ["line-control", "surface-2", null, 3, "sidebar: dashed \"+N\" outline / panel background"],
+  ["ink", "surface", null, 4.5, "\"+N\" popover: exam name / background"],
+  ["ink-muted", "surface", null, 4.5, "\"+N\" popover: level and institution / background"],
+  // Review: tabs, the counter in the header, the "Due today" card
+  ["ink-muted", "bg", null, 4.5, "Review tabs: inactive / background"],
+  ["accent", "bg", null, 3, "tabs: active indicator / background"],
+  ["accent", "accent-soft", "bg", 4.5, "\"N due\" counter in the header: text / background"],
+  ["accent", "surface", null, 4.5, "\"Due today\" card: the links \"Decks\", \"My mistakes\", \"+ Add mistake\" / card"],
+  ["lvl-a2", "surface", null, 3, "\"Due today\" card: flashcard marker / card"],
+  ["lvl-b2", "surface", null, 3, "\"Due today\" card: mistake marker / card"],
+  ["lvl-c1", "surface", null, 3, "\"Due today\" card: item marker / card"]
 );
 ["a1", "a2", "b1", "b2", "c1", "c2"].forEach(function (l) {
   const L = l.toUpperCase();
   pairs.push(
-    ["lvl-" + l + "-ink", "lvl-" + l + "-soft", null, 4.5, "tekst poziomu " + L + " / tło " + L],
+    ["lvl-" + l + "-ink", "lvl-" + l + "-soft", null, 4.5, "level text " + L + " / background " + L],
     ["lvl-" + l + "-ink", "surface", null, 4.5, "tekst poziomu " + L + " / karta"],
     ["lvl-" + l, "lvl-" + l + "-soft", null, 3, "pasek " + L + " / tor"],
     ["lvl-" + l, "surface", null, 3, "znacznik " + L + " / karta"],
-    ["lvl-" + l, "bg", null, 3, "znacznik " + L + " / tło"],
-    ["on-accent", "lvl-" + l, null, 3, "ptaszek „Umiem” / wypełnienie " + L],
-    ["lvl-" + l + "-ink", "bg", null, 4.5, "etykieta krainy " + L + " nad nagłówkiem / tło"],
-    ["ink", "lvl-" + l + "-glow", "surface", 4.5, "marker słowa-klucza " + L + " / karta zadania"],
+    ["lvl-" + l, "bg", null, 3, "marker " + L + " / background"],
+    ["on-accent", "lvl-" + l, null, 3, "\"I know this\" tick / fill " + L],
+    ["lvl-" + l + "-ink", "bg", null, 4.5, "land label " + L + " above the heading / background"],
+    ["ink", "lvl-" + l + "-glow", "surface", 4.5, "key-word marker " + L + " / item card"],
     ["lvl-" + l, "lvl-" + l + "-soft", null, 3, "symbol krainy " + L + " / plama na Szlaku"],
-    ["lvl-" + l + "-ink", "surface", null, 4.5, "Dziś: nazwa bieżącej krainy " + L + " / karta mapy"]
+    ["lvl-" + l + "-ink", "surface", null, 4.5, "Today: name of the current land " + L + " / map card"]
   );
 });
 
 let fails = 0;
 let checked = 0;
-[["JASNY", light], ["CIEMNY", dark]].forEach(function (theme) {
+[["LIGHT", light], ["DARK", dark]].forEach(function (theme) {
   const t = theme[1];
   const bad = [];
-  pairs.concat(t["exam-mark-bg"] ? [["exam-on-mark", "exam-mark-bg", null, 4.5, "plakietka wyniku egzaminu / tło"], ["exam-mark-ink", "bg", null, 4.5, "tekst w kolorze akcentu egzaminu / tło"]] : []).forEach(function (p) {
+  pairs.concat(t["exam-mark-bg"] ? [["exam-on-mark", "exam-mark-bg", null, 4.5, "exam result badge / background"], ["exam-mark-ink", "bg", null, 4.5, "text in the exam accent color / background"]] : []).forEach(function (p) {
     let b = parse(t[p[1]]);
     if (b[3] < 1) b = over(b, parse(t[p[2] || "surface"]));
     let f = parse(t[p[0]]);
     if (f[3] < 1) f = over(f, b);
     const r = ratio(f, b);
     checked++;
-    if (r < p[3]) { fails++; bad.push("  ZA MAŁO " + r.toFixed(2) + " (min " + p[3] + ")  " + p[4]); }
+    if (r < p[3]) { fails++; bad.push("  TOO LOW " + r.toFixed(2) + " (min " + p[3] + ")  " + p[4]); }
   });
   console.log("== " + theme[0] + ": " + (pairs.length - bad.length) + "/" + pairs.length + " ok");
   bad.forEach(function (b) { console.log(b); });
 });
-// Okładka mini (kafel na stronie głównej i Dziś): kolory z rejestru, poza sekcją egzaminu → pasek akcentu na --surface (3:1)
+// Mini cover (tile on the home page and Today): colors from the registry, outside the exam section → accent bar on --surface (3:1)
 // Exam colours come from the exam registry (empty until stage E, spec 06 E8)
 const registryFile = path.join(__dirname, "..", "content", "exams", "registry.json");
 const manifest = fs.existsSync(registryFile) ? JSON.parse(fs.readFileSync(registryFile, "utf8")) : { exams: [] };
-[["JASNY", light], ["CIEMNY", dark]].forEach(function (theme) {
+[["LIGHT", light], ["DARK", dark]].forEach(function (theme) {
   const bad = [];
   manifest.exams.forEach(function (e) {
     const bg = parse(theme[1].surface);
     if (!e.accent) return;
-    const r = ratio(parse(theme[0] === "CIEMNY" ? (e.accent2 || e.accent) : e.accent), bg); // jasny: pasek w accent, ciemny: w accent2
+    const r = ratio(parse(theme[0] === "DARK" ? (e.accent2 || e.accent) : e.accent), bg); // light: the bar in accent, dark: in accent2
     checked++;
-    if (r < 3) { fails++; bad.push("  ZA MAŁO " + r.toFixed(2) + " (min 3)  pasek okładki mini " + e.code + " / karta"); }
+    if (r < 3) { fails++; bad.push("  TOO LOW " + r.toFixed(2) + " (min 3)  mini cover bar " + e.code + " / card"); }
   });
-  // Kafelek egzaminu w pasku (kod i odliczanie, 44×44): biały tekst na kolorze egzaminu, C1: złoto i biel na granacie (4.5:1)
+  // Exam tile in the sidebar (code and countdown, 44×44): white text on the exam color (4.5:1)
   manifest.exams.forEach(function (e) {
     const bgc = e.accent;
     if (!bgc) return;
-    const pairsT = [["#ffffff", "kod i odliczanie " + e.code]];
+    const pairsT = [["#ffffff", "code and countdown " + e.code]];
     pairsT.forEach(function (pt) {
       const rt = ratio(parse(pt[0]), parse(bgc));
       checked++;
-      if (rt < 4.5) { fails++; bad.push("  ZA MAŁO " + rt.toFixed(2) + " (min 4.5)  kafelek paska: " + pt[1] + " / tło kafelka"); }
+      if (rt < 4.5) { fails++; bad.push("  TOO LOW " + rt.toFixed(2) + " (min 4.5)  sidebar tile: " + pt[1] + " / tile background"); }
     });
   });
-  console.log("== OKŁADKI MINI " + theme[0] + ": " + (bad.length ? "błędy" : "ok"));
+  console.log("== MINI COVERS " + theme[0] + ": " + (bad.length ? "errors" : "ok"));
   bad.forEach(function (b) { console.log(b); });
 });
-console.log("Sprawdzone pary: " + checked + ", niezgodne: " + fails);
+console.log("Pairs checked: " + checked + ", failing: " + fails);
 if (fails) process.exit(1);

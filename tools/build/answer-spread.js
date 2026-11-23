@@ -1,13 +1,12 @@
 /*
- * rozklad-regula.js — reguła rozkładu poprawnych liter w zestawach „wybierz A, B, C lub D”
- * (gaps[].options = { A, B, C, D }, gaps[].answer = litera): żadna litera nie jest poprawna w więcej niż 50% luk
- * zestawu i żadna nie jest poprawna więcej niż 2 razy z rzędu. Zestawy z jedną–dwiema lukami są pomijane
- * (reguła nie ma wtedy sensu).
+ * answer-spread.js — the spread rule for correct letters in "choose A, B, C or D" sets
+ * (gaps[].options = { A, B, C, D }, gaps[].answer = a letter): no letter is correct in more than 50% of the gaps
+ * of a set, and no letter is correct more than 2 times in a row. Sets with one or two gaps are skipped
+ * (the rule makes no sense then).
  *
- * Użycie: require("./rozklad-regula").check(zestaw) → opis błędu albo null;
- *         checkAll() → lista błędów dla wszystkich niezbednik/<egzamin>/cwiczenia/*.json.
- * Wywołują ją tools/waliduj-c1-uoe.js (npm run validate) i tools/zbuduj-egzaminy.js (npm run build): błąd przerywa.
- * Naprawa: node tools/rozklad-odpowiedzi.js.
+ * Usage: require("./answer-spread").check(set) → a description of the problem, or null;
+ *        checkAll(root) → the problems of all exam sets (content/exams/<exam>/sets/*.json).
+ * Exam builds and validators call it in stage E; a problem stops the build.
  */
 "use strict";
 
@@ -24,7 +23,7 @@ function isLettered(set) {
   });
 }
 
-/** Opis naruszenia reguły albo null. */
+/** A description of the rule violation, or null. */
 function check(set) {
   if (!isLettered(set) || set.gaps.length < 3) return null;
   const seq = set.gaps.map(function (g) { return g.answer; });
@@ -32,28 +31,30 @@ function check(set) {
   seq.forEach(function (l) { counts[l] = (counts[l] || 0) + 1; });
   const dist = Object.keys(counts).sort().map(function (l) { return l + counts[l]; }).join(" ") + " [" + seq.join("") + "]";
   const worst = Object.keys(counts).reduce(function (a, l) { return counts[l] > counts[a] ? l : a; }, Object.keys(counts)[0]);
-  if (counts[worst] / seq.length > MAX_SHARE) return "litera " + worst + " poprawna w " + counts[worst] + " z " + seq.length + " luk (max 50%): " + dist;
+  if (counts[worst] / seq.length > MAX_SHARE) return "letter " + worst + " is correct in " + counts[worst] + " of " + seq.length + " gaps (max 50%): " + dist;
   let run = 1;
   for (let i = 1; i < seq.length; i++) {
     run = seq[i] === seq[i - 1] ? run + 1 : 1;
-    if (run > MAX_RUN) return "litera " + seq[i] + " poprawna więcej niż " + MAX_RUN + " razy z rzędu (luki " + (i - MAX_RUN + 1) + "–" + (i + 1) + "): " + dist;
+    if (run > MAX_RUN) return "letter " + seq[i] + " is correct more than " + MAX_RUN + " times in a row (gaps " + (i - MAX_RUN + 1) + "–" + (i + 1) + "): " + dist;
   }
   return null;
 }
 
 function walk(dir, out) {
+  if (!fs.existsSync(dir)) return out;
   fs.readdirSync(dir).forEach(function (name) {
     const p = path.join(dir, name);
     if (fs.statSync(p).isDirectory()) walk(p, out);
-    else if (/\.json$/.test(name) && path.basename(path.dirname(p)) === "cwiczenia") out.push(p);
+    else if (/\.json$/.test(name) && path.basename(path.dirname(p)) === "sets") out.push(p);
   });
   return out;
 }
 
-/** Błędy wszystkich zestawów z literowymi opcjami w folderach cwiczenia egzaminów (niezbednik). → [{ file, id, error }] */
+/** Problems of all sets with lettered options in the "sets" folders under root. → [{ file, id, error }] */
 function checkAll(root) {
   const errors = [];
-  walk(root || ROOT, []).sort().forEach(function (file) {
+  const base = root || ROOT;
+  walk(base, []).sort().forEach(function (file) {
     let json;
     try { json = JSON.parse(fs.readFileSync(file, "utf8").replace(/^﻿/, "")); } catch (e) { return; }
     (function find(x) {
@@ -61,7 +62,7 @@ function checkAll(root) {
       if (!x || typeof x !== "object") return;
       if (isLettered(x)) {
         const e = check(x);
-        if (e) errors.push({ file: path.relative(ROOT, file).replace(/\\/g, "/"), id: x.id || path.basename(file), error: e });
+        if (e) errors.push({ file: path.relative(base, file).replace(/\\/g, "/"), id: x.id || path.basename(file), error: e });
       } else Object.keys(x).forEach(function (k) { find(x[k]); });
     })(json);
   });
