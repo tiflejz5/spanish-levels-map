@@ -7,7 +7,7 @@
  *
  *   LM.LEVEL_IDS                   ["A1", …, "C2"] in syllabus order
  *   syl.levels() / level(id)       syllabus levels ({ id, land, goal, units, status })
- *   syl.status(id), isAvailable(id), availableLevels()
+ *   syl.status(id), isAvailable(id), availableLevels(), startLevelFor(id) (the level the trail really starts at)
  *   syl.categories()               [{ id, name }] in syllabus order; categoryName(id)
  *   syl.topics(levelId?)           topics in unit order: { id, level, unit, unitTitle, category, title, example, order, file, path }
  *   syl.topic(id)                  one topic or null
@@ -62,6 +62,14 @@ window.LM = window.LM || {};
   }
   function isAvailable(id) { return status(id) === "available"; }
   function availableLevels() { return LM.LEVEL_IDS.filter(isAvailable); }
+  /** Where the trail really starts for a wanted start level: that level when available, else the highest available
+   *  level below it, else the first available level (spec 06 E1: a placement result may be a "soon" level). */
+  function startLevelFor(id) {
+    const avail = availableLevels();
+    if (isAvailable(id)) return id;
+    const below = avail.filter(function (l) { return LM.LEVEL_IDS.indexOf(l) < LM.LEVEL_IDS.indexOf(id); });
+    return below.length ? below[below.length - 1] : (avail[0] || LM.LEVEL_IDS[0]);
+  }
 
   function categories() {
     const cats = src().categories || {};
@@ -112,7 +120,7 @@ window.LM = window.LM || {};
   LM.LEVEL_IDS = levels().map(function (l) { return l.id; });
 
   LM.syl = {
-    levels: levels, level: level, status: status, isAvailable: isAvailable, availableLevels: availableLevels,
+    levels: levels, level: level, status: status, isAvailable: isAvailable, availableLevels: availableLevels, startLevelFor: startLevelFor,
     categories: categories, categoryName: categoryName, topics: topics, topic: topic, groups: groups,
     routeOf: routeOf, topicFromPath: topicFromPath, hasPage: hasPage, stats: stats, countDone: countDone,
     landName: landName, reset: reset

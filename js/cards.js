@@ -68,6 +68,9 @@ window.LM = window.LM || {};
     });
     return out;
   }
+  /** Built-in decks of a level (the deck's "level" in content/decks/index.json): the level page links to them. */
+  function decksForLevel(level) { return index().filter(function (d) { return d.level === level; }); }
+
   function deckById(id) { return allDecks().find(function (d) { return d.id === id; }) || null; }
 
   /** Cards of a deck (with the deck field). Built-in decks must be loaded. */
@@ -164,7 +167,8 @@ window.LM = window.LM || {};
         ? [document.createTextNode(c.before), el("span", { class: "fc-blank", "aria-label": "gap" }, "_____"), document.createTextNode(c.after)]
         : [document.createTextNode(card.text)]));
     } else {
-      nodes.push(el("p", { class: "fc-text", text: card.front }));
+      // The front is English on built-in typed cards, often target text on "My mistakes" cards: no lang attribute, so guess
+      nodes.push(el("p", { class: "fc-text", lang: L().isTarget(card.front) ? LM.APP.targetLang : null, text: card.front }));
     }
     if (card.hint) nodes.push(el("p", { class: "fc-hint" }, [el("span", { class: "review-label", text: "Hint: " }), document.createTextNode(card.hint)]));
     else if (card.word && card.type === "cloze") {
@@ -187,9 +191,9 @@ window.LM = window.LM || {};
         ? [document.createTextNode(c.before), el("strong", { class: "fc-answer", text: c.answers[0] }), document.createTextNode(c.after)]
         : [document.createTextNode(card.text)]));
     } else {
-      nodes.push(el("p", { class: "fc-text fc-back" }, el("strong", { class: "fc-answer", text: card.back })));
+      nodes.push(el("p", { class: "fc-text fc-back", lang: LM.APP.targetLang }, el("strong", { class: "fc-answer", text: card.back })));
     }
-    if (answers.length > 1) nodes.push(el("p", { class: "fc-extra" }, [el("span", { class: "review-label", text: "Also accepted: " }), document.createTextNode(answers.slice(1).join(", "))]));
+    if (answers.length > 1) nodes.push(el("p", { class: "fc-extra" }, [el("span", { class: "review-label", text: "Also accepted: " }), el("span", { lang: LM.APP.targetLang, text: answers.slice(1).join(", ") })]));
     if (card.example) nodes.push(el("p", { class: "fc-extra", lang: LM.APP.targetLang }, [el("span", { class: "review-label", text: "Example: " }), document.createTextNode(card.example)]));
     // "My words": the meaning (when there is one), extra examples and the source
     if (card.word && card.hint && card.type === "cloze") nodes.push(el("p", { class: "fc-extra" }, [el("span", { class: "review-label", text: "Meaning: " }), document.createTextNode(card.hint)]));
@@ -206,6 +210,9 @@ window.LM = window.LM || {};
     if (card.note) nodes.push(el("p", { class: "fc-extra" }, [el("span", { class: "review-label", text: "Note: " }), document.createTextNode(card.note)]));
     const chips = examChips(card);
     if (chips) nodes.push(chips);
+    // E12: built-in cards only (a card of a deck from content/decks); the user's own cards and mistakes are theirs
+    const builtIn = LM.DECKS_INDEX && (LM.DECKS_INDEX.decks || []).some(function (d) { return d.id === card.deck; });
+    if (builtIn) { const r = LM.ui.reportLink(card.id, { className: "fc-report" }); if (r) nodes.push(r); }
     return nodes;
   }
 
@@ -253,17 +260,16 @@ window.LM = window.LM || {};
   }
 
   function renderThemes(view, level) {
-    view.appendChild(LM.ui.breadcrumbs([{ label: "Flashcards and mistakes", href: HOME }, { label: "Decks", href: HASH }, { label: "Topics" }]));
-    view.appendChild(head("Topic decks", "Words and phrases on everyday topics, from A1 to B1. Each deck is turned on separately."));
-    const levels = ["", "A1", "A2", "B1"];
+    view.appendChild(LM.ui.breadcrumbs([{ label: "Flashcards and mistakes", href: HOME }, { label: "Decks", href: HASH }, { label: "By level" }]));
+    view.appendChild(head("Decks by level", "Built-in decks: words and phrases of everyday topics and the forms of each level. Each deck is turned on separately."));
+    // Levels that have built-in decks (content/decks/index.json), in level order
+    const levels = [""].concat(LM.LEVEL_IDS.filter(function (l) { return decksForLevel(l).length; }));
     view.appendChild(el("div", { class: "chip-filter", role: "group", "aria-label": "Level" }, levels.map(function (l) {
       const active = l === level;
       return el("a", { class: "chip-btn" + (active ? " is-active" : ""), href: HASH + "/topics" + (l ? "/" + l.toLowerCase() : ""), "aria-current": active ? "true" : null }, [active ? LM.icon("check", { size: 16 }) : null, l || "All"]);
     })));
-    const themes = allDecks().filter(function (d) { return /^temat-/.test(d.id); }).filter(function (d) {
-      return !level || cardsOf(d.id).some(function (c) { return c.level === level; });
-    });
-    if (!themes.length) { view.appendChild(el("p", { class: "tool-note", text: "There are no topic decks at this level." })); return; }
+    const themes = allDecks().filter(function (d) { return d.builtIn && (!level || d.level === level); });
+    if (!themes.length) { view.appendChild(el("p", { class: "tool-note", text: "There are no built-in decks at this level yet." })); return; }
     view.appendChild(el("ul", { class: "fc-deck-list" }, themes.map(deckCard)));
   }
 
@@ -663,7 +669,12 @@ window.LM = window.LM || {};
     cardNode.appendChild(result);
 
     if (session.revealed) {
-      cardNode.appendChild(el("div", { class: "fc-backside" + (LM.reducedMotion && LM.reducedMotion() ? "" : " is-anim") }, renderBack(card)));
+      const backside = el("div", { class: "fc-backside" + (LM.reducedMotion && LM.reducedMotion() ? "" : " is-anim") }, renderBack(card));
+      // Listen button (spec 06 E5): the same text as the S key; hidden by CSS without a voice
+      const spoken = cardSpeech(card, true);
+      const listen = spoken && LM.markdown && LM.markdown.listenButton ? LM.markdown.listenButton(backside, function () { return spoken; }, "Listen to the answer") : null;
+      if (listen) { backside.classList.add("has-listen"); backside.setAttribute("data-listen", spoken); backside.insertBefore(listen, backside.firstChild); }
+      cardNode.appendChild(backside);
       const pv = H().preview(st().cards[card.id] && st().cards[card.id].state !== "new" ? st().cards[card.id] : H().newCard(), now());
       const suggested = session.typed ? session.typed.result.suggested : null;
       root.appendChild(el("div", { class: "fc-grades", role: "group", "aria-label": "Rate how it went" }, GRADE_INFO.map(function (g) {
@@ -848,7 +859,7 @@ window.LM = window.LM || {};
     const p = (m[2] || "").replace(/\/+$/, "").split("/").filter(Boolean).map(decodeURIComponent);
     if (!p.length) return { kind: "home" };
     if (p[0] === "import") return { kind: "import" };
-    if (p[0] === "topics") return { kind: "themes", level: /^(a1|a2|b1)$/.test(p[1] || "") ? p[1].toUpperCase() : "" };
+    if (p[0] === "topics") return { kind: "themes", level: /^(a1|a2|b1|b2|c1|c2)$/.test(p[1] || "") ? p[1].toUpperCase() : "" };
     if (p[0] === "deck" && p[1] === WORDS_ID && !p[2]) return { kind: "words" };
     if (p[0] === "deck" && p[1]) {
       if (p[2] === "new") return { kind: "edit", deck: p[1], card: null };
@@ -1104,7 +1115,7 @@ window.LM = window.LM || {};
     HASH: HASH, SESSION: SESSION, HOME: HOME, MISTAKES_ID: MISTAKES_ID, WORDS_ID: WORDS_ID, parseRoute: parseRoute, render: render, badgeCount: badgeCount, dueSummary: dueSummary,
     hasJournalCard: hasJournalCard, addFromJournal: addFromJournal, autoAddFromJournal: autoAddFromJournal, mistakeInfo: mistakeInfo,
     journalRemoved: journalRemoved, journalUpdated: journalUpdated, journalWrong: journalWrong, journalCorrect: journalCorrect,
-    todayTile: todayTile, statsTile: statsTile, examTile: examTile, openFromSelection: openFromSelection,
+    todayTile: todayTile, statsTile: statsTile, decksForLevel: decksForLevel, examTile: examTile, openFromSelection: openFromSelection,
     // for browsing / editing and integrations
     internal: { hasProfile: hasProfile, st: st, saveState: saveState, allDecks: allDecks, deckById: deckById, cardsOf: cardsOf, cardById: cardById, enabled: enabled,
       toggleDeck: toggleDeck, examChips: examChips, renderFront: renderFront, renderBack: renderBack, head: head, plural: plural, downloadText: downloadText,

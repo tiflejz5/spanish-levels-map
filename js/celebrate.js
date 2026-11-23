@@ -60,7 +60,7 @@ window.LM = window.LM || {};
       const name = levelName(lvl);
       if (step === 100) {
         const next = LM.LEVEL_IDS[LM.LEVEL_IDS.indexOf(lvl) + 1];
-        return { title: lvl + " complete", text: "You know every topic of " + (name ? lvl + " · " + name : lvl) + "." + (next ? " Next stop: " + next + "." : " This is the end of the trail."), icon: "flag", level: lvl };
+        return { title: lvl + " complete", text: "You know every topic of " + (name ? lvl + " · " + name : lvl) + "." + (!next ? " This is the end of the trail." : LM.syl.isAvailable(next) ? " Next stop: " + next + "." : " " + next + " is on its way."), icon: "flag", level: lvl };
       }
       const label = { 25: "a quarter of the way", 50: "halfway", 75: "three quarters of the way" }[step];
       return { title: lvl + ": " + label, text: "You know " + step + "% of the topics of " + (name ? lvl + " · " + name : lvl) + ".", icon: "map-pin", level: lvl };
@@ -73,7 +73,8 @@ window.LM = window.LM || {};
     if (id === "first-review") return { title: "Your first review session", text: "Things you review come back and stay longer in memory.", icon: "rotate-ccw" };
     if (id === "level-test") {
       const lvl = info && info.level;
-      return { title: "Placement test finished", text: lvl ? "Approximate result: " + lvl + ". This land is a good place to start." : "Your result is below.", icon: "target", level: lvl };
+      return { title: "Placement test finished", text: !lvl ? "Your result is below." : LM.syl.isAvailable(lvl) ? "Approximate result: " + lvl + ". This land is a good place to start."
+        : "Approximate result: " + lvl + ". " + lvl + " is on its way, so the trail starts at " + LM.syl.startLevelFor(lvl) + ".", icon: "target", level: lvl };
     }
     return null;
   }

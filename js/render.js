@@ -376,6 +376,12 @@ window.LM = window.LM || {};
     groups.forEach(function (g) {
       section.appendChild(el("h3", { class: "ess-group-title", text: g.name }));
       section.appendChild(el("ul", { class: "ess-list" }, g.topics.map(topicRow)));
+      // Under the vocabulary topics: the built-in decks of the level (content/decks/index.json)
+      const decks = g.id === "vocabulary" && LM.cards ? LM.cards.decksForLevel(level.id) : [];
+      if (decks.length) {
+        section.appendChild(el("p", { class: "ess-decks tool-note" }, [LM.icon("layers", { size: 16 }), " Flashcard decks: ",
+          el("a", { href: LM.cards.HASH + "/topics/" + level.id.toLowerCase() }, decks.map(function (d) { return d.title; }).join(", "))]));
+      }
     });
     if (!groups.length) {
       section.appendChild(emptyState("This level has no topics."));

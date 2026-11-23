@@ -522,6 +522,7 @@ window.LM = window.LM || {};
     parse: parse,
     parseFrontmatter: parseFrontmatter,
     render: render,
-    inline: inline
+    inline: inline,
+    listenButton: listenButton // also used by flashcards and the mistake log (spec 06 E5)
   };
 })(window.LM);
