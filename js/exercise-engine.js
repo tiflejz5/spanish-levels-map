@@ -100,7 +100,7 @@ window.LM = window.LM || {};
 
   /** Pool to draw from (mixes, generator, weak spots): no dictation when the browser has no voice. */
   function playablePool(pool) {
-    return noEnglishVoice() ? pool.filter(function (it) { return it.type !== "dictation"; }) : pool;
+    return noVoice() ? pool.filter(function (it) { return it.type !== "dictation"; }) : pool;
   }
 
   /** Topic by id: { id, level, title, href } or null. */
@@ -201,7 +201,7 @@ window.LM = window.LM || {};
       return { pairs: pairs };
     }
     // Dictation without a voice: skipped (counts neither in the result nor in the stats)
-    if (p.item.type === "dictation" && noEnglishVoice()) return { skipped: true };
+    if (p.item.type === "dictation" && noVoice()) return { skipped: true };
     return { text: st.text };
   }
 
@@ -223,7 +223,7 @@ window.LM = window.LM || {};
   function check() {
     const p = run.items[run.i];
     if (p.res) return next();
-    const res = X().evaluate(p.item, answerOf(p));
+    const res = X().evaluate(p.item, answerOf(p), { lenientAccents: lenientAccents() });
     if (run.mode === "learn" && !res.answered) {
       const box = document.querySelector(".ex-status");
       if (box) { box.textContent = NEED_ANSWER[p.item.type]; box.classList.add("is-hint"); }
@@ -243,6 +243,11 @@ window.LM = window.LM || {};
     focusLater(".ex-next");
   }
 
+  /** Preference "accept answers without accents" of the active profile (spec 06 E4); off without a profile. */
+  function lenientAccents() {
+    try { return !!(pd() && pd().prefs().lenientAccents); } catch (e) { return false; }
+  }
+
   /** Mode in the attempts log: learn / exam (set), mix (mixed), weak (weak spots). */
   function attemptMode() { return run.isWeak ? "weak" : run.isMix ? "mix" : run.mode; }
 
@@ -252,7 +257,7 @@ window.LM = window.LM || {};
       itemId: p.item.id, setId: p.item.setId || null, topic: p.item.topic, level: p.item.level,
       // Listening read from the transcript (no voice) — marked, left out of the listening stats
       type: p.item.type, tags: p.st.readMode ? (p.item.tags || []).concat("read") : p.item.tags,
-      correct: !!p.res.correct, mode: attemptMode(), answer: userAnswer(p),
+      correct: !!p.res.correct, mode: attemptMode(), answer: userAnswer(p), lenient: p.res.lenient === true ? true : undefined,
       // Items worth several points: points as well (optional fields; the stats count by correct)
       points: p.res.max > 1 ? p.res.points : undefined, max: p.res.max > 1 ? p.res.max : undefined
     });
@@ -419,66 +424,16 @@ window.LM = window.LM || {};
 
   // ---------- Listening (kind "listening", spec 01, section 5): Web Speech API ----------
 
-  let speaking = null; // { p, stop }
+  // Speech: LM.speech (js/speech.js); the owner of a reading is the item (p) or the whole session (run)
 
-  function synth() { return "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function" ? window.speechSynthesis : null; }
+  /** No speech synthesizer, or voices loaded but none in the target language. */
+  function noVoice() { return !LM.speech.available(); }
 
-  function englishVoices() {
-    const s = synth();
-    if (!s) return [];
-    const all = s.getVoices();
-    return all.filter(function (v) { return /^en[-_]GB/i.test(v.lang); }).concat(all.filter(function (v) { return /^en[-_]US/i.test(v.lang); }), all.filter(function (v) { return /^en/i.test(v.lang) && !/^en[-_](GB|US)/i.test(v.lang); }));
-  }
+  function stopSpeaking() { LM.speech.stop(); }
 
-  /** No API, or voices loaded but none in the target language. */
-  function noEnglishVoice() {
-    const s = synth();
-    if (!s) return true;
-    const all = s.getVoices();
-    return all.length > 0 && !englishVoices().length;
-  }
-
-  function stopSpeaking() {
-    const s = synth();
-    if (speaking) { speaking.cancelled = true; speaking = null; }
-    if (s) s.cancel();
-  }
-
-  /** Reads a script: lines with a speaker ("A: …", "Man: …", "Speaker 2: …") in two voices (when there are two), rate 0.9, short pauses.
-   *  owner — the item (p) or the whole session (run) with a shared recording. */
+  /** Reads a script (lines with a speaker, two voices when there are two); owner — the item or the session with a shared recording. */
   function speakScript(owner, script, onDone) {
-    const s = synth();
-    if (!s) return;
-    stopSpeaking();
-    const voices = englishVoices();
-    const lines = String(script || "").split("\n").map(function (l) { return l.trim(); }).filter(Boolean);
-    const token = { p: owner, cancelled: false };
-    speaking = token;
-    // Speakers: "A:" / "B:" as before (A — the first voice, B — the second); other labels ("Man:", "Interviewer:",
-    // "Speaker 2:") get the voices in turn, in order of appearance. Labels are not read.
-    const order = [];
-    function voiceIndex(label) {
-      if (!label) return 0;
-      if (label === "A" || label === "B") return label === "B" ? 1 : 0;
-      if (order.indexOf(label) === -1) order.push(label);
-      return order.indexOf(label) % 2;
-    }
-    let i = 0;
-    function nextLine() {
-      if (token.cancelled) return;
-      if (i >= lines.length) { speaking = null; onDone(); return; }
-      const m = /^([A-Z][A-Za-z]*(?: [A-Z0-9][A-Za-z0-9]*)?):\s*(.*)$/.exec(lines[i]);
-      const u = new window.SpeechSynthesisUtterance(m ? m[2] : lines[i]);
-      const k = voiceIndex(m && m[1]);
-      const voice = voices.length ? voices[k && voices.length > 1 ? 1 : 0] : null;
-      if (voice) u.voice = voice;
-      u.lang = voice ? voice.lang : "en-GB";
-      u.rate = 0.9;
-      u.onend = function () { i++; setTimeout(nextLine, 450); };
-      u.onerror = function () { i++; setTimeout(nextLine, 50); };
-      s.speak(u);
-    }
-    nextLine();
+    LM.speech.speakScript(script, { owner: owner, onend: onDone });
   }
 
   function listeningBox(p) {
@@ -493,10 +448,10 @@ window.LM = window.LM || {};
     if (!script) return el("p", { class: "tool-note ex-listen-note", text: "The recording for this item is in the full set – answer from memory or open the set." });
     const max = p.item.maxPlays || 2;
     st.plays = st.plays || 0;
-    const playing = speaking && speaking.p === owner;
-    const noVoice = noEnglishVoice();
+    const playing = LM.speech.speaking(owner);
+    const silent = noVoice();
     const nodes = [];
-    if (noVoice && !st.readMode) {
+    if (silent && !st.readMode) {
       nodes.push(el("p", { class: "ex-listen-warn", role: "status", text: "This browser has no " + LM.APP.language + " voice." }));
       nodes.push(el("button", { type: "button", class: "btn btn-secondary btn-small", onclick: function () { st.readMode = true; repaint("first"); } }, LM.ui.withIcon("file-text", "Show the transcript to read")));
     } else if (!st.readMode) {
@@ -518,8 +473,8 @@ window.LM = window.LM || {};
     if (st.readMode || done) {
       const lines = String(script || "").split("\n").map(function (l) { return el("p", { text: l }); });
       nodes.push(st.readMode && !done
-        ? el("div", { class: "ex-transcript", lang: "en" }, [el("p", { class: "review-label", text: "Transcript (the result is marked as “read”):" })].concat(lines))
-        : el("details", { class: "ex-transcript" }, [el("summary", null, "Show the transcript")].concat(el("div", { lang: "en" }, lines))));
+        ? el("div", { class: "ex-transcript", lang: LM.APP.targetLang }, [el("p", { class: "review-label", text: "Transcript (the result is marked as “read”):" })].concat(lines))
+        : el("details", { class: "ex-transcript" }, [el("summary", null, "Show the transcript")].concat(el("div", { lang: LM.APP.targetLang }, lines))));
     }
     return el("div", { class: "ex-listen" }, nodes);
   }
@@ -743,7 +698,7 @@ window.LM = window.LM || {};
 
   /** A text field without browser suggestions (target-language text). */
   function textField(tag, attrs) {
-    return el(tag, Object.assign({ autocomplete: "off", autocapitalize: "off", spellcheck: "false", lang: "en" }, attrs));
+    return el(tag, Object.assign({ autocomplete: "off", autocapitalize: "off", spellcheck: "false", lang: LM.APP.targetLang }, attrs));
   }
 
   /** Width of a gap field: by the longest answer with some room, rounded (does not give the length away exactly). */
@@ -780,7 +735,7 @@ window.LM = window.LM || {};
     });
     return [
       item.context ? el("p", { class: "ex-context" }, [el("span", { class: "review-label", text: "In English: " }), el("span", { text: item.context })]) : null,
-      el("p", { class: "ex-prompt ex-gapfill", id: "ex-prompt", lang: "en" }, sentence),
+      el("p", { class: "ex-prompt ex-gapfill", id: "ex-prompt", lang: LM.APP.targetLang }, sentence),
       hints.length ? el("ul", { class: "ex-gap-hints tool-note" }, hints) : null,
       done ? null : el("p", { class: "tool-note ex-keys-hint", text: n > 1 ? "Tab goes to the next gap, Enter checks." : "Enter checks." })
     ];
@@ -793,6 +748,8 @@ window.LM = window.LM || {};
     response: ["What someone says", "Reply"]
   };
   const LETTERS = "ABCDEFGH";
+  // Item types with typed target-language answers: they get the special-character bar (spec 06 E3)
+  const TYPED = ["short-answer", "gap-fill", "transformation", "translate", "dictation", "find-error"];
 
   /** The left item matched with a right one: the left index, or -1. */
   function pairedLeft(st, rightId) {
@@ -836,7 +793,8 @@ window.LM = window.LM || {};
   function bodyMatch(p) {
     const st = p.st, done = !!p.res, item = p.item;
     const heads = MATCH_HEADS[item.mode] || ["Left column", "Right column"];
-    const langL = item.mode === "translation" ? "pl" : "en";
+    // translation mode: the left column is the target language, the right one English (MATCH_HEADS)
+    const langL = LM.APP.targetLang, langR = item.mode === "translation" ? LM.APP.uiLang : LM.APP.targetLang;
     if (done) {
       return [
         el("p", { class: "ex-match-prompt", id: "ex-prompt", text: item.prompt || "Match the pairs." }),
@@ -848,11 +806,11 @@ window.LM = window.LM || {};
             el("span", { class: "ex-gap-mark", "aria-hidden": "true" }, LM.icon(ok ? "check" : "x", { size: 16 })),
             el("span", { class: "ex-match-left", lang: langL, text: pair[0] }),
             el("span", { class: "ex-match-arrow", "aria-hidden": "true", text: "–" }),
-            ok ? el("span", { class: "ex-match-right", lang: "en", text: pair[1] }) : el("span", { class: "ex-match-right" }, [
+            ok ? el("span", { class: "ex-match-right", lang: langR, text: pair[1] }) : el("span", { class: "ex-match-right" }, [
               el("span", { class: "visually-hidden", text: "Your pair: " }),
-              chosen ? el("s", { class: "ex-match-wrong", lang: "en", text: chosen }) : el("span", { class: "ex-match-wrong is-empty", text: "no pair" }),
+              chosen ? el("s", { class: "ex-match-wrong", lang: langR, text: chosen }) : el("span", { class: "ex-match-wrong is-empty", text: "no pair" }),
               el("span", { class: "visually-hidden", text: ", right answer: " }),
-              el("strong", { lang: "en", text: pair[1] })
+              el("strong", { lang: langR, text: pair[1] })
             ])
           ]);
         }))
@@ -884,7 +842,7 @@ window.LM = window.LM || {};
         onclick: function () { matchPick(p, "right", i); repaintMatch("R" + i); }
       }, [
         el("span", { class: "ex-key", "aria-hidden": "true", text: String(i + 1) }),
-        el("span", { class: "ex-match-text", lang: "en", text: r.text }),
+        el("span", { class: "ex-match-text", lang: langR, text: r.text }),
         owner !== -1 ? el("span", { class: "ex-match-tag", "aria-hidden": "true", text: "↔ " + LETTERS[owner] }) : null
       ]));
     });
@@ -921,9 +879,9 @@ window.LM = window.LM || {};
     });
     showCount();
     return [
-      el("p", { class: "ex-tr-source", lang: "en", text: item.source }),
-      el("p", { class: "ex-tr-keyword" }, [el("span", { class: "visually-hidden", text: "Key word: " }), el("span", { class: "c1-keyword", lang: "en", text: String(item.keyword).toUpperCase() })]),
-      el("p", { class: "ex-prompt ex-tr-line", id: "ex-prompt", lang: "en" }, [item.before ? item.before + " " : null, input, item.after ? " " + item.after : null]),
+      el("p", { class: "ex-tr-source", lang: LM.APP.targetLang, text: item.source }),
+      el("p", { class: "ex-tr-keyword" }, [el("span", { class: "visually-hidden", text: "Key word: " }), el("span", { class: "c1-keyword", lang: LM.APP.targetLang, text: String(item.keyword).toUpperCase() })]),
+      el("p", { class: "ex-prompt ex-tr-line", id: "ex-prompt", lang: LM.APP.targetLang }, [item.before ? item.before + " " : null, input, item.after ? " " + item.after : null]),
       el("p", { class: "tool-note" }, [count, " · the key word stays as it is; contractions count as two words."])
     ];
   }
@@ -945,30 +903,19 @@ window.LM = window.LM || {};
           onclick: function () { st.hint = !st.hint; repaint("hint"); }, "data-fk": "hint" }, LM.ui.withIcon("circle-question-mark", st.hint ? "Hide the hint" : "Hint")) : null,
         el("span", { class: "tool-note", text: "Enter checks, Shift+Enter – a new line." })
       ]),
-      item.hint && (st.hint || done) ? el("p", { class: "ex-hint", id: "ex-hint" }, [el("span", { class: "review-label", text: "Hint: " }), el("span", { lang: "en", text: item.hint })]) : null
+      item.hint && (st.hint || done) ? el("p", { class: "ex-hint", id: "ex-hint" }, [el("span", { class: "review-label", text: "Hint: " }), el("span", { text: item.hint })]) : null
     ];
   }
 
-  /** Reads one text (dictation) aloud at the given rate (stage 3 moves the voice choice into LM.speech). */
+  /** Reads one text (dictation) aloud at the given rate (the slow replay uses 0.7). */
   function speakText(owner, text, rate, onDone) {
-    const s = synth();
-    if (!s) return;
-    stopSpeaking();
-    const token = { p: owner, cancelled: false };
-    speaking = token;
-    const voice = englishVoices()[0] || null;
-    const u = new window.SpeechSynthesisUtterance(text);
-    if (voice) u.voice = voice;
-    u.lang = voice ? voice.lang : "en-GB";
-    u.rate = rate;
-    u.onend = u.onerror = function () { if (token.cancelled) return; speaking = null; onDone(); };
-    s.speak(u);
+    LM.speech.speak(text, { owner: owner, rate: rate, onend: onDone, force: true });
   }
 
   function bodyDictation(p) {
     const st = p.st, done = !!p.res, item = p.item;
     const max = item.maxPlays || 3;
-    if (done && p.res.skipped || !done && noEnglishVoice()) {
+    if (done && p.res.skipped || !done && noVoice()) {
       return [
         el("p", { class: "visually-hidden", id: "ex-prompt", text: "Dictation" }),
         el("div", { class: "ex-listen" }, [
@@ -978,7 +925,7 @@ window.LM = window.LM || {};
         ])
       ];
     }
-    const playing = speaking && speaking.p === p;
+    const playing = LM.speech.speaking(p);
     const play = function (rate, key) {
       if (!done) st.plays++;
       speakText(p, item.text, rate, function () { repaint(null); });
@@ -1028,7 +975,7 @@ window.LM = window.LM || {};
     const sum = [missing ? "missing: " + missing : null, extra ? "extra: " + extra : null, repl ? "replaced: " + repl : null].filter(Boolean).join(" · ");
     return el("div", { class: "ex-diff" }, [
       el("p", { class: "review-label", text: "Word by word" + (sum ? " (" + sum + ")" : "") + ":" }),
-      el("p", { class: "ex-diff-line", lang: "en" }, nodes),
+      el("p", { class: "ex-diff-line", lang: LM.APP.targetLang }, nodes),
       el("p", { class: "tool-note ex-diff-legend", text: "+ missing word · struck through – extra · struck through with bold next to it – replaced" })
     ]);
   }
@@ -1102,9 +1049,25 @@ window.LM = window.LM || {};
     const kw = String(item.keyword || "");
     const esc = kw.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const parts = kw ? full.split(new RegExp("(\\b" + esc + "\\b)", "i")) : [full];
-    return el("p", { class: "ex-hl-line", lang: "en" }, parts.map(function (s, i) {
+    return el("p", { class: "ex-hl-line", lang: LM.APP.targetLang }, parts.map(function (s, i) {
       return i % 2 ? el("span", { class: "ex-hl", text: s }) : s;
     }));
+  }
+
+  /** translate / dictation: the accepted sentence number k (as written in the item). */
+  function sentenceModel(item, k) {
+    const list = item.type === "translate" ? item.accepted : [item.text].concat(item.accepted || []);
+    return list[k || 0] || list[0] || "";
+  }
+
+  /** "Almost. Check the accents: <closest>" (LM.exLogic.nearText, the answer in bold); lenient = counted as right, the reminder stays. */
+  function nearLine(near, closest, lenient, prefix) {
+    return el("p", { class: "ex-spelling ex-near is-" + near }, [
+      LM.icon("triangle-alert", { size: 14 }), " ",
+      prefix + X().nearText(near),
+      el("strong", { lang: LM.APP.targetLang, text: closest }),
+      lenient ? el("span", { class: "ex-near-note", text: " (counted as right: you accept answers without accents)" }) : null
+    ]);
   }
 
   function feedback(p) {
@@ -1119,16 +1082,19 @@ window.LM = window.LM || {};
     }
     if (item.type === "reorder" && !res.correct && res.diffAt >= 0) verdict = "Not quite – the order differs from word " + (res.diffAt + 1) + " on.";
     if (!res.correct && res.points > 0) verdict = "Partly right.";
-    if (!res.correct && res.spelling && (item.type === "translate" || item.type === "dictation")) verdict = "Almost – check the spelling.";
+    if (!res.correct && res.near && (item.type === "translate" || item.type === "dictation")) verdict = "Almost.";
     if (res.skipped) verdict = "Skipped – without a voice this item does not count in the result.";
     lines.push(el("p", { class: "lt-verdict" }, [
       el("span", { class: "c1-mark " + (res.correct ? "is-ok" : "is-bad"), "aria-hidden": "true" }, LM.icon(res.correct ? "check" : res.skipped ? "arrow-right" : "x", { size: 14 })),
       el("strong", { text: verdict }),
-      res.max > 1 ? el("span", { class: "ex-points num", text: " " + res.points + " / " + res.max + " pkt" }) : null
+      res.max > 1 ? el("span", { class: "ex-points num", text: " " + res.points + " / " + res.max + " points" }) : null
     ]));
-    if (item.type === "short-answer" && res.spelling) lines.push(el("p", { class: "ex-spelling", text: "Check the spelling – one letter is missing or different." }));
+    // Near misses (spec 05 §2): accents / ending / typo with the closest right answer; also after a lenient "right"
     if (item.type === "gap-fill") {
-      res.gaps.forEach(function (g, i) { if (g.spelling) lines.push(el("p", { class: "ex-spelling", text: "Gap " + (i + 1) + ": check the spelling – one letter is missing or different." })); });
+      res.gaps.forEach(function (g, i) { if (g.near) lines.push(nearLine(g.near, g.closest, g.lenient, "Gap " + (i + 1) + ": ")); });
+    } else if (res.near && !res.skipped) {
+      const closest = typeof res.closest === "number" ? sentenceModel(item, res.closest) : res.closest;
+      lines.push(nearLine(res.near, closest, res.lenient, ""));
     }
     if (item.type === "transformation") {
       if (res.msg) lines.push(el("p", { class: "ex-spelling", text: res.msg }));
@@ -1250,7 +1216,7 @@ window.LM = window.LM || {};
       view.classList.add("has-passage");
       view.appendChild(el("details", { class: "card ex-passage", open: true }, [
         el("summary", { class: "ex-passage-title" }, [LM.icon("file-text", { size: 18 }), " Text for the items"]),
-        el("div", { class: "md ex-passage-text", lang: "en" }, LM.markdown.render(LM.markdown.parse(run.passage).blocks))
+        el("div", { class: "md ex-passage-text", lang: LM.APP.targetLang }, LM.markdown.render(LM.markdown.parse(run.passage).blocks))
       ]));
     }
     view.appendChild(el("section", {
@@ -1258,7 +1224,7 @@ window.LM = window.LM || {};
       style: /^[ABC][12]$/.test(p.item.level || "") ? "--mark:var(--lvl-" + p.item.level.toLowerCase() + "-glow)" : null
     }, [
       el("h2", { class: "ex-type", id: "ex-type", text: TYPE_LABEL[p.item.type] || "Item" }),
-      el("div", { class: "ex-body" }, body),
+      el("div", { class: "ex-body", "data-charbar": !done && TYPED.indexOf(p.item.type) !== -1 ? "" : null }, body),
       el("div", { class: "ex-status" + (done ? " lt-feedback " + (p.res.correct ? "is-ok" : "is-bad") : ""), role: "status", "aria-live": "polite" }, done ? feedback(p) : null),
       el("div", { class: "tool-actions ex-actions" }, [
         primary,
@@ -1311,7 +1277,7 @@ window.LM = window.LM || {};
     // Shared recording of the set: the transcript only after the end (spec 09, 3.2)
     if (run.script) {
       view.appendChild(el("details", { class: "card ex-transcript ex-set-transcript" }, [el("summary", null, "Show the recording's transcript")].concat(
-        el("div", { lang: "en" }, String(run.script).split("\n").map(function (l) { return el("p", { text: l }); })))));
+        el("div", { lang: LM.APP.targetLang }, String(run.script).split("\n").map(function (l) { return el("p", { text: l }); })))));
     }
 
     view.appendChild(el("section", { class: "card ex-review" }, [
@@ -1760,7 +1726,7 @@ window.LM = window.LM || {};
     TYPE_SHORT: TYPE_SHORT,
     TYPE_LABEL: TYPE_LABEL,
     playablePool: playablePool,
-    noEnglishVoice: noEnglishVoice,
+    noVoice: noVoice,
     parseRoute: parseRoute,
     render: render,
     onEnter: onEnter,

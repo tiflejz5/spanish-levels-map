@@ -8,7 +8,7 @@ window.LM = window.LM || {};
 (function (LM) {
   "use strict";
 
-  LM.VERSION = "152"; // lm-version (rewritten by tools/build.js --bump; do not edit by hand)
+  LM.VERSION = "153"; // lm-version (rewritten by tools/build.js --bump; do not edit by hand)
 
   LM.APP = {
     id: "es",
@@ -17,6 +17,7 @@ window.LM = window.LM || {};
     appTitle: "Spanish Levels Map",
     tagline: "Your map of Spanish, A1–C2",
     targetLang: "es",
+    uiLang: "en",
     storagePrefix: "slm.",
     exportName: "spanish-levels-map",
     speech: {
@@ -28,6 +29,8 @@ window.LM = window.LM || {};
       ]
     },
     chars: "á é í ó ú ü ñ ¿ ¡".split(" "),
+    // Example rows in the flashcard import field (tab-separated: type, front, back)
+    importSample: "basic\tEstoy de acuerdo.\tI agree.\ncloze\tAyer {{fui}} al cine.",
     mistakesHeading: "Common mistakes",
     lab: { title: "Tense & Mood Lab" },
     reportUrl: "https://github.com/tiflejz5/spanish-levels-map/issues/new?labels=content&title=",
