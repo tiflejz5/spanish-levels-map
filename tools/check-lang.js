@@ -5,9 +5,11 @@
  *   1. Polish letters ą ć ę ł ń ś ź ż (any case);
  *   2. the Polish opening quote „ (the closing ” is also the English closing quote, so it is allowed);
  *   3. a word from the stop list of frequent Polish UI and comment words, whole word, any case.
- * It also reports, as WARNINGS until stage 3 moves speech and answers into js/lang.js (LANGUAGE_RULES_ARE_ERRORS below):
- *   4. the locale codes en-GB / en-US / es-ES … in code (LM.fmt in js/utils.js may name en-US for dates);
- *   5. Spanish letters á é í ó ú ü ñ ¿ ¡ (ó counts here too) outside js/lang.js and js/config.js.
+ * Spec 09 rule 1 (since stage 3 also errors): target-language facts live only in js/lang.js, js/config.js and content/ —
+ *   4. locale codes (en-GB, en-US, es-ES, es-MX, es-419 …) in code (LM.fmt in js/utils.js may name en-US for dates);
+ *   5. Spanish letters á é í ó ú ü ñ ¿ ¡ (ó counts here too);
+ *   6. region names of the target language (Spain, Latin America, Mexico …) and frequent Spanish words (whole words).
+ *   Test data of language-dependent logic lives in tools/fixtures/lang/ (spec 09 rule 3), which is not scanned.
  *
  * False positives: tools/check-lang-allow.txt, one rule per line: <path glob relative to the repo> <regex>; "#" comments.
  * This file, the allow list and tools/extract-strings.js are skipped (they hold the patterns).
@@ -21,7 +23,7 @@ const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
-const LANGUAGE_RULES_ARE_ERRORS = false; // stage 3 turns rules 4 and 5 into errors
+const LANGUAGE_RULES_ARE_ERRORS = true; // rules 4–6 (spec 09 rule 1) are errors since stage 3
 
 const PL_LETTERS = /[ąćęłńśźżĄĆĘŁŃŚŹŻ]/;
 const PL_QUOTE = /„/;
@@ -34,8 +36,11 @@ const STOP_WORDS = [
   "tak", "jesli", "zeby", "przy", "bez", "dla", "pusty", "pusta", "strona", "podstrona", "profil", "postep", "uwaga", "poprawn\\w*"
 ];
 const STOP = new RegExp("(^|[^\\p{L}\\p{N}_])(" + STOP_WORDS.join("|") + ")(?=$|[^\\p{L}\\p{N}_])", "iu");
-const LOCALE = /\b(en-GB|en-US|es-ES|es-MX|es-US|es-419|pl-PL)\b/;
+const LOCALE = /\b(en-GB|en-US|es-ES|es-MX|es-US|es-AR|es-CO|es-419|pl-PL)\b/;
 const ES_LETTERS = /[áéíóúüñÁÉÍÓÚÜÑ¿¡]/;
+// Region names and frequent Spanish words that never occur in English code or comments (whole words)
+const ES_WORDS = new RegExp("(^|[^\\p{L}\\p{N}_])(Spain|Latin America|Mexico|Argentina|Colombia|Castilian|castellano|espa\\w*ol|hola|gracias|" +
+  "estoy|est[aá]s|gusta|gustan|quiero|tengo|tienes|pero|muy|usted|ustedes|vosotros|nosotros|hermano|hermana|ciudad|ayer|ma[nñ]ana|acuerdo)(?=$|[^\\p{L}\\p{N}_])", "iu");
 
 const SKIP_DIRS = ["fixtures", "vendor", "node_modules"];
 const SKIP_FILES = ["tools/check-lang.js", "tools/extract-strings.js", "tools/check-lang-allow.txt"];
@@ -85,6 +90,7 @@ function check() {
       let warn = null;
       if (!isLang && LOCALE.test(line) && !(r === "js/utils.js" && /en-US/.test(line))) warn = "locale code " + LOCALE.exec(line)[1];
       else if (!isLang && !why && ES_LETTERS.test(line)) warn = "Spanish letter outside js/lang.js and js/config.js";
+      else if (!isLang && !why && ES_WORDS.test(line)) warn = "target-language fact \"" + ES_WORDS.exec(line)[2] + "\" outside js/lang.js and js/config.js";
       if (warn && !allowed()) (LANGUAGE_RULES_ARE_ERRORS ? errors : warnings).push({ at: at, why: warn, line: line.trim() });
     });
   });
@@ -101,14 +107,14 @@ if (require.main === module) {
   const res = check();
   const list = process.argv.indexOf("--list") !== -1;
   if (res.warnings.length) {
-    console.log("Warnings (become errors in stage 3): " + res.warnings.length);
+    console.log("Warnings: " + res.warnings.length);
     if (list) res.warnings.forEach(function (w) { console.log("  " + w.at + "  " + w.why + "  | " + w.line.slice(0, 140)); });
     else summary(res.warnings).forEach(function (l) { console.log(l); });
   }
   if (!res.errors.length) { console.log("check:lang: OK"); process.exit(0); }
   if (list) res.errors.forEach(function (e) { console.log("  " + e.at + "  " + e.why + "  | " + e.line.slice(0, 140)); });
   else summary(res.errors).forEach(function (l) { console.log(l); });
-  console.error("check:lang: " + res.errors.length + " lines with Polish text");
+  console.error("check:lang: " + res.errors.length + " lines with Polish text or target-language facts outside js/lang.js and js/config.js");
   process.exit(1);
 }
 
