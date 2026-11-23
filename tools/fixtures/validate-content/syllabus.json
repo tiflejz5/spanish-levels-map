@@ -1,0 +1,161 @@
+{
+ "lang": "es",
+ "categories": {
+  "verbs": "Verbs",
+  "grammar": "Grammar",
+  "functions": "Communication",
+  "vocabulary": "Vocabulary"
+ },
+ "levels": [
+  {
+   "id": "A1",
+   "land": "Land",
+   "goal": "Goal",
+   "units": [
+    {
+     "id": "a1-u1",
+     "title": "Unit",
+     "topics": [
+      {
+       "id": "a1-verbs-test",
+       "category": "verbs",
+       "title": "Test",
+       "example": "x"
+      },
+      {
+       "id": "a1-grammar-test",
+       "category": "grammar",
+       "title": "Test",
+       "example": "x"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "A2",
+   "land": "Land",
+   "goal": "Goal",
+   "units": [
+    {
+     "id": "a2-u1",
+     "title": "Unit",
+     "topics": [
+      {
+       "id": "a2-verbs-test",
+       "category": "verbs",
+       "title": "Test",
+       "example": "x"
+      },
+      {
+       "id": "a2-grammar-test",
+       "category": "grammar",
+       "title": "Test",
+       "example": "x"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "B1",
+   "land": "Land",
+   "goal": "Goal",
+   "units": [
+    {
+     "id": "b1-u1",
+     "title": "Unit",
+     "topics": [
+      {
+       "id": "b1-verbs-test",
+       "category": "verbs",
+       "title": "Test",
+       "example": "x"
+      },
+      {
+       "id": "b1-grammar-test",
+       "category": "grammar",
+       "title": "Test",
+       "example": "x"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "B2",
+   "land": "Land",
+   "goal": "Goal",
+   "units": [
+    {
+     "id": "b2-u1",
+     "title": "Unit",
+     "topics": [
+      {
+       "id": "b2-verbs-test",
+       "category": "verbs",
+       "title": "Test",
+       "example": "x"
+      },
+      {
+       "id": "b2-grammar-test",
+       "category": "grammar",
+       "title": "Test",
+       "example": "x"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C1",
+   "land": "Land",
+   "goal": "Goal",
+   "units": [
+    {
+     "id": "c1-u1",
+     "title": "Unit",
+     "topics": [
+      {
+       "id": "c1-verbs-test",
+       "category": "verbs",
+       "title": "Test",
+       "example": "x"
+      },
+      {
+       "id": "c1-grammar-test",
+       "category": "grammar",
+       "title": "Test",
+       "example": "x"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "C2",
+   "land": "Land",
+   "goal": "Goal",
+   "units": [
+    {
+     "id": "c2-u1",
+     "title": "Unit",
+     "topics": [
+      {
+       "id": "c2-verbs-test",
+       "category": "verbs",
+       "title": "Test",
+       "example": "x"
+      },
+      {
+       "id": "c2-grammar-test",
+       "category": "grammar",
+       "title": "Test",
+       "example": "x"
+      }
+     ]
+    }
+   ]
+  }
+ ]
+}

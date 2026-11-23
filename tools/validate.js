@@ -1,7 +1,8 @@
 /*
  * validate.js — `npm run validate`: every validator, without writing anything.
  *
- *   1. tools/validate-*.js listed in VALIDATORS (content rules, ported from the reference waliduj-*.js)
+ *   1. tools/validate-*.js listed in VALIDATORS: validate-exercises.js (port of the reference exercise validator) and
+ *      validate-content.js (every rule of docs/plan/scripts/validate_plan.py + the heuristics of spec 06 E11)
  *   2. the structural checks of tools/build.js (syllabus, pages ↔ syllabus, quizzes, decks, placement, sets) in --check mode
  *
  * Validators of the reference that are not here yet, and why, are listed in SKIPPED and printed at the end.
@@ -11,11 +12,11 @@
 const path = require("path");
 const cp = require("child_process");
 
-const VALIDATORS = ["validate-exercises.js"];
+const VALIDATORS = ["validate-exercises.js", "validate-content.js"];
 
 const SKIPPED = [
-  "rules of docs/plan/scripts/validate_plan.py and spec 06 E11 (pages, quizzes, placement pool, decks, target-language checks): stage 4",
-  "deck rules (reference deck validator: English theme and exam decks of spec v6 15): replaced by the spec 07 §7 rules in stage 4",
+  "deck rules of the reference deck validator (English theme and exam decks of spec v6 15): replaced by the spec 07 §7 rules in tools/validate-content.js",
+
   "phrase bank (reference phrase validator): no content/writing/phrases.json yet (stage X of B1)",
   "speaking trainers and model essays (reference validators): exams, stage E",
   "trail (reference trail validator): replaced; the trail is generated from the syllabus by tools/build/trail.js (E9), which checks content/trail-overrides.json",

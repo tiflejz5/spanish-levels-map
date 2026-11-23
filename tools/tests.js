@@ -2713,5 +2713,61 @@ console.log("\nEnglish helpers: LM.plural and LM.fmt (spec 04 §1)");
   });
 })();
 
+console.log("\nValidators (spec 06 E11: tools/validate-content.js = validate_plan.py + heuristics)");
+(function () {
+  const cp = require("child_process");
+  const ROOT = path.join(__dirname, "..");
+  function runNode(dir) {
+    const r = cp.spawnSync(process.execPath, [path.join(ROOT, "tools", "validate-content.js"), dir], { encoding: "utf8" });
+    return { status: r.status, out: (r.stdout || "") + (r.stderr || "") };
+  }
+  function runPython(dir) {
+    for (const exe of ["python3", "python"]) {
+      const r = cp.spawnSync(exe, [path.join(ROOT, "docs", "plan", "scripts", "validate_plan.py"), dir], { encoding: "utf8", env: Object.assign({}, process.env, { PYTHONUTF8: "1" }) });
+      if (!r.error && /topics/.test(r.stdout || "")) return { status: r.status, out: r.stdout };
+    }
+    return null;
+  }
+  /** "#n" of every message of a severity in a validator output (ERROR / warn). */
+  function itemsWith(out, level) {
+    const re = new RegExp("^" + level + "\\s+.*? #(\\d+):", "gm"); // paths may contain spaces
+    const s = new Set(); let m;
+    while ((m = re.exec(out))) s.add(Number(m[1]));
+    return Array.from(s).sort(function (a, b) { return a - b; });
+  }
+  const FIXTURE = path.join(ROOT, "tools", "fixtures", "validate-content");
+  test("docs/plan (syllabus + examples): 0 errors and 0 warnings in Node", function () {
+    const r = runNode(path.join(ROOT, "docs", "plan"));
+    assert.strictEqual(r.status, 0, r.out);
+    assert.ok(/0 error\(s\), 0 warning\(s\)/.test(r.out), r.out);
+  });
+  test("content/: 0 errors in Node (the sample placement pool shape is a warning until STRICT)", function () {
+    const r = runNode(path.join(ROOT, "content"));
+    assert.strictEqual(r.status, 0, r.out);
+  });
+  test("fixture: every broken item is reported with the right severity, the clean ones are silent", function () {
+    const r = runNode(FIXTURE);
+    assert.strictEqual(r.status, 1);
+    assert.deepStrictEqual(itemsWith(r.out, "ERROR"), [4, 5, 6, 7]);
+    assert.deepStrictEqual(itemsWith(r.out, "warn"), [1, 2, 3, 6]);
+    [/#1: .*subject pronoun/, /#2: .*gender/, /#3: .*you \(plural\)/, /#4: characters outside/, /#5: duplicate options \(after normalisation\)/,
+      /#5: optionNotes length/, /#6: correct must be an option index/, /#7: paradigm: at least 2 cells to fill/].forEach(function (re) {
+      assert.ok(re.test(r.out), "missing " + re);
+    });
+  });
+  const py = runPython(path.join(ROOT, "docs", "plan"));
+  test("Python and Node agree: docs/plan 0 errors; on the fixture the items with errors match (Python skipped when not installed)", function () {
+    if (!py) { console.log("       (python not found: agreement not checked)"); return; }
+    assert.strictEqual(py.status, 0, py.out);
+    const pf = runPython(FIXTURE);
+    const nodeErr = itemsWith(runNode(FIXTURE).out, "ERROR");
+    // Node adds E11 rule 4 (duplicates after normalisation: item 5 has a second error); the items with errors are the same
+    assert.deepStrictEqual(itemsWith(pf.out, "ERROR"), nodeErr);
+  });
+})();
+
 console.log("\nResult: " + passed + " ok, " + failures.length + " failed");
+
+
+
 if (failures.length) process.exit(1);
