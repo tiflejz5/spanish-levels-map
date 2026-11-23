@@ -1,0 +1,62 @@
+{
+  "about": "Exercise bank for the engine tests in tools/tests.js (all item types, three topics). Test data only, never shipped.",
+  "sets": [
+    {
+      "id": "fx-ser-estar-1",
+      "topic": "fx-ser-estar",
+      "items": [
+        { "id": "fx-ser-estar-1-01", "type": "multiple-choice", "prompt": "Mi hermana ___ médica.", "options": ["es", "está", "son", "están"], "correct": 0,
+          "optionNotes": [null, "Estar is for states, not professions.", "Son is plural.", "Están is plural."] },
+        { "id": "fx-ser-estar-1-02", "type": "short-answer", "prompt": "¿Dónde ___ (estar) las llaves?", "accepted": ["están"] },
+        { "id": "fx-ser-estar-1-03", "type": "gap-fill", "text": "Hoy {{1}} cansada, pero normalmente {{2}} muy activa.", "gaps": [{ "accepted": ["estoy"] }, { "accepted": ["soy"] }] },
+        { "id": "fx-ser-estar-1-04", "type": "reorder", "answers": ["¿Dónde está la estación de tren?"] },
+        { "id": "fx-ser-estar-1-05", "type": "find-error", "tokens": ["La", "fiesta", "está", "en", "mi", "casa."], "errorRange": [2, 2], "fixes": ["es"] },
+        { "id": "fx-ser-estar-1-06", "type": "translate", "source": "My parents are at home.", "accepted": ["Mis padres están en casa."] }
+      ]
+    },
+    {
+      "id": "fx-preterito-1",
+      "topic": "fx-preterito",
+      "items": [
+        { "id": "fx-preterito-1-01", "type": "multiple-choice", "prompt": "Ayer ___ con Lucía.", "options": ["comí", "como", "comía", "comeré"], "correct": 0 },
+        { "id": "fx-preterito-1-02", "type": "transformation", "source": "Llegué a Madrid hace dos años.", "keyword": "LLEVO", "before": "", "after": "en Madrid.",
+          "answers": ["llevo dos años"], "wordLimit": [2, 4] },
+        { "id": "fx-preterito-1-03", "type": "transformation", "source": "Empecé a estudiar español hace tres meses.", "keyword": "DESDE", "before": "Estudio español", "after": "",
+          "answers": ["desde hace tres meses"], "parts": [["desde hace"], ["tres meses"]], "wordLimit": [3, 5] },
+        { "id": "fx-preterito-1-04", "type": "dictation", "text": "El sábado pasado fuimos a la playa con unos amigos.", "accepted": [] },
+        { "id": "fx-preterito-1-05", "type": "translate", "source": "I didn't go to work yesterday.", "accepted": ["Ayer no fui a trabajar.", "No fui a trabajar ayer.", "Ayer no fui al trabajo."] },
+        { "id": "fx-preterito-1-06", "type": "gap-fill", "text": "Anoche {{1}} (nosotros, cenar) en un restaurante y después {{2}} (dar) un paseo.", "gaps": [{ "accepted": ["cenamos"] }, { "accepted": ["dimos"] }] }
+      ]
+    },
+    {
+      "id": "fx-gustar-1",
+      "topic": "fx-gustar",
+      "items": [
+        { "id": "fx-gustar-1-01", "type": "match", "pairs": [["Me encanta.", "I love it."], ["Me gusta.", "I like it."], ["No me gusta nada.", "I don't like it at all."]], "extraRight": ["I hate it."] },
+        { "id": "fx-gustar-1-02", "type": "short-answer", "prompt": "A mis padres les ___ (gustar) viajar.", "accepted": ["gusta"] },
+        { "id": "fx-gustar-1-03", "type": "reorder", "answers": ["A Carlos le gusta mucho el cine."], "extraTokens": ["les"] },
+        { "id": "fx-gustar-1-04", "type": "multiple-choice", "prompt": "¿___ gustan las películas de miedo?", "options": ["Te", "Tú", "Ti"], "correct": 0 },
+        { "id": "fx-gustar-1-05", "type": "translate", "source": "We love this city.", "accepted": ["Nos encanta esta ciudad."] },
+        { "id": "fx-gustar-1-06", "type": "find-error", "tokens": ["Me", "gustan", "los", "gatos."], "noError": true }
+      ]
+    }
+  ],
+  "cases": {
+    "reorderDiff": { "item": "fx-ser-estar-1-04", "words": ["dónde", "la", "está", "estación", "de", "tren"], "at": 1 },
+    "gapFill": { "item": "fx-preterito-1-06", "half": ["Cenamos", "damos"], "accents": ["cenamos", "dímos"] },
+    "match": { "item": "fx-gustar-1-01" },
+    "transformation": {
+      "plain": "fx-preterito-1-02", "plainOk": ["Llevo dos años", "LLEVO DOS AÑOS"], "plainAccents": "llevo dos anos",
+      "tooLong": "llevo ya más de dos años", "tooLongWords": 6, "noKeyword": "hace dos años",
+      "parts": "fx-preterito-1-03", "partial": "desde hace tres semanas", "full": "desde hace tres meses"
+    },
+    "translate": {
+      "item": "fx-preterito-1-05",
+      "ok": ["ayer no fui a trabajar", "No fui a trabajar ayer!", "¡Ayer no fui al trabajo!"],
+      "accents": "Ayer no fuí a trabajar.",
+      "missing": { "text": "Ayer fui a trabajar.", "word": "no", "closest": 0 },
+      "typo": { "text": "No fui a trabjar ayer.", "closest": 1 }
+    },
+    "dictation": { "item": "fx-preterito-1-04", "ok": "el sábado pasado fuimos a la playa con unos amigos", "wrong": "el sabado pasado fuimos a la playa con amigos" }
+  }
+}
