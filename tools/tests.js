@@ -14,6 +14,7 @@ const assert = require("assert");
 const path = require("path");
 
 global.window = global;
+require(path.join(__dirname, "..", "js", "lang.js"));
 require(path.join(__dirname, "..", "js", "learning.js"));
 require(path.join(__dirname, "..", "js", "exercise-logic.js"));
 require(path.join(__dirname, "..", "js", "learning-stats.js"));
@@ -28,19 +29,6 @@ const X = global.LM.exLogic;
 
 let passed = 0;
 const failures = [];
-// Tests that still read the English content of the reference app (reference/english-levels-map,
-// git-ignored, read-only). Without that clone they are skipped. Stage 3 replaces them with Spanish fixtures.
-const LEGACY_ROOT = process.env.LM_LEGACY_ROOT || path.join(__dirname, "..", "reference", "english-levels-map");
-const LEGACY = require("fs").existsSync(path.join(LEGACY_ROOT, "niezbednik", "index.json"));
-let skipped = 0;
-function legacyJson(parts, fallback) {
-  if (!LEGACY) return fallback;
-  return JSON.parse(require("fs").readFileSync(path.join.apply(path, [LEGACY_ROOT].concat(parts)), "utf8").replace(/^﻿/, ""));
-}
-function legacyTest(name, fn) {
-  if (!LEGACY) { skipped++; console.log("  skip " + name + " (no reference content)"); return; }
-  test(name, fn);
-}
 function test(name, fn) {
   try { fn(); passed++; console.log("  ok  " + name); } catch (e) { failures.push(name); console.log("  FAIL " + name + "\n       " + e.message); }
 }
@@ -306,176 +294,14 @@ test("simulation (small pool, 2 questions per level): the result does not \"drif
   }
 });
 
-console.log("\nExercise engine");
+console.log("\nExercise engine (bank: tools/fixtures/lang/exercises.json)");
 const fs = require("fs");
-const SETS_DIR = path.join(LEGACY_ROOT, "cwiczenia", "tematy");
-const exBank = (LEGACY ? fs.readdirSync(SETS_DIR) : []).filter(function (f) { return /\.json$/.test(f); })
-  .map(function (f) { return JSON.parse(fs.readFileSync(path.join(SETS_DIR, f), "utf8")); });
-const allItems = [].concat.apply([], exBank.map(function (s) { return s.items.map(function (it) { return Object.assign({ topic: s.topic }, it); }); }));
+const FX_DIR = path.join(__dirname, "fixtures", "lang");
+const FX = JSON.parse(fs.readFileSync(path.join(FX_DIR, "lang.json"), "utf8"));
+const BANK = JSON.parse(fs.readFileSync(path.join(FX_DIR, "exercises.json"), "utf8"));
+const allItems = [].concat.apply([], BANK.sets.map(function (s) { return s.items.map(function (it) { return Object.assign({ topic: s.topic }, it); }); }));
+function bankItem(id) { const it = allItems.find(function (x) { return x.id === id; }); assert.ok(it, "no fixture item " + id); return it; }
 function seeded(seed) { let x = seed; return function () { x = (x * 16807) % 2147483647; return (x - 1) / 2147483646; }; }
-
-legacyTest("normalize: spaces, apostrophes, final punctuation, case; contractions not expanded", function () {
-  assert.strictEqual(X.normalize("  I  Didn’t   go. "), "i didn't go");
-  assert.strictEqual(X.normalize("Really?!"), "really");
-  assert.notStrictEqual(X.normalize("I'm"), X.normalize("I am"));
-});
-legacyTest("prepareChoice: the right answer and the notes follow their option after shuffling", function () {
-  const item = allItems.find(function (it) { return it.type === "multiple-choice" && it.optionNotes; });
-  for (let s = 1; s < 30; s++) {
-    const p = X.prepareChoice(item, seeded(s));
-    assert.strictEqual(p.options[p.correct].original, item.correct);
-    assert.strictEqual(p.options[p.correct].note, null);
-    p.options.forEach(function (o) { assert.strictEqual(o.text, item.options[o.original]); });
-  }
-  const fixed = X.prepareChoice(Object.assign({}, item, { fixedOrder: true }), seeded(3));
-  assert.deepStrictEqual(fixed.options.map(function (o) { return o.original; }), item.options.map(function (_, i) { return i; }));
-});
-legacyTest("reorderTokens: never in the right order at once, the same set of words", function () {
-  allItems.filter(function (it) { return it.type === "reorder"; }).forEach(function (it) {
-    for (let s = 1; s < 40; s++) {
-      const t = X.reorderTokens(it, seeded(s)).map(function (x) { return x.text; });
-      assert.ok(!X.evaluate(it, { words: t }).correct, it.id + " given in the right order");
-      assert.deepStrictEqual(t.slice().sort(), X.answerTokens(it.answers[0]).concat(it.extraTokens || []).sort());
-    }
-  });
-});
-legacyTest("evaluate: the model answer of every item of the reference topic sets is correct", function () {
-  assert.ok(allItems.length >= 60);
-  allItems.forEach(function (it) {
-    const r = X.evaluate(it, modelAnswerOf(it));
-    assert.ok(r.correct && r.points === r.max && r.max === X.maxPoints(it), it.id);
-  });
-});
-test("evaluate: find-error tells a wrong fragment from a wrong fix", function () {
-  const it = { type: "find-error", tokens: ["I", "buyed", "a", "bike."], errorRange: [1, 1], fixes: ["bought"] };
-  assert.strictEqual(X.evaluate(it, { range: [2, 2], fix: "bought" }).rangeOk, false);
-  const r = X.evaluate(it, { range: [1, 1], fix: "buy" });
-  assert.ok(r.rangeOk && !r.fixOk && !r.correct);
-  assert.ok(!X.evaluate(it, { noError: true }).correct);
-  assert.ok(X.evaluate({ type: "find-error", tokens: ["Ok."], noError: true }, { noError: true }).correct);
-});
-test("evaluate: short-answer — case does not matter, a typo = 0 points with a note", function () {
-  const it = { type: "short-answer", prompt: "My mum ___ in a hospital.", accepted: ["works"] };
-  assert.ok(X.evaluate(it, { text: " Works " }).correct);
-  const one = X.evaluate(it, { text: "work" });
-  assert.ok(!one.correct && one.spelling);
-  assert.ok(!X.evaluate(it, { text: "worked" }).spelling); // 2 changes — no note
-});
-legacyTest("reorder: pointing to the first difference", function () {
-  const it = { type: "reorder", answers: ["I didn't go to school yesterday."] };
-  assert.strictEqual(X.firstDifference(it, ["i", "didn't", "to", "go", "school", "yesterday"]), 2);
-});
-/** An answer to an item of an old type: right or wrong (for the points regression test). */
-function oldTypeAnswer(it, ok) {
-  if (it.type === "multiple-choice") return { chosen: ok ? it.correct : (it.correct + 1) % it.options.length };
-  if (it.type === "reorder") return { words: ok ? X.answerTokens(it.answers[0]) : X.answerTokens(it.answers[0]).reverse() };
-  if (it.type === "find-error") return ok ? (it.noError ? { noError: true } : { range: it.errorRange.slice(), fix: it.fixes[0] }) : (it.noError ? { range: [0, 0], fix: "x" } : { noError: true });
-  return { text: ok ? it.accepted[0] : "zzz" };
-}
-legacyTest("points: the score of every set of old types equals the number of right items", function () {
-  const OLD = ["multiple-choice", "reorder", "find-error", "short-answer"];
-  // Topic sets and exam sets of the reference app (in the engine format)
-  const NZ = path.join(LEGACY_ROOT, "niezbednik");
-  const examSets = [];
-  fs.readdirSync(NZ).forEach(function (d) {
-    const dir = path.join(NZ, d, "cwiczenia");
-    if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) return;
-    fs.readdirSync(dir).filter(function (f) { return /\.json$/.test(f); }).forEach(function (f) {
-      const s = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8").replace(/^﻿/, ""));
-      if (Array.isArray(s.items) && s.items.length && s.items[0].type) examSets.push(s);
-    });
-  });
-  const sets = exBank.concat(examSets).filter(function (s) { return s.items.every(function (it) { return OLD.indexOf(it.type) !== -1; }); });
-  assert.ok(sets.length >= 25, "too few sets: " + sets.length);
-  sets.forEach(function (s) {
-    for (let seed = 1; seed <= 12; seed++) {
-      const rng = seeded(seed);
-      const results = s.items.map(function (it) {
-        const ok = seed === 1 ? true : seed === 2 ? false : rng() < 0.5;
-        return { item: it, res: X.evaluate(it, oldTypeAnswer(it, ok)) };
-      });
-      // The old score: the number of right items / the number of items
-      const before = { score: results.filter(function (r) { return r.res.correct; }).length, total: s.items.length };
-      assert.deepStrictEqual(X.sessionScore(results), before, s.id + " (seed " + seed + ")");
-      results.forEach(function (r) {
-        assert.strictEqual(X.maxPoints(r.item), 1);
-        assert.strictEqual(r.res.max, 1);
-        assert.strictEqual(r.res.points, r.res.correct ? 1 : 0, r.item.id);
-      });
-    }
-  });
-});
-legacyTest("points: sessionScore adds up points and maximums, skips items with max = 0", function () {
-  const r = X.sessionScore([
-    { item: { type: "short-answer" }, res: { correct: true, points: 1, max: 1 } },
-    { item: { type: "x" }, res: { correct: false, points: 1, max: 2 } },
-    { item: { type: "x" }, res: { correct: false, points: 0, max: 0, skipped: true } },
-    { item: { type: "multiple-choice" }, res: null }
-  ]);
-  assert.deepStrictEqual(r, { score: 2, total: 4 });
-});
-// The Part 4 scoring before it moved to exercise-logic.js (a copy from the reference) — the reference for the compatibility test
-const OLD_PART4 = (function () {
-  function norm(text) { return String(text || "").toUpperCase().replace(/[’‘`´]/g, "'").replace(/[^\p{L}\p{N}'\s]/gu, "").replace(/\s+/g, " ").trim(); }
-  const CONTRACTION = /^(.+?)(N'T|'S|'RE|'VE|'D|'LL|'M)$/;
-  function tokens(text) { const out = []; norm(text).split(" ").filter(Boolean).forEach(function (w) { const m = CONTRACTION.exec(w); if (m) out.push(m[1], m[2]); else out.push(w); }); return out; }
-  function findSeq(hay, needle, from) { const hits = []; if (!needle.length) return hits; for (let i = from || 0; i + needle.length <= hay.length; i++) { let ok = true; for (let j = 0; j < needle.length; j++) { if (hay[i + j] !== needle[j]) { ok = false; break; } } if (ok) hits.push(i); } return hits; }
-  function plural(n, one, few, many) { if (n === 1) return one; const d = n % 10, t = n % 100; return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many; }
-  function itemMax(item) { return item.parts.length === 1 ? 2 : item.parts.length; }
-  return function (item, answer, limit) {
-    const lim = Array.isArray(limit) ? limit : [3, 6];
-    const t = tokens(answer);
-    const parts = item.parts.map(function () { return false; });
-    if (!t.length) return { score: 0, parts: parts, msg: "No answer." };
-    if (t.length < lim[0] || t.length > lim[1]) return { score: 0, parts: parts, msg: "Use " + lim[0] + "–" + lim[1] + " words (you have " + t.length + " " + (t.length === 1 ? "word" : "words") + "; contractions count as two)." };
-    if (!findSeq(t, tokens(item.keyword), 0).length) return { score: 0, parts: parts, msg: "Use the key word without changing it (" + item.keyword + ")." };
-    let cursor = 0;
-    item.parts.forEach(function (variants, k) {
-      let bestEnd = -1;
-      variants.forEach(function (variant) { const v = tokens(variant); const starts = findSeq(t, v, cursor); if (starts.length) { const end = starts[0] + v.length; if (bestEnd === -1 || end < bestEnd) bestEnd = end; } });
-      if (bestEnd !== -1) { parts[k] = true; cursor = bestEnd; }
-    });
-    return { score: parts.filter(Boolean).length * (itemMax(item) / item.parts.length), parts: parts, msg: null };
-  };
-})();
-legacyTest("transformations: the shared scoring = the old Part 4 scoring on all real items", function () {
-  const NZ = path.join(LEGACY_ROOT, "niezbednik");
-  const sets = [];
-  fs.readdirSync(NZ).forEach(function (d) {
-    const dir = path.join(NZ, d, "cwiczenia");
-    if (!fs.existsSync(dir) || !fs.statSync(dir).isDirectory()) return;
-    fs.readdirSync(dir).filter(function (f) { return /\.json$/.test(f); }).forEach(function (f) {
-      const s = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8").replace(/^﻿/, ""));
-      if (s.type === "transformation") sets.push(s);
-    });
-  });
-  assert.ok(sets.length >= 10, "too few Part 4 sets: " + sets.length);
-  let checked = 0;
-  sets.forEach(function (s) {
-    const lim = Array.isArray(s.wordLimit) ? s.wordLimit : undefined;
-    s.items.forEach(function (it) {
-      const first = it.parts.map(function (p) { return p[0]; }).join(" ");
-      const answers = [
-        it.model, it.model.toLowerCase(), first, "", "   ",
-        it.model + " and so on now", it.model.split(" ").slice(0, 2).join(" "),
-        it.model.split(" ").filter(function (w) { return w.toUpperCase() !== it.keyword.toUpperCase(); }).concat("xx").join(" "),
-        it.model.replace(new RegExp("\\b" + it.keyword + "\\b", "i"), it.keyword + "S"),
-        it.parts[0][0] + " xx yy", "xx " + it.parts[it.parts.length - 1][0], it.parts[it.parts.length - 1][0] + " " + it.parts[0][0],
-        it.model.replace(/n't/i, " not").replace(/'s\b/i, " is"), it.model + ".", "“" + it.model + "”"
-      ];
-      it.parts.forEach(function (p) { p.forEach(function (v) { answers.push(v + " " + it.keyword); answers.push(it.keyword + " " + v); }); });
-      answers.forEach(function (a) {
-        assert.deepStrictEqual(X.scoreTransformationParts(it, a, lim), OLD_PART4(it, a, lim), s.id + " #" + it.n + ": “" + a + "”");
-        checked++;
-      });
-      assert.strictEqual(X.scoreTransformationParts(it, it.model, lim).score, 2, s.id + " #" + it.n + " model < 2 points");
-    });
-  });
-  assert.ok(checked > 500);
-});
-// ---------- Item types of pack v6 ----------
-const PILOT = legacyJson(["docs", "rozbudowa-v6", "przyklady", "cwiczenia", "v6-pilot-nowe-typy.json"], { items: [] }).items;
-function pilot(id) { return PILOT.find(function (it) { return it.id === id; }); }
 /** The model answer of an item (every type) in the evaluate format. */
 function modelAnswerOf(it) {
   if (it.type === "multiple-choice") return { chosen: it.correct };
@@ -488,38 +314,137 @@ function modelAnswerOf(it) {
   return { text: it.accepted[0] };
 }
 
-legacyTest("maxPoints: gaps and pairs one point each, transformation with parts 2, the rest 1", function () {
-  assert.strictEqual(X.maxPoints(pilot("v6-pilot-01")), 2);
-  assert.strictEqual(X.maxPoints(pilot("v6-pilot-03")), 4);
-  assert.strictEqual(X.maxPoints(pilot("v6-pilot-05")), 1);
-  assert.strictEqual(X.maxPoints(pilot("v6-pilot-06")), 2);
-  assert.strictEqual(X.maxPoints(pilot("v6-pilot-07")), 1);
-  assert.strictEqual(X.maxPoints(pilot("v6-pilot-09")), 1);
+test("normalize = LM.lang.normalizeAnswer: spaces, apostrophes, final full stop, case; diacritics kept", function () {
+  FX.normalizeAnswer.forEach(function (c) { assert.strictEqual(X.normalize(c[0]), c[1], c[0]); });
 });
-legacyTest("new types: the model answer of every item of the sample file gives full points", function () {
-  PILOT.forEach(function (it) {
-    const r = X.evaluate(it, modelAnswerOf(it));
-    assert.ok(r.correct && r.points === X.maxPoints(it) && r.max === X.maxPoints(it), it.id + " " + JSON.stringify(r));
+test("prepareChoice: the right answer and the notes follow their option after shuffling", function () {
+  const item = allItems.find(function (it) { return it.type === "multiple-choice" && it.optionNotes; });
+  for (let s = 1; s < 30; s++) {
+    const p = X.prepareChoice(item, seeded(s));
+    assert.strictEqual(p.options[p.correct].original, item.correct);
+    assert.strictEqual(p.options[p.correct].note, null);
+    p.options.forEach(function (o) { assert.strictEqual(o.text, item.options[o.original]); });
+  }
+  const fixed = X.prepareChoice(Object.assign({}, item, { fixedOrder: true }), seeded(3));
+  assert.deepStrictEqual(fixed.options.map(function (o) { return o.original; }), item.options.map(function (_, i) { return i; }));
+});
+test("reorderTokens: never in the right order at once, the same set of words, no punctuation around the sentence", function () {
+  const items = allItems.filter(function (it) { return it.type === "reorder"; });
+  assert.ok(items.length >= 2);
+  items.forEach(function (it) {
+    const words = X.answerTokens(it.answers[0]);
+    assert.ok(/^\p{Ll}/u.test(words[0]) && /\p{L}$/u.test(words[words.length - 1]), it.id + ": " + words.join(" "));
+    for (let s = 1; s < 40; s++) {
+      const t = X.reorderTokens(it, seeded(s)).map(function (x) { return x.text; });
+      assert.ok(!X.evaluate(it, { words: t }).correct, it.id + " given in the right order");
+      assert.deepStrictEqual(t.slice().sort(), words.concat(it.extraTokens || []).sort());
+    }
   });
 });
-legacyTest("gap-fill: a point for each gap, a typo = 0 points with a note, case does not matter", function () {
-  const it = pilot("v6-pilot-02");
-  const half = X.evaluate(it, { texts: ["Was built", "has repaired"] });
+test("evaluate: the model answer of every fixture item gives full points", function () {
+  assert.ok(allItems.length >= 18);
+  allItems.forEach(function (it) {
+    const r = X.evaluate(it, modelAnswerOf(it));
+    assert.ok(r.correct && r.points === r.max && r.max === X.maxPoints(it), it.id + " " + JSON.stringify(r));
+  });
+});
+test("evaluate: the model answer of every item in content/exercises gives full points (types of the engine)", function () {
+  const dir = path.join(__dirname, "..", "content", "exercises");
+  let n = 0;
+  fs.readdirSync(dir).filter(function (f) { return /\.json$/.test(f); }).forEach(function (f) {
+    const set = JSON.parse(fs.readFileSync(path.join(dir, f), "utf8"));
+    (set.items || []).filter(function (it) { return X.TYPES.indexOf(it.type) !== -1; }).forEach(function (it) {
+      const r = X.evaluate(it, modelAnswerOf(it));
+      assert.ok(r.correct && r.points === r.max, f + " " + it.id + " " + JSON.stringify(r));
+      n++;
+    });
+  });
+  assert.ok(n > 0);
+});
+test("evaluate: find-error tells a wrong fragment from a wrong fix; the fix uses match", function () {
+  const it = bankItem("fx-ser-estar-1-05");
+  assert.strictEqual(X.evaluate(it, { range: [0, 0], fix: it.fixes[0] }).rangeOk, false);
+  const r = X.evaluate(it, { range: it.errorRange.slice(), fix: "zzz" });
+  assert.ok(r.rangeOk && !r.fixOk && !r.correct);
+  assert.ok(X.evaluate(it, { range: it.errorRange.slice(), fix: it.fixes[0].toUpperCase() }).correct);
+  assert.ok(!X.evaluate(it, { noError: true }).correct);
+  assert.ok(X.evaluate(bankItem("fx-gustar-1-06"), { noError: true }).correct);
+});
+test("evaluate: short-answer — case does not matter, an accents-only answer is not correct but gets the hint", function () {
+  const it = bankItem("fx-ser-estar-1-02");
+  assert.ok(X.evaluate(it, { text: " " + it.accepted[0].toUpperCase() + " " }).correct);
+  const acc = X.evaluate(it, { text: global.LM.lang.stripMarks(it.accepted[0]) });
+  assert.ok(!acc.correct && acc.near === "accents" && acc.closest === it.accepted[0], JSON.stringify(acc));
+  assert.ok(!X.evaluate(it, { text: "" }).answered);
+});
+test("reorder: pointing to the first difference", function () {
+  const c = BANK.cases.reorderDiff;
+  assert.strictEqual(X.firstDifference(bankItem(c.item), c.words), c.at);
+});
+test("points: the score of every set of one-point types equals the number of right items", function () {
+  const ONE = ["multiple-choice", "reorder", "find-error", "short-answer", "translate"];
+  const sets = BANK.sets.map(function (s) { return s.items.filter(function (it) { return ONE.indexOf(it.type) !== -1; }); });
+  /** A right or a wrong answer to a one-point item. */
+  function answer(it, ok) {
+    if (it.type === "multiple-choice") return { chosen: ok ? it.correct : (it.correct + 1) % it.options.length };
+    if (it.type === "reorder") return { words: ok ? X.answerTokens(it.answers[0]) : X.answerTokens(it.answers[0]).reverse() };
+    if (it.type === "find-error") return ok ? (it.noError ? { noError: true } : { range: it.errorRange.slice(), fix: it.fixes[0] }) : (it.noError ? { range: [0, 0], fix: "x" } : { noError: true });
+    return { text: ok ? it.accepted[0] : "zzz" };
+  }
+  sets.forEach(function (items, k) {
+    for (let seed = 1; seed <= 12; seed++) {
+      const rng = seeded(seed);
+      const results = items.map(function (it) {
+        const ok = seed === 1 ? true : seed === 2 ? false : rng() < 0.5;
+        return { item: it, res: X.evaluate(it, answer(it, ok)) };
+      });
+      const before = { score: results.filter(function (r) { return r.res.correct; }).length, total: items.length };
+      assert.deepStrictEqual(X.sessionScore(results), before, "set " + k + " (seed " + seed + ")");
+      results.forEach(function (r) {
+        assert.strictEqual(X.maxPoints(r.item), 1);
+        assert.strictEqual(r.res.points, r.res.correct ? 1 : 0, r.item.id);
+      });
+    }
+  });
+});
+test("points: sessionScore adds up points and maximums, skips items with max = 0", function () {
+  const r = X.sessionScore([
+    { item: { type: "short-answer" }, res: { correct: true, points: 1, max: 1 } },
+    { item: { type: "x" }, res: { correct: false, points: 1, max: 2 } },
+    { item: { type: "x" }, res: { correct: false, points: 0, max: 0, skipped: true } },
+    { item: { type: "multiple-choice" }, res: null }
+  ]);
+  assert.deepStrictEqual(r, { score: 2, total: 4 });
+});
+test("maxPoints: gaps and pairs one point each, transformation with parts 2, the rest 1", function () {
+  assert.strictEqual(X.maxPoints(bankItem("fx-ser-estar-1-03")), 2);
+  assert.strictEqual(X.maxPoints(bankItem("fx-gustar-1-01")), 3);
+  assert.strictEqual(X.maxPoints(bankItem("fx-preterito-1-02")), 1);
+  assert.strictEqual(X.maxPoints(bankItem("fx-preterito-1-03")), 2);
+  assert.strictEqual(X.maxPoints(bankItem("fx-preterito-1-05")), 1);
+  assert.strictEqual(X.maxPoints(bankItem("fx-preterito-1-04")), 1);
+});
+test("gap-fill: a point for each gap, near hints per gap, lenient accents, case does not matter", function () {
+  const c = BANK.cases.gapFill, it = bankItem(c.item);
+  const half = X.evaluate(it, { texts: c.half });
   assert.deepStrictEqual([half.points, half.max, half.correct], [1, 2, false]);
   assert.deepStrictEqual(half.gaps.map(function (g) { return g.correct; }), [true, false]);
-  const typo = X.evaluate(it, { texts: ["was bilt", ""] });
-  assert.ok(typo.gaps[0].spelling && !typo.gaps[0].correct && typo.answered);
+  assert.strictEqual(half.gaps[1].near, "typo");
+  const acc = X.evaluate(it, { texts: c.accents });
+  assert.ok(!acc.correct && acc.gaps[1].near === "accents" && acc.gaps[1].closest === it.gaps[1].accepted[0]);
+  const len = X.evaluate(it, { texts: c.accents }, { lenientAccents: true });
+  assert.ok(len.correct && len.lenient && len.points === 2 && len.gaps[1].near === "accents" && len.gaps[1].lenient);
   assert.ok(!X.evaluate(it, { texts: ["", " "] }).answered);
 });
-legacyTest("match: a point for each pair, extraRight is never right", function () {
-  const it = pilot("v6-pilot-03");
-  const r = X.evaluate(it, { pairs: { 0: it.pairs[0][1], 1: it.pairs[2][1], 2: it.pairs[1][1], 3: it.extraRight[0] } });
-  assert.deepStrictEqual([r.points, r.max, r.correct], [1, 4, false]);
-  assert.deepStrictEqual(r.pairs, [true, false, false, false]);
+test("match: a point for each pair, extraRight is never right", function () {
+  const it = bankItem(BANK.cases.match.item);
+  const r = X.evaluate(it, { pairs: { 0: it.pairs[0][1], 1: it.pairs[2][1], 2: it.extraRight[0] } });
+  assert.deepStrictEqual([r.points, r.max, r.correct], [1, 3, false]);
+  assert.deepStrictEqual(r.pairs, [true, false, false]);
   assert.ok(!X.evaluate(it, { pairs: {} }).answered);
 });
-legacyTest("prepareMatch: the right column always shuffled, with extraRight, nothing lost", function () {
-  PILOT.filter(function (it) { return it.type === "match"; }).forEach(function (it) {
+test("prepareMatch: the right column always shuffled, with extraRight, nothing lost", function () {
+  allItems.filter(function (it) { return it.type === "match"; }).forEach(function (it) {
     for (let s = 1; s < 60; s++) {
       const right = X.prepareMatch(it, seeded(s));
       assert.ok(!it.pairs.every(function (p, i) { return right[i].text === p[1]; }), it.id + " in the right order");
@@ -527,77 +452,61 @@ legacyTest("prepareMatch: the right column always shuffled, with extraRight, not
     }
   });
 });
-legacyTest("transformation: answers, contractions, word limit, key word; with parts — partial points", function () {
-  const it = pilot("v6-pilot-05");
-  assert.ok(X.evaluate(it, { text: "that I saw Tom was" }).correct);
-  assert.ok(X.evaluate(it, { text: "i SAW tom was" }).correct);
-  const long = X.evaluate(it, { text: "I saw Tom for the first time was" });
-  assert.ok(!long.correct && /2–5 words \(you have 8 words/.test(long.msg));
-  const kw = X.evaluate(it, { text: "I seen Tom was" });
-  assert.ok(!kw.correct && /key word without changing it \(SAW\)/.test(kw.msg));
-  assert.strictEqual(X.evaluate(it, { text: "I saw him was" }).points, 0);
-  const p = pilot("v6-pilot-06");
-  const one = X.evaluate(p, { text: "is said to being" });
+test("transformation: answers, case, word limit, key word, accents hint; with parts — partial points", function () {
+  const c = BANK.cases.transformation, it = bankItem(c.plain);
+  c.plainOk.forEach(function (a) { assert.ok(X.evaluate(it, { text: a }).correct, a); });
+  const long = X.evaluate(it, { text: c.tooLong });
+  assert.ok(!long.correct && new RegExp("you have " + c.tooLongWords + " words").test(long.msg), long.msg);
+  const kw = X.evaluate(it, { text: c.noKeyword });
+  assert.ok(!kw.correct && kw.msg.indexOf("(" + it.keyword + ")") !== -1, kw.msg);
+  const acc = X.evaluate(it, { text: c.plainAccents });
+  assert.ok(!acc.correct && acc.near === "accents", JSON.stringify(acc));
+  assert.ok(X.evaluate(it, { text: c.plainAccents }, { lenientAccents: true }).lenient);
+  const p = bankItem(c.parts);
+  const one = X.evaluate(p, { text: c.partial });
   assert.deepStrictEqual([one.points, one.max, one.correct], [1, 2, false]);
   assert.deepStrictEqual(one.parts, [true, false]);
-  assert.strictEqual(X.evaluate(p, { text: "is said to be" }).points, 2);
-  // a contraction = two words: "didn't" fits the limit like "did not"
-  const c = { type: "transformation", keyword: "NOT", answers: ["did not go"], wordLimit: [2, 3] };
-  assert.ok(X.evaluate({ type: "transformation", keyword: "DID", answers: ["did not go"], wordLimit: [2, 3] }, { text: "didn't go" }).correct);
-  assert.ok(/you have 4 words/.test(X.evaluate(c, { text: "didn't not go" }).msg));
+  assert.strictEqual(X.evaluate(p, { text: c.full }).points, 2);
+  assert.deepStrictEqual(X.trTokens("  a-b,  c ' d - e "), ["A-B", "C", "'", "D", "E"]);
 });
-test("normalizeSentence: contractions expanded on both sides, commas and apostrophes", function () {
-  const N = X.normalizeSentence;
-  assert.strictEqual(N("I don’t know, really."), "i do not know really");
-  assert.strictEqual(N("We won't go"), "we will not go");
-  assert.strictEqual(N("She can't swim"), "she cannot swim");
-  assert.strictEqual(N("They're here and we've seen it"), "they are here and we have seen it");
-  assert.strictEqual(N("I'll call, I'm sure"), "i will call i am sure");
-  assert.strictEqual(N("It isn't, is it?"), "it is not is it");
-  assert.strictEqual(N("Let's go!"), "let us go");
-  assert.strictEqual(N("  Hello ,  world  "), "hello world");
-  // 's and 'd are ambiguous — they stay, the comparison checks both expansions
-  assert.strictEqual(N("He's gone"), "he's gone");
-  assert.ok(X.sentenceVariants("He's gone").indexOf("he has gone") !== -1);
-  assert.ok(X.sentenceVariants("I'd go").indexOf("i would go") !== -1 && X.sentenceVariants("I'd go").indexOf("i had go") !== -1);
+test("normalizeSentence = LM.lang.normalizeSentence: the punctuation of the language goes, diacritics stay", function () {
+  FX.normalizeSentence.forEach(function (c) { assert.strictEqual(X.normalizeSentence(c[0]), c[1], c[0]); });
 });
-legacyTest("translate: match after normalizing (contractions, commas), I'd = I would, the possessive 's stays", function () {
-  const it = pilot("v6-pilot-07");
-  assert.ok(X.evaluate(it, { text: "if I had more time I'd learn to play the guitar" }).correct);
-  assert.ok(X.evaluate(it, { text: "If I had more time, I would learn to play the guitar!" }).correct);
-  assert.ok(!X.evaluate(it, { text: "If I have more time, I will learn to play the guitar." }).correct);
-  const pos = { type: "translate", accepted: ["This is John's car."] };
-  assert.ok(X.evaluate(pos, { text: "this is johns car" }).correct === false);
-  assert.ok(X.evaluate(pos, { text: "This is John’s car" }).correct);
-  assert.ok(X.evaluate({ type: "translate", accepted: ["She has gone home."] }, { text: "She's gone home" }).correct);
-  assert.ok(!X.evaluate({ type: "translate", accepted: ["She is at home."] }, { text: "" }).answered);
+test("translate: match after normalizing (case, opening and final marks), alternatives; accents → hint, lenient → correct", function () {
+  const c = BANK.cases.translate, it = bankItem(c.item);
+  c.ok.forEach(function (a) { assert.ok(X.evaluate(it, { text: a }).correct, a); });
+  const acc = X.evaluate(it, { text: c.accents });
+  assert.ok(!acc.correct && acc.near === "accents" && acc.closest === 0, JSON.stringify(acc));
+  const len = X.evaluate(it, { text: c.accents }, { lenientAccents: true });
+  assert.ok(len.correct && len.lenient && len.near === "accents");
+  assert.ok(!X.evaluate(it, { text: "" }).answered);
 });
-legacyTest("word-by-word comparison: missing, extra, swapped; the nearest variant; a typo", function () {
-  const d = X.wordDiff(["have", "you", "ever", "been", "to", "london"], ["have", "you", "been", "in", "to", "london", "yet"]);
-  assert.deepStrictEqual(d.ops.filter(function (o) { return o.op !== "same"; }), [
-    { op: "missing", word: "ever" }, { op: "extra", got: "in" }, { op: "extra", got: "yet" }
-  ]);
-  const r = X.wordDiff(["i", "went", "home"], ["i", "go", "home"]);
-  assert.deepStrictEqual(r.ops[1], { op: "replace", word: "went", got: "go" });
-  const it = pilot("v6-pilot-08");
-  const res = X.evaluate(it, { text: "Have you ever been in Londn?" });
-  assert.ok(!res.correct && res.spelling && res.closest === 1, JSON.stringify(res));
-  const miss = X.evaluate(it, { text: "Have you been to London?" });
-  assert.ok(!miss.spelling && miss.closest === 0 && miss.diff.some(function (o) { return o.op === "missing" && o.word === "ever"; }));
+test("word-by-word comparison: missing, extra, replaced on a 6-word sentence; the nearest variant; a typo", function () {
+  const w = FX.wordDiff;
+  const d = X.wordDiff(w.model.split(" "), w.got.split(" "));
+  assert.deepStrictEqual(d.ops.filter(function (o) { return o.op !== "same"; }), w.changes);
+  const low = X.wordDiff(w.model.toLowerCase().split(" "), w.got.split(" "));
+  assert.deepStrictEqual(low.ops.filter(function (o) { return o.op !== "same"; }), w.lowerChanges);
+  const c = BANK.cases.translate, it = bankItem(c.item);
+  const miss = X.evaluate(it, { text: c.missing.text });
+  assert.ok(!miss.correct && !miss.near && miss.closest === c.missing.closest && miss.diff.some(function (o) { return o.op === "missing" && o.word === c.missing.word; }), JSON.stringify(miss));
+  const typo = X.evaluate(it, { text: c.typo.text });
+  assert.ok(!typo.correct && typo.near === "typo" && typo.closest === c.typo.closest, JSON.stringify(typo));
 });
-legacyTest("dictation: text and variants from accepted; skipped (no voice) — 0 of 0, not counted", function () {
-  const it = pilot("v6-pilot-10");
-  assert.ok(X.evaluate(it, { text: "I have never eaten anything so spicy in my life" }).correct);
-  assert.ok(X.evaluate(it, { text: "ive never eaten anything so spicy in my life" }).correct === false);
+test("dictation: text and variants from accepted; skipped (no voice) — 0 of 0, not counted", function () {
+  const c = BANK.cases.dictation, it = bankItem(c.item);
+  assert.ok(X.evaluate(it, { text: c.ok }).correct);
+  assert.ok(!X.evaluate(it, { text: c.wrong }).correct);
   const s = X.evaluate(it, { skipped: true });
   assert.deepStrictEqual([s.points, s.max, s.skipped, s.correct], [0, 0, true, false]);
-  assert.deepStrictEqual(X.sessionScore([{ item: it, res: s }, { item: pilot("v6-pilot-03"), res: X.evaluate(pilot("v6-pilot-03"), modelAnswerOf(pilot("v6-pilot-03"))) }]), { score: 4, total: 4 });
+  const m = bankItem("fx-gustar-1-01");
+  assert.deepStrictEqual(X.sessionScore([{ item: it, res: s }, { item: m, res: X.evaluate(m, modelAnswerOf(m)) }]), { score: 3, total: 3 });
 });
-legacyTest("pickMix: even across topics, no repeats, a limit, a type filter, ≤ 2 of the same type in a row", function () {
+test("pickMix: even across topics, no repeats, a limit, a type filter, ≤ 2 of the same type in a row", function () {
   for (let s = 1; s < 30; s++) {
-    const m = X.pickMix(allItems, { count: 15 }, seeded(s));
-    assert.strictEqual(m.items.length, 15);
-    assert.strictEqual(new Set(m.items.map(function (x) { return x.id; })).size, 15);
+    const m = X.pickMix(allItems, { count: 9 }, seeded(s));
+    assert.strictEqual(m.items.length, 9);
+    assert.strictEqual(new Set(m.items.map(function (x) { return x.id; })).size, 9);
     const per = {};
     m.items.forEach(function (x) { per[x.topic] = (per[x.topic] || 0) + 1; });
     const counts = Object.keys(per).map(function (k) { return per[k]; });
@@ -611,11 +520,65 @@ legacyTest("pickMix: even across topics, no repeats, a limit, a type filter, ≤
   assert.ok(fe.items.every(function (x) { return x.type === "find-error"; }));
   assert.strictEqual(fe.items.length, fe.available);
 });
-legacyTest("pickMix: leaves out the items of the last session when the pool is big enough", function () {
-  const first = X.pickMix(allItems, { count: 10 }, seeded(7));
+test("pickMix: leaves out the items of the last session when the pool is big enough", function () {
+  const first = X.pickMix(allItems, { count: 6 }, seeded(7));
   const ids = first.items.map(function (x) { return x.id; });
-  const second = X.pickMix(allItems, { count: 10, exclude: ids }, seeded(8));
+  const second = X.pickMix(allItems, { count: 6, exclude: ids }, seeded(8));
   assert.ok(second.items.every(function (x) { return ids.indexOf(x.id) === -1; }));
+});
+
+console.log("\nLanguage layer: LM.lang and LM.exLogic.match (spec 05 §6, fixtures in tools/fixtures/lang/lang.json)");
+const LG = global.LM.lang;
+test("stripMarks and fold keep the length of the input", function () {
+  FX.stripMarks.forEach(function (c) { assert.strictEqual(LG.stripMarks(c[0]), c[1]); assert.strictEqual(LG.stripMarks(c[0]).length, c[0].length); });
+  FX.fold.forEach(function (c) { assert.strictEqual(LG.fold(c[0]), c[1]); assert.strictEqual(LG.fold(c[0]).length, c[0].length); });
+  assert.strictEqual(LG.stripMarks(null), "");
+});
+test("normalizeAnswer keeps diacritics; normalizeSentence strips the punctuation of the language", function () {
+  FX.normalizeAnswer.forEach(function (c) { assert.strictEqual(LG.normalizeAnswer(c[0]), c[1], c[0]); });
+  FX.normalizeSentence.forEach(function (c) { assert.strictEqual(LG.normalizeSentence(c[0]), c[1], c[0]); });
+  assert.deepStrictEqual(LG.variants("x"), ["x"]);
+});
+test("countWords", function () {
+  FX.countWords.forEach(function (c) { assert.strictEqual(LG.countWords(c[0]), c[1], c[0]); });
+});
+test("wordPattern matches whole words with diacritics and inner hyphens", function () {
+  const re = new RegExp("^" + LG.wordPattern + "$", "u");
+  FX.cloze.forEach(function (c) { assert.ok(re.test(c[1]), c[1]); });
+});
+test("match: exact, accents only, ending only, typo, nothing; sentences; closest and index", function () {
+  FX.match.forEach(function (c) {
+    const r = X.match(c.answer, c.accepted, { sentence: !!c.sentence });
+    const tag = JSON.stringify(c) + " → " + JSON.stringify(r);
+    assert.strictEqual(r.ok, !!c.ok, tag);
+    if (!c.ok) assert.strictEqual(r.near, c.near, tag);
+    if (c.closest) assert.strictEqual(r.closest, c.closest, tag);
+    if (c.index !== undefined) assert.strictEqual(r.index, c.index, tag);
+    if (c.answered === false) assert.strictEqual(r.answered, false, tag);
+  });
+  ["accents", "ending", "typo"].forEach(function (n) { assert.ok(X.nearText(n).length > 5, n); });
+  assert.strictEqual(X.nearText(null), "");
+});
+test("match: lenient mode — an accents-only answer counts, the reminder stays; other near misses never count", function () {
+  const c = FX.lenient;
+  const strict = X.evaluate(c.item, { text: c.answer });
+  assert.ok(!strict.correct && strict.near === "accents" && !strict.lenient);
+  const len = X.evaluate(c.item, { text: c.answer }, { lenientAccents: true });
+  assert.ok(len.correct && len.lenient && len.near === "accents" && len.points === 1);
+  FX.match.filter(function (m) { return !m.sentence && (m.near === "typo" || m.near === "ending"); }).forEach(function (m) {
+    assert.ok(!X.evaluate({ type: "short-answer", accepted: m.accepted }, { text: m.answer }, { lenientAccents: true }).correct, m.answer);
+  });
+});
+test("isTarget: 10 target-language sentences yes, 10 English sentences no", function () {
+  assert.strictEqual(FX.isTarget.target.length, 10);
+  assert.strictEqual(FX.isTarget.native.length, 10);
+  FX.isTarget.target.forEach(function (s) { assert.ok(LG.isTarget(s), s); });
+  FX.isTarget.native.forEach(function (s) { assert.ok(!LG.isTarget(s), s); });
+  assert.ok(!LG.isTarget("") && !LG.isTarget(null));
+});
+test("abbreviations and sentence openers come from LM.lang", function () {
+  assert.ok(LG.abbreviations.length >= 8 && LG.abbreviations.every(function (a) { return /\.$/.test(a); }));
+  assert.ok(typeof LG.sentenceOpeners === "string");
 });
 
 console.log("\nLevel final tests");
@@ -701,59 +664,6 @@ test("breakdown: points by category, topics with lost points, skipped ones do no
   assert.ok(b.topics.every(function (t) { return t.lost > 0 && t.topic !== "t-x"; }));
   for (let i = 1; i < b.topics.length; i++) assert.ok(b.topics[i - 1].lost >= b.topics[i].lost);
   assert.deepStrictEqual(F.breakdown([], catOf), { categories: [], topics: [] });
-});
-
-// ---------- Real final test pools of the reference app ----------
-const LV_INDEX = legacyJson(["niezbednik", "index.json"], { levels: [] });
-const LV_CATS = {};
-LV_INDEX.levels.forEach(function (l) { l.items.forEach(function (it) { LV_CATS[it.id] = it.category; }); });
-const POOLS = (LEGACY ? ["a1", "a2", "b1", "b2", "c1", "c2"] : []).map(function (l) {
-  return legacyJson(["niezbednik", "testy-poziomow", l + ".json"]);
-});
-legacyTest("final test pools: the model answer of each of the 180 items gives full points", function () {
-  let n = 0;
-  POOLS.forEach(function (set) {
-    set.items.forEach(function (it) {
-      const r = X.evaluate(it, modelAnswerOf(it));
-      assert.ok(r.correct && r.points === X.maxPoints(it) && r.points === r.max, set.id + " " + it.id + " " + JSON.stringify(r));
-      n++;
-    });
-  });
-  assert.strictEqual(n, 180);
-});
-legacyTest("final test pools: every accepted / answers variant is accepted, and an empty answer gives no points", function () {
-  POOLS.forEach(function (set) {
-    set.items.forEach(function (it) {
-      if (it.type === "translate") it.accepted.forEach(function (a) { assert.ok(X.evaluate(it, { text: a }).correct, it.id + " “" + a + "”"); });
-      if (it.type === "transformation") it.answers.forEach(function (a) { assert.ok(X.evaluate(it, { text: a }).correct, it.id + " “" + a + "”"); });
-      if (it.type === "short-answer") it.accepted.forEach(function (a) { assert.ok(X.evaluate(it, { text: a }).correct, it.id + " “" + a + "”"); });
-      if (it.type === "gap-fill") it.gaps.forEach(function (g, i) { g.accepted.forEach(function (a) {
-        const texts = it.gaps.map(function (x) { return x.accepted[0]; }); texts[i] = a;
-        assert.ok(X.evaluate(it, { texts: texts }).correct, it.id + " gap " + (i + 1) + " “" + a + "”");
-      }); });
-      const empty = X.evaluate(it, it.type === "match" ? { pairs: {} } : it.type === "gap-fill" ? { texts: [] } : it.type === "multiple-choice" ? {} : it.type === "reorder" ? { words: [] } : it.type === "find-error" ? {} : { text: "" });
-      assert.strictEqual(empty.points, 0, it.id + " empty answer");
-    });
-  });
-});
-legacyTest("final test pools: drawing 20 of 30 – category proportions, items from different pages, different sets", function () {
-  POOLS.forEach(function (set) {
-    const cat = function (it) { return LV_CATS[it.topic]; };
-    const pool = {};
-    set.items.forEach(function (it) { pool[cat(it)] = (pool[cat(it)] || 0) + 1; });
-    const seen = new Set();
-    for (let s = 1; s <= 25; s++) {
-      const d = F.drawItems(set.items, set.draw, cat, seeded(s * 7919));
-      assert.strictEqual(d.length, 20);
-      assert.strictEqual(new Set(d.map(function (x) { return x.id; })).size, 20);
-      Object.keys(pool).forEach(function (c) {
-        const got = d.filter(function (it) { return cat(it) === c; }).length;
-        assert.ok(got >= 1 && Math.abs(got - 20 * pool[c] / 30) <= 1.01, set.id + " " + c + ": " + got + " (pula " + pool[c] + ")");
-      });
-      seen.add(d.map(function (x) { return x.id; }).sort().join());
-    }
-    assert.ok(seen.size >= 20, set.id + ": too few different draws (" + seen.size + ")");
-  });
 });
 
 // ---------- Profile data: slm.finals (level stamps) ----------
@@ -874,6 +784,17 @@ function att(itemId, topic, type, level, correct, day) {
   return { t: day + "T10:00:00.000Z", day: day, itemId: itemId, setId: null, topic: topic, level: level, type: type, tags: [], correct: correct, mode: "learn", answer: "" };
 }
 function recWith(list) { const r = { items: [], aggregates: {} }; list.forEach(function (a) { T.pushAttempt(r, a); }); return r; }
+test("summary: answers accepted without accents (lenient) are a separate number, also after compacting (spec 06 E4)", function () {
+  const a = att("a", "t", "short-answer", "A1", true, "2026-10-20"); a.lenient = true;
+  const b = att("b", "t", "short-answer", "A1", true, "2026-10-19"); b.lenient = true;
+  const r = recWith([b, a, att("c", "t", "short-answer", "A1", true, "2026-10-20")]);
+  assert.strictEqual(T.summary(r, "2026-10-20").lenient, 2);
+  const small = { items: [], aggregates: {} };
+  [b, a].forEach(function (x) { T.pushAttempt(small, x, 1); }); // the older one goes into the aggregates
+  assert.strictEqual(small.aggregates.b.lenient, 1);
+  assert.strictEqual(T.summary(small, "2026-10-20").lenient, 2);
+  assert.strictEqual(T.summary(recWith([att("d", "t", "reorder", "A1", true, "2026-10-20")]), "2026-10-20").lenient, 0);
+});
 
 test("ring buffer: a limit, the oldest go to aggregates, stats without loss", function () {
   const r = { items: [], aggregates: {} };
@@ -992,51 +913,47 @@ test("weighted draw: an item with weight 2 gets into the set more often", functi
   assert.ok(heavy > light * 1.4, "waga 2: " + heavy + ", waga 1: " + light);
 });
 
-console.log("\nSearch");
+console.log("\nSearch (fold from LM.lang, records in tools/fixtures/lang/lang.json)");
 const SR = global.LM.searchLogic;
-const recs = SR.prepare([
-  { id: "1", group: "pages", title: "Pretérito perfecto", headings: ["Common mistakes", "How it works"], summary: "Past actions linked to the present.", text: "Haber + participio. He estado en París dos veces." },
-  { id: "2", group: "pages", title: "Pretérito imperfecto", headings: [], summary: "Routine in the past.", text: "Vivía en Málaga." },
-  { id: "3", group: "lab", title: "Indefinido", headings: [], summary: "Finished events.", text: "Pretérito perfecto versus indefinido." },
-  { id: "4", group: "exercises", title: "Posesivos átonos – check yourself", headings: [], summary: "", text: "" }
-]);
+const SFX = FX.search;
+const recs = SR.prepare(SFX.records);
+const searchIds = function (q, opts) { return [].concat.apply([], SR.search(recs, q, opts).groups.map(function (g) { return g.results.map(function (r) { return r.record.id; }); })); };
 
-test("fold: accents, case, the same length", function () {
-  assert.strictEqual(SR.fold("ÁRBOL Pingüino Ñandú"), "arbol pinguino nandu");
-  assert.strictEqual(SR.fold("Ñandú").length, 5);
+test("fold = LM.lang.fold: accents, case, quotes, the same length", function () {
+  FX.fold.forEach(function (c) { assert.strictEqual(SR.fold(c[0]), c[1]); assert.strictEqual(SR.fold(c[0]).length, c[0].length); });
   assert.deepStrictEqual(SR.tokenize("Don’t stop, I'm here!"), ["don't", "stop", "i'm", "here"]);
 });
 test("search: prefix, accents with and without, all words must match, field weights", function () {
-  const ids = function (q) { return [].concat.apply([], SR.search(recs, q).groups.map(function (g) { return g.results.map(function (r) { return r.record.id; }); })); };
-  assert.deepStrictEqual(ids("pret").slice(0, 2).sort(), ["1", "2"]);
-  assert.deepStrictEqual(ids("malaga"), ["2"]);
-  assert.deepStrictEqual(ids("Málaga"), ["2"]);
-  assert.deepStrictEqual(ids("atonos"), ["4"]);
-  assert.deepStrictEqual(ids("preterito paris"), ["1"]); // both words
-  const pp = SR.search(recs, "preterito perfecto").groups;
-  assert.strictEqual(pp[0].results[0].record.id, "1"); // title > text (record 3)
-  assert.deepStrictEqual(ids("zzzz"), []);
+  assert.deepStrictEqual(searchIds(SFX.prefix[0]).slice(0, 2).sort(), SFX.prefix[1]);
+  SFX.queries.forEach(function (q) { assert.deepStrictEqual(searchIds(q[0]), q[1], q[0]); });
+  assert.strictEqual(SR.search(recs, SFX.titleFirst[0]).groups[0].results[0].record.id, SFX.titleFirst[1]); // title > text
 });
 test("search: typos only from 5 characters, swapped letters = one typo", function () {
-  assert.ok(SR.search(recs, "pretreito").total > 0);
+  assert.ok(SR.search(recs, SFX.typo).total > 0);
   assert.strictEqual(SR.search(recs, "pert").total, 0); // short: no tolerance
-  assert.strictEqual(SR.distance("pretreito", "preterito"), 1);
+  assert.strictEqual(SR.distance(SFX.typo, SFX.typoTarget), 1);
 });
 test("search: anchor to a heading, groups in the given order, a limit and \"show more\"", function () {
   const r = SR.search(recs, "mistakes", { groups: ["lab", "pages"] });
   assert.strictEqual(r.groups[0].results[0].anchor, "Common mistakes");
-  const g = SR.search(recs, "preterito", { groups: ["lab", "pages"], limit: 1 });
+  const g = SR.search(recs, SFX.typoTarget, { groups: ["lab", "pages"], limit: 1 });
   assert.deepStrictEqual(g.groups.map(function (x) { return x.group; }), ["lab", "pages"]);
   assert.strictEqual(g.groups[1].results.length, 1);
   assert.strictEqual(g.groups[1].total, 2);
-  assert.strictEqual(SR.search(recs, "preterito", { limit: 1, expanded: { pages: true } }).groups.find(function (x) { return x.group === "pages"; }).results.length, 2);
+  assert.strictEqual(SR.search(recs, SFX.typoTarget, { limit: 1, expanded: { pages: true } }).groups.find(function (x) { return x.group === "pages"; }).results.length, 2);
 });
-test("snippet and highlight: parts with a hit flag, no HTML", function () {
-  const s = SR.snippet("Vivía en Málaga desde hace <b>cinco</b> años.", "malaga");
-  assert.ok(s.some(function (p) { return p.hit && p.text === "Málaga"; }));
+test("snippet and highlight: parts with a hit flag, no HTML; highlighting keeps the accented original", function () {
+  const s = SR.snippet(SFX.snippet.text, SFX.snippet.query);
+  assert.ok(s.some(function (p) { return p.hit && p.text === SFX.snippet.hit; }));
   assert.ok(s.map(function (p) { return p.text; }).join("").indexOf("<b>") !== -1); // text unchanged, for textContent
+  [SFX.highlight, SFX.accentedHighlight].forEach(function (h) {
+    const parts = SR.highlight(h.text, h.query);
+    assert.deepStrictEqual(parts.filter(function (p) { return p.hit; }).map(function (p) { return p.text; }), h.hits);
+    assert.strictEqual(parts.map(function (p) { return p.text; }).join(""), h.text);
+  });
   assert.deepStrictEqual(SR.highlight("Present Perfect", "perf").filter(function (p) { return p.hit; }).map(function (p) { return p.text; }), ["Perfect"]);
 });
+
 
 console.log("\nExams: counter zones");
 const EL = global.LM.examLogic;
@@ -1095,20 +1012,32 @@ test("normalize: lower case, spaces, apostrophes, punctuation at the edges", fun
   assert.strictEqual(FL.normalize("“Come up with”."), "come up with");
   assert.strictEqual(FL.normalize("well-known"), "well-known"); // a hyphen inside stays
 });
-test("checkAnswer: exact / typo (Levenshtein 1, ≥ 5 characters) / wrong / empty", function () {
-  assert.deepStrictEqual(FL.checkAnswer("Decision", ["decision"]).result, "exact");
-  assert.strictEqual(FL.checkAnswer("decison", ["decision"]).result, "typo");
-  assert.strictEqual(FL.checkAnswer("decison", ["decision"]).suggested, "hard");
-  assert.strictEqual(FL.checkAnswer("decide", ["decision"]).suggested, "again");
-  assert.strictEqual(FL.checkAnswer("bok", ["box"]).result, "wrong"); // short: no tolerance
-  assert.strictEqual(FL.checkAnswer("   ", ["box"]).result, "empty");
+test("checkAnswer uses LM.exLogic.match: exact / accents / ending / typo / wrong / empty, with suggested ratings", function () {
+  const C = FX.cards;
+  const t = FL.checkAnswer(C.typo.answer, C.typo.accepted);
+  assert.deepStrictEqual([t.result, t.suggested, t.near, t.expected], ["typo", "hard", "typo", C.typo.accepted[0]]);
+  const a = FL.checkAnswer(C.accents.answer, C.accents.accepted);
+  assert.deepStrictEqual([a.result, a.suggested, a.near, a.lenient], ["accents", "hard", "accents", false]);
+  assert.strictEqual(a.expected, C.accents.accepted[1], "the closest accepted answer, as written");
+  const l = FL.checkAnswer(C.accents.answer, C.accents.accepted, { lenientAccents: true });
+  assert.deepStrictEqual([l.result, l.suggested, l.near, l.lenient], ["exact", "good", "accents", true]);
+  assert.deepStrictEqual([FL.checkAnswer(C.ending.answer, C.ending.accepted).result, FL.checkAnswer(C.ending.answer, C.ending.accepted).suggested], ["ending", "again"]);
+  assert.strictEqual(FL.checkAnswer(C.wrong.answer, C.wrong.accepted).result, "wrong"); // short: no tolerance
+  assert.strictEqual(FL.checkAnswer(C.typo.accepted[0].toUpperCase(), C.typo.accepted).result, "exact");
+  assert.strictEqual(FL.checkAnswer("   ", C.wrong.accepted).result, "empty");
 });
 test("checkAnswer: alternatives a|b, case and apostrophes", function () {
-  const alts = FL.parseCloze("I {{gave up|quit}} smoking.").answers;
-  assert.strictEqual(FL.checkAnswer("QUIT", alts).result, "exact");
-  assert.strictEqual(FL.checkAnswer("gave up", alts).expected, "gave up");
+  const alts = FL.parseCloze(FX.cards.alternatives.text).answers;
+  assert.strictEqual(FL.checkAnswer(FX.cards.alternatives.answer, alts).result, "exact");
+  assert.strictEqual(FL.checkAnswer(alts[0], alts).expected, alts[0]);
   assert.strictEqual(FL.checkAnswer("can't", ["can’t"]).result, "exact");
   assert.strictEqual(FL.levenshtein("kitten", "sitting"), 3);
+});
+test("cardSpeech: only target-language text is read; a cloze gap is a pause until the answer shows", function () {
+  FX.cards.speech.forEach(function (c) {
+    assert.strictEqual(FL.cardSpeech(c.card, false), c.front, JSON.stringify(c.card) + " (front)");
+    assert.strictEqual(FL.cardSpeech(c.card, true), c.back, JSON.stringify(c.card) + " (back)");
+  });
 });
 test("parseCloze: one gap, alternatives, bad input", function () {
   const c = FL.parseCloze("She {{came up with}} a plan.");
@@ -1170,34 +1099,34 @@ test("deckStats: new / learning / mastered (≥ 21 d) / suspended", function () 
   assert.deepStrictEqual([s.new, s.learning, s.mastered, s.review, s.suspended, s.due], [1, 1, 1, 1, 1, 2]);
 });
 test("parseDelimited: tab / semicolon, RFC 4180 quotes, new lines in a field, accented letters", function () {
-  const p = FL.parseDelimited('type;front;back\nbasic;"Tengo ""20"" años";"I am 20;\nyears"\nbasic;Ñandú;rhea\n');
+  const p = FL.parseDelimited('type;front;back\nbasic;"She is ""20"" now";"I am 20;\nyears"\nbasic;Smörgåsbord;buffet\n');
   assert.strictEqual(p.separator, ";");
-  assert.deepStrictEqual(p.rows[1].cells, ["basic", 'Tengo "20" años', "I am 20;\nyears"]);
-  assert.deepStrictEqual(p.rows[2], { line: 4, cells: ["basic", "Ñandú", "rhea"] });
+  assert.deepStrictEqual(p.rows[1].cells, ["basic", 'She is "20" now', "I am 20;\nyears"]);
+  assert.deepStrictEqual(p.rows[2], { line: 4, cells: ["basic", "Smörgåsbord", "buffet"] });
   assert.strictEqual(FL.parseDelimited("a\tb\n").separator, "\t");
 });
 test("importCards: spec columns, Anki format ({{c1::…}}), rejections with a reason, a limit", function () {
   const r = FL.importCards("type\tfront\tback\thint\texample\tnote\ttags\n" +
     "cloze\tShe {{c1::came up with}} it.\t\tthink of\t\t\tphrasal c1\n" +
-    "typed\tla nevera\tfridge|refrigerator\n" +
+    "typed\tthe fridge\tfridge|refrigerator\n" +
     "cloze\tNo gap\n" +
     "cosmos\ta\tb\n" +
-    "basic\tEstoy de acuerdo.\tI agree.\n");
+    "basic\tAgreed.\tI agree.\n");
   assert.strictEqual(r.cards.length, 3);
   assert.deepStrictEqual(r.cards[0], { type: "cloze", tags: ["phrasal", "c1"], text: "She {{came up with}} it.", hint: "think of" });
   assert.deepStrictEqual(r.cards[1].accepted, ["fridge", "refrigerator"]);
   assert.deepStrictEqual(r.rejected.map(function (x) { return x.line; }), [4, 5]);
-  const anki = FL.importCards("I {{c1::gave up}} smoking.\tstop\tphrasal\nEstoy de acuerdo.\tI agree.\t\n");
+  const anki = FL.importCards("I {{c1::gave up}} smoking.\tstop\tphrasal\nAgreed.\tI agree.\t\n");
   assert.deepStrictEqual(anki.cards.map(function (c) { return c.type; }), ["cloze", "basic"]);
   assert.strictEqual(FL.importCards("basic\t" + "x".repeat(501) + "\ty\n").rejected[0].reason.indexOf("500") !== -1, true);
   assert.strictEqual(FL.importCards("basic\ta\tb\nbasic\tc\td\nbasic\te\tf\n", { limit: 2 }).cards.length, 2);
 });
 test("exportTsv: Anki (front, back, tags), cloze as {{c1::…}}, export → import", function () {
-  const cards = [{ type: "cloze", text: "I {{gave up|quit}} it.", hint: "stop", tags: ["a"] }, { type: "basic", front: "Tengo 20 años.", back: "I am 20.", note: "Not: I have", tags: [] }];
+  const cards = [{ type: "cloze", text: "I {{gave up|quit}} it.", hint: "stop", tags: ["a"] }, { type: "basic", front: "She is 20.", back: "I am 20.", note: "Not: I have", tags: [] }];
   const tsv = FL.exportTsv(cards);
   assert.strictEqual(tsv.split("\n")[0], "I {{c1::gave up::stop}} it.\t\ta");
   const back = FL.importCards(tsv);
-  assert.deepStrictEqual([back.cards[0].type, back.cards[0].text, back.cards[1].front], ["cloze", "I {{gave up}} it.", "Tengo 20 años."]);
+  assert.deepStrictEqual([back.cards[0].type, back.cards[0].text, back.cards[1].front], ["cloze", "I {{gave up}} it.", "She is 20."]);
 });
 test("sanitizeState: damaged data, an unknown version, too long fields, trimming daily", function () {
   assert.throws(function () { FL.sanitizeState(null); });
@@ -1557,18 +1486,22 @@ test("wordFromSelection: 1–6 words and up to 60 characters, punctuation at the
   assert.strictEqual(FL.wordFromSelection("don’t"), "don’t");
   assert.strictEqual(FL.wordFromSelection(""), "");
 });
-test("isPolish: Polish letters turn off \"Add to My words\" (stage 3 replaces this with LM.lang)", function () {
-  ["zażółć", "Łódź", "więc", "ŻÓŁW", "sąd", "kość", "źle", "ń"].forEach(function (w) { assert.ok(FL.isPolish(w), w); });
-  ["commute", "naïve café", "über", "résumé", "", null].forEach(function (w) { assert.ok(!FL.isPolish(w), String(w)); });
+test("isTarget (LM.lang) decides where \"Add to My words\" is offered when there is no lang attribute", function () {
+  FX.isTarget.target.forEach(function (s) { assert.ok(FL.isTarget(s), s); });
+  FX.isTarget.native.concat(["", null]).forEach(function (s) { assert.ok(!FL.isTarget(s), String(s)); });
 });
-test("splitSentences / extractSentence: abbreviations (e.g., Mr., etc.), numbers 3.5, quotes, initials", function () {
-  const t = "Mr. Brown works hard, e.g. on Sundays. He earns 3.5 thousand pounds. “Really?” she asked. J. K. Rowling wrote it. We use tea, coffee, etc. They never complain.";
-  assert.strictEqual(FL.extractSentence(t, "Sundays"), "Mr. Brown works hard, e.g. on Sundays.");
+test("splitSentences / extractSentence: abbreviations of the language, opening marks of the language, numbers 3.5, quotes, initials", function () {
+  const S = FX.sentences;
+  assert.strictEqual(FL.splitSentences(S.text).length, S.count);
+  S.cases.forEach(function (c) { assert.strictEqual(FL.extractSentence(S.text, c[0]), c[1], c[0]); });
+  const t = "Brown works hard on Sundays. He earns 3.5 thousand pounds. “Really?” she asked. J. K. Rowling wrote it.";
   assert.strictEqual(FL.extractSentence(t, "thousand"), "He earns 3.5 thousand pounds.");
   assert.strictEqual(FL.extractSentence(t, "asked"), "“Really?” she asked.");
   assert.strictEqual(FL.extractSentence(t, "Rowling"), "J. K. Rowling wrote it.");
-  assert.strictEqual(FL.extractSentence(t, "tea"), "We use tea, coffee, etc. They never complain."); // etc. does not split
-  assert.strictEqual(FL.extractSentence("Dr. Smith said so. Prof. Lee agreed.", "agreed"), "Prof. Lee agreed.");
+});
+test("makeCloze and wordFromSelection around diacritics and inner hyphens", function () {
+  FX.cloze.forEach(function (c) { assert.strictEqual(FL.makeCloze(c[0], c[1]), c[2], c[0] + " / " + c[1]); });
+  FX.selection.forEach(function (c) { assert.strictEqual(FL.wordFromSelection(c[0]), c[1], c[0]); });
 });
 test("extractSentence: a table cell and a single sentence, case and spaces, no selection in the text", function () {
   assert.strictEqual(FL.extractSentence("  Commute   to work.  ", "COMMUTE"), "Commute to work.");
@@ -1664,9 +1597,7 @@ test("examBoxAnchor: exam boxes before \"Common mistakes\" on the example topic 
 
 test("countWords: white space, symbols, opening and placeholder words", function () {
   const EL = global.LM.examLogic;
-  assert.strictEqual(EL.countWords("Hola, ¿qué tal? :) Un saludo, XYZ"), 6);
-  assert.strictEqual(EL.countWords("Hola, ¿qué tal? :) Un saludo, XYZ", "", ["XYZ"]), 5);
-  assert.strictEqual(EL.countWords("Querida Ana: te escribo", "Querida Ana:"), 2);
+  FX.examCountWords.forEach(function (c) { assert.strictEqual(EL.countWords(c.text, c.opening || "", c.placeholders), c.n, c.text); });
   assert.strictEqual(EL.countWords("  "), 0);
 });
 
@@ -2012,6 +1943,12 @@ test("speechText: a gap as a pause before checking, the answer after checking (c
   assert.strictEqual(f(tr, true), "I wish I had more time.");
   const sa = { type: "short-answer", prompt: "A: Where is Tom?\nB: He ___ at home.", accepted: ["is"] };
   assert.strictEqual(f(sa, false), "Where is Tom? He … at home.", "speaker labels are not read");
+});
+test("speechText: speaker labels with any capital letter (also with diacritics) are not read", function () {
+  FX.speech.forEach(function (c) {
+    assert.strictEqual(global.LM.exLogic.speechText(c.item, false), c.before);
+    assert.strictEqual(global.LM.exLogic.speechText(c.item, true), c.after);
+  });
 });
 test("speechText: put in order and translate only after checking, match and dictation without a sentence, find the mistake: the whole sentence", function () {
   const f = global.LM.exLogic.speechText;
@@ -2669,5 +2606,5 @@ console.log("\nEnglish helpers: LM.plural and LM.fmt (spec 04 §1)");
   });
 })();
 
-console.log("\nResult: " + passed + " ok, " + failures.length + " failed" + (skipped ? ", skipped (no reference content): " + skipped : ""));
+console.log("\nResult: " + passed + " ok, " + failures.length + " failed");
 if (failures.length) process.exit(1);

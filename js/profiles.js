@@ -221,7 +221,9 @@ window.LM = window.LM || {};
       [
         ["autoJournal", "Add mistakes from exercises to the mistake log automatically"],
         ["selectionMenu", "Show a menu when you select text (My words, flashcards)"],
-        ["highlightWords", "Underline my words in texts"]
+        ["highlightWords", "Underline my words in texts"],
+        ["lenientAccents", "Accept answers without accents – you still see the correct spelling"],
+        ["autoPlayCards", "Play the " + LM.APP.language + " side of a flashcard automatically"]
       ].forEach(function (sw) {
         const on = !!prefs[sw[0]];
         parts.push(el("button", {
@@ -242,6 +244,32 @@ window.LM = window.LM || {};
           el("span", { class: "switch-track", "aria-hidden": "true" }, el("span", { class: "switch-thumb" }))
         ]));
       });
+    }
+
+    // Voice variant (spec 06 E5): radio buttons from LM.APP.speech.variants; a note when the browser has no voice
+    if (activeId && LM.profileData && LM.speech) {
+      const variants = LM.speech.variants();
+      parts.push(el("p", { class: "menu-title", id: "menu-voice-title", text: "Voice" }));
+      if (!LM.speech.available()) {
+        parts.push(el("p", { class: "menu-note", role: "note", text: "This browser has no " + LM.APP.language + " voice: listening shows the transcript and dictation is skipped." }));
+      } else {
+        parts.push(el("div", { class: "menu-radios", role: "radiogroup", "aria-labelledby": "menu-voice-title" }, variants.map(function (v) {
+          return el("button", {
+            type: "button", class: "menu-action menu-radio", role: "radio", "aria-checked": v.current ? "true" : "false",
+            "data-menu-item": "", "data-voice-variant": v.id,
+            onclick: function () {
+              LM.profileData.setPref("voiceVariant", v.id);
+              LM.speech.stop();
+              LM.speech.changed();
+              renderMenu();
+              focusInMenu('[data-voice-variant="' + v.id + '"]');
+            }
+          }, [
+            el("span", { class: "menu-radio-dot", "aria-hidden": "true" }),
+            el("span", { class: "menu-switch-text" }, v.label + (v.hasVoice ? "" : " (no voice in this browser)"))
+          ]);
+        })));
+      }
     }
 
     // "Mine" section: pages taken out of the left panel (same routes)

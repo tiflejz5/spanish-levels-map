@@ -218,6 +218,8 @@ window.LM = window.LM || {};
       const area = el("textarea", {
         class: "field c1-writing-area",
         rows: 18,
+        lang: LM.APP.targetLang,
+        "data-charbar": "",
         spellcheck: "false",
         autocorrect: "off",
         autocapitalize: "off",
@@ -284,7 +286,7 @@ window.LM = window.LM || {};
           body.appendChild(el("ul", { class: "zw-panel-list" }, r.phrases.map(function (p) {
             return el("li", { class: "zw-panel-item" }, [
               el("div", null, [
-                el("p", { class: "zw-panel-en", lang: "en", text: p.en }),
+                el("p", { class: "zw-panel-en", lang: LM.APP.targetLang, text: p.en }),
                 el("p", { class: "zw-panel-gloss", text: p.pl + " · " + p.level })
               ]),
               el("button", { type: "button", class: "btn btn-secondary btn-small", "aria-label": "Insert: " + LM.writingPhrases.plain(p.en), onclick: function () { insertPhrase(p.en); } }, "Insert")
@@ -411,8 +413,8 @@ window.LM = window.LM || {};
       return el("div", { class: "c1-check-group wt-compare" }, [
         el("h3", { class: "c1-check-title", text: "Compare with the model" }),
         el("div", { class: "wt-compare-cols" }, [
-          el("figure", { class: "wt-col" }, [el("figcaption", { text: "Your text" }), el("p", { class: "wt-text", lang: "en", text: (task.opening ? task.opening + "\n" : "") + (text || "(empty)") })]),
-          el("figure", { class: "wt-col is-model" }, [el("figcaption", { text: "Model answer (" + cfg.wordsLabel(cfg.countWords(task.model, task)) + ")" }), el("p", { class: "wt-text", lang: "en", text: task.model })])
+          el("figure", { class: "wt-col" }, [el("figcaption", { text: "Your text" }), el("p", { class: "wt-text", lang: LM.APP.targetLang, text: (task.opening ? task.opening + "\n" : "") + (text || "(empty)") })]),
+          el("figure", { class: "wt-col is-model" }, [el("figcaption", { text: "Model answer (" + cfg.wordsLabel(cfg.countWords(task.model, task)) + ")" }), el("p", { class: "wt-text", lang: LM.APP.targetLang, text: task.model })])
         ]),
         el("p", { class: "tool-note", text: "The model is one possible answer. Check that your text covers all the " + (task.bullets && task.bullets.length ? "points" : "parts of the task") + " and has a similar length." })
       ]);

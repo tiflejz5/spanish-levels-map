@@ -196,7 +196,7 @@ window.LM = window.LM || {};
     const body = [
       // Reading: a short text in a box above the question (spec v6 13, 1.2)
       q.passage ? el("div", { class: "lt-passage", lang: LM.APP.targetLang }, [
-        el("p", { class: "lt-passage-label", lang: "en", text: "Read the text:" }),
+        el("p", { class: "lt-passage-label", lang: LM.APP.uiLang, text: "Read the text:" }),
         el("p", { class: "lt-passage-text", text: q.passage })
       ]) : null,
       el("p", { class: "lt-question", id: "lt-question", text: q.question }),

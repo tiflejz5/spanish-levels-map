@@ -4,7 +4,7 @@
  *
  *   normalize(s)                       answer comparison (2.1): lower case, spaces, ’ → ', no punctuation at the edges
  *   levenshtein(a, b)
- *   checkAnswer(input, accepted)       { result: exact|typo|wrong|empty, suggested: good|hard|again, expected }
+ *   checkAnswer(input, accepted, opts) LM.exLogic.match → { result: exact|accents|ending|typo|wrong|empty, suggested, expected, near, lenient }
  *   parseCloze(text)                   { ok, before, answers, after, error } — exactly one gap {{a|b}}
  *   fromAnki(text), toAnki(text, hint) {{c1::x}} ↔ {{x}}
  *   answersOf(card), frontText(card)
@@ -17,7 +17,7 @@
  *   importCards(text, opts)            { cards, rejected: [{ line, reason }], total } — import preview
  *   exportTsv(cards)                   TSV compatible with the Anki import (front, back, tags; cloze as {{c1::…}})
  *   extractSentence(block, selection)  context sentence (≤ 220 characters); makeCloze(sentence, word) → sentence with {{word}} or null
- *   wordFromSelection(text), isPolish(text), wordKey(word), makeWordCard({ selection, sentence, hint, source, day })
+ *   wordFromSelection(text), isTarget(text), wordKey(word), makeWordCard({ selection, sentence, hint, source, day })
  *   sanitizeWordFields(card)           word, source, addedAt, examples on saving and import (spec v6 14)
  *   exportWordsCsv(cards)              "My words" to CSV: word; meaning; sentence; source
  *   sanitizeState(raw)                 state from localStorage / import → a valid state or an exception
@@ -48,7 +48,7 @@ window.LM = window.LM || {};
       .toLowerCase()
       .replace(/\s+/g, " ")
       .trim()
-      .replace(/^[\s.,;:!?¡¿"“”„«»()[\]{}…–—-]+|[\s.,;:!?¡¿"“”„«»()[\]{}…–—-]+$/g, "")
+      .replace(/^[\s\p{P}]+|[\s\p{P}]+$/gu, "") // any punctuation at the edges: quotes, brackets, opening marks, dashes
       .trim();
   }
 
@@ -68,16 +68,23 @@ window.LM = window.LM || {};
     return prev[b.length];
   }
 
-  /** Rating of a typed answer (2.1). accepted — the list of accepted answers (the first is the model). */
-  function checkAnswer(input, accepted) {
+  const NEAR_RATING = { accents: "hard", typo: "hard", ending: "again" };
+
+  /**
+   * Rating of a typed answer (2.1) with the shared check LM.exLogic.match (spec 05 §2).
+   * accepted — the accepted answers (the first is the model); opts.lenientAccents (spec 06 E4).
+   * → { result: exact | accents | ending | typo | wrong | empty, suggested, expected, near, lenient }
+   *   lenient: accents only, counted as exact; near stays "accents" so the view still shows the right spelling.
+   */
+  function checkAnswer(input, accepted, opts) {
     const list = (accepted || []).filter(function (a) { return normalize(a); });
-    const expected = list[0] || "";
-    const n = normalize(input);
-    if (!n) return { result: "empty", suggested: "again", expected: expected };
-    if (list.some(function (a) { return normalize(a) === n; })) return { result: "exact", suggested: "good", expected: expected };
-    const close = list.find(function (a) { const t = normalize(a); return t.length >= 5 && levenshtein(t, n) === 1; });
-    if (close) return { result: "typo", suggested: "hard", expected: close };
-    return { result: "wrong", suggested: "again", expected: expected };
+    const m = LM.exLogic.match(input, list, {});
+    const expected = m.closest || list[0] || "";
+    if (!m.answered) return { result: "empty", suggested: "again", expected: expected, near: null, lenient: false };
+    if (m.ok) return { result: "exact", suggested: "good", expected: expected, near: null, lenient: false };
+    if (m.near === "accents" && opts && opts.lenientAccents) return { result: "exact", suggested: "good", expected: expected, near: "accents", lenient: true };
+    if (m.near) return { result: m.near, suggested: NEAR_RATING[m.near], expected: expected, near: m.near, lenient: false };
+    return { result: "wrong", suggested: "again", expected: expected, near: null, lenient: false };
   }
 
   // =====================================================================
@@ -360,13 +367,34 @@ window.LM = window.LM || {};
   const WORD_WORDS = 6;      // words in a selection
   const SENTENCE_MAX = 220;  // characters in the context sentence and in an example
   const EXAMPLES_MAX = 3;    // added examples
-  const ABBREVIATIONS = ["e.g", "i.e", "etc", "mr", "mrs", "ms", "dr", "prof", "vs", "st", "fig", "approx", "inc", "ltd", "jr", "sr", "cf", "viz", "al"];
+  /** Abbreviations of the target language (LM.lang.abbreviations), lower case, without the final full stop. */
+  function abbreviations() {
+    return ((LM.lang && LM.lang.abbreviations) || []).map(function (a) { return a.replace(/\.$/, "").toLowerCase(); });
+  }
 
   /** Typographic apostrophes → ' (same length, so indexes in the text still match). */
   function foldApostrophes(s) { return String(s).replace(/[’‘ʼ`´]/g, "'"); }
 
-  /** Whether a text has Polish letters — then "Add to My words" is not offered (spec 14, 3.4). Stage 3 replaces this with LM.lang.isTarget. */
-  function isPolish(text) { return /[ąćęłńóśźżĄĆĘŁŃÓŚŹŻ]/.test(String(text == null ? "" : text)); }
+  /** Whether a text is in the target language when no lang attribute says so (LM.lang.isTarget). */
+  function isTarget(text) { return !!(LM.lang && LM.lang.isTarget(text)); }
+
+  /**
+   * The card's text for playback (S, auto-play): only target-language text, never the English prompt (spec 05 §4).
+   * cloze: the sentence with the gap as a pause until revealed; typed: the back (target by format, spec 07 §7) once revealed;
+   * basic (own cards, any direction): the front when it is in the target language, otherwise the back once revealed.
+   */
+  function cardSpeech(card, revealed) {
+    if (!card) return "";
+    const tidy = function (t) { return String(t).replace(/\s+/g, " ").trim(); };
+    if (card.type === "cloze") {
+      const c = parseCloze(card.text);
+      return c.ok ? tidy(c.before + (revealed ? c.answers[0] : " … ") + c.after) : "";
+    }
+    const front = String(card.front || ""), back = String(card.back || "");
+    if (card.type === "typed") return revealed ? tidy(back) : "";
+    if (front && isTarget(front)) return tidy(front);
+    return revealed && back ? tidy(back) : "";
+  }
 
   /**
    * Selection → word / phrase to save, or "" (too long: > 60 characters or > 6 words, no letters).
@@ -374,7 +402,7 @@ window.LM = window.LM || {};
    */
   function wordFromSelection(text) {
     let t = String(text == null ? "" : text).replace(/\s+/g, " ").trim();
-    t = t.replace(/^[\s.,;:!?¡¿"“”„«»'‘’()[\]{}…–—-]+|[\s.,;:!?¡¿"“”„«»'‘’()[\]{}…–—-]+$/g, "");
+    t = t.replace(/^[\s\p{P}]+|[\s\p{P}]+$/gu, "");
     t = t.replace(/[{}|]/g, " ").replace(/\s+/g, " ").trim();
     if (!t || t.length > WORD_MAX || !/\p{L}/u.test(t)) return "";
     return t.split(" ").length > WORD_WORDS ? "" : t;
@@ -389,17 +417,26 @@ window.LM = window.LM || {};
     return m ? m.index : -1;
   }
 
-  /** Sentence ranges: an end after . ! ? and a space before a capital letter; no split at abbreviations (e.g., Mr.), initials or numbers (3.5). */
+  function escapeClass(s) { return String(s || "").replace(/[\\\]^-]/g, "\\$&"); }
+
+  /**
+   * Sentence ranges: an end after . ! ? … and a space before a capital letter, which may follow an opening mark
+   * (quotes, a bracket, a dash, LM.lang.sentenceOpeners); no split at abbreviations (LM.lang.abbreviations), initials or numbers (3.5).
+   */
   function splitSentences(text) {
     const out = [];
     let start = 0;
-    const re = /[.!?]+["”’')\]]*\s+(?=["“‘'(\[]?\p{Lu})/gu;
+    const openers = escapeClass((LM.lang && LM.lang.sentenceOpeners) || "");
+    const re = new RegExp("[.!?…]+[\"”’»')\\]]*\\s+(?=[\"“‘'«(\\[—–" + openers + "]*\\p{Lu})", "gu");
+    const abbr = abbreviations();
     let m;
     while ((m = re.exec(text))) {
       const before = text.slice(start, m.index);
       const tok = (/(\S+)$/.exec(before) || [])[1] || "";
-      const bare = tok.replace(/^[("'“‘\[]+/, "");
-      const abbreviation = m[0].charAt(0) === "." && (ABBREVIATIONS.indexOf(bare.toLowerCase()) !== -1 || /^\p{Lu}$/u.test(bare) || /^(?:\p{L}\.)+\p{L}$/u.test(bare));
+      const bare = tok.replace(/^[("'“‘«\[—–]+/, "");
+      // a multi-word abbreviation ("p. ej."): the last two tokens together
+      const two = ((/(\S+\s+\S+)$/.exec(before) || [])[1] || "").toLowerCase();
+      const abbreviation = m[0].charAt(0) === "." && (abbr.indexOf(bare.toLowerCase()) !== -1 || abbr.indexOf(two) !== -1 || /^\p{Lu}$/u.test(bare) || /^(?:\p{L}\.)+\p{L}$/u.test(bare));
       if (abbreviation) continue;
       out.push({ start: start, end: m.index + m[0].replace(/\s+$/, "").length });
       start = m.index + m[0].length;
@@ -762,7 +799,7 @@ window.LM = window.LM || {};
     buildQueue: buildQueue, pickNext: pickNext, deckStats: deckStats,
     parseDelimited: parseDelimited, makeCard: makeCard, importCards: importCards, exportTsv: exportTsv,
     WORD_MAX: WORD_MAX, SENTENCE_MAX: SENTENCE_MAX, EXAMPLES_MAX: EXAMPLES_MAX,
-    isPolish: isPolish, wordFromSelection: wordFromSelection, findWord: findWord, splitSentences: splitSentences,
+    isTarget: isTarget, cardSpeech: cardSpeech, wordFromSelection: wordFromSelection, findWord: findWord, splitSentences: splitSentences,
     extractSentence: extractSentence, makeCloze: makeCloze, wordKey: wordKey, sanitizeWordFields: sanitizeWordFields,
     makeWordCard: makeWordCard, exportWordsCsv: exportWordsCsv,
     emptyState: emptyState, sanitizeState: sanitizeState, pruneDaily: pruneDaily

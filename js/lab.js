@@ -70,29 +70,14 @@ window.LM = window.LM || {};
   }
 
   // =====================================================================
-  // LISTENING (Web Speech API, en-GB, then en-US)
+  // LISTENING (LM.speech; hidden without a target-language voice)
   // =====================================================================
 
-  function canSpeak() { return "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function"; }
-
-  function speak(text) {
-    if (!canSpeak()) return;
-    const synth = window.speechSynthesis;
-    synth.cancel();
-    const u = new window.SpeechSynthesisUtterance(text);
-    const voices = synth.getVoices();
-    const voice = voices.find(function (v) { return /^en[-_]GB/i.test(v.lang); }) || voices.find(function (v) { return /^en[-_]US/i.test(v.lang); }) || voices.find(function (v) { return /^en/i.test(v.lang); });
-    if (voice) u.voice = voice;
-    u.lang = voice ? voice.lang : "en-GB";
-    u.rate = 0.9;
-    synth.speak(u);
-  }
-
   function speakButton(text) {
-    if (!canSpeak()) return null;
+    if (!text || !LM.speech.supported()) return null;
     return el("button", {
-      type: "button", class: "btn btn-link lab-speak", "aria-label": "Listen: " + text, "data-tooltip": "Listen",
-      onclick: function () { speak(text); }
+      type: "button", class: "btn btn-link lab-speak listen-btn", "aria-label": "Listen: " + text, "data-tooltip": "Listen",
+      onclick: function () { LM.speech.speak(text); }
     }, LM.icon("volume-2", { size: 18 }));
   }
 
@@ -298,7 +283,7 @@ window.LM = window.LM || {};
 
   function formationTable(t) {
     const f = t.formation;
-    const row = function (label, value) { return el("tr", null, [el("th", { scope: "row", text: label }), el("td", { lang: "en" }, formula(value))]); };
+    const row = function (label, value) { return el("tr", null, [el("th", { scope: "row", text: label }), el("td", { lang: LM.APP.targetLang }, formula(value))]); };
     return el("div", { class: "md-table" }, el("div", { class: "md-table-wrap" }, el("table", { class: "lab-formation" }, [
       el("tbody", null, [row("Affirmative", f.affirmative), row("Negative", f.negative), row("Question", f.question)])
     ])));
@@ -315,7 +300,7 @@ window.LM = window.LM || {};
         levelChip(t.level)
       ]),
       el("span", { class: "lab-tile-note", text: t.namePl }),
-      t.uses && t.uses[0] ? el("span", { class: "lab-tile-ex", lang: "en", text: t.uses[0].en }) : null
+      t.uses && t.uses[0] ? el("span", { class: "lab-tile-ex", lang: LM.APP.targetLang, text: t.uses[0].text || t.uses[0].en }) : null
     ]);
   }
 
@@ -369,7 +354,7 @@ window.LM = window.LM || {};
         el("p", { class: "lab-card-eyebrow" }, [levelChip(t.level), el("span", { text: GROUPS.find(function (g) { return g.id === t.group; }).label + (isForm(t) ? " · future form" : " · " + (ASPECTS.find(function (a) { return a.id === t.aspect; }) || { label: t.aspect }).label) })]),
         LM.notes ? LM.notes.button("lab:" + t.id, { title: LM.APP.lab.title + " · " + t.name, route: BASE + "/" + t.id }) : null
       ]),
-      el("h2", { class: "lab-card-title", id: "lab-card-title", lang: "en", text: t.name }),
+      el("h2", { class: "lab-card-title", id: "lab-card-title", lang: LM.APP.targetLang, text: t.name }),
       el("p", { class: "lab-card-gloss", text: t.namePl }),
       el("p", { class: "lab-card-summary", text: t.summary })
     ]));
@@ -379,13 +364,13 @@ window.LM = window.LM || {};
     card.appendChild(section("Uses", el("ul", { class: "lab-uses" }, t.uses.map(function (u) {
       return el("li", { class: "card lab-use" }, [
         el("p", { class: "lab-use-label", text: u.label }),
-        el("p", { class: "lab-use-en" }, [el("span", { lang: "en", text: u.en }), speakButton(u.en)]),
+        el("p", { class: "lab-use-en" }, [el("span", { lang: LM.APP.targetLang, text: u.text || u.en }), speakButton(u.text || u.en)]),
         el("p", { class: "lab-use-gloss", text: u.pl })
       ]);
     }))));
     if (t.signals && t.signals.length) {
       card.appendChild(section("Signal words", el("ul", { class: "lab-signals" }, t.signals.map(function (s) {
-        return el("li", null, el("span", { class: "chip", lang: "en", text: s }));
+        return el("li", null, el("span", { class: "chip", lang: LM.APP.targetLang, text: s }));
       }))));
     }
     if (t.traps && t.traps.length) {
@@ -398,9 +383,9 @@ window.LM = window.LM || {};
       card.appendChild(section("Compare with…", el("ul", { class: "lab-contrasts" }, t.contrasts.map(function (c) {
         const other = tense(c.with);
         return el("li", { class: "card lab-contrast" }, [
-          el("p", { class: "lab-contrast-head" }, [el("strong", { lang: "en", text: t.name }), " vs ", el("strong", { lang: "en", text: other ? other.name : c.with })]),
+          el("p", { class: "lab-contrast-head" }, [el("strong", { lang: LM.APP.targetLang, text: t.name }), " vs ", el("strong", { lang: LM.APP.targetLang, text: other ? other.name : c.with })]),
           el("p", { text: c.rule }),
-          c.examples && c.examples.length ? el("ul", { class: "lab-contrast-ex", lang: "en" }, c.examples.map(function (x) { return el("li", { text: x }); })) : null,
+          c.examples && c.examples.length ? el("ul", { class: "lab-contrast-ex", lang: LM.APP.targetLang }, c.examples.map(function (x) { return el("li", { text: x }); })) : null,
           el("a", { class: "btn btn-secondary btn-small", href: BASE + "/compare/" + t.id + "/" + c.with }, LM.ui.withIcon("arrow-left-right", "Compare side by side"))
         ]);
       }))));
@@ -469,9 +454,9 @@ window.LM = window.LM || {};
       if (result.why) body.push(el("p", { class: "lab-why", text: result.why }));
       body.push(el("ul", { class: "lab-results" }, list.map(function (t) {
         return el("li", { class: "card lab-result lvl-" + t.level + " lab-group-" + t.group }, [
-          el("p", { class: "lab-result-name" }, [el("strong", { lang: "en", text: t.name }), " ", levelChip(t.level)]),
+          el("p", { class: "lab-result-name" }, [el("strong", { lang: LM.APP.targetLang, text: t.name }), " ", levelChip(t.level)]),
           el("p", { text: t.summary }),
-          t.uses[0] ? el("p", { class: "lab-use-en" }, [el("span", { lang: "en", text: t.uses[0].en }), speakButton(t.uses[0].en)]) : null,
+          t.uses[0] ? el("p", { class: "lab-use-en" }, [el("span", { lang: LM.APP.targetLang, text: t.uses[0].text || t.uses[0].en }), speakButton(t.uses[0].text || t.uses[0].en)]) : null,
           el("a", { class: "btn btn-primary btn-small", href: BASE + "/" + t.id }, LM.ui.withIcon("arrow-right", "Open the tense card"))
         ]);
       })));
@@ -517,13 +502,13 @@ window.LM = window.LM || {};
 
     const column = function (t) {
       return el("section", { class: "card lab-compare-col lvl-" + t.level + " lab-group-" + t.group, "aria-labelledby": "cmp-" + t.id }, [
-        el("h2", { class: "lab-card-title", id: "cmp-" + t.id, lang: "en" }, [t.name, " ", levelChip(t.level)]),
+        el("h2", { class: "lab-card-title", id: "cmp-" + t.id, lang: LM.APP.targetLang }, [t.name, " ", levelChip(t.level)]),
         el("p", { class: "lab-card-gloss", text: t.namePl + " – " + t.summary }),
         timelineBlock(t, { noSwitch: true, animate: false, compact: true }),
         el("h3", { class: "lab-block-title", text: "Form" }),
         formationTable(t),
         el("h3", { class: "lab-block-title", text: "When to use it" }),
-        el("ul", { class: "lab-when" }, t.uses.map(function (u) { return el("li", null, [el("strong", { text: u.label + ": " }), el("span", { lang: "en", text: u.en })]); })),
+        el("ul", { class: "lab-when" }, t.uses.map(function (u) { return el("li", null, [el("strong", { text: u.label + ": " }), el("span", { lang: LM.APP.targetLang, text: u.text || u.en })]); })),
         t.traps && t.traps.length ? el("h3", { class: "lab-block-title", text: LM.APP.mistakesHeading }) : null,
         t.traps && t.traps.length ? el("ul", { class: "lab-when" }, t.traps.map(function (x) { return el("li", { text: x }); })) : null
       ]);
@@ -538,7 +523,7 @@ window.LM = window.LM || {};
       diffs.length ? el("div", { class: "md-table" }, el("div", { class: "md-table-wrap" }, el("table", null, [
         el("thead", null, el("tr", null, [el("th", { text: "Rule" }), el("th", { text: "Examples" })])),
         el("tbody", null, diffs.map(function (d) {
-          return el("tr", null, [el("td", { text: d.c.rule }), el("td", { lang: "en" }, (d.c.examples || []).map(function (x) { return el("p", { class: "lab-diff-ex", text: x }); }))]);
+          return el("tr", null, [el("td", { text: d.c.rule }), el("td", { lang: LM.APP.targetLang }, (d.c.examples || []).map(function (x) { return el("p", { class: "lab-diff-ex", text: x }); }))]);
         }))
       ]))) : el("p", { class: "tool-note", text: "No rule is written for this pair yet. Compare the timelines and the forms above." })
     ]));

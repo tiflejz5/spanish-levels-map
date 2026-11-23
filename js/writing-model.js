@@ -83,7 +83,7 @@ window.LM = window.LM || {};
 
     // ----- text and comments
     const layout = el("div", { class: "wz-layout" });
-    const textCol = el("div", { class: "wz-text", lang: "en", "data-fc-selectable": "" });
+    const textCol = el("div", { class: "wz-text", lang: LM.APP.targetLang, "data-fc-selectable": "" });
     const margin = el("aside", { class: "wz-margin", "aria-label": "Comments on the text" });
     const lines = model.split("\n");
     let offset = 0, k = 0;

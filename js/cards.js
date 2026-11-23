@@ -160,7 +160,7 @@ window.LM = window.LM || {};
     const nodes = [];
     if (card.type === "cloze") {
       const c = clozeParts(card);
-      nodes.push(el("p", { class: "fc-text", lang: "en" }, c.ok
+      nodes.push(el("p", { class: "fc-text", lang: LM.APP.targetLang }, c.ok
         ? [document.createTextNode(c.before), el("span", { class: "fc-blank", "aria-label": "gap" }, "_____"), document.createTextNode(c.after)]
         : [document.createTextNode(card.text)]));
     } else {
@@ -183,20 +183,20 @@ window.LM = window.LM || {};
     const answers = L().answersOf(card);
     if (card.type === "cloze") {
       const c = clozeParts(card);
-      nodes.push(el("p", { class: "fc-text", lang: "en" }, c.ok
+      nodes.push(el("p", { class: "fc-text", lang: LM.APP.targetLang }, c.ok
         ? [document.createTextNode(c.before), el("strong", { class: "fc-answer", text: c.answers[0] }), document.createTextNode(c.after)]
         : [document.createTextNode(card.text)]));
     } else {
       nodes.push(el("p", { class: "fc-text fc-back" }, el("strong", { class: "fc-answer", text: card.back })));
     }
     if (answers.length > 1) nodes.push(el("p", { class: "fc-extra" }, [el("span", { class: "review-label", text: "Also accepted: " }), document.createTextNode(answers.slice(1).join(", "))]));
-    if (card.example) nodes.push(el("p", { class: "fc-extra", lang: "en" }, [el("span", { class: "review-label", text: "Example: " }), document.createTextNode(card.example)]));
+    if (card.example) nodes.push(el("p", { class: "fc-extra", lang: LM.APP.targetLang }, [el("span", { class: "review-label", text: "Example: " }), document.createTextNode(card.example)]));
     // "My words": the meaning (when there is one), extra examples and the source
     if (card.word && card.hint && card.type === "cloze") nodes.push(el("p", { class: "fc-extra" }, [el("span", { class: "review-label", text: "Meaning: " }), document.createTextNode(card.hint)]));
     if (card.examples && card.examples.length) {
       nodes.push(el("div", { class: "fc-extra fc-examples" }, [
         el("span", { class: "review-label", text: card.examples.length === 1 ? "Second example:" : "More examples:" }),
-        el("ul", { class: "fc-example-list", lang: "en" }, card.examples.map(function (x) { return el("li", { text: x }); }))
+        el("ul", { class: "fc-example-list", lang: LM.APP.targetLang }, card.examples.map(function (x) { return el("li", { text: x }); }))
       ]));
     }
     if (card.source && (card.source.route || card.source.title)) {
@@ -639,8 +639,8 @@ window.LM = window.LM || {};
     if (typedMode) {
       input = el("input", { type: "text", class: "field fc-input", id: "fc-input", autocomplete: "off", autocapitalize: "off", spellcheck: "false",
         "aria-label": "Your answer", value: session.typed ? session.typed.input : "", disabled: session.revealed });
-      if (session.typed) input.classList.add(session.typed.result.result === "exact" ? "is-ok" : session.typed.result.result === "typo" ? "is-close" : "is-bad");
-      cardNode.appendChild(el("div", { class: "fc-type-row" }, [
+      if (session.typed) input.classList.add(session.typed.result.result === "exact" ? "is-ok" : session.typed.result.near ? "is-close" : "is-bad");
+      cardNode.appendChild(el("div", { class: "fc-type-row", "data-charbar": session.revealed ? null : "" }, [
         el("label", { class: "field-label", for: "fc-input", text: "Type the answer and press Enter" }),
         input
       ]));
@@ -651,11 +651,14 @@ window.LM = window.LM || {};
     const result = el("p", { class: "fc-result", "aria-live": "polite" });
     if (session.typed) {
       const r = session.typed.result;
-      result.className = "fc-result is-" + r.result;
-      result.replaceChildren(
-        LM.icon(r.result === "exact" ? "check" : r.result === "typo" ? "triangle-alert" : "x", { size: 18 }),
-        document.createTextNode(" " + (r.result === "exact" ? "Right!" : r.result === "typo" ? "Almost right (a typo). Right answer: " + r.expected : r.result === "empty" ? "No answer." : "Not right. Right answer: " + r.expected))
-      );
+      // Near misses (spec 05 §2): "Almost. Check the accents: <closest>" in bold; a lenient right answer keeps the reminder
+      const strong = function (t) { return el("strong", { lang: LM.APP.targetLang, text: t }); };
+      const parts = r.result === "exact"
+        ? (r.lenient ? [" Right! ", el("span", { class: "fc-result-note" }, [LM.exLogic.nearText(r.near), strong(r.expected)])] : [" Right!"])
+        : r.near ? [" " + LM.exLogic.nearText(r.near), strong(r.expected)]
+          : r.result === "empty" ? [" No answer."] : [" Not right. Right answer: ", strong(r.expected)];
+      result.className = "fc-result is-" + (r.result === "exact" ? "exact" : r.near ? "near" : r.result);
+      result.replaceChildren.apply(result, [LM.icon(r.result === "exact" ? "check" : r.near ? "triangle-alert" : "x", { size: 18 })].concat(parts));
     }
     cardNode.appendChild(result);
 
@@ -691,6 +694,7 @@ window.LM = window.LM || {};
     ]));
     root.appendChild(el("p", { class: "tool-note fc-keys", text: "Shortcuts: Space – show / Good, 1–4 – ratings, S – play, Z – undo, W – suspend, B – put off" + (own ? ", E – edit" : "") + ", ? – list." }));
     root.appendChild(liveNode);
+    autoPlay(card);
 
     // Focus: the typing field or the main button
     setTimeout(function () {
@@ -700,12 +704,24 @@ window.LM = window.LM || {};
   }
 
   /** The card's sentence for playback (S): a cloze gap as a pause, after revealing the answer; text not in the target language is not read. */
-  function cardSpeech(card, revealed) {
-    const c = card.type === "cloze" ? L().parseCloze(card.text) : null;
-    if (c && c.ok) return (c.before + (revealed ? c.answers[0] : " … ") + c.after).replace(/\s+/g, " ").trim();
-    const front = String(card.front || ""), back = String(card.back || "");
-    if (front && !L().isPolish(front)) return front;
-    return revealed && back && !L().isPolish(back) ? back : "";
+  function cardSpeech(card, revealed) { return L().cardSpeech(card, revealed); }
+
+  /**
+   * Optional auto-play (preference autoPlayCards, spec 06 E5): the target-language side once per card side —
+   * the front when it is target text (a cloze with the gap as a pause), the answer after revealing. Never English.
+   */
+  function autoPlay(card) {
+    if (!pref("autoPlayCards") || !LM.speech || !LM.speech.available()) return;
+    const key = card.id + (session.revealed ? ":back" : ":front");
+    if (session.autoKey === key) return;
+    session.autoKey = key;
+    const text = cardSpeech(card, session.revealed);
+    if (text && text !== session.autoText) { session.autoText = text; LM.speech.speak(text, { force: true }); }
+  }
+
+  /** A learning setting of the active profile (lenientAccents, autoPlayCards); false without a profile. */
+  function pref(key) {
+    try { return !!(LM.profileData && LM.app && LM.app.getActiveProfile() && LM.profileData.prefs()[key]); } catch (e) { return false; }
   }
 
   function reveal() {
@@ -716,7 +732,7 @@ window.LM = window.LM || {};
 
   function checkTyped(card, value) {
     if (!session || session.revealed) return;
-    session.typed = { input: value, result: L().checkAnswer(value, L().answersOf(card)) };
+    session.typed = { input: value, result: L().checkAnswer(value, L().answersOf(card), { lenientAccents: pref("lenientAccents") }) };
     session.revealed = true;
     paintSession();
   }

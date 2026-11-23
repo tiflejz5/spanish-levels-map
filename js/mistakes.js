@@ -96,15 +96,17 @@ window.LM = window.LM || {};
     const n = ++formCounter;
     const ids = function (name) { return "jf-" + n + "-" + name; };
 
-    function area(name, max, rows) {
-      const t = el("textarea", { id: ids(name), class: "field", rows: String(rows || 2), maxlength: String(max) });
+    // Answer fields hold target-language text: lang and the special-character bar (spec 06 E3)
+    function area(name, max, rows, target) {
+      const t = el("textarea", { id: ids(name), class: "field", rows: String(rows || 2), maxlength: String(max),
+        lang: target ? LM.APP.targetLang : null, "data-charbar": target ? "" : null });
       t.value = v[name] || "";
       return t;
     }
 
     const context = area("context", L.context, 3);
-    const myAnswer = area("myAnswer", L.myAnswer, 2);
-    const correct = area("correct", L.correct, 2);
+    const myAnswer = area("myAnswer", L.myAnswer, 2, true);
+    const correct = area("correct", L.correct, 2, true);
     const rule = area("rule", L.rule, 2);
     const source = el("input", { id: ids("source"), class: "field", type: "text", maxlength: String(L.source), value: v.source, placeholder: "e.g. Mock test 1, part 4, question 29", autocomplete: "off" });
     const category = el("select", { id: ids("category"), class: "field" }, pd().CATEGORIES.map(function (c) {

@@ -258,6 +258,150 @@ async function main() {
     await s.ctx.close();
   });
 
+  console.log("\nLanguage layer (spec 05, spec 06 E3–E5; data from tools/fixtures/lang/)");
+  const BANK = JSON.parse(fs.readFileSync(path.join(ROOT, "tools", "fixtures", "lang", "exercises.json"), "utf8"));
+  const bankItem = function (id) { for (const s of BANK.sets) for (const it of s.items) if (it.id === id) return Object.assign({ topic: a1Topics[0].id, level: "A1" }, it); return null; };
+  /** Voices for a test: a target-language voice, or only a voice of the UI language (the real browser may have none at all). */
+  async function withVoices(ctx, target) {
+    await ctx.addInitScript(function (on) {
+      // built on first use, when LM.APP (js/config.js) is loaded: a voice of the first configured locale, and an English one
+      speechSynthesis.getVoices = function () {
+        const v = [{ lang: LM.APP.uiLang, name: "ui", localService: true, voiceURI: "ui" }];
+        if (on) v.unshift({ lang: LM.APP.speech.voices[0], name: "target", localService: true, voiceURI: "t" });
+        return v;
+      };
+      speechSynthesis.speak = function () {};
+    }, !!target);
+  }
+  async function startItem(page, it) {
+    await page.evaluate(function (x) { LM.exercises.startCustom({ items: [x], mode: "learn", autostart: true, title: "E2E" }); }, it);
+    await page.waitForTimeout(500);
+  }
+  await test("character bar: inserts at the cursor and keeps the focus; Alt + letter gives the marked form", async function () {
+    const s = await session(1280, 800, true);
+    await visit(s.page, "#/practice", 600);
+    const it = bankItem("fx-ser-estar-1-02");
+    await startItem(s.page, it);
+    const plan = await s.page.evaluate(function (word) {
+      const i = Array.prototype.findIndex.call(word, function (c) { return LM.APP.chars.indexOf(c) !== -1; });
+      return { before: word.slice(0, i), ch: word[i], after: word.slice(i + 1), base: LM.lang.keyBase(word[i]), keys: document.querySelectorAll(".ex-body .charbar-key").length, n: LM.APP.chars.length };
+    }, it.accepted[0]);
+    ok(plan.keys === plan.n, "bar keys: " + plan.keys);
+    await s.page.click(".ex-body input");
+    await s.page.keyboard.type(plan.before);
+    await s.page.click('.charbar-key[data-char="' + plan.ch + '"]');
+    await s.page.keyboard.type(plan.after);
+    ok(await s.page.inputValue(".ex-body input") === it.accepted[0], "bar insert: " + await s.page.inputValue(".ex-body input"));
+    ok(await s.page.evaluate(function () { return document.activeElement === document.querySelector(".ex-body input"); }), "focus left the field");
+    await s.page.fill(".ex-body input", plan.before);
+    await s.page.keyboard.press("Alt+Key" + plan.base.toUpperCase());
+    ok(await s.page.inputValue(".ex-body input") === plan.before + plan.ch, "Alt + letter: " + await s.page.inputValue(".ex-body input"));
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+  await test("answer check: accents-only is wrong with the accents hint; with lenientAccents right, the reminder stays, the attempt is marked lenient", async function () {
+    const s = await session(1280, 800, true);
+    await visit(s.page, "#/practice", 600);
+    const it = bankItem("fx-ser-estar-1-02");
+    const plain = await s.page.evaluate(function (w) { return LM.lang.stripMarks(w); }, it.accepted[0]);
+    await startItem(s.page, it);
+    await s.page.fill(".ex-body input", plain);
+    await s.page.click(".ex-check");
+    await s.page.waitForTimeout(300);
+    let t = await s.page.innerText(".ex-status");
+    ok(/Not quite/.test(t) && /Check the accents/.test(t) && t.indexOf(it.accepted[0]) !== -1, "strict: " + t);
+    await s.page.evaluate(function () { LM.profileData.setPref("lenientAccents", true); });
+    await startItem(s.page, it);
+    await s.page.fill(".ex-body input", plain);
+    await s.page.click(".ex-check");
+    await s.page.waitForTimeout(300);
+    t = await s.page.innerText(".ex-status");
+    ok(/Right!/.test(t) && /Check the accents/.test(t) && /counted as right/.test(t), "lenient: " + t);
+    const last = await s.page.evaluate(function () { const a = LM.profileData.attempts().items; return a[a.length - 1]; });
+    ok(last.correct === true && last.lenient === true, "attempt: " + JSON.stringify(last));
+    await s.ctx.close();
+  });
+  await test("topic page: lang on italics, the target column and its glosses; listen buttons per row only with a voice", async function () {
+    const s = await session(1280, 800, true);
+    await withVoices(s.ctx, true);
+    await visit(s.page, "#/a1/verbs-gustar", 900);
+    const r = await s.page.evaluate(function () {
+      const T = LM.APP.targetLang;
+      const rows = document.querySelectorAll(".md-examples tbody tr");
+      return {
+        em: document.querySelectorAll("#view em").length, emLang: document.querySelectorAll("#view em[lang='" + T + "']").length,
+        rows: rows.length, cells: document.querySelectorAll(".md-examples td.md-target-cell .md-target[lang='" + T + "']").length,
+        glossOutside: Array.prototype.every.call(document.querySelectorAll(".md-gloss"), function (g) { return !g.closest("[lang='" + T + "']"); }),
+        visibleButtons: Array.prototype.filter.call(document.querySelectorAll(".md-examples .listen-btn"), function (b) { return b.offsetParent !== null; }).length,
+        listen: Array.prototype.every.call(rows, function (tr) { return tr.getAttribute("data-listen") && tr.getAttribute("data-listen").indexOf("(") === -1; }),
+        voice: document.documentElement.getAttribute("data-voice")
+      };
+    });
+    ok(r.em > 0 && r.em === r.emLang, "italics: " + r.emLang + "/" + r.em);
+    ok(r.rows > 0 && r.cells === r.rows, "target cells: " + r.cells + "/" + r.rows);
+    ok(r.glossOutside, "a gloss inside a lang span");
+    ok(r.voice === "ok" && r.visibleButtons === r.rows && r.listen, JSON.stringify(r));
+    await s.ctx.close();
+    const n = await session(1280, 800, true);
+    await withVoices(n.ctx, null);
+    await visit(n.page, "#/a1/verbs-gustar", 900);
+    const hidden = await n.page.evaluate(function () {
+      return { voice: document.documentElement.getAttribute("data-voice"), visible: Array.prototype.filter.call(document.querySelectorAll(".listen-btn"), function (b) { return b.offsetParent !== null; }).length };
+    });
+    ok(hidden.voice === "none" && hidden.visible === 0, "no voice: " + JSON.stringify(hidden));
+    await startItem(n.page, bankItem("fx-preterito-1-04"));
+    ok(/has no .* voice/.test(await n.page.innerText(".ex-card")), "dictation without a voice: no message");
+    await n.ctx.close();
+  });
+  await test("quotes: target-language lines, the gloss outside, one listen button; My words menu only on target-language text", async function () {
+    const s = await session(1280, 800, true);
+    await withVoices(s.ctx, true);
+    await visit(s.page, "#/a1/verbs-gustar", 900);
+    const q = await s.page.evaluate(function () {
+      const ex = document.querySelector(".md-examples .md-target").textContent;
+      const box = document.createElement("article");
+      box.className = "md";
+      box.appendChild(LM.markdown.render(LM.markdown.parse("> A: " + ex + " (gloss)\n> B: " + ex).blocks));
+      document.getElementById("view").appendChild(box);
+      const bq = box.querySelector("blockquote");
+      return { spans: bq.querySelectorAll(".md-target[lang='" + LM.APP.targetLang + "']").length, gloss: bq.querySelector(".md-gloss").textContent, buttons: bq.querySelectorAll(".listen-btn").length, listen: bq.getAttribute("data-listen").split("\n").length };
+    });
+    ok(q.spans === 2 && q.gloss === "(gloss)" && q.buttons === 1 && q.listen === 2, JSON.stringify(q));
+    const menuFor = async function (sel) {
+      await s.page.evaluate(function (selector) {
+        const host = document.querySelector(selector);
+        host.scrollIntoView({ block: "center" });
+        const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT);
+        const n = walker.nextNode();
+        const word = /\p{L}{3,}/u.exec(n.nodeValue);
+        const r = document.createRange();
+        r.setStart(n, word.index); r.setEnd(n, word.index + word[0].length);
+        getSelection().removeAllRanges(); getSelection().addRange(r);
+      }, sel);
+      await s.page.waitForTimeout(400);
+      return s.page.evaluate(function () { const m = document.querySelector(".fc-sel-menu"); return m && !m.hidden ? m.innerText : ""; });
+    };
+    ok(/Add to My words/.test(await menuFor(".md-examples .md-target")), "no Add to My words on target-language text");
+    const en = await menuFor(".md-examples td:not(.md-target-cell)");
+    ok(en && !/Add to My words/.test(en), "Add to My words on English text: " + en);
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+  await test("settings: the voice variant radios change the preference (one checked)", async function () {
+    const s = await session(1280, 800, true);
+    await withVoices(s.ctx, true);
+    await visit(s.page, "#/review", 700);
+    await s.page.click("#profile-btn");
+    await s.page.waitForTimeout(300);
+    const radios = await s.page.locator(".menu-radio").count();
+    ok(radios >= 2, "voice radios: " + radios);
+    await s.page.locator(".menu-radio").nth(1).click();
+    const pref = await s.page.evaluate(function () { return { v: LM.profileData.prefs().voiceVariant, want: LM.APP.speech.variants[1].id, checked: document.querySelectorAll(".menu-radio[aria-checked='true']").length }; });
+    ok(pref.v === pref.want && pref.checked === 1, JSON.stringify(pref));
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+
   console.log("\nLayout");
   await test("no horizontal scroll at 320 px on the main routes", async function () {
     const s = await session(320, 740, true);

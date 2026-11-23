@@ -352,7 +352,7 @@ window.LM = window.LM || {};
     const decks = userDecks();
     const target = el("select", { id: "fc-i-deck", class: "field" }, decks.map(function (d) { return el("option", { value: d.id, selected: d.id === importTarget, text: d.title }); })
       .concat([el("option", { value: "__new", selected: !decks.length || !importTarget, text: "+ New deck" })]));
-    const area = el("textarea", { id: "fc-i-text", class: "field", rows: "8", placeholder: "type\tfront\tback\nbasic\tEstoy de acuerdo.\tI agree.\ncloze\tAyer {{fui}} al cine.", spellcheck: "false" });
+    const area = el("textarea", { id: "fc-i-text", class: "field", rows: "8", placeholder: "type\tfront\tback\n" + LM.APP.importSample, spellcheck: "false" });
     const file = el("input", { id: "fc-i-file", type: "file", accept: ".tsv,.csv,.txt,text/tab-separated-values,text/csv,text/plain" });
     const out = el("section", { class: "fc-import-preview", "aria-live": "polite" });
     file.addEventListener("change", function () {

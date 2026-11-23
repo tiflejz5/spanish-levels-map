@@ -37,24 +37,10 @@ window.LM = window.LM || {};
   // EXAMINER'S VOICE (Web Speech API, the same way as listening tasks)
   // =====================================================================
 
-  function synthOk() { return "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function"; }
-  function voiceOk() {
-    if (!synthOk()) return false;
-    const v = window.speechSynthesis.getVoices();
-    return !v.length || v.some(function (x) { return /^en/i.test(x.lang); });
-  }
-  function stopSpeech() { if (synthOk()) window.speechSynthesis.cancel(); }
-  function speak(text) {
-    if (!voiceOk()) return;
-    const s = window.speechSynthesis;
-    s.cancel();
-    const u = new window.SpeechSynthesisUtterance(text);
-    const vs = s.getVoices();
-    const v = vs.find(function (x) { return /^en[-_]GB/i.test(x.lang); }) || vs.find(function (x) { return /^en/i.test(x.lang); });
-    if (v) { u.voice = v; u.lang = v.lang; } else u.lang = "en-GB";
-    u.rate = 0.9;
-    s.speak(u);
-  }
+  // LM.speech (js/speech.js): target-language voice, voice variant, no-voice state
+  function voiceOk() { return LM.speech.available(); }
+  function stopSpeech() { LM.speech.stop(); }
+  function speak(text) { if (voiceOk()) LM.speech.speak(text, { force: true }); }
 
   // =====================================================================
   // TIMER (start / pause, reset, a bar, 30 s and 10 s announcements)
@@ -349,7 +335,7 @@ window.LM = window.LM || {};
 
     function phrasesBox(list) {
       if (!list || !list.length) return null;
-      return el("details", { class: "sp-phrases" }, [el("summary", { text: "Useful phrases" }), el("ul", { lang: "en" }, list.map(function (p) { return el("li", { text: p }); }))]);
+      return el("details", { class: "sp-phrases" }, [el("summary", { text: "Useful phrases" }), el("ul", { lang: LM.APP.targetLang }, list.map(function (p) { return el("li", { text: p }); }))]);
     }
 
     /** Questions one at a time: "Next question", "Play" and (when on) reading by the examiner. */
@@ -361,7 +347,7 @@ window.LM = window.LM || {};
       function paint(auto) {
         box.replaceChildren(
           el("p", { class: "sp-q-count", text: (label || "Question") + " " + (n + 1) + " of " + questions.length }),
-          el("p", { class: "sp-q-text", lang: "en", text: questions[n] })
+          el("p", { class: "sp-q-text", lang: LM.APP.targetLang, text: questions[n] })
         );
         nextBtn.replaceChildren.apply(nextBtn, LM.ui.withIcon("arrow-right", n < questions.length - 1 ? "Next question" : "From the start"));
         if (auto) say(questions[n]);
@@ -399,7 +385,7 @@ window.LM = window.LM || {};
       const more = el("button", { type: "button", class: "btn btn-secondary" }, LM.ui.withIcon("arrow-right", "Next – the examiner's next line"));
       function paintLines(auto) {
         list.replaceChildren.apply(list, lines.slice(0, shown).map(function (l) {
-          return el("li", { class: "sp-line" }, [el("span", { class: "sp-line-who", text: "Examiner" }), el("span", { lang: "en", text: l })]);
+          return el("li", { class: "sp-line" }, [el("span", { class: "sp-line-who", text: "Examiner" }), el("span", { lang: LM.APP.targetLang, text: l })]);
         }));
         more.hidden = shown >= lines.length;
         if (auto) say(lines[shown - 1]);
@@ -417,14 +403,14 @@ window.LM = window.LM || {};
     }
 
     function paintPicture(panel, P, c, ctx) {
-      panel.appendChild(el("figure", { class: "sp-picture sp-picture-wide" }, [el("span", { class: "sp-picture-mark", "aria-hidden": "true", text: "Photo" }), el("figcaption", null, [el("span", { class: "review-label", text: "Imagine a photo: " }), el("span", { lang: "en", text: c.description })])]));
+      panel.appendChild(el("figure", { class: "sp-picture sp-picture-wide" }, [el("span", { class: "sp-picture-mark", "aria-hidden": "true", text: "Photo" }), el("figcaption", null, [el("span", { class: "review-label", text: "Imagine a photo: " }), el("span", { lang: LM.APP.targetLang, text: c.description })])]));
       panel.appendChild(el("div", { class: "sp-part-body" }, [questionStepper(c.questions), mainTimer(ctx, P.seconds, "Description and answers (approximate)").node]));
       U.appendChildren(panel, phrasesBox(c.usefulPhrases));
     }
 
     function paintChoice(panel, P, c, ctx) {
       panel.appendChild(el("p", { class: "sp-situation", text: c.situation }));
-      panel.appendChild(el("ol", { class: "sp-options-num", "aria-label": "Pictures to choose from" }, c.options.map(function (o) { return el("li", { lang: "en", text: o }); })));
+      panel.appendChild(el("ol", { class: "sp-options-num", "aria-label": "Pictures to choose from" }, c.options.map(function (o) { return el("li", { lang: LM.APP.targetLang, text: o }); })));
       panel.appendChild(el("p", { class: "review-label", text: "In your answer:" }));
       panel.appendChild(el("ul", { class: "sp-elements" }, c.criteria.map(function (e) { return el("li", { text: e }); })));
       panel.appendChild(prepTimer(P.prepSeconds));
@@ -442,20 +428,20 @@ window.LM = window.LM || {};
     function paintB2Card(panel, P, c, ctx) {
       const partner = el("div", { class: "sp-partner", hidden: true }, [
         el("p", { class: "review-label", text: "Question to your partner (about 30 seconds):" }),
-        el("p", { class: "sp-q-text", lang: "en", text: PARTNER_QUESTION })
+        el("p", { class: "sp-q-text", lang: LM.APP.targetLang, text: PARTNER_QUESTION })
       ]);
       const partnerBtn = el("button", { type: "button", class: "btn btn-secondary", hidden: true, onclick: function () { partner.hidden = false; partnerBtn.hidden = true; partner.focus(); say(PARTNER_QUESTION); } }, "Show the question to your partner");
       partner.tabIndex = -1;
       const timer = mainTimer(ctx, P.seconds, "Your turn", { onEnd: function () { partnerBtn.hidden = false; } });
       panel.appendChild(el("p", { class: "sp-intro", text: "Instead of photos you have two situations. Imagine them and speak for a minute." }));
-      panel.appendChild(el("p", { class: "sp-q-text sp-card-question", lang: "en", text: c.question }));
+      panel.appendChild(el("p", { class: "sp-q-text sp-card-question", lang: LM.APP.targetLang, text: c.question }));
       panel.appendChild(el("div", { class: "sp-pictures" }, [
-        el("figure", { class: "sp-picture" }, [el("span", { class: "sp-picture-mark", "aria-hidden": "true", text: "A" }), el("figcaption", { lang: "en", text: c.a })]),
-        el("figure", { class: "sp-picture" }, [el("span", { class: "sp-picture-mark", "aria-hidden": "true", text: "B" }), el("figcaption", { lang: "en", text: c.b })])
+        el("figure", { class: "sp-picture" }, [el("span", { class: "sp-picture-mark", "aria-hidden": "true", text: "A" }), el("figcaption", { lang: LM.APP.targetLang, text: c.a })]),
+        el("figure", { class: "sp-picture" }, [el("span", { class: "sp-picture-mark", "aria-hidden": "true", text: "B" }), el("figcaption", { lang: LM.APP.targetLang, text: c.b })])
       ]));
       panel.appendChild(el("aside", { class: "callout callout-tip sp-reminder", "aria-label": "Reminder" }, [
         el("p", { class: "callout-title", text: "Compare and speculate, do not describe one by one" }),
-        el("p", { lang: "en", text: "Both pictures show… · In the first one…, whereas in the second… · They might be… because… · It looks as if…" })
+        el("p", { lang: LM.APP.targetLang, text: "Both pictures show… · In the first one…, whereas in the second… · They might be… because… · It looks as if…" })
       ]));
       panel.appendChild(timer.node);
       panel.appendChild(el("div", { class: "sp-actions" }, [partnerBtn, el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(c.question); } }, LM.ui.withIcon("play", "Play the question"))]));
@@ -482,7 +468,7 @@ window.LM = window.LM || {};
       }
       const discussion = mainTimer(ctx, P.discussionSeconds, "Discussion", { onEnd: showDecision });
       decision.appendChild(el("p", { class: "review-label", text: "Now decide together (about a minute):" }));
-      decision.appendChild(el("p", { class: "sp-q-text", lang: "en", text: t.decision }));
+      decision.appendChild(el("p", { class: "sp-q-text", lang: LM.APP.targetLang, text: t.decision }));
       decision.appendChild(decisionTimer.node);
 
       panel.appendChild(el("fieldset", { class: "sp-modes" }, [el("legend", { class: "field-label", text: "Mode" })].concat(modes.map(function (m) {
@@ -494,8 +480,8 @@ window.LM = window.LM || {};
       paintMode();
       panel.appendChild(modeNote);
       panel.appendChild(el("div", { class: "sp-mindmap" }, [
-        el("p", { class: "sp-central", lang: "en", text: t.central }),
-        el("ul", { class: "sp-options", "aria-label": "Options to discuss" }, t.options.map(function (o) { return el("li", { class: "sp-option", lang: "en", text: o }); }))
+        el("p", { class: "sp-central", lang: LM.APP.targetLang, text: t.central }),
+        el("ul", { class: "sp-options", "aria-label": "Options to discuss" }, t.options.map(function (o) { return el("li", { class: "sp-option", lang: LM.APP.targetLang, text: o }); }))
       ]));
       panel.appendChild(discussion.node);
       panel.appendChild(el("div", { class: "sp-actions" }, [toDecision, el("button", { type: "button", class: "btn btn-link", hidden: !voiceOk(), onclick: function () { speak(t.central); } }, LM.ui.withIcon("play", "Play the task"))]));

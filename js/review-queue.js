@@ -205,7 +205,7 @@ window.LM = window.LM || {};
 
 
 
-  function noVoice() { return !!(LM.exercises && LM.exercises.noEnglishVoice && LM.exercises.noEnglishVoice()); }
+  function noVoice() { return !!(LM.speech && !LM.speech.available()); }
 
   function weakNow() {
     return LM.stats && LM.profileData ? weakTasks(LM.profileData.attempts(), LM.learn.today(), { noVoice: noVoice() }) : [];

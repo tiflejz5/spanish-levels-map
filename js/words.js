@@ -8,7 +8,8 @@
  *                           elements with the data-fc-selectable attribute (model answers, phrase bank, cheat sheets)
  *   Card                    cloze with the context sentence (LM.cardsLogic.makeWordCard), deck u-moje-slowa
  *
- * Logic without DOM (sentence, gap, language check, deduplication, field cleaning): js/cards-logic.js.
+ * Logic without DOM (sentence, gap, deduplication, field cleaning): js/cards-logic.js. "Add to My words" and the underlining
+ * work only on target-language text: the nearest lang attribute names LM.APP.targetLang (spec 05 §5, set by js/markdown.js).
  * Adding a word is NOT a study-day activity (too easy to pad the streak). User content only as text.
  */
 window.LM = window.LM || {};
@@ -39,14 +40,16 @@ window.LM = window.LM || {};
 
   function elementOf(node) { return node && (node.nodeType === 1 ? node : node.parentElement); }
 
-  /** A table cell in the "English" / "Meaning" column — the text there is not in the target language (spec 14, 3.4). Stage 3 switches to lang attributes. */
-  function inNativeColumn(cell) {
-    const table = cell.closest && cell.closest("table");
-    if (!table || !/^(TD|TH)$/.test(cell.tagName)) return false;
-    const idx = Array.prototype.indexOf.call(cell.parentElement.children, cell);
-    const head = table.querySelector("thead tr") || table.rows[0];
-    const h = head && head.cells[idx];
-    return !!h && h !== cell && /^\s*(english|meaning)\b/i.test(h.textContent);
+  /**
+   * Whether a node is target-language text: its nearest lang attribute names the target language (spec 05 §5).
+   * The page itself is lang="en", so English text — explanations, the English column of a table — never qualifies.
+   */
+  function inTarget(node) {
+    const e = elementOf(node);
+    const host = e && e.closest ? e.closest("[lang]") : null;
+    const l = host ? String(host.getAttribute("lang") || "").toLowerCase() : "";
+    const t = String(LM.APP.targetLang).toLowerCase();
+    return l === t || l.indexOf(t + "-") === 0;
   }
 
   function pageTitle() {
@@ -73,11 +76,14 @@ window.LM = window.LM || {};
     if (anchor.closest(".ex-passage-text, .ex-transcript, .ex-set-transcript") && !(LM.exercises && LM.exercises.textSelectable && LM.exercises.textSelectable())) return null;
     const text = s.toString().replace(/\s+/g, " ").trim().slice(0, 300);
     if (!text) return null;
-    const block = anchor.closest(BLOCKS) || area;
+    let block = anchor.closest(BLOCKS) || area;
+    // Target-language text inside an English block (*italics*, a quote line): the sentence comes from that span only
+    const host = anchor.closest("[lang]");
+    if (host && host !== block && block.contains(host) && inTarget(host)) block = host;
     const word = L().wordFromSelection(text);
     return {
       text: text, word: word, block: block, blockText: block.textContent || "",
-      canWord: !!word && !L().isPolish(text) && !inNativeColumn(block),
+      canWord: !!word && inTarget(s.anchorNode) && inTarget(s.focusNode),
       source: { route: /^#\/[^\s<>"]*$/.test(location.hash || "") ? location.hash.slice(0, 200) : "", title: pageTitle() }
     };
   }
@@ -483,7 +489,8 @@ window.LM = window.LM || {};
         const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
           acceptNode: function (n) {
             const p = n.parentElement;
-            return p && !p.closest(HL_SKIP) && n.nodeValue.length > 2 ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            // only target-language text (spec 05 §5): English explanations are never underlined
+            return p && !p.closest(HL_SKIP) && n.nodeValue.length > 2 && inTarget(p) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
           }
         });
         const nodes = [];
