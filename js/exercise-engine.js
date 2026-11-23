@@ -937,7 +937,7 @@ window.LM = window.LM || {};
     area.value = st.text;
     return [
       el("p", { class: "ex-context" }, el("span", { class: "review-label", text: "Translate into " + LM.APP.language + ":" })),
-      el("p", { class: "ex-prompt", id: "ex-prompt", lang: "pl", text: item.source }),
+      el("p", { class: "ex-prompt", id: "ex-prompt", text: item.source }),
       el("label", { class: "field-label", for: "ex-answer", text: "Your translation" }),
       area,
       done ? null : el("div", { class: "ex-tools" }, [

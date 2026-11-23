@@ -181,14 +181,4 @@ window.LM = window.LM || {};
   LM.plural = function (n, one, other) {
     return LM.fmt.number(n) + " " + (n === 1 ? one : (other || one + "s"));
   };
-
-  /**
-   * TEMPORARY (stage 2): the Polish three-form plural of the reference app, used only by files not translated yet.
-   * Removed at the end of stage 2; a unit test checks that nothing calls it then.
-   */
-  LM.pluralPl = function (n, one, few, many) {
-    if (n === 1) return one;
-    const d = n % 10, t = n % 100;
-    return d >= 2 && d <= 4 && (t < 12 || t > 14) ? few : many;
-  };
 })(window.LM);

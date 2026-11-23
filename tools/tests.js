@@ -1649,22 +1649,25 @@ legacyTest("exportWordsCsv: słowo; znaczenie; zdanie; źródło, cudzysłowy i 
   assert.strictEqual(csv[2], 'ephemeral;;"He said ""hi"".";');
 });
 
-legacyTest("examBoxAnchor: ramki egzaminów przed „Życie i egzamin” na 3 podstronach (A1, B2, C2) i warianty skrajne", function () {
+test("examBoxAnchor: exam boxes before \"Common mistakes\" on the example topic page, and edge cases", function () {
   const fs = require("fs");
   const EL = global.LM.examLogic;
-  function titles(file) {
-    return fs.readFileSync(path.join(LEGACY_ROOT, "niezbednik", file), "utf8").split(/\r?\n/)
-      .filter(function (l) { return /^## /.test(l); }).map(function (l) { return l.slice(3).trim(); });
-  }
-  ["a1/czasy-present-simple.md", "b2/czasy-future-continuous-perfect.md", "c2/funkcje-humor-ironia-understatement.md"].forEach(function (f) {
-    const t = titles(f);
-    const i = EL.examBoxAnchorIndex(t);
-    assert.strictEqual(t[i], "Życie i egzamin", f);
-    assert.ok(i > 0, f + ": ramki po wyjaśnieniu, nie na początku");
-  });
-  assert.strictEqual(EL.examBoxAnchorIndex(["Budowa", "Typowe błędy Polaków", "Ćwiczenie"]), 1);
-  assert.strictEqual(EL.examBoxAnchorIndex(["Budowa", "Przykłady", "Odpowiedzi"]), 2);
-  assert.strictEqual(EL.examBoxAnchorIndex(["Budowa", "Przykłady"]), -1);
+  const t = fs.readFileSync(path.join(__dirname, "..", "content", "pages", "a1", "verbs-gustar.md"), "utf8").split(/\r?\n/)
+    .filter(function (l) { return /^## /.test(l); }).map(function (l) { return l.slice(3).trim(); });
+  const i = EL.examBoxAnchorIndex(t);
+  assert.strictEqual(t[i], "Common mistakes");
+  assert.ok(i > 0, "boxes after the explanation, not at the start");
+  assert.strictEqual(EL.examBoxAnchorIndex(["How it works", "Real life vs exam", "Common mistakes"]), 1);
+  assert.strictEqual(EL.examBoxAnchorIndex(["How it works", "Examples", "Answers"]), 2);
+  assert.strictEqual(EL.examBoxAnchorIndex(["How it works", "Examples"]), -1);
+});
+
+test("countWords: white space, symbols, opening and placeholder words", function () {
+  const EL = global.LM.examLogic;
+  assert.strictEqual(EL.countWords("Hola, ¿qué tal? :) Un saludo, XYZ"), 6);
+  assert.strictEqual(EL.countWords("Hola, ¿qué tal? :) Un saludo, XYZ", "", ["XYZ"]), 5);
+  assert.strictEqual(EL.countWords("Querida Ana: te escribo", "Querida Ana:"), 2);
+  assert.strictEqual(EL.countWords("  "), 0);
 });
 
 test("myExams: data, zestaw, odpięty, przypięty, data w przeszłości", function () {
@@ -1698,11 +1701,11 @@ test("myExams: data, zestaw, odpięty, przypięty, data w przeszłości", functi
   assert.deepStrictEqual(run({ isSetDone: function (id) { return id === "c1-b"; } }), [{ id: "c1", reason: "sets", days: null }]);
 });
 
-test("formatDatePl i daysBetween", function () {
+test("formatDateLong and daysBetween", function () {
   const EL = global.LM.examLogic;
-  assert.strictEqual(EL.formatDatePl("2027-05-06"), "czwartek, 6 maja 2027");
-  assert.strictEqual(EL.formatDatePl("2027-05-12"), "środa, 12 maja 2027");
-  assert.strictEqual(EL.formatDatePl("zle"), "");
+  assert.strictEqual(EL.formatDateLong("2027-05-06"), "Thursday, May 6, 2027");
+  assert.strictEqual(EL.formatDateLong("2027-05-12"), "Wednesday, May 12, 2027");
+  assert.strictEqual(EL.formatDateLong("bad"), "");
   assert.strictEqual(EL.daysBetween("2026-11-01", "2026-10-30"), 2);
   assert.strictEqual(EL.daysBetween("2026-10-29", "2026-10-30"), -1);
 });
@@ -2655,6 +2658,14 @@ console.log("\nEnglish helpers: LM.plural and LM.fmt (spec 04 §1)");
     assert.strictEqual(LMg.fmt.percent(0.426), "43%");
     assert.strictEqual(LMg.fmt.percent(1), "100%");
     assert.strictEqual(LMg.fmt.percent(0), "0%");
+  });
+  test("the temporary Polish plural (LM.pluralPl) is gone and nothing calls it", function () {
+    const fs = require("fs");
+    assert.strictEqual(LMg.pluralPl, undefined);
+    const dir = path.join(__dirname, "..", "js");
+    fs.readdirSync(dir).filter(function (f) { return /\.js$/.test(f); }).forEach(function (f) {
+      assert.ok(!/pluralPl/.test(fs.readFileSync(path.join(dir, f), "utf8")), f + " still mentions pluralPl");
+    });
   });
 })();
 

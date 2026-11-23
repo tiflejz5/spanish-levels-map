@@ -1,16 +1,16 @@
 /*
- * writing-model.js — widok wzorca z komentarzami (paczka v6, spec 17, sekcja 1.3):
- * #/writing/models/<egzamin>/<id zadania>.
+ * writing-model.js — the view of a model answer with comments:
+ * #/writing/models/<exam>/<task id>.
  *
- *   - komputer (≥ 1024 px): tekst w kolumnie ~65 znaków, komentarze w prawym marginesie na wysokości kotwic
- *     (przy kolizji przesuwają się w dół, cienka linia łączy je z kotwicą),
- *   - węższe ekrany: kotwica z numerem; dotknięcie rozwija komentarz pod akapitem, drugi raz zwija,
- *   - kolor typu nigdy nie jest jedynym nośnikiem: numer w kółku + ikona i nazwa typu w komentarzu,
- *   - filtry typów, „Ukryj komentarze”, legenda; pod tekstem „Dlaczego to działa” i tabela kryteriów,
- *   - klawiatura: Tab po kotwicach, Enter / spacja pokazuje komentarz, aria-describedby łączy kotwicę z komentarzem,
- *   - druk: komentarze jako numerowane przypisy pod tekstem (css/print.css),
- *   - zaznaczanie tekstu: menu Słowniczka (data-fc-selectable).
- * Tekstu `model` nie zmieniamy: kotwice to dokładne fragmenty (występują w nim raz, nie nakładają się).
+ *   - computer (≥ 1024 px): text in a ~65-character column, comments in the right margin level with their anchors
+ *     (on a collision they move down; a thin line joins them to the anchor),
+ *   - narrower screens: an anchor with a number; a tap opens the comment under the paragraph, a second tap closes it,
+ *   - the type color is never the only carrier: a number in a circle + the type icon and name in the comment,
+ *   - type filters, "Hide comments", a legend; under the text "Why this works" and a criteria table,
+ *   - keyboard: Tab through the anchors, Enter / Space shows the comment, aria-describedby joins anchor and comment,
+ *   - print: comments as numbered footnotes under the text (css/print.css),
+ *   - text selection: the My words menu (data-fc-selectable).
+ * The model text is never changed: anchors are exact fragments (each occurs once, they do not overlap).
  */
 window.LM = window.LM || {};
 
@@ -23,26 +23,26 @@ window.LM = window.LM || {};
 
   function P() { return LM.writing; }
 
-  /** Kotwice w kolejności występowania: [{ start, end, type, note, criterion, element }]; błędne pomijamy z ostrzeżeniem. */
+  /** Anchors in order of appearance: [{ start, end, type, note, criterion, element }]; bad ones are skipped with a warning. */
   function placeAnnotations(model, list) {
     const out = [];
     (list || []).forEach(function (a) {
       const anchor = String(a.anchor || "");
       const i = anchor ? model.indexOf(anchor) : -1;
-      if (i === -1 || model.indexOf(anchor, i + 1) !== -1) { console.warn("Wzorzec: kotwica „" + anchor.slice(0, 40) + "…” nie występuje dokładnie raz"); return; }
+      if (i === -1 || model.indexOf(anchor, i + 1) !== -1) { console.warn("Model: the anchor “" + anchor.slice(0, 40) + "…” does not occur exactly once"); return; }
       out.push({ start: i, end: i + anchor.length, type: a.type, note: a.note || "", criterion: a.criterion, element: a.element });
     });
     out.sort(function (x, y) { return x.start - y.start; });
     return out.filter(function (a, k) { return k === 0 || a.start >= out[k - 1].end; }).map(function (a, k) { a.n = k + 1; return a; });
   }
 
-  function typeOf(a) { return P().TYPES[a.type] || P().TYPES.uwaga; }
+  function typeOf(a) { return P().TYPES[a.type] || P().TYPES.improve; }
 
   function render(view, route) {
-    document.title = "Pisanie · " + LM.APP.appTitle;
-    const back = LM.ui.breadcrumbs([{ label: "Pisanie", href: P().HASH }, { label: "Wzorzec" }]);
+    document.title = "Writing · " + LM.APP.appTitle;
+    const back = LM.ui.breadcrumbs([{ label: "Writing", href: P().HASH }, { label: "Model answer" }]);
     view.appendChild(back);
-    const status = el("p", { class: "tool-note", role: "status", text: "Wczytuję wzorzec…" });
+    const status = el("p", { class: "tool-note", role: "status", text: "Loading the model…" });
     view.appendChild(status);
     P().examList().then(function (rows) {
       if (!view.contains(status)) return;
@@ -50,7 +50,7 @@ window.LM = window.LM || {};
       const row = rows.find(function (r) { return r.exam.id === route.exam; });
       const task = row && row.tasks.find(function (t) { return t.id === route.task; });
       if (!task) {
-        view.appendChild(P().head("Nie ma takiego wzorca", "Wybierz wzorzec z listy."));
+        view.appendChild(P().head("There is no such model answer", "Choose a model from the list."));
         return;
       }
       build(view, row, task);
@@ -63,28 +63,28 @@ window.LM = window.LM || {};
     const anns = placeAnnotations(model, notes.annotations);
     const words = P().wordCount(row.exam.id, task);
     const T = row.T;
-    document.title = (task.title || task.id) + " · Pisanie · " + LM.APP.appTitle;
-    if (LM.profileData && LM.profileData.setLastPage) LM.profileData.setLastPage(location.hash, "Wzorzec: " + (task.title || task.id));
+    document.title = (task.title || task.id) + " · Writing · " + LM.APP.appTitle;
+    if (LM.profileData && LM.profileData.setLastPage) LM.profileData.setLastPage(location.hash, "Model answer: " + (task.title || task.id));
 
-    // ----- nagłówek
+    // ----- header
     view.appendChild(P().head(task.title || task.id, null));
     view.appendChild(el("p", { class: "wz-meta" }, [
       P().examChip(row.exam),
       el("span", { class: "chip", text: P().genreLabel(task.genre) }),
-      el("span", { class: "tool-note", text: words + " " + P().plural(words, "słowo", "słowa", "słów") + (T.wordRange ? " · wymagane " + T.wordRange[0] + "–" + T.wordRange[1] : "") })
+      el("span", { class: "tool-note", text: LM.plural(words, "word") + (T.wordRange ? " · required " + T.wordRange[0] + "–" + T.wordRange[1] : "") })
     ]));
     view.appendChild(el("details", { class: "wz-prompt" }, [
-      el("summary", { text: "Polecenie" }),
+      el("summary", { text: "Task" }),
       el("p", { class: "wz-prompt-text", lang: /^certyfikat-/.test(row.exam.id) ? "en" : null, text: task.prompt || "" })
     ]));
 
-    // ----- stan filtrów
+    // ----- filter state
     const state = { hidden: false, off: {} };
 
-    // ----- tekst i komentarze
+    // ----- text and comments
     const layout = el("div", { class: "wz-layout" });
     const textCol = el("div", { class: "wz-text", lang: "en", "data-fc-selectable": "" });
-    const margin = el("aside", { class: "wz-margin", "aria-label": "Komentarze do tekstu" });
+    const margin = el("aside", { class: "wz-margin", "aria-label": "Comments on the text" });
     const lines = model.split("\n");
     let offset = 0, k = 0;
     const paras = [];
@@ -118,9 +118,9 @@ window.LM = window.LM || {};
           el("span", { class: "wz-note-icon", "aria-hidden": "true" }, LM.icon(t.icon, { size: 16 })),
           el("strong", { class: "wz-note-type", text: t.label }),
           a.criterion && rubric[a.criterion] ? el("span", { class: "wz-note-crit", text: rubric[a.criterion].label }) : null,
-          a.element ? el("span", { class: "wz-note-crit", text: "Element " + a.element }) : null
+          a.element ? el("span", { class: "wz-note-crit", text: "Point " + a.element }) : null
         ]),
-        el("p", { class: "wz-note-text", lang: "pl", text: a.note })
+        el("p", { class: "wz-note-text", text: a.note })
       ]);
     });
     layout.appendChild(textCol);
@@ -130,7 +130,7 @@ window.LM = window.LM || {};
     lines_svg.setAttribute("aria-hidden", "true");
     layout.appendChild(lines_svg);
 
-    // ----- pasek filtrów
+    // ----- filter bar
     const counts = {};
     anns.forEach(function (a) { counts[a.type] = (counts[a.type] || 0) + 1; });
     const typeButtons = P().TYPE_ORDER.filter(function (t) { return counts[t]; }).map(function (t) {
@@ -145,38 +145,38 @@ window.LM = window.LM || {};
     const hideBtn = el("button", { type: "button", class: "btn btn-secondary btn-small wz-hide", "aria-pressed": "false", onclick: function () {
       state.hidden = !state.hidden;
       hideBtn.setAttribute("aria-pressed", state.hidden ? "true" : "false");
-      hideBtn.textContent = state.hidden ? "Pokaż komentarze" : "Ukryj komentarze";
+      hideBtn.textContent = state.hidden ? "Show comments" : "Hide comments";
       apply();
-    } }, "Ukryj komentarze");
-    view.appendChild(el("div", { class: "wz-toolbar", role: "group", "aria-label": "Filtry komentarzy" }, [el("div", { class: "wz-filters" }, typeButtons), hideBtn]));
+    } }, "Hide comments");
+    view.appendChild(el("div", { class: "wz-toolbar", role: "group", "aria-label": "Comment filters" }, [el("div", { class: "wz-filters" }, typeButtons), hideBtn]));
     view.appendChild(el("details", { class: "wz-legend" }, [
-      el("summary", { text: "Legenda" }),
+      el("summary", { text: "Legend" }),
       el("dl", null, P().TYPE_ORDER.filter(function (t) { return counts[t]; }).map(function (t) {
         const def = P().TYPES[t];
         return el("div", { class: "wz-legend-row" }, [el("dt", null, [el("span", { class: "wz-note-icon", "aria-hidden": "true" }, LM.icon(def.icon, { size: 16 })), " " + def.label]), el("dd", { text: def.help })]);
       })),
-      el("p", { class: "tool-note", text: "Numer przy fragmencie tekstu odpowiada numerowi komentarza. Kolor to tylko dodatek – typ komentarza podaje też ikona i nazwa." })
+      el("p", { class: "tool-note", text: "The number at a text fragment matches the number of the comment. Color is only an extra – the icon and name also give the comment type." })
     ]));
     view.appendChild(layout);
 
-    // ----- przypisy do druku
+    // ----- footnotes for print
     view.appendChild(el("section", { class: "wz-footnotes", "aria-hidden": "true" }, [
-      el("h2", { text: "Komentarze" }),
+      el("h2", { text: "Comments" }),
       el("ol", null, anns.map(function (a) { return el("li", { value: String(a.n) }, [el("strong", { text: typeOf(a).label + ": " }), a.note]); }))
     ]));
 
-    // ----- „Dlaczego to działa” i kryteria
+    // ----- "Why this works" and the criteria
     if ((notes.summary || []).length) {
       view.appendChild(el("section", { class: "card wz-why", "aria-labelledby": "wz-why-t" }, [
-        el("h2", { class: "section-title", id: "wz-why-t", text: "Dlaczego to działa" }),
-        el("ul", { lang: "pl" }, notes.summary.map(function (s) { return el("li", { text: s }); }))
+        el("h2", { class: "section-title", id: "wz-why-t", text: "Why this works" }),
+        el("ul", null, notes.summary.map(function (s) { return el("li", { text: s }); }))
       ]));
     }
     if ((T.rubric || []).length) {
       view.appendChild(el("section", { class: "card wz-crit", "aria-labelledby": "wz-crit-t" }, [
-        el("h2", { class: "section-title", id: "wz-crit-t", text: "Kryteria oceny i liczba komentarzy" }),
+        el("h2", { class: "section-title", id: "wz-crit-t", text: "Scoring criteria and number of comments" }),
         el("div", { class: "md-table-wrap" }, el("table", null, [
-          el("thead", null, el("tr", null, [el("th", { text: "Kryterium" }), el("th", { text: "Punkty" }), el("th", { text: "Komentarze" })])),
+          el("thead", null, el("tr", null, [el("th", { text: "Criterion" }), el("th", { text: "Points" }), el("th", { text: "Comments" })])),
           el("tbody", null, T.rubric.map(function (r) {
             const n = anns.filter(function (a) { return a.criterion === r.id; }).length;
             return el("tr", null, [el("td", { text: r.label }), el("td", { class: "num", text: String(r.max) }), el("td", { class: "num", text: String(n) })]);
@@ -185,10 +185,10 @@ window.LM = window.LM || {};
       ]));
     }
 
-    // ----- układ: margines (komputer) albo akordeon pod akapitem (węższe ekrany)
+    // ----- layout: margin (computer) or an accordion under the paragraph (narrower screens)
     const mq = window.matchMedia ? window.matchMedia(WIDE) : { matches: false };
-    let expanded = null; // numer rozwiniętego komentarza (tryb wąski)
-    let active = null;   // numer wyróżnionego komentarza (tryb szeroki)
+    let expanded = null; // number of the open comment (narrow mode)
+    let active = null;   // number of the highlighted comment (wide mode)
 
     function visible(a) { return !state.hidden && !state.off[a.type]; }
 
@@ -240,7 +240,7 @@ window.LM = window.LM || {};
         margin.style.minHeight = bottom + "px";
         drawLines(items);
       } else {
-        // pod akapitem, w kolejności kotwic
+        // under the paragraph, in anchor order
         const lastIn = new Map();
         anns.forEach(function (a) {
           const prev = lastIn.get(a.para) || a.para;
@@ -271,7 +271,7 @@ window.LM = window.LM || {};
     anns.forEach(function (a) {
       a.anchorEl.addEventListener("click", function (ev) {
         const sel = window.getSelection && window.getSelection();
-        if (sel && !sel.isCollapsed) return; // zaznaczanie tekstu (Słowniczek) nie przełącza komentarza
+        if (sel && !sel.isCollapsed) return; // selecting text (My words) does not toggle the comment
         ev.preventDefault();
         if (visible(a)) activate(a);
       });
@@ -289,7 +289,7 @@ window.LM = window.LM || {};
     if (mq.addEventListener) mq.addEventListener("change", place); else if (mq.addListener) mq.addListener(place);
     if (window.ResizeObserver) { const ro = new ResizeObserver(function () { place(); }); ro.observe(layout); }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(place);
-    window.addEventListener("beforeprint", function () { /* przypisy są w DOM; css/print.css ukrywa margines */ });
+    window.addEventListener("beforeprint", function () { /* the footnotes are in the DOM; css/print.css hides the margin */ });
   }
 
   LM.writingModel = { render: render, placeAnnotations: placeAnnotations };
