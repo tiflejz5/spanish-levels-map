@@ -151,7 +151,7 @@ window.LM = window.LM || {};
       let itemId = "";
       if (itemText) {
         const hit = allItems().find(function (it) { return it.label === itemText; }) ||
-          allItems().find(function (it) { return it.title.toLocaleLowerCase("pl") === itemText.toLocaleLowerCase("pl"); });
+          allItems().find(function (it) { return it.title.toLowerCase() === itemText.toLowerCase(); });
         if (!hit) return { error: "There is no such handbook topic. Choose one from the suggestions or clear the field.", focus: item };
         itemId = hit.id;
       }
@@ -233,9 +233,9 @@ window.LM = window.LM || {};
     if (filters.status === "mastered" && !(info && info.mastered)) return false;
     if (filters.category && e.category !== filters.category) return false;
     if (filters.auto && !pd().isAutoEntry(e)) return false;
-    const q = filters.query.trim().toLocaleLowerCase("pl");
+    const q = filters.query.trim().toLowerCase();
     if (q) {
-      const hay = [e.context, e.myAnswer, e.correct, e.rule, e.source, e.category].join(" ").toLocaleLowerCase("pl");
+      const hay = [e.context, e.myAnswer, e.correct, e.rule, e.source, e.category].join(" ").toLowerCase();
       if (hay.indexOf(q) === -1) return false;
     }
     return true;

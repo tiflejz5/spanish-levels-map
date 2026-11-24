@@ -39,6 +39,8 @@ const STOP_WORDS = [
 ];
 const STOP = new RegExp("(^|[^\\p{L}\\p{N}_])(" + STOP_WORDS.join("|") + ")(?=$|[^\\p{L}\\p{N}_])", "iu");
 const LOCALE = /\b(en-GB|en-US|es-ES|es-MX|es-US|es-AR|es-CO|es-419|pl-PL)\b/;
+// A locale written into a toLocale…() call ("pl", "es") is a language fact too (stage 7: toLocaleLowerCase("pl") leftovers)
+const LOCALE_CALL = /toLocale\w*\(\s*["'`]([a-z]{2,3}(?:-[A-Za-z0-9]+)?)["'`]/;
 const ES_LETTERS = /[áéíóúüñÁÉÍÓÚÜÑ¿¡]/;
 // Region names and frequent Spanish words that never occur in English code or comments (whole words)
 const ES_WORDS = new RegExp("(^|[^\\p{L}\\p{N}_])(Spain|Latin America|Mexico|Argentina|Colombia|Castilian|castellano|espa\\w*ol|hola|gracias|" +
@@ -91,6 +93,7 @@ function check() {
       if (why && !isLang && !allowed()) errors.push({ at: at, why: why, line: line.trim() });
       let warn = null;
       if (!isLang && LOCALE.test(line) && !(r === "js/utils.js" && /en-US/.test(line))) warn = "locale code " + LOCALE.exec(line)[1];
+      else if (!isLang && LOCALE_CALL.test(line)) warn = "locale code in a toLocale call: " + LOCALE_CALL.exec(line)[1];
       else if (!isLang && !why && ES_LETTERS.test(line)) warn = "Spanish letter outside js/lang.js and js/config.js";
       else if (!isLang && !why && ES_WORDS.test(line)) warn = "target-language fact \"" + ES_WORDS.exec(line)[2] + "\" outside js/lang.js and js/config.js";
       if (warn && !allowed()) (LANGUAGE_RULES_ARE_ERRORS ? errors : warnings).push({ at: at, why: warn, line: line.trim() });

@@ -741,10 +741,6 @@ window.LM = window.LM || {};
     return makeCard({ type: "basic", front: lines.join("\n").slice(0, MAX_FIELD) || "?", back: correct || "—", note: rule }).card;
   }
 
-  function sameCardContent(a, b) {
-    if (!a || !b) return false;
-    return ["type", "text", "front", "back", "note", "hint"].every(function (k) { return String(a[k] || "") === String(b[k] || ""); });
-  }
 
 
   function reviewState(interval, due, reps) {

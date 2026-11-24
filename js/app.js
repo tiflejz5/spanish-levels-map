@@ -249,9 +249,6 @@ window.LM = window.LM || {};
     LM.render.renderMain(opts);
   }
 
-  function renderMainOnly(opts) {
-    LM.render.renderMain(opts);
-  }
 
   /** Refreshes the learning badges in the left panel (e.g. the number of reviews due today). */
   function refreshLearning() {

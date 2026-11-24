@@ -44,10 +44,6 @@ window.LM = window.LM || {};
     return new Date(Number(day.slice(0, 4)), Number(day.slice(5, 7)) - 1, Number(day.slice(8, 10)), 12);
   }
 
-  /** A number that counts up from zero on entry (js/motion.js reads data-count). */
-  function bigNumber(value, cls) {
-    return el("span", { class: "num today-number" + (cls ? " " + cls : ""), "data-count": String(value), text: String(value) });
-  }
 
   function tile(cls, label, children) {
     return el("section", { class: "card bento-tile " + cls, "aria-label": label }, children);

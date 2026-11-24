@@ -97,7 +97,6 @@ window.LM = window.LM || {};
 
   function enabled() { return st().settings.enabledDecks; }
   function today() { return L().studyDay(now()); }
-  function todayCounts() { return st().daily[today()] || { new: 0, reviews: 0, again: 0, good: 0, answers: 0, minutes: 0 }; }
 
   /** Numbers for today without loading decks (badge, Today, "Due today"): one queue from js/review-queue.js. */
   function dueSummary() {
@@ -907,7 +906,6 @@ window.LM = window.LM || {};
   /** Whether a log entry already has a card (by card id or sourceItemId). */
   function hasJournalCard(e) { return hasProfile() && L().hasJournalCard(st(), e); }
 
-  function cardFromJournal(e) { return L().journalCard(e); }
 
   /** The card of a log entry, when it exists. */
   function journalCardOf(e) {

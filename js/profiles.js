@@ -50,7 +50,7 @@ window.LM = window.LM || {};
     if (!name) return { name: name, error: "Type a profile name." };
     if (name.length > MAX_NAME) return { name: name, error: "A name can have up to " + MAX_NAME + " characters." };
     const taken = (data() ? data().profiles : []).some(function (p) {
-      return p.id !== exceptId && p.name.toLocaleLowerCase("pl") === name.toLocaleLowerCase("pl");
+      return p.id !== exceptId && p.name.toLowerCase() === name.toLowerCase();
     });
     if (taken) return { name: name, error: "A profile called “" + name + "” already exists." };
     return { name: name, error: null };
