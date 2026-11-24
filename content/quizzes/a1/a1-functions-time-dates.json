@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-functions-time-dates",
+  "topic": "a1-functions-time-dates",
+  "level": "A1",
+  "title": "Stop: time and dates",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-functions-time-dates-q1",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "It's 1:00. You say:",
+      "options": [
+        "Son la una.",
+        "Es la una.",
+        "Es las una.",
+        "Son las uno."
+      ],
+      "correct": 1,
+      "explanation": "One o'clock is singular: es la una.",
+      "optionNotes": [
+        "La una is singular: es.",
+        null,
+        "Una is singular: la, not las.",
+        "The hour is la una (feminine)."
+      ]
+    },
+    {
+      "id": "a1-functions-time-dates-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "It's 3:30. You say:",
+      "options": [
+        "Son las tres y media.",
+        "Es las tres y media.",
+        "Son las tres y medio.",
+        "Son tres y media."
+      ],
+      "correct": 0,
+      "explanation": "From two o'clock on: son las…; half past is y media.",
+      "optionNotes": [
+        null,
+        "From two o'clock on, the verb is son.",
+        "Media agrees with the feminine hora: y media.",
+        "The article las is needed."
+      ]
+    },
+    {
+      "id": "a1-functions-time-dates-q3",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "La clase empieza ___ nueve.",
+      "options": [
+        "en las",
+        "a las",
+        "de las",
+        "por las"
+      ],
+      "correct": 1,
+      "explanation": "“At” a time is a las.",
+      "optionNotes": [
+        "Spanish uses a, not en, for clock times.",
+        null,
+        "De las means “from” or “of”.",
+        "Por la mañana means “in the morning”, but not with a clock time."
+      ]
+    },
+    {
+      "id": "a1-functions-time-dates-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "How do you say “May 5” in Spanish?",
+      "options": [
+        "mayo 5",
+        "el 5 de mayo",
+        "el mayo 5",
+        "5 mayo"
+      ],
+      "correct": 1,
+      "explanation": "The day first, then de and the month: el 5 de mayo.",
+      "optionNotes": [
+        "The day comes first.",
+        null,
+        "The day comes first, with de.",
+        "Dates need de between the day and the month."
+      ]
+    }
+  ]
+}

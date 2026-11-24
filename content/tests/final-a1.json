@@ -4,9 +4,8 @@
   "kind": "level-test",
   "level": "A1",
   "title": "A1 final test",
-  "intro": "Questions from the whole level. Explanations come at the end.",
-  "note": "TEMPORARY minimal pool for stage 5 (10 items, draw 10) so the final test runs end to end. The full pool (stage X of A1) has 30 items and draw 20.",
-  "draw": 10,
+  "intro": "20 questions drawn from the whole level. Explanations come at the end.",
+  "draw": 20,
   "passPercent": 80,
   "defaultMode": "exam",
   "passage": null,
@@ -16,111 +15,716 @@
       "type": "multiple-choice",
       "kind": "form",
       "topic": "a1-verbs-ser",
-      "tags": ["ser", "origin"],
+      "tags": [
+        "ser",
+        "origin"
+      ],
       "prompt": "Nosotros ___ de Argentina.",
-      "options": ["somos", "estamos", "son", "sois"],
+      "options": [
+        "somos",
+        "estamos",
+        "son",
+        "sois"
+      ],
       "correct": 0,
       "explanation": "Origin takes ser, and nosotros takes somos.",
-      "optionNotes": [null, "Estar is not used for where you are from.", "Son is for ellos / ellas / ustedes.", "Sois is for vosotros."]
+      "optionNotes": [
+        null,
+        "Estar is not used for where you are from.",
+        "Son is for ellos / ellas / ustedes.",
+        "Sois is for vosotros."
+      ]
     },
     {
       "id": "final-a1-02",
       "type": "multiple-choice",
       "kind": "form",
       "topic": "a1-verbs-estar-hay",
-      "tags": ["hay", "existence"],
+      "tags": [
+        "hay",
+        "existence"
+      ],
       "prompt": "En mi calle ___ dos farmacias.",
-      "options": ["hay", "están", "es", "tiene"],
+      "options": [
+        "hay",
+        "están",
+        "es",
+        "tiene"
+      ],
       "correct": 0,
       "explanation": "To say that something exists somewhere, use hay. It never changes for plural.",
-      "optionNotes": [null, "Están is for things already known: las farmacias están en mi calle.", "Es does not say that something exists.", "Tiene needs a subject (mi calle tiene dos farmacias). After en mi calle, use hay."]
+      "optionNotes": [
+        null,
+        "Están is for things already known: las farmacias están en mi calle.",
+        "Es does not say that something exists.",
+        "Tiene needs a subject (mi calle tiene dos farmacias). After en mi calle, use hay."
+      ]
     },
     {
       "id": "final-a1-03",
       "type": "multiple-choice",
       "kind": "form",
       "topic": "a1-grammar-articles",
-      "tags": ["articles", "contractions"],
+      "tags": [
+        "articles",
+        "contractions"
+      ],
       "prompt": "El sábado vamos ___ cine.",
-      "options": ["al", "a el", "del", "en el"],
+      "options": [
+        "al",
+        "a el",
+        "del",
+        "en el"
+      ],
       "correct": 0,
       "explanation": "Ir a + el becomes al.",
-      "optionNotes": [null, "A + el (the article) joins into al.", "Del means from the / of the.", "With ir, the place takes a, not en."]
+      "optionNotes": [
+        null,
+        "A + el (the article) joins into al.",
+        "Del means from the / of the.",
+        "With ir, the place takes a, not en."
+      ]
     },
     {
       "id": "final-a1-04",
       "type": "multiple-choice",
       "kind": "meaning",
       "topic": "a1-vocabulary-family-people",
-      "tags": ["family"],
+      "tags": [
+        "family"
+      ],
       "prompt": "La madre de mi padre es mi ___.",
-      "options": ["abuela", "tía", "prima", "sobrina"],
+      "options": [
+        "abuela",
+        "tía",
+        "prima",
+        "sobrina"
+      ],
       "correct": 0,
       "explanation": "Your father's mother is your grandmother: abuela.",
-      "optionNotes": [null, "Tía is your aunt.", "Prima is your cousin.", "Sobrina is your niece."]
+      "optionNotes": [
+        null,
+        "Tía is your aunt.",
+        "Prima is your cousin.",
+        "Sobrina is your niece."
+      ]
     },
     {
       "id": "final-a1-05",
       "type": "multiple-choice",
       "kind": "function",
       "topic": "a1-functions-asking-to-repeat",
-      "tags": ["survival-phrases", "usted"],
+      "tags": [
+        "survival-phrases",
+        "usted"
+      ],
       "prompt": "You did not understand a shop assistant. What do you say?",
-      "options": ["¿Puede repetir, por favor?", "¿Cuánto cuesta?", "¿Qué hora es?", "¿De dónde es usted?"],
+      "options": [
+        "¿Puede repetir, por favor?",
+        "¿Cuánto cuesta?",
+        "¿Qué hora es?",
+        "¿De dónde es usted?"
+      ],
       "correct": 0,
       "explanation": "¿Puede repetir, por favor? asks someone (usted) to say it again.",
-      "optionNotes": [null, "This asks for the price.", "This asks for the time.", "This asks where the person is from."]
+      "optionNotes": [
+        null,
+        "This asks for the price.",
+        "This asks for the time.",
+        "This asks where the person is from."
+      ]
     },
     {
       "id": "final-a1-06",
       "type": "multiple-choice",
       "kind": "form",
       "topic": "a1-verbs-tener",
-      "tags": ["tener", "present"],
+      "tags": [
+        "tener",
+        "present"
+      ],
       "prompt": "Por la mañana no ___ tiempo para desayunar.",
-      "options": ["tengo", "teno", "tiene", "tieno"],
+      "options": [
+        "tengo",
+        "teno",
+        "tiene",
+        "tieno"
+      ],
       "correct": 0,
       "explanation": "Tener is irregular: the yo form is tengo.",
-      "optionNotes": [null, "The yo form has a g: tengo.", "Tiene is for él / ella / usted.", "The yo form does not change e to ie."]
+      "optionNotes": [
+        null,
+        "The yo form has a g: tengo.",
+        "Tiene is for él / ella / usted.",
+        "The yo form does not change e to ie."
+      ]
     },
     {
       "id": "final-a1-07",
       "type": "gap-fill",
       "topic": "a1-verbs-reflexive-routine",
-      "tags": ["reflexive", "routine"],
+      "tags": [
+        "reflexive",
+        "routine"
+      ],
       "context": "Two people's mornings.",
       "text": "Mi hermano {{1}} levanta a las ocho y yo {{2}} levanto a las siete.",
-      "gaps": [{ "accepted": ["se"] }, { "accepted": ["me"] }],
+      "gaps": [
+        {
+          "accepted": [
+            "se"
+          ]
+        },
+        {
+          "accepted": [
+            "me"
+          ]
+        }
+      ],
       "explanation": "Levantarse is reflexive: él se levanta, yo me levanto."
     },
     {
       "id": "final-a1-08",
       "type": "gap-fill",
       "topic": "a1-grammar-adjective-agreement",
-      "tags": ["adjectives", "agreement"],
+      "tags": [
+        "adjectives",
+        "agreement"
+      ],
       "context": "Describe the cats.",
       "text": "Tengo dos gatas muy {{1}}.",
-      "gaps": [{ "accepted": ["bonitas"], "hint": "bonito" }],
+      "gaps": [
+        {
+          "accepted": [
+            "bonitas"
+          ],
+          "hint": "bonito"
+        }
+      ],
       "explanation": "The adjective agrees with gatas (feminine plural): bonitas."
     },
     {
       "id": "final-a1-09",
       "type": "reorder",
       "topic": "a1-grammar-questions-negation",
-      "tags": ["negation", "word-order"],
+      "tags": [
+        "negation",
+        "word-order"
+      ],
       "context": "We don't live in Madrid.",
-      "answers": ["No vivimos en Madrid.", "En Madrid no vivimos."],
+      "answers": [
+        "No vivimos en Madrid.",
+        "En Madrid no vivimos."
+      ],
       "explanation": "No goes straight before the verb."
     },
     {
       "id": "final-a1-10",
       "type": "find-error",
       "topic": "a1-grammar-gender-number",
-      "tags": ["gender", "articles"],
-      "tokens": ["La", "problema", "es", "muy", "difícil."],
-      "errorRange": [0, 0],
-      "fixes": ["El"],
+      "tags": [
+        "gender",
+        "articles"
+      ],
+      "tokens": [
+        "La",
+        "problema",
+        "es",
+        "muy",
+        "difícil."
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "El"
+      ],
       "explanation": "Problema ends in -a but is masculine: el problema."
+    },
+    {
+      "id": "final-a1-11",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "topic": "a1-grammar-alphabet-pronunciation",
+      "tags": [
+        "accents"
+      ],
+      "prompt": "Which word is written correctly?",
+      "options": [
+        "telefono",
+        "teléfono",
+        "teléfóno",
+        "télefono"
+      ],
+      "correct": 1,
+      "explanation": "Te-LÉ-fo-no is stressed on the third syllable from the end, so it needs a written accent on the é.",
+      "optionNotes": [
+        "Without the accent the stress would fall on -fo-.",
+        null,
+        "A word has only one written accent.",
+        "The stress is on -lé-, not on the first syllable."
+      ]
+    },
+    {
+      "id": "final-a1-12",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "topic": "a1-grammar-subject-pronouns",
+      "tags": [
+        "tu-usted"
+      ],
+      "prompt": "You speak to a hotel receptionist you don't know. Which word for “you”?",
+      "options": [
+        "tú",
+        "usted",
+        "vosotros",
+        "tu"
+      ],
+      "correct": 1,
+      "explanation": "With a stranger in a formal situation, use usted.",
+      "optionNotes": [
+        "Tú is for friends, family and people your age.",
+        null,
+        "Vosotros is for a group.",
+        "Tu without an accent means “your”."
+      ]
+    },
+    {
+      "id": "final-a1-13",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a1-grammar-possessives-demonstratives",
+      "tags": [
+        "possessives"
+      ],
+      "prompt": "Mis hermanas y yo vivimos con ___ padres.",
+      "options": [
+        "nuestro",
+        "nuestros",
+        "nuestras",
+        "vuestros"
+      ],
+      "correct": 1,
+      "explanation": "Padres is masculine plural: nuestros padres.",
+      "optionNotes": [
+        "Padres is plural.",
+        null,
+        "Padres is masculine.",
+        "Vuestros is for vosotros."
+      ]
+    },
+    {
+      "id": "final-a1-14",
+      "type": "gap-fill",
+      "topic": "a1-grammar-prepositions-place-time",
+      "tags": [
+        "time"
+      ],
+      "context": "I work from Monday to Friday, in the morning.",
+      "text": "Trabajo {{1}} lunes {{2}} viernes, por la mañana.",
+      "gaps": [
+        {
+          "accepted": [
+            "de"
+          ]
+        },
+        {
+          "accepted": [
+            "a"
+          ]
+        }
+      ],
+      "explanation": "From … to … = de … a …: de lunes a viernes."
+    },
+    {
+      "id": "final-a1-15",
+      "type": "find-error",
+      "topic": "a1-grammar-adjective-agreement",
+      "tags": [
+        "agreement",
+        "position"
+      ],
+      "tokens": [
+        "Tengo",
+        "una",
+        "roja",
+        "bicicleta."
+      ],
+      "errorRange": [
+        2,
+        3
+      ],
+      "fixes": [
+        "bicicleta roja."
+      ],
+      "explanation": "Colors come after the noun: una bicicleta roja."
+    },
+    {
+      "id": "final-a1-16",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a1-verbs-present-regular",
+      "tags": [
+        "present"
+      ],
+      "prompt": "Mis amigos ___ en una oficina.",
+      "options": [
+        "trabaja",
+        "trabajan",
+        "trabajamos",
+        "trabajáis"
+      ],
+      "correct": 1,
+      "explanation": "Mis amigos = ellos: trabajan.",
+      "optionNotes": [
+        "Trabaja is for one person.",
+        null,
+        "Trabajamos is for nosotros.",
+        "Trabajáis is for vosotros."
+      ]
+    },
+    {
+      "id": "final-a1-17",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a1-verbs-present-irregular",
+      "tags": [
+        "stem-change"
+      ],
+      "prompt": "¿___ (tú) venir a mi casa el sábado?",
+      "options": [
+        "Pudes",
+        "Puedes",
+        "Puede",
+        "Podemos"
+      ],
+      "correct": 1,
+      "explanation": "Poder changes o → ue: puedes.",
+      "optionNotes": [
+        "The stem changes o → ue: puedes.",
+        null,
+        "Puede is for él, ella, usted.",
+        "Podemos is for nosotros."
+      ]
+    },
+    {
+      "id": "final-a1-18",
+      "type": "paradigm",
+      "topic": "a1-verbs-present-irregular",
+      "tags": [
+        "stem-change",
+        "e-ie"
+      ],
+      "prompt": "Write the present tense of querer.",
+      "lemma": "querer",
+      "gloss": "to want",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "quiero"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "quieres"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "quiere"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "queremos"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "quieren"
+          ]
+        }
+      ],
+      "explanation": "e → ie in every form except nosotros and vosotros: queremos."
+    },
+    {
+      "id": "final-a1-19",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a1-verbs-ser-vs-estar-basics",
+      "tags": [
+        "ser-estar"
+      ],
+      "prompt": "Hoy no voy a clase porque ___ enfermo.",
+      "options": [
+        "soy",
+        "estoy",
+        "tengo",
+        "hay"
+      ],
+      "correct": 1,
+      "explanation": "Being sick today is a state: estoy enfermo.",
+      "optionNotes": [
+        "Ser would describe a lasting quality.",
+        null,
+        "Tener needs a noun: tengo fiebre.",
+        "Hay means “there is”."
+      ]
+    },
+    {
+      "id": "final-a1-20",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a1-verbs-gustar",
+      "tags": [
+        "gustar"
+      ],
+      "prompt": "A mis padres ___ gusta viajar.",
+      "options": [
+        "le",
+        "les",
+        "se",
+        "los"
+      ],
+      "correct": 1,
+      "explanation": "Mis padres = ellos: les gusta.",
+      "optionNotes": [
+        "Le is for one person.",
+        null,
+        "Se is reflexive.",
+        "Los is a direct object pronoun."
+      ]
+    },
+    {
+      "id": "final-a1-21",
+      "type": "gap-fill",
+      "topic": "a1-verbs-ir-a-infinitive",
+      "tags": [
+        "ir-a"
+      ],
+      "context": "Tomorrow I'm going to visit my grandmother.",
+      "text": "Mañana {{1}} a {{2}} a mi abuela.",
+      "gaps": [
+        {
+          "accepted": [
+            "voy"
+          ],
+          "hint": "ir"
+        },
+        {
+          "accepted": [
+            "visitar"
+          ]
+        }
+      ],
+      "explanation": "Voy a + infinitive: voy a visitar. Visitar + a person takes a: a mi abuela."
+    },
+    {
+      "id": "final-a1-22",
+      "type": "multiple-choice",
+      "kind": "function",
+      "topic": "a1-functions-greetings-introductions",
+      "tags": [
+        "greetings"
+      ],
+      "prompt": "It is 10 p.m. and dark. You meet a neighbor. You say:",
+      "options": [
+        "Buenos días.",
+        "Buenas tardes.",
+        "Buenas noches.",
+        "Buenos noches."
+      ],
+      "correct": 2,
+      "explanation": "After dark, the greeting is buenas noches.",
+      "optionNotes": [
+        "Buenos días is for the morning.",
+        "Buenas tardes is for the afternoon, until it gets dark.",
+        null,
+        "Noche is feminine: buenas."
+      ]
+    },
+    {
+      "id": "final-a1-23",
+      "type": "multiple-choice",
+      "kind": "function",
+      "topic": "a1-functions-personal-details",
+      "tags": [
+        "questions"
+      ],
+      "prompt": "You want to know someone's job (to a friend):",
+      "options": [
+        "¿A qué te dedicas?",
+        "¿Qué es tu trabajo de?",
+        "¿Cuál eres?",
+        "¿Dónde trabajo?"
+      ],
+      "correct": 0,
+      "explanation": "¿A qué te dedicas? asks about someone's job.",
+      "optionNotes": [
+        null,
+        "This is not a Spanish question.",
+        "This means “Which one are you?” (for example in a photo).",
+        "Trabajo is the yo form: “where do I work?”."
+      ]
+    },
+    {
+      "id": "final-a1-24",
+      "type": "multiple-choice",
+      "kind": "function",
+      "topic": "a1-functions-time-dates",
+      "tags": [
+        "time"
+      ],
+      "prompt": "It's 4:45. In Spain people usually say:",
+      "options": [
+        "Son las cuatro menos cuarto.",
+        "Son las cinco menos cuarto.",
+        "Es las cinco menos cuarto.",
+        "Son las cinco y cuarto."
+      ],
+      "correct": 1,
+      "explanation": "A quarter to five: son las cinco menos cuarto.",
+      "optionNotes": [
+        "That is 3:45.",
+        null,
+        "From two o'clock on, the verb is son.",
+        "That is 5:15."
+      ]
+    },
+    {
+      "id": "final-a1-25",
+      "type": "short-answer",
+      "topic": "a1-functions-time-dates",
+      "tags": [
+        "dates"
+      ],
+      "prompt": "Mi cumpleaños es el 3 ___ marzo.",
+      "accepted": [
+        "de"
+      ],
+      "explanation": "Dates: el + day + de + month: el 3 de marzo."
+    },
+    {
+      "id": "final-a1-26",
+      "type": "multiple-choice",
+      "kind": "function",
+      "topic": "a1-functions-ordering-shopping",
+      "tags": [
+        "paying"
+      ],
+      "prompt": "You want to know the total in a café. You ask:",
+      "options": [
+        "¿Cuánto es?",
+        "¿Cuántos son?",
+        "¿Qué cuesta?",
+        "¿Cuánto tienes?"
+      ],
+      "correct": 0,
+      "explanation": "For the total: ¿Cuánto es?",
+      "optionNotes": [
+        null,
+        "Cuántos asks “how many”.",
+        "¿Qué cuesta? is not used for a price.",
+        "That asks how much the other person has."
+      ]
+    },
+    {
+      "id": "final-a1-27",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "topic": "a1-vocabulary-numbers-days-months",
+      "tags": [
+        "numbers"
+      ],
+      "prompt": "Which number is sesenta y siete?",
+      "options": [
+        "76",
+        "57",
+        "67",
+        "17"
+      ],
+      "correct": 2,
+      "explanation": "Sesenta is 60 and siete is 7: 67.",
+      "optionNotes": [
+        "76 is setenta y seis.",
+        "57 is cincuenta y siete.",
+        null,
+        "17 is diecisiete."
+      ]
+    },
+    {
+      "id": "final-a1-28",
+      "type": "short-answer",
+      "topic": "a1-vocabulary-numbers-days-months",
+      "tags": [
+        "days"
+      ],
+      "prompt": "Trabajo ___ sábados. (on Saturdays, every week)",
+      "accepted": [
+        "los",
+        "todos los"
+      ],
+      "explanation": "Every Saturday = los sábados, with no preposition."
+    },
+    {
+      "id": "final-a1-29",
+      "type": "match",
+      "topic": "a1-vocabulary-home-city",
+      "tags": [
+        "places"
+      ],
+      "mode": "translation",
+      "prompt": "Match each place with its meaning.",
+      "pairs": [
+        [
+          "la biblioteca",
+          "the library"
+        ],
+        [
+          "la librería",
+          "the bookstore"
+        ],
+        [
+          "la farmacia",
+          "the pharmacy"
+        ],
+        [
+          "la estación",
+          "the station"
+        ]
+      ],
+      "explanation": "Watch out: la biblioteca is the library; la librería is a bookstore."
+    },
+    {
+      "id": "final-a1-30",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a1-vocabulary-food-shopping",
+      "tags": [
+        "prices"
+      ],
+      "prompt": "¿Cuánto ___ estos tomates?",
+      "options": [
+        "cuesta",
+        "cuestan",
+        "costan",
+        "cuestas"
+      ],
+      "correct": 1,
+      "explanation": "Estos tomates is plural: cuestan.",
+      "optionNotes": [
+        "Cuesta is for one thing.",
+        null,
+        "Costar changes o → ue: cuestan.",
+        "Cuestas is for tú."
+      ]
     }
   ]
 }

@@ -27,6 +27,46 @@
         "a1-grammar-adjective-agreement",
         "a1-verbs-tener"
       ]
+    },
+    {
+      "id": "mix-a1-u3",
+      "title": "Unit review: Everyday life",
+      "description": "Present tense, questions and negation, estar and hay, ser or estar, mixed.",
+      "level": "A1",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a1-verbs-present-regular",
+        "a1-grammar-questions-negation",
+        "a1-verbs-estar-hay",
+        "a1-verbs-ser-vs-estar-basics"
+      ]
+    },
+    {
+      "id": "mix-a1-u4",
+      "title": "Unit review: Likes and routines",
+      "description": "gustar, irregular verbs and the daily routine, mixed.",
+      "level": "A1",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a1-verbs-gustar",
+        "a1-verbs-present-irregular",
+        "a1-verbs-reflexive-routine"
+      ]
+    },
+    {
+      "id": "mix-a1-u5",
+      "title": "Unit review: Out and about",
+      "description": "Possessives and demonstratives, prepositions and ir a + infinitive, mixed.",
+      "level": "A1",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a1-grammar-possessives-demonstratives",
+        "a1-grammar-prepositions-place-time",
+        "a1-verbs-ir-a-infinitive"
+      ]
     }
   ]
 }

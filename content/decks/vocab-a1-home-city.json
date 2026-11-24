@@ -1,0 +1,405 @@
+{
+  "version": 1,
+  "id": "vocab-a1-home-city",
+  "title": "Home and town",
+  "description": "Rooms, furniture and places in town, for the topic a1-vocabulary-home-city.",
+  "level": "A1",
+  "cards": [
+    {
+      "id": "vocab-a1-home-city-001",
+      "type": "typed",
+      "front": "the kitchen",
+      "accepted": [
+        "la cocina",
+        "cocina"
+      ],
+      "back": "la cocina",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-002",
+      "type": "typed",
+      "front": "the bedroom",
+      "accepted": [
+        "el dormitorio",
+        "dormitorio",
+        "la habitación",
+        "habitación",
+        "el cuarto",
+        "cuarto",
+        "la recámara",
+        "recámara"
+      ],
+      "back": "el dormitorio",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ],
+      "note": "La recámara is Mexico."
+    },
+    {
+      "id": "vocab-a1-home-city-003",
+      "type": "typed",
+      "front": "the bathroom",
+      "accepted": [
+        "el baño",
+        "baño"
+      ],
+      "back": "el baño",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-004",
+      "type": "typed",
+      "front": "the window",
+      "accepted": [
+        "la ventana",
+        "ventana"
+      ],
+      "back": "la ventana",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-005",
+      "type": "typed",
+      "front": "the door",
+      "accepted": [
+        "la puerta",
+        "puerta"
+      ],
+      "back": "la puerta",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-006",
+      "type": "typed",
+      "front": "the bed",
+      "accepted": [
+        "la cama",
+        "cama"
+      ],
+      "back": "la cama",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-007",
+      "type": "typed",
+      "front": "the chair",
+      "accepted": [
+        "la silla",
+        "silla"
+      ],
+      "back": "la silla",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-008",
+      "type": "typed",
+      "front": "the table",
+      "accepted": [
+        "la mesa",
+        "mesa"
+      ],
+      "back": "la mesa",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-009",
+      "type": "typed",
+      "front": "the street",
+      "accepted": [
+        "la calle",
+        "calle"
+      ],
+      "back": "la calle",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-010",
+      "type": "typed",
+      "front": "the square",
+      "accepted": [
+        "la plaza",
+        "plaza"
+      ],
+      "back": "la plaza",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-011",
+      "type": "typed",
+      "front": "the pharmacy",
+      "accepted": [
+        "la farmacia",
+        "farmacia"
+      ],
+      "back": "la farmacia",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-012",
+      "type": "typed",
+      "front": "the library",
+      "accepted": [
+        "la biblioteca",
+        "biblioteca"
+      ],
+      "back": "la biblioteca",
+      "note": "La librería is a bookstore.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-013",
+      "type": "typed",
+      "front": "the bookstore",
+      "accepted": [
+        "la librería",
+        "librería"
+      ],
+      "back": "la librería",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-014",
+      "type": "typed",
+      "front": "the station",
+      "accepted": [
+        "la estación",
+        "estación"
+      ],
+      "back": "la estación",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-015",
+      "type": "typed",
+      "front": "the bank",
+      "accepted": [
+        "el banco",
+        "banco"
+      ],
+      "back": "el banco",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-016",
+      "type": "typed",
+      "front": "the bus stop",
+      "accepted": [
+        "la parada de autobús",
+        "parada de autobús"
+      ],
+      "back": "la parada de autobús",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-017",
+      "type": "typed",
+      "front": "the park",
+      "accepted": [
+        "el parque",
+        "parque"
+      ],
+      "back": "el parque",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-018",
+      "type": "typed",
+      "front": "the apartment",
+      "accepted": [
+        "el piso",
+        "piso",
+        "el apartamento",
+        "apartamento",
+        "el departamento",
+        "departamento"
+      ],
+      "back": "el piso (Spain) / el apartamento / el departamento (Latin America)",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-019",
+      "type": "cloze",
+      "text": "La farmacia está al {{lado}} del banco.",
+      "hint": "next (to)",
+      "en": "The pharmacy is next to the bank.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-020",
+      "type": "cloze",
+      "text": "¿{{Hay}} un supermercado por aquí?",
+      "hint": "is there",
+      "en": "Is there a supermarket around here?",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-021",
+      "type": "cloze",
+      "text": "El museo está {{enfrente}} del parque.",
+      "hint": "opposite",
+      "en": "The museum is opposite the park.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-022",
+      "type": "cloze",
+      "text": "La estación está {{lejos}} del centro.",
+      "hint": "far",
+      "en": "The station is far from downtown.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-023",
+      "type": "cloze",
+      "text": "Mi casa está {{cerca}} de la playa.",
+      "hint": "near",
+      "en": "My house is near the beach.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-024",
+      "type": "cloze",
+      "text": "La parada está en la {{esquina}}.",
+      "hint": "corner",
+      "en": "The stop is on the corner.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-025",
+      "type": "cloze",
+      "text": "En mi habitación hay una {{cama}} y una mesa.",
+      "hint": "bed",
+      "en": "In my room there's a bed and a table.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-026",
+      "type": "cloze",
+      "text": "El gato está {{debajo}} de la mesa.",
+      "hint": "under",
+      "en": "The cat is under the table.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-027",
+      "type": "cloze",
+      "text": "La cocina es muy {{grande}}.",
+      "hint": "big",
+      "en": "The kitchen is very big.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-028",
+      "type": "cloze",
+      "text": "El banco está {{entre}} la farmacia y el bar.",
+      "hint": "between",
+      "en": "The bank is between the pharmacy and the bar.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-029",
+      "type": "cloze",
+      "text": "¿Dónde está el {{baño}}, por favor?",
+      "hint": "bathroom",
+      "en": "Where's the bathroom, please?",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    },
+    {
+      "id": "vocab-a1-home-city-030",
+      "type": "cloze",
+      "text": "Vivimos en el {{centro}}.",
+      "hint": "downtown (the center)",
+      "en": "We live downtown.",
+      "level": "A1",
+      "tags": [
+        "home-city"
+      ]
+    }
+  ]
+}

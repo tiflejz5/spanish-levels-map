@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "id": "a1-grammar-prepositions-place-time-1",
+  "topic": "a1-grammar-prepositions-place-time",
+  "level": "A1",
+  "title": "Prepositions: check yourself",
+  "intro": "10 tasks: en, a, de, por, con, para, and days without a preposition.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-grammar-prepositions-place-time-1-01",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "place"
+      ],
+      "prompt": "Las llaves están ___ la mesa.",
+      "options": [
+        "en",
+        "a",
+        "de",
+        "con"
+      ],
+      "correct": 0,
+      "explanation": "On / in a place = en.",
+      "optionNotes": [
+        null,
+        "A is for movement to a place.",
+        "De means “of / from”.",
+        "Con means “with”."
+      ]
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "place",
+        "origin"
+      ],
+      "prompt": "Somos ___ Colombia.",
+      "options": [
+        "en",
+        "a",
+        "de",
+        "desde"
+      ],
+      "correct": 2,
+      "explanation": "Origin = ser de.",
+      "optionNotes": [
+        "En is for where you are now.",
+        "A is for where you go.",
+        null,
+        "Desde is “from” a starting point in time or space, not origin."
+      ]
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "time"
+      ],
+      "prompt": "No trabajo ___ agosto.",
+      "options": [
+        "a",
+        "en",
+        "el",
+        "por"
+      ],
+      "correct": 1,
+      "explanation": "In a month = en.",
+      "optionNotes": [
+        "A is for clock times.",
+        null,
+        "El is for days, not months.",
+        "Por is not used with months."
+      ]
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "time"
+      ],
+      "context": "The store is open from nine to two.",
+      "text": "La tienda abre {{1}} nueve {{2}} dos.",
+      "gaps": [
+        {
+          "accepted": [
+            "de"
+          ]
+        },
+        {
+          "accepted": [
+            "a"
+          ]
+        }
+      ],
+      "explanation": "From … to … = de … a …."
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "pronouns"
+      ],
+      "context": "This present is for you. Do you want to come with me?",
+      "text": "Este regalo es para {{1}}. ¿Quieres venir {{2}}?",
+      "gaps": [
+        {
+          "accepted": [
+            "ti"
+          ]
+        },
+        {
+          "accepted": [
+            "conmigo"
+          ]
+        }
+      ],
+      "explanation": "After para, tú becomes ti; con + mí = conmigo."
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-1-06",
+      "type": "find-error",
+      "tags": [
+        "time"
+      ],
+      "tokens": [
+        "Nos",
+        "vemos",
+        "en",
+        "el",
+        "lunes."
+      ],
+      "errorRange": [
+        2,
+        3
+      ],
+      "fixes": [
+        "el"
+      ],
+      "explanation": "No preposition with days: Nos vemos el lunes."
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-1-07",
+      "type": "find-error",
+      "tags": [
+        "place"
+      ],
+      "tokens": [
+        "Mañana",
+        "voy",
+        "en",
+        "el",
+        "museo",
+        "con",
+        "Ana."
+      ],
+      "errorRange": [
+        2,
+        3
+      ],
+      "fixes": [
+        "al"
+      ],
+      "explanation": "Movement to a place takes a, and a + el = al: Mañana voy al museo."
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-1-08",
+      "type": "short-answer",
+      "tags": [
+        "place"
+      ],
+      "prompt": "El gato está ___ la cama. (under)",
+      "accepted": [
+        "debajo de",
+        "bajo",
+        "abajo de"
+      ],
+      "explanation": "Under = debajo de."
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-1-09",
+      "type": "translate",
+      "tags": [
+        "time"
+      ],
+      "source": "I work in the afternoon.",
+      "accepted": [
+        "Trabajo por la tarde.",
+        "Yo trabajo por la tarde.",
+        "Trabajo en la tarde.",
+        "Yo trabajo en la tarde.",
+        "Trabajo por las tardes.",
+        "Yo trabajo por las tardes."
+      ],
+      "explanation": "In the afternoon = por la tarde."
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-1-10",
+      "type": "match",
+      "tags": [
+        "place"
+      ],
+      "mode": "translation",
+      "prompt": "Match each phrase with its meaning.",
+      "pairs": [
+        [
+          "delante de",
+          "in front of"
+        ],
+        [
+          "detrás de",
+          "behind"
+        ],
+        [
+          "encima de",
+          "on top of"
+        ],
+        [
+          "entre",
+          "between"
+        ]
+      ],
+      "explanation": "Most place phrases end in de: delante de, detrás de, encima de. Entre has no de."
+    }
+  ]
+}

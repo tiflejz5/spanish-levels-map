@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-functions-ordering-shopping",
+  "topic": "a1-functions-ordering-shopping",
+  "level": "A1",
+  "title": "Stop: in a café",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-functions-ordering-shopping-q1",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "The polite way to order:",
+      "options": [
+        "Quiero tener un café.",
+        "Quería un café, por favor.",
+        "Dame café.",
+        "Tengo un café."
+      ],
+      "correct": 1,
+      "explanation": "Quería… por favor is the polite way to order.",
+      "optionNotes": [
+        "You just name what you want.",
+        null,
+        "This is too direct for a learner with a stranger.",
+        "Tengo un café means “I have a coffee”."
+      ]
+    },
+    {
+      "id": "a1-functions-ordering-shopping-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You want to pay. You say:",
+      "options": [
+        "La cuenta, por favor.",
+        "El cuento, por favor.",
+        "La cuesta, por favor.",
+        "La conta, por favor."
+      ],
+      "correct": 0,
+      "explanation": "The check is la cuenta.",
+      "optionNotes": [
+        null,
+        "El cuento is a story.",
+        "La cuesta is a slope.",
+        "Conta is not a Spanish word."
+      ]
+    },
+    {
+      "id": "a1-functions-ordering-shopping-q3",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "¿Puedo pagar ___ tarjeta?",
+      "options": [
+        "por",
+        "con",
+        "en",
+        "de"
+      ],
+      "correct": 1,
+      "explanation": "You pay con tarjeta (by card) and en efectivo (in cash).",
+      "optionNotes": [
+        "Spanish uses con with a card.",
+        null,
+        "En goes with efectivo (cash).",
+        "De is not used here."
+      ]
+    },
+    {
+      "id": "a1-functions-ordering-shopping-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "—¿Algo más? —___",
+      "options": [
+        "No, nada más, gracias.",
+        "Sí, nada.",
+        "No, algo más.",
+        "De nada."
+      ],
+      "correct": 0,
+      "explanation": "No, nada más, gracias = No, nothing else, thanks.",
+      "optionNotes": [
+        null,
+        "Sí and nada do not match.",
+        "Algo más would mean “something more”.",
+        "De nada answers gracias."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-grammar-questions-negation",
+  "topic": "a1-grammar-questions-negation",
+  "level": "A1",
+  "title": "Stop: questions and no",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-grammar-questions-negation-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿___ vives? —En Quito.",
+      "options": [
+        "Qué",
+        "Dónde",
+        "Cuándo",
+        "Quién"
+      ],
+      "correct": 1,
+      "explanation": "The answer is a place, so the question word is dónde.",
+      "optionNotes": [
+        "Qué asks “what”.",
+        null,
+        "Cuándo asks “when”.",
+        "Quién asks “who”."
+      ]
+    },
+    {
+      "id": "a1-grammar-questions-negation-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿___ hermanas tienes?",
+      "options": [
+        "Cuántos",
+        "Cuánto",
+        "Cuántas",
+        "Cuál"
+      ],
+      "correct": 2,
+      "explanation": "Cuánto agrees with the noun: hermanas is feminine plural, so cuántas.",
+      "optionNotes": [
+        "Hermanas is feminine.",
+        "Hermanas is plural.",
+        null,
+        "Cuál asks “which”."
+      ]
+    },
+    {
+      "id": "a1-grammar-questions-negation-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "No tengo ___.",
+      "options": [
+        "algo",
+        "nada",
+        "nunca",
+        "alguien"
+      ],
+      "correct": 1,
+      "explanation": "After no, Spanish uses the negative word: no tengo nada (I have nothing).",
+      "optionNotes": [
+        "After no, use nada, not algo.",
+        null,
+        "Nunca means “never”, not “nothing”.",
+        "Alguien means “someone”."
+      ]
+    },
+    {
+      "id": "a1-grammar-questions-negation-q4",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Which question is written correctly?",
+      "options": [
+        "¿Donde esta el banco?",
+        "¿Dónde está el banco?",
+        "Dónde está el banco?",
+        "¿Dónde esta el banco?"
+      ],
+      "correct": 1,
+      "explanation": "Question words have an accent (dónde), está has an accent, and the question opens with ¿.",
+      "optionNotes": [
+        "Dónde and está both need an accent.",
+        null,
+        "The question needs ¿ at the start.",
+        "Está needs its accent."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+{
+  "version": 1,
+  "id": "a1-verbs-estar-hay-1",
+  "topic": "a1-verbs-estar-hay",
+  "level": "A1",
+  "title": "estar and hay: check yourself",
+  "intro": "10 tasks: the forms of estar, location, feelings, and hay vs está.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-estar-hay-1-01",
+      "type": "paradigm",
+      "tags": [
+        "estar",
+        "forms"
+      ],
+      "prompt": "Write the present tense of estar.",
+      "lemma": "estar",
+      "gloss": "to be (where, how)",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "estoy"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "estás"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "está"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "estamos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "estáis"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "están"
+          ]
+        }
+      ],
+      "explanation": "Estoy, estás, está, estamos, estáis, están: watch the accents."
+    },
+    {
+      "id": "a1-verbs-estar-hay-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "estar",
+        "feelings"
+      ],
+      "prompt": "Nosotros ___ muy contentos.",
+      "options": [
+        "somos",
+        "estamos",
+        "hay",
+        "están"
+      ],
+      "correct": 1,
+      "explanation": "A feeling now takes estar: estamos contentos.",
+      "optionNotes": [
+        "Feelings now take estar.",
+        null,
+        "Hay means “there is”.",
+        "Están is for ellos."
+      ]
+    },
+    {
+      "id": "a1-verbs-estar-hay-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "hay"
+      ],
+      "prompt": "En la plaza ___ dos cafeterías.",
+      "options": [
+        "están",
+        "son",
+        "hay",
+        "está"
+      ],
+      "correct": 2,
+      "explanation": "Something new with a number takes hay, also in the plural.",
+      "optionNotes": [
+        "Están needs a known thing (las cafeterías).",
+        "Ser is not used for where things are.",
+        null,
+        "Está is singular and needs a known thing."
+      ]
+    },
+    {
+      "id": "a1-verbs-estar-hay-1-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "estar",
+        "location"
+      ],
+      "prompt": "El banco ___ al lado de la farmacia.",
+      "options": [
+        "hay",
+        "está",
+        "es",
+        "tiene"
+      ],
+      "correct": 1,
+      "explanation": "A known place (el banco) takes estar: está.",
+      "optionNotes": [
+        "Hay is for something new (un banco).",
+        null,
+        "Location takes estar.",
+        "Tiene means “has”."
+      ]
+    },
+    {
+      "id": "a1-verbs-estar-hay-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "hay",
+        "estar"
+      ],
+      "context": "There's a museum downtown. The museum is next to the cathedral.",
+      "text": "{{1}} un museo en el centro. El museo {{2}} al lado de la catedral.",
+      "gaps": [
+        {
+          "accepted": [
+            "Hay",
+            "hay"
+          ]
+        },
+        {
+          "accepted": [
+            "está"
+          ]
+        }
+      ],
+      "explanation": "Something new (un museo): hay. The same museum, now known (el museo): está."
+    },
+    {
+      "id": "a1-verbs-estar-hay-1-06",
+      "type": "find-error",
+      "tags": [
+        "hay"
+      ],
+      "tokens": [
+        "¿Dónde",
+        "hay",
+        "el",
+        "hotel?"
+      ],
+      "errorRange": [
+        1,
+        1
+      ],
+      "fixes": [
+        "está"
+      ],
+      "explanation": "You know the hotel exists (el hotel): ¿Dónde está el hotel?"
+    },
+    {
+      "id": "a1-verbs-estar-hay-1-07",
+      "type": "short-answer",
+      "tags": [
+        "estar",
+        "agreement"
+      ],
+      "prompt": "Laura: “Hoy estoy muy ___.” (tired)",
+      "accepted": [
+        "cansada"
+      ],
+      "explanation": "Laura is a woman: cansada."
+    },
+    {
+      "id": "a1-verbs-estar-hay-1-08",
+      "type": "translate",
+      "tags": [
+        "estar",
+        "location"
+      ],
+      "source": "Where are you? (to a friend)",
+      "accepted": [
+        "¿Dónde estás?",
+        "¿Dónde estás tú?"
+      ],
+      "explanation": "Where someone is: estar. Tú: estás."
+    },
+    {
+      "id": "a1-verbs-estar-hay-1-09",
+      "type": "translate",
+      "tags": [
+        "hay"
+      ],
+      "source": "There's no milk.",
+      "accepted": [
+        "No hay leche."
+      ],
+      "explanation": "No + hay; no article for an unspecified amount."
+    },
+    {
+      "id": "a1-verbs-estar-hay-1-10",
+      "type": "match",
+      "tags": [
+        "estar"
+      ],
+      "mode": "halves",
+      "prompt": "Match the beginnings and the endings.",
+      "pairs": [
+        [
+          "¿Dónde",
+          "estás?"
+        ],
+        [
+          "Hay",
+          "un cajero en la esquina."
+        ],
+        [
+          "La puerta está",
+          "abierta."
+        ],
+        [
+          "Los niños están",
+          "contentos."
+        ]
+      ],
+      "explanation": "¿Dónde estás? asks where; hay says that something exists (un cajero = an ATM); estar for states (abierta, contentos), which agree with the subject."
+    }
+  ]
+}

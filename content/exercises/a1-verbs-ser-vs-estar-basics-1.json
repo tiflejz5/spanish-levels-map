@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "id": "a1-verbs-ser-vs-estar-basics-1",
+  "topic": "a1-verbs-ser-vs-estar-basics",
+  "level": "A1",
+  "title": "ser or estar: check yourself",
+  "intro": "10 tasks: identity, origin, location, feelings, events and adjectives that change meaning.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-01",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "ser-estar"
+      ],
+      "prompt": "Mi abuela ___ de Sevilla, pero ahora ___ en Lima.",
+      "options": [
+        "es / está",
+        "está / es",
+        "es / es",
+        "está / está"
+      ],
+      "correct": 0,
+      "explanation": "Origin takes ser (es de Sevilla); location takes estar (está en Lima).",
+      "optionNotes": [
+        null,
+        "Both verbs are the wrong way round.",
+        "Location takes estar.",
+        "Origin takes ser."
+      ]
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "ser-estar",
+        "events"
+      ],
+      "prompt": "El concierto ___ en el teatro.",
+      "options": [
+        "está",
+        "es",
+        "hay",
+        "están"
+      ],
+      "correct": 1,
+      "explanation": "Where an event takes place uses ser: el concierto es en el teatro.",
+      "optionNotes": [
+        "Events take ser for their place.",
+        null,
+        "Hay would need un: hay un concierto.",
+        "El concierto is singular."
+      ]
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "ser-estar",
+        "food"
+      ],
+      "prompt": "Hoy la sopa ___ muy rica. ¡Mmm!",
+      "options": [
+        "es",
+        "está",
+        "hay",
+        "son"
+      ],
+      "correct": 1,
+      "explanation": "How food tastes now takes estar: está rica.",
+      "optionNotes": [
+        "Es rica would describe this kind of soup in general; for how it tastes today, use está.",
+        null,
+        "Hay means “there is”.",
+        "La sopa is singular."
+      ]
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-04",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "tags": [
+        "ser-estar",
+        "meaning"
+      ],
+      "prompt": "Which sentence means “He is ready”?",
+      "options": [
+        "Es listo.",
+        "Está listo.",
+        "Es lista.",
+        "Están listos."
+      ],
+      "correct": 1,
+      "explanation": "Listo with estar means ready; with ser it means clever.",
+      "optionNotes": [
+        "Es listo means “He is clever”.",
+        null,
+        "Lista is feminine.",
+        "Están listos is plural."
+      ]
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "ser-estar"
+      ],
+      "context": "Carlos is a teacher. Today he's sick and he's at home.",
+      "text": "Carlos {{1}} profesor. Hoy {{2}} enfermo y {{3}} en casa.",
+      "gaps": [
+        {
+          "accepted": [
+            "es"
+          ]
+        },
+        {
+          "accepted": [
+            "está"
+          ]
+        },
+        {
+          "accepted": [
+            "está"
+          ]
+        }
+      ],
+      "explanation": "A job: ser (es profesor). A state now: estar (está enfermo). Location: estar (está en casa)."
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-06",
+      "type": "find-error",
+      "tags": [
+        "ser-estar"
+      ],
+      "tokens": [
+        "Soy",
+        "muy",
+        "cansado",
+        "hoy."
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "Estoy"
+      ],
+      "explanation": "Feeling tired is a state now: Estoy muy cansado hoy."
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-07",
+      "type": "find-error",
+      "tags": [
+        "ser-estar",
+        "location"
+      ],
+      "tokens": [
+        "Bogotá",
+        "es",
+        "en",
+        "Colombia."
+      ],
+      "errorRange": [
+        1,
+        1
+      ],
+      "fixes": [
+        "está"
+      ],
+      "explanation": "Location of a place takes estar: Bogotá está en Colombia."
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-08",
+      "type": "translate",
+      "tags": [
+        "ser-estar"
+      ],
+      "source": "The movie is boring.",
+      "accepted": [
+        "La película es aburrida."
+      ],
+      "explanation": "Boring (a quality of the movie) is ser aburrida."
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-09",
+      "type": "translate",
+      "tags": [
+        "ser-estar"
+      ],
+      "source": "I'm bored. (a man)",
+      "accepted": [
+        "Estoy aburrido.",
+        "Yo estoy aburrido.",
+        "Me aburro."
+      ],
+      "explanation": "Bored (how you feel now) is estar aburrido."
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-1-10",
+      "type": "match",
+      "tags": [
+        "ser-estar"
+      ],
+      "mode": "halves",
+      "prompt": "Match the beginnings and the endings.",
+      "pairs": [
+        [
+          "Mi hermano es",
+          "muy alto."
+        ],
+        [
+          "La tienda está",
+          "cerrada."
+        ],
+        [
+          "Son",
+          "las tres."
+        ],
+        [
+          "¿Estás",
+          "bien?"
+        ]
+      ],
+      "explanation": "Ser for what someone is like (alto) and the time (son las tres); estar for states (cerrada) and bien."
+    }
+  ]
+}

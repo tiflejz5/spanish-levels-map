@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-verbs-present-irregular",
+  "topic": "a1-verbs-present-irregular",
+  "level": "A1",
+  "title": "Stop: irregular verbs",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-verbs-present-irregular-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Yo ___ un café, por favor.",
+      "options": [
+        "quero",
+        "quiero",
+        "queremos",
+        "quiere"
+      ],
+      "correct": 1,
+      "explanation": "Querer changes e → ie: yo quiero.",
+      "optionNotes": [
+        "Querer changes the stem: quiero.",
+        null,
+        "Queremos is for nosotros.",
+        "Quiere is for él, ella, usted."
+      ]
+    },
+    {
+      "id": "a1-verbs-present-irregular-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Nosotros no ___ venir mañana.",
+      "options": [
+        "puedemos",
+        "pueden",
+        "podemos",
+        "puedo"
+      ],
+      "correct": 2,
+      "explanation": "No stem change in nosotros: podemos.",
+      "optionNotes": [
+        "Nosotros keeps the o: podemos.",
+        "Pueden is for ellos.",
+        null,
+        "Puedo is for yo."
+      ]
+    },
+    {
+      "id": "a1-verbs-present-irregular-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Los sábados yo ___ la comida.",
+      "options": [
+        "hago",
+        "hace",
+        "haco",
+        "hacemos"
+      ],
+      "correct": 0,
+      "explanation": "The yo form of hacer is hago.",
+      "optionNotes": [
+        null,
+        "Hace is for él, ella, usted.",
+        "The yo form ends in -go: hago.",
+        "Hacemos is for nosotros."
+      ]
+    },
+    {
+      "id": "a1-verbs-present-irregular-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿___ (tú) a la playa mañana?",
+      "options": [
+        "Voy",
+        "Vas",
+        "Va",
+        "Vais"
+      ],
+      "correct": 1,
+      "explanation": "Ir: voy, vas, va… The tú form is vas.",
+      "optionNotes": [
+        "Voy is for yo.",
+        null,
+        "Va is for él, ella, usted.",
+        "Vais is for vosotros."
+      ]
+    }
+  ]
+}

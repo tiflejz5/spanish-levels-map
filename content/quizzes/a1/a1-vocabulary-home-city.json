@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-vocabulary-home-city",
+  "topic": "a1-vocabulary-home-city",
+  "level": "A1",
+  "title": "Stop: home and town",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-vocabulary-home-city-q1",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Where do you sleep?",
+      "options": [
+        "en la cocina",
+        "en el dormitorio",
+        "en el baño",
+        "en la calle"
+      ],
+      "correct": 1,
+      "explanation": "You sleep in the bedroom: el dormitorio.",
+      "optionNotes": [
+        "La cocina is the kitchen.",
+        null,
+        "El baño is the bathroom.",
+        "La calle is the street."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-home-city-q2",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Where do you borrow books?",
+      "options": [
+        "en la librería",
+        "en la farmacia",
+        "en el banco",
+        "en la biblioteca"
+      ],
+      "correct": 3,
+      "explanation": "A library is la biblioteca; la librería is a bookstore.",
+      "optionNotes": [
+        "La librería is a bookstore, where you buy books.",
+        "La farmacia is the pharmacy.",
+        "El banco is the bank.",
+        null
+      ]
+    },
+    {
+      "id": "a1-vocabulary-home-city-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "La farmacia está al lado ___ banco.",
+      "options": [
+        "de",
+        "del",
+        "de la",
+        "al"
+      ],
+      "correct": 1,
+      "explanation": "Al lado de + el banco = al lado del banco.",
+      "optionNotes": [
+        "De + el joins into del.",
+        null,
+        "Banco is masculine.",
+        "Al is a + el."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-home-city-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ un parque cerca de mi casa.",
+      "options": [
+        "Está",
+        "Hay",
+        "Es",
+        "Tiene"
+      ],
+      "correct": 1,
+      "explanation": "Something new (un parque) takes hay.",
+      "optionNotes": [
+        "Está needs a known thing: el parque está…",
+        null,
+        "Ser is not used for where things are.",
+        "Tiene needs a subject who has it."
+      ]
+    }
+  ]
+}

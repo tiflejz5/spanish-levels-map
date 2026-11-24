@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-vocabulary-food-shopping",
+  "topic": "a1-vocabulary-food-shopping",
+  "level": "A1",
+  "title": "Stop: food and prices",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-vocabulary-food-shopping-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Cuánto ___ las manzanas?",
+      "options": [
+        "cuesta",
+        "cuestan",
+        "costan",
+        "cuesto"
+      ],
+      "correct": 1,
+      "explanation": "Las manzanas is plural: cuestan (o → ue).",
+      "optionNotes": [
+        "Cuesta is for one thing.",
+        null,
+        "Costar changes o → ue: cuestan.",
+        "Cuesto would mean “I cost”."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-food-shopping-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Un kilo ___ tomates, por favor.",
+      "options": [
+        "de",
+        "con",
+        "por",
+        "en"
+      ],
+      "correct": 0,
+      "explanation": "Amounts need de: un kilo de tomates.",
+      "optionNotes": [
+        null,
+        "Con means “with”.",
+        "Por is not used for amounts.",
+        "En means “in”; amounts need de."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-food-shopping-q3",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Which word is a drink?",
+      "options": [
+        "el queso",
+        "el zumo",
+        "el pollo",
+        "el pan"
+      ],
+      "correct": 1,
+      "explanation": "El zumo (Spain) / el jugo (Latin America) is juice.",
+      "optionNotes": [
+        "El queso is cheese.",
+        null,
+        "El pollo is chicken.",
+        "El pan is bread."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-food-shopping-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ agua está fría.",
+      "options": [
+        "La",
+        "Los",
+        "El",
+        "Las"
+      ],
+      "correct": 2,
+      "explanation": "Agua is feminine but takes el in the singular: el agua.",
+      "optionNotes": [
+        "A feminine noun with a stressed a- takes el.",
+        "Agua is singular here.",
+        null,
+        "Agua is singular here."
+      ]
+    }
+  ]
+}

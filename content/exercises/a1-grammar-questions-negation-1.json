@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "id": "a1-grammar-questions-negation-1",
+  "topic": "a1-grammar-questions-negation",
+  "level": "A1",
+  "title": "Questions and negation: check yourself",
+  "intro": "10 tasks: question words, accents, no and nada / nadie / nunca.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-grammar-questions-negation-1-01",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "question-words"
+      ],
+      "prompt": "¿___ es tu profesor? —Es alto y muy simpático.",
+      "options": [
+        "Qué",
+        "Cómo",
+        "Quién",
+        "Cuál"
+      ],
+      "correct": 1,
+      "explanation": "The answer describes the person, so the question is ¿Cómo es…? (What is he like?)",
+      "optionNotes": [
+        "¿Qué es? asks for a definition.",
+        null,
+        "¿Quién es? would be answered with a name.",
+        "¿Cuál es? asks for one item of information."
+      ]
+    },
+    {
+      "id": "a1-grammar-questions-negation-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "question-words"
+      ],
+      "prompt": "¿___ llega el autobús? —A las diez.",
+      "options": [
+        "Dónde",
+        "Cuándo",
+        "Cuánto",
+        "Quién"
+      ],
+      "correct": 1,
+      "explanation": "The answer is a time: cuándo.",
+      "optionNotes": [
+        "Dónde asks “where”.",
+        null,
+        "Cuánto asks “how much”.",
+        "Quién asks “who”."
+      ]
+    },
+    {
+      "id": "a1-grammar-questions-negation-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "negation"
+      ],
+      "prompt": "No hay ___ en la oficina. (nobody)",
+      "options": [
+        "alguien",
+        "nadie",
+        "nada",
+        "nunca"
+      ],
+      "correct": 1,
+      "explanation": "Nobody = nadie; after no, Spanish uses the negative word.",
+      "optionNotes": [
+        "Alguien means “somebody”.",
+        null,
+        "Nada means “nothing”.",
+        "Nunca means “never”."
+      ]
+    },
+    {
+      "id": "a1-grammar-questions-negation-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "question-words",
+        "por-que"
+      ],
+      "context": "Why are you studying Spanish? —Because I like it.",
+      "text": "¿{{1}} estudias español? —{{2}} me gusta.",
+      "gaps": [
+        {
+          "accepted": [
+            "Por qué",
+            "por qué"
+          ]
+        },
+        {
+          "accepted": [
+            "Porque",
+            "porque"
+          ]
+        }
+      ],
+      "explanation": "The question is por qué (two words, accent); the answer starts with porque (one word, no accent)."
+    },
+    {
+      "id": "a1-grammar-questions-negation-1-05",
+      "type": "find-error",
+      "tags": [
+        "accents"
+      ],
+      "tokens": [
+        "¿Donde",
+        "vive",
+        "tu",
+        "hermano?"
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "¿Dónde"
+      ],
+      "explanation": "Question words carry a written accent: ¿Dónde?"
+    },
+    {
+      "id": "a1-grammar-questions-negation-1-06",
+      "type": "find-error",
+      "tags": [
+        "negation"
+      ],
+      "tokens": [
+        "¿Por",
+        "qué",
+        "no",
+        "comes?",
+        "—Por",
+        "qué",
+        "no",
+        "tengo",
+        "hambre."
+      ],
+      "errorRange": [
+        4,
+        5
+      ],
+      "fixes": [
+        "—Porque"
+      ],
+      "explanation": "The question is por qué (two words, accent); the answer starts with porque (one word): —Porque no tengo hambre."
+    },
+    {
+      "id": "a1-grammar-questions-negation-1-07",
+      "type": "transformation",
+      "tags": [
+        "negation"
+      ],
+      "source": "Siempre como pescado.",
+      "keyword": "nunca",
+      "before": "",
+      "after": "pescado.",
+      "answers": [
+        "Nunca como",
+        "No como nunca"
+      ],
+      "explanation": "Nunca before the verb works alone; after the verb you need no: No como nunca pescado."
+    },
+    {
+      "id": "a1-grammar-questions-negation-1-08",
+      "type": "translate",
+      "tags": [
+        "questions"
+      ],
+      "source": "Where are you from? (to a friend)",
+      "accepted": [
+        "¿De dónde eres?",
+        "¿De dónde eres tú?",
+        "¿Tú de dónde eres?"
+      ],
+      "explanation": "The preposition de goes before the question word: ¿De dónde eres?"
+    },
+    {
+      "id": "a1-grammar-questions-negation-1-09",
+      "type": "translate",
+      "tags": [
+        "negation"
+      ],
+      "source": "I don't work on Saturdays.",
+      "accepted": [
+        "No trabajo los sábados.",
+        "Yo no trabajo los sábados.",
+        "Los sábados no trabajo."
+      ],
+      "explanation": "No before the verb; los sábados = on Saturdays."
+    },
+    {
+      "id": "a1-grammar-questions-negation-1-10",
+      "type": "match",
+      "tags": [
+        "question-words"
+      ],
+      "mode": "response",
+      "prompt": "Match each question with the answer.",
+      "pairs": [
+        [
+          "¿Quién es?",
+          "Es mi hermana."
+        ],
+        [
+          "¿Cuántos años tienes?",
+          "Veinticinco."
+        ],
+        [
+          "¿Dónde vives?",
+          "En el centro."
+        ],
+        [
+          "¿Cuándo trabajas?",
+          "Por la mañana."
+        ]
+      ],
+      "explanation": "Quién → a person; cuántos → a number; dónde → a place; cuándo → a time."
+    }
+  ]
+}

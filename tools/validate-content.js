@@ -39,7 +39,7 @@ const APP = global.LM.APP;
 const FACTS = LANG.content;
 const LAB = global.LM.labLogic;
 
-const STRICT = false; // spec 10 §3: true from the first stage X (the whole placement pool exists)
+const STRICT = true;  // spec 10 §3: true from the first stage X (the whole placement pool exists)
 
 const REPO = path.join(__dirname, "..");
 const ARG = process.argv[2] ? path.resolve(process.argv[2]) : path.join(REPO, "content");
