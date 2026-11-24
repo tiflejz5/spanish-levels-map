@@ -1,0 +1,406 @@
+{
+  "version": 1,
+  "id": "vocab-a1-family-people",
+  "title": "Family and people",
+  "description": "Family, describing people, nationalities and jobs, for the topic a1-vocabulary-family-people.",
+  "level": "A1",
+  "cards": [
+    {
+      "id": "vocab-a1-family-people-001",
+      "type": "typed",
+      "front": "mother",
+      "accepted": [
+        "la madre",
+        "madre"
+      ],
+      "back": "la madre",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-002",
+      "type": "typed",
+      "front": "father",
+      "accepted": [
+        "el padre",
+        "padre"
+      ],
+      "back": "el padre",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-003",
+      "type": "typed",
+      "front": "parents",
+      "accepted": [
+        "los padres",
+        "padres"
+      ],
+      "back": "los padres",
+      "note": "Parientes means relatives.",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-004",
+      "type": "typed",
+      "front": "sister",
+      "accepted": [
+        "la hermana",
+        "hermana"
+      ],
+      "back": "la hermana",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-005",
+      "type": "typed",
+      "front": "brother",
+      "accepted": [
+        "el hermano",
+        "hermano"
+      ],
+      "back": "el hermano",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-006",
+      "type": "typed",
+      "front": "son",
+      "accepted": [
+        "el hijo",
+        "hijo"
+      ],
+      "back": "el hijo",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-007",
+      "type": "typed",
+      "front": "daughter",
+      "accepted": [
+        "la hija",
+        "hija"
+      ],
+      "back": "la hija",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-008",
+      "type": "typed",
+      "front": "grandmother",
+      "accepted": [
+        "la abuela",
+        "abuela"
+      ],
+      "back": "la abuela",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-009",
+      "type": "typed",
+      "front": "uncle",
+      "accepted": [
+        "el tío",
+        "tío"
+      ],
+      "back": "el tío",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-010",
+      "type": "typed",
+      "front": "cousin (female)",
+      "accepted": [
+        "la prima",
+        "prima"
+      ],
+      "back": "la prima",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-011",
+      "type": "typed",
+      "front": "husband",
+      "accepted": [
+        "el marido",
+        "marido",
+        "el esposo",
+        "esposo"
+      ],
+      "back": "el marido",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-012",
+      "type": "typed",
+      "front": "tall (a woman)",
+      "accepted": [
+        "alta"
+      ],
+      "back": "alta",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-013",
+      "type": "typed",
+      "front": "short (a man)",
+      "accepted": [
+        "bajo"
+      ],
+      "back": "bajo",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-014",
+      "type": "typed",
+      "front": "nice, friendly (a man)",
+      "accepted": [
+        "simpático"
+      ],
+      "back": "simpático",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-015",
+      "type": "typed",
+      "front": "shy (a woman)",
+      "accepted": [
+        "tímida"
+      ],
+      "back": "tímida",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-016",
+      "type": "typed",
+      "front": "Mexican (a woman)",
+      "accepted": [
+        "mexicana"
+      ],
+      "back": "mexicana",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-017",
+      "type": "typed",
+      "front": "English (a man)",
+      "accepted": [
+        "inglés"
+      ],
+      "back": "inglés",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-018",
+      "type": "typed",
+      "front": "German (a woman)",
+      "accepted": [
+        "alemana"
+      ],
+      "back": "alemana",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-019",
+      "type": "typed",
+      "front": "American (from the US)",
+      "accepted": [
+        "estadounidense"
+      ],
+      "back": "estadounidense",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-020",
+      "type": "typed",
+      "front": "doctor (a woman)",
+      "accepted": [
+        "la médica",
+        "médica",
+        "la doctora",
+        "doctora"
+      ],
+      "back": "la médica",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-021",
+      "type": "typed",
+      "front": "teacher (a man)",
+      "accepted": [
+        "el profesor",
+        "profesor",
+        "el maestro",
+        "maestro"
+      ],
+      "back": "el profesor",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-022",
+      "type": "typed",
+      "front": "nurse (a woman)",
+      "accepted": [
+        "la enfermera",
+        "enfermera"
+      ],
+      "back": "la enfermera",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-023",
+      "type": "cloze",
+      "text": "Tengo dos {{hermanos}}.",
+      "hint": "brothers (or brothers and sisters)",
+      "en": "I have two brothers / a brother and a sister.",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-024",
+      "type": "cloze",
+      "text": "Mi hermana es {{alta}} y morena.",
+      "hint": "tall",
+      "en": "My sister is tall and dark-haired.",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-025",
+      "type": "cloze",
+      "text": "Mi abuelo es {{mayor}}.",
+      "hint": "old (the polite word)",
+      "en": "My grandfather is old.",
+      "note": "Viejo can sound rude about people.",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-026",
+      "type": "cloze",
+      "text": "Es de Colombia, es {{colombiana}}.",
+      "hint": "Colombian",
+      "en": "She's from Colombia; she's Colombian.",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-027",
+      "type": "cloze",
+      "text": "Mi madre es {{profesora}}.",
+      "hint": "a teacher",
+      "en": "My mother is a teacher.",
+      "note": "No una before a job.",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-028",
+      "type": "cloze",
+      "text": "Mis padres son muy {{simpáticos}}.",
+      "hint": "nice",
+      "en": "My parents are very nice.",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-029",
+      "type": "cloze",
+      "text": "¿Tienes {{novio}}?",
+      "hint": "a boyfriend",
+      "en": "Do you have a boyfriend?",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    },
+    {
+      "id": "vocab-a1-family-people-030",
+      "type": "cloze",
+      "text": "Es hijo {{único}}.",
+      "hint": "only (child)",
+      "en": "He's an only child.",
+      "level": "A1",
+      "tags": [
+        "family-people"
+      ]
+    }
+  ]
+}

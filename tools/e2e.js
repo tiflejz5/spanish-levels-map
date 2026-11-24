@@ -691,7 +691,8 @@ async function main() {
     await withVoices(s.ctx, true);
     const p = s.page;
     await visit(p, "#/review/session?only=decks", 1200);
-    ok(/Food, drink and shopping/.test(await viewText(p)), "the enabled A1 deck is not studied");
+    const deckTitle = JSON.parse(fs.readFileSync(path.join(ROOT, "content", "decks", "index.json"), "utf8")).decks.find(function (x) { return x.id === FX.deck; }).title;
+    ok(new RegExp(deckTitle).test(await viewText(p)), "the enabled A1 deck is not studied");
     if (await p.$(".fc-reveal")) await p.click(".fc-reveal");
     else { await p.fill(".fc-input", "zzz"); await p.keyboard.press("Enter"); }
     await p.waitForSelector(".fc-backside");

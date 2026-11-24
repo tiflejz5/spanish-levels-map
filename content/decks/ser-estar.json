@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "id": "ser-estar",
+  "title": "ser or estar",
+  "description": "Choose and conjugate ser or estar in everyday sentences (A1–B1). This A1 part covers identity, origin, jobs, location, states and events.",
+  "level": "A1",
+  "cards": [
+    {
+      "id": "ser-estar-001",
+      "type": "cloze",
+      "text": "Yo {{soy}} de México.",
+      "hint": "ser or estar? (yo)",
+      "en": "I'm from Mexico.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-002",
+      "type": "cloze",
+      "text": "Mi madre {{es}} enfermera.",
+      "hint": "ser or estar?",
+      "en": "My mother is a nurse.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-003",
+      "type": "cloze",
+      "text": "¿Dónde {{están}} las llaves?",
+      "hint": "ser or estar?",
+      "en": "Where are the keys?",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-004",
+      "type": "cloze",
+      "text": "Hoy {{estoy}} muy cansado.",
+      "hint": "ser or estar? (yo)",
+      "en": "I'm very tired today.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-005",
+      "type": "cloze",
+      "text": "Madrid {{está}} en el centro de España.",
+      "hint": "ser or estar?",
+      "en": "Madrid is in the center of Spain.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-006",
+      "type": "cloze",
+      "text": "Mis amigos {{son}} muy simpáticos.",
+      "hint": "ser or estar?",
+      "en": "My friends are very nice.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-007",
+      "type": "cloze",
+      "text": "La fiesta {{es}} en mi casa.",
+      "hint": "ser or estar? (an event)",
+      "en": "The party is at my house.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-008",
+      "type": "cloze",
+      "text": "¿Cómo {{estás}}? —Bien, gracias.",
+      "hint": "ser or estar? (tú)",
+      "en": "How are you? —Fine, thanks.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-009",
+      "type": "cloze",
+      "text": "{{Son}} las tres y media.",
+      "hint": "ser or estar? (the time)",
+      "en": "It's half past three.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-010",
+      "type": "cloze",
+      "text": "Hoy {{es}} lunes.",
+      "hint": "ser or estar? (the day)",
+      "en": "Today is Monday.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-011",
+      "type": "cloze",
+      "text": "La puerta {{está}} abierta.",
+      "hint": "ser or estar?",
+      "en": "The door is open.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-012",
+      "type": "cloze",
+      "text": "Nosotros {{somos}} estudiantes.",
+      "hint": "ser or estar?",
+      "en": "We're students.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-013",
+      "type": "cloze",
+      "text": "Ana {{está}} enferma hoy.",
+      "hint": "ser or estar?",
+      "en": "Ana is sick today.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-014",
+      "type": "cloze",
+      "text": "Tu casa {{es}} muy grande.",
+      "hint": "ser or estar?",
+      "en": "Your house is very big.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-015",
+      "type": "cloze",
+      "text": "¿{{Eres}} de aquí?",
+      "hint": "ser or estar? (tú)",
+      "en": "Are you from here?",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-016",
+      "type": "cloze",
+      "text": "Los niños {{están}} en el parque.",
+      "hint": "ser or estar?",
+      "en": "The children are in the park.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-017",
+      "type": "cloze",
+      "text": "La película {{es}} aburrida.",
+      "hint": "ser or estar? (boring)",
+      "en": "The movie is boring.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-018",
+      "type": "cloze",
+      "text": "Los niños {{están}} aburridos.",
+      "hint": "ser or estar? (bored)",
+      "en": "The children are bored.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-019",
+      "type": "cloze",
+      "text": "Esta sopa {{está}} muy rica.",
+      "hint": "ser or estar? (tastes now)",
+      "en": "This soup tastes very good.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-020",
+      "type": "cloze",
+      "text": "¿{{Estás}} listo? Nos vamos.",
+      "hint": "ser or estar? (ready)",
+      "en": "Are you ready (to a man)? We are leaving.",
+      "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    }
+  ]
+}

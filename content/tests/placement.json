@@ -1,18 +1,977 @@
 {
   "version": 1,
-  "note": "TEMPORARY minimal pool for stage 5 (12 questions, 2 per level) so the placement test runs end to end. The full pool (stage X of each level) has 10 per level: 5 grammar, 3 vocabulary, 2 reading.",
   "questions": [
-    {"id": "a1-g-01", "level": "A1", "skill": "grammar", "type": "multiple-choice", "question": "Mi hermana ___ profesora.", "options": ["está", "es", "tiene", "hay"], "correct": 1, "explanation": "Professions take ser: es profesora.", "topicId": "a1-verbs-ser"},
-    {"id": "a1-r-01", "level": "A1", "skill": "reading", "type": "multiple-choice", "passage": "¡Hola! Me llamo Diego y soy de Colombia, pero ahora vivo en Valencia con mi hermano. Trabajo en un restaurante. No tengo coche: voy al trabajo en bicicleta. Los domingos visito a mis amigos.", "question": "¿Cómo va Diego al trabajo?", "options": ["En coche", "En autobús", "En bicicleta", "A pie"], "correct": 2, "explanation": "The text says: “voy al trabajo en bicicleta”. He has no car.", "topicId": null},
-    {"id": "a2-g-01", "level": "A2", "skill": "grammar", "type": "multiple-choice", "question": "Ayer nosotros ___ al cine y después cenamos en casa.", "options": ["vamos", "íbamos", "hemos ido", "fuimos"], "correct": 3, "explanation": "Ayer and a finished action: preterite, fuimos.", "topicId": "a2-verbs-preterite-irregular"},
-    {"id": "a2-v-01", "level": "A2", "skill": "vocabulary", "type": "multiple-choice", "question": "Hace mucho frío. Ponte el ___ antes de salir.", "options": ["abrigo", "bañador", "ventilador", "billete"], "correct": 0, "explanation": "Abrigo = coat, the thing you wear when it is cold.", "topicId": "a2-vocabulary-shopping-clothes"},
-    {"id": "b1-g-01", "level": "B1", "skill": "grammar", "type": "multiple-choice", "question": "Espero que mañana ___ buen tiempo.", "options": ["hace", "haga", "hizo", "hacía"], "correct": 1, "explanation": "Esperar que + subjunctive: haga.", "topicId": "b1-verbs-subjunctive-wishes-requests"},
-    {"id": "b1-v-01", "level": "B1", "skill": "vocabulary", "type": "multiple-choice", "question": "Vivo lejos de mi familia y la ___ mucho de menos.", "options": ["echo", "hago", "tengo", "pongo"], "correct": 0, "explanation": "Echar de menos = to miss someone. Usual in Spain; in Latin America people mostly say extrañar.", "topicId": "b1-vocabulary-life-events-relationships"},
-    {"id": "b2-g-01", "level": "B2", "skill": "grammar", "type": "multiple-choice", "question": "Si ___ más tiempo, aprendería a tocar el piano.", "options": ["tengo", "tendría", "tuviera", "tenga"], "correct": 2, "explanation": "Unreal condition in the present: si + imperfect subjunctive (tuviera or tuviese), then conditional.", "topicId": "b2-grammar-si-clauses-unreal"},
-    {"id": "b2-v-01", "level": "B2", "skill": "vocabulary", "type": "multiple-choice", "question": "Me sentía tan ___ que no podía mirar a nadie a la cara.", "options": ["avergonzada", "embarazada", "excitada", "constipada"], "correct": 0, "explanation": "Avergonzada = embarrassed. Embarazada is a false friend: it means pregnant. Excitada usually means aroused, and constipada means having a cold.", "topicId": "b2-vocabulary-false-friends"},
-    {"id": "c1-g-01", "level": "C1", "skill": "grammar", "type": "multiple-choice", "question": "Te lo advierto: como no ___ antes de las diez, nos iremos sin ti.", "options": ["llegaras", "llegues", "llegarías", "llegando"], "correct": 1, "explanation": "Como at the start of a condition or warning (= if) takes the present subjunctive when the main clause is in the future: como no llegues.", "topicId": "c1-verbs-conditional-connectors"},
-    {"id": "c1-v-01", "level": "C1", "skill": "vocabulary", "type": "multiple-choice", "question": "La empresa ha decidido ___ medidas para reducir el consumo de energía.", "options": ["adoptar", "hacer", "cumplir", "dar"], "correct": 0, "explanation": "The collocation is adoptar (or tomar) medidas, not hacer, cumplir or dar medidas.", "topicId": "c1-vocabulary-precise-synonyms-collocations"},
-    {"id": "c2-g-01", "level": "C2", "skill": "grammar", "type": "multiple-choice", "question": "¿Pagar trescientos euros por una cena? ¡Ni que ___ millonarios!", "options": ["fuéramos", "éramos", "seamos", "seríamos"], "correct": 0, "explanation": "Ni que (= as if) takes the imperfect or pluperfect subjunctive: ni que fuéramos (or fuésemos) millonarios.", "topicId": "c2-grammar-control-under-pressure"},
-    {"id": "c2-v-01", "level": "C2", "skill": "vocabulary", "type": "multiple-choice", "question": "Ya no puedes cambiar lo que pasó. Como dice el refrán: a lo hecho, ___.", "options": ["pecho", "dicho", "techo", "derecho"], "correct": 0, "explanation": "The proverb is a lo hecho, pecho: accept the consequences of what is done.", "topicId": "c2-vocabulary-proverbs-culture-connotation"}
+    {
+      "id": "a1-g-01",
+      "level": "A1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Mi hermana ___ profesora.",
+      "options": [
+        "está",
+        "es",
+        "tiene",
+        "hay"
+      ],
+      "correct": 1,
+      "explanation": "Professions take ser: es profesora.",
+      "topicId": "a1-verbs-ser"
+    },
+    {
+      "id": "a1-r-01",
+      "level": "A1",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "passage": "¡Hola! Me llamo Diego y soy de Colombia, pero ahora vivo en Valencia con mi hermano. Trabajo en un restaurante. No tengo coche: voy al trabajo en bicicleta. Los domingos visito a mis amigos.",
+      "question": "¿Cómo va Diego al trabajo?",
+      "options": [
+        "En coche",
+        "En autobús",
+        "En bicicleta",
+        "A pie"
+      ],
+      "correct": 2,
+      "explanation": "The text says: “voy al trabajo en bicicleta”. He has no car.",
+      "topicId": null
+    },
+    {
+      "id": "a1-g-02",
+      "level": "A1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Mis padres ___ en casa ahora.",
+      "options": [
+        "son",
+        "están",
+        "hay",
+        "tienen"
+      ],
+      "correct": 1,
+      "explanation": "Where people are takes estar: están.",
+      "topicId": "a1-verbs-estar-hay"
+    },
+    {
+      "id": "a1-g-03",
+      "level": "A1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "A mí me ___ los perros.",
+      "options": [
+        "gusta",
+        "gustan",
+        "gusto",
+        "gustas"
+      ],
+      "correct": 1,
+      "explanation": "Los perros is plural: me gustan.",
+      "topicId": "a1-verbs-gustar"
+    },
+    {
+      "id": "a1-g-04",
+      "level": "A1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Vivo cerca ___ parque.",
+      "options": [
+        "de el",
+        "del",
+        "al",
+        "de la"
+      ],
+      "correct": 1,
+      "explanation": "De + el joins into del: cerca del parque.",
+      "topicId": "a1-grammar-articles"
+    },
+    {
+      "id": "a1-g-05",
+      "level": "A1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "¿Tú ___ en una oficina?",
+      "options": [
+        "trabaja",
+        "trabajas",
+        "trabajo",
+        "trabajan"
+      ],
+      "correct": 1,
+      "explanation": "Tú + -ar verb: trabajas.",
+      "topicId": "a1-verbs-present-regular"
+    },
+    {
+      "id": "a1-v-01",
+      "level": "A1",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "La hermana de mi madre es mi ___.",
+      "options": [
+        "abuela",
+        "prima",
+        "tía",
+        "hija"
+      ],
+      "correct": 2,
+      "explanation": "Your mother's sister is your aunt: tía.",
+      "topicId": "a1-vocabulary-family-people"
+    },
+    {
+      "id": "a1-v-02",
+      "level": "A1",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Para hacer una tortilla de patatas necesito ___.",
+      "options": [
+        "huevos",
+        "sillas",
+        "calles",
+        "zapatos"
+      ],
+      "correct": 0,
+      "explanation": "A Spanish tortilla de patatas is made with eggs: huevos. (In Mexico a tortilla is a corn or flour flatbread.)",
+      "topicId": "a1-vocabulary-food-shopping"
+    },
+    {
+      "id": "a1-v-03",
+      "level": "A1",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "El día después del viernes es el ___.",
+      "options": [
+        "jueves",
+        "domingo",
+        "sábado",
+        "lunes"
+      ],
+      "correct": 2,
+      "explanation": "After Friday comes Saturday: el sábado.",
+      "topicId": "a1-vocabulary-numbers-days-months"
+    },
+    {
+      "id": "a1-r-02",
+      "level": "A1",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "¿Qué hacen Lucía y su hermana los sábados por la tarde?",
+      "options": [
+        "Van al mercado.",
+        "Trabajan.",
+        "Ven películas en casa.",
+        "Estudian."
+      ],
+      "correct": 2,
+      "explanation": "The text says: por la tarde vemos películas en casa.",
+      "topicId": null,
+      "passage": "Hola, me llamo Lucía y soy de Valencia. Vivo en un apartamento pequeño con mi hermana. Ella es enfermera y trabaja por la noche. Yo soy estudiante. Los sábados por la mañana vamos al mercado y por la tarde vemos películas en casa."
+    },
+    {
+      "id": "a2-g-01",
+      "level": "A2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Ayer nosotros ___ al cine y después cenamos en casa.",
+      "options": [
+        "vamos",
+        "íbamos",
+        "hemos ido",
+        "fuimos"
+      ],
+      "correct": 3,
+      "explanation": "Ayer and a finished action: preterite, fuimos.",
+      "topicId": "a2-verbs-preterite-irregular"
+    },
+    {
+      "id": "a2-v-01",
+      "level": "A2",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Hace mucho frío. Ponte el ___ antes de salir.",
+      "options": [
+        "abrigo",
+        "bañador",
+        "ventilador",
+        "billete"
+      ],
+      "correct": 0,
+      "explanation": "Abrigo = coat, the thing you wear when it is cold.",
+      "topicId": "a2-vocabulary-shopping-clothes"
+    },
+    {
+      "id": "a2-g-02",
+      "level": "A2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Cuando era niño, ___ al fútbol todos los días.",
+      "options": [
+        "jugué",
+        "jugaba",
+        "juego",
+        "jugaré"
+      ],
+      "correct": 1,
+      "explanation": "A habit in the past takes the imperfect: jugaba.",
+      "topicId": "a2-verbs-imperfect"
+    },
+    {
+      "id": "a2-g-03",
+      "level": "A2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "—¿Tienes las entradas? —Sí, ___ tengo aquí.",
+      "options": [
+        "los",
+        "las",
+        "les",
+        "la"
+      ],
+      "correct": 1,
+      "explanation": "Las entradas is feminine plural: las tengo.",
+      "topicId": "a2-grammar-direct-object-pronouns"
+    },
+    {
+      "id": "a2-g-04",
+      "level": "A2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Este año ya ___ tres veces a Barcelona.",
+      "options": [
+        "he ido",
+        "fui a ir",
+        "iba",
+        "voy"
+      ],
+      "correct": 0,
+      "explanation": "Este año (a period that is not over) takes the present perfect in Spain: he ido.",
+      "topicId": "a2-verbs-present-perfect"
+    },
+    {
+      "id": "a2-g-05",
+      "level": "A2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Mi hermano es ___ alto que yo.",
+      "options": [
+        "tan",
+        "más",
+        "muy",
+        "mucho"
+      ],
+      "correct": 1,
+      "explanation": "Comparisons use más … que: más alto que yo.",
+      "topicId": "a2-grammar-comparatives-superlatives"
+    },
+    {
+      "id": "a2-v-02",
+      "level": "A2",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Para viajar en avión necesitas una ___ de embarque.",
+      "options": [
+        "tarjeta",
+        "carta",
+        "mesa",
+        "maleta"
+      ],
+      "correct": 0,
+      "explanation": "A boarding pass is una tarjeta de embarque (Latin America: pase de abordar).",
+      "topicId": "a2-vocabulary-travel-transport"
+    },
+    {
+      "id": "a2-v-03",
+      "level": "A2",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Me duele la ___; creo que voy a tomar una aspirina.",
+      "options": [
+        "cabeza",
+        "mesa",
+        "camisa",
+        "calle"
+      ],
+      "correct": 0,
+      "explanation": "Me duele la cabeza = I have a headache.",
+      "topicId": "a2-vocabulary-health-body"
+    },
+    {
+      "id": "a2-r-01",
+      "level": "A2",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "¿Por qué compraron jerséis en Cusco?",
+      "options": [
+        "Porque eran baratos.",
+        "Porque hacía frío por la noche.",
+        "Porque iban a Machu Picchu.",
+        "Porque eran un regalo."
+      ],
+      "correct": 1,
+      "explanation": "The text says: hacía frío por la noche, así que compramos unos jerséis.",
+      "topicId": null,
+      "passage": "El verano pasado fui a Perú con dos amigos. Primero estuvimos tres días en Lima y después tomamos un autobús a Cusco. El viaje fue muy largo, pero el paisaje era precioso. En Cusco hacía frío por la noche, así que compramos unos suéteres de lana en el mercado. El último día subimos a Machu Picchu. ¡Fue increíble!"
+    },
+    {
+      "id": "a2-r-02",
+      "level": "A2",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "¿Cómo fueron de Lima a Cusco?",
+      "options": [
+        "En avión.",
+        "En tren.",
+        "En autobús.",
+        "En coche."
+      ],
+      "correct": 2,
+      "explanation": "The text says: tomamos un autobús a Cusco.",
+      "topicId": null,
+      "passage": "El verano pasado fui a Perú con dos amigos. Primero estuvimos tres días en Lima y después tomamos un autobús a Cusco. El viaje fue muy largo, pero el paisaje era precioso. En Cusco hacía frío por la noche, así que compramos unos suéteres de lana en el mercado. El último día subimos a Machu Picchu. ¡Fue increíble!"
+    },
+    {
+      "id": "b1-g-01",
+      "level": "B1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Espero que mañana ___ buen tiempo.",
+      "options": [
+        "hace",
+        "haga",
+        "hizo",
+        "hacía"
+      ],
+      "correct": 1,
+      "explanation": "Esperar que + subjunctive: haga.",
+      "topicId": "b1-verbs-subjunctive-wishes-requests"
+    },
+    {
+      "id": "b1-v-01",
+      "level": "B1",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Vivo lejos de mi familia y la ___ mucho de menos.",
+      "options": [
+        "echo",
+        "hago",
+        "tengo",
+        "pongo"
+      ],
+      "correct": 0,
+      "explanation": "Echar de menos = to miss someone. Usual in Spain; in Latin America people mostly say extrañar.",
+      "topicId": "b1-vocabulary-life-events-relationships"
+    },
+    {
+      "id": "b1-g-02",
+      "level": "B1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Mientras ___ la cena, sonó el teléfono.",
+      "options": [
+        "preparé",
+        "preparaba",
+        "he preparado",
+        "prepararé"
+      ],
+      "correct": 1,
+      "explanation": "The background action in progress takes the imperfect: mientras preparaba.",
+      "topicId": "b1-verbs-preterite-vs-imperfect"
+    },
+    {
+      "id": "b1-g-03",
+      "level": "B1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "No creo que Marta ___ razón.",
+      "options": [
+        "tiene",
+        "tenga",
+        "tendrá",
+        "tenía"
+      ],
+      "correct": 1,
+      "explanation": "A negated opinion (no creo que) takes the subjunctive: tenga.",
+      "topicId": "b1-verbs-subjunctive-emotion-opinion"
+    },
+    {
+      "id": "b1-g-04",
+      "level": "B1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Esta es la casa ___ nací.",
+      "options": [
+        "que",
+        "donde",
+        "quien",
+        "cual"
+      ],
+      "correct": 1,
+      "explanation": "A place: la casa donde (en la que) nací.",
+      "topicId": "b1-grammar-relative-clauses"
+    },
+    {
+      "id": "b1-g-05",
+      "level": "B1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Te llamaré cuando ___ a casa.",
+      "options": [
+        "llego",
+        "llegaré",
+        "llegue",
+        "llegué"
+      ],
+      "correct": 2,
+      "explanation": "Cuando + a future action takes the subjunctive: cuando llegue.",
+      "topicId": "b1-verbs-subjunctive-time-purpose"
+    },
+    {
+      "id": "b1-v-02",
+      "level": "B1",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Mañana tengo una ___ de trabajo y estoy muy nervioso.",
+      "options": [
+        "entrevista",
+        "encuesta",
+        "entrega",
+        "entrada"
+      ],
+      "correct": 0,
+      "explanation": "A job interview is una entrevista de trabajo.",
+      "topicId": "b1-vocabulary-work-education"
+    },
+    {
+      "id": "b1-v-03",
+      "level": "B1",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Hay que ___ el plástico y el vidrio.",
+      "options": [
+        "reciclar",
+        "recibir",
+        "recordar",
+        "recoger"
+      ],
+      "correct": 0,
+      "explanation": "To recycle = reciclar.",
+      "topicId": "b1-vocabulary-media-technology-environment"
+    },
+    {
+      "id": "b1-r-01",
+      "level": "B1",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "¿Qué sorprendió a la narradora cuando visitó el pueblo?",
+      "options": [
+        "Que las puertas estaban cerradas.",
+        "Que había muy poca gente.",
+        "Que nadie la recibió.",
+        "Que su abuela vivía allí."
+      ],
+      "correct": 1,
+      "explanation": "She says: me sorprendió ver que estaba casi vacío.",
+      "topicId": null,
+      "passage": "Cuando era pequeña, mi abuela me contaba historias de su pueblo. Decía que allí todo el mundo se conocía y que las puertas nunca se cerraban con llave. Hace un año fui a visitarlo por primera vez. Me sorprendió ver que estaba casi vacío: solo quedaban unas veinte personas, casi todas mayores. Aun así, me recibieron como a una vieja amiga."
+    },
+    {
+      "id": "b1-r-02",
+      "level": "B1",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "¿Cómo la trataron los vecinos?",
+      "options": [
+        "Con desconfianza.",
+        "Con indiferencia.",
+        "Como a alguien conocido.",
+        "Como a una turista más."
+      ],
+      "correct": 2,
+      "explanation": "The text says: me recibieron como a una vieja amiga.",
+      "topicId": null,
+      "passage": "Cuando era pequeña, mi abuela me contaba historias de su pueblo. Decía que allí todo el mundo se conocía y que las puertas nunca se cerraban con llave. Hace un año fui a visitarlo por primera vez. Me sorprendió ver que estaba casi vacío: solo quedaban unas veinte personas, casi todas mayores. Aun así, me recibieron como a una vieja amiga."
+    },
+    {
+      "id": "b2-g-01",
+      "level": "B2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Si ___ más tiempo, aprendería a tocar el piano.",
+      "options": [
+        "tengo",
+        "tendría",
+        "tuviera",
+        "tenga"
+      ],
+      "correct": 2,
+      "explanation": "Unreal condition in the present: si + imperfect subjunctive (tuviera or tuviese), then conditional.",
+      "topicId": "b2-grammar-si-clauses-unreal"
+    },
+    {
+      "id": "b2-v-01",
+      "level": "B2",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Me sentía tan ___ que no podía mirar a nadie a la cara.",
+      "options": [
+        "avergonzada",
+        "embarazada",
+        "excitada",
+        "constipada"
+      ],
+      "correct": 0,
+      "explanation": "Avergonzada = embarrassed. Embarazada is a false friend: it means pregnant. Excitada usually means aroused, and constipada means having a cold (Spain).",
+      "topicId": "b2-vocabulary-false-friends"
+    },
+    {
+      "id": "b2-g-02",
+      "level": "B2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "___ llueva mañana, iremos de excursión.",
+      "options": [
+        "Aunque",
+        "Porque",
+        "Si no",
+        "Como"
+      ],
+      "correct": 0,
+      "explanation": "Aunque + subjunctive: even if it rains.",
+      "topicId": "b2-grammar-concession-cause-consequence"
+    },
+    {
+      "id": "b2-g-03",
+      "level": "B2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Ana me dijo que ___ al día siguiente.",
+      "options": [
+        "vendrá",
+        "vendría",
+        "viene",
+        "venga"
+      ],
+      "correct": 1,
+      "explanation": "In reported speech, a future in the past becomes the conditional: vendría.",
+      "topicId": "b2-grammar-reported-speech"
+    },
+    {
+      "id": "b2-g-04",
+      "level": "B2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "En este restaurante ___ muy bien.",
+      "options": [
+        "se come",
+        "se comen",
+        "come",
+        "es comido"
+      ],
+      "correct": 0,
+      "explanation": "Impersonal se with no plural subject: se come muy bien.",
+      "topicId": "b2-grammar-passive-impersonal-se"
+    },
+    {
+      "id": "b2-g-05",
+      "level": "B2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Me pidió que le ___ el libro.",
+      "options": [
+        "devuelvo",
+        "devolviera",
+        "devolveré",
+        "he devuelto"
+      ],
+      "correct": 1,
+      "explanation": "Pedir que in the past takes the imperfect subjunctive: devolviera.",
+      "topicId": "b2-verbs-imperfect-subjunctive"
+    },
+    {
+      "id": "b2-v-02",
+      "level": "B2",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Después de la discusión, decidieron ___ las paces.",
+      "options": [
+        "hacer",
+        "dar",
+        "poner",
+        "tomar"
+      ],
+      "correct": 0,
+      "explanation": "To make peace / make up = hacer las paces.",
+      "topicId": "b2-vocabulary-collocations-idioms"
+    },
+    {
+      "id": "b2-v-03",
+      "level": "B2",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "El adjetivo que corresponde a “responsabilidad” es ___.",
+      "options": [
+        "responsable",
+        "responsabilizado",
+        "respondido",
+        "respuesta"
+      ],
+      "correct": 0,
+      "explanation": "Responsabilidad → responsable (responsible).",
+      "topicId": "b2-vocabulary-word-formation-register"
+    },
+    {
+      "id": "b2-r-01",
+      "level": "B2",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "Según el texto, ¿qué critican algunos psicólogos?",
+      "options": [
+        "El coste de los desplazamientos.",
+        "Los efectos del aislamiento.",
+        "El modelo híbrido.",
+        "La falta de oficinas."
+      ],
+      "correct": 1,
+      "explanation": "They warn that prolonged isolation can affect motivation and the sense of belonging.",
+      "topicId": null,
+      "passage": "El teletrabajo, que hasta hace pocos años era un privilegio de unos cuantos, se ha convertido en una opción habitual para muchas empresas. Sus defensores destacan que permite ahorrar tiempo y dinero en desplazamientos y conciliar mejor la vida laboral y familiar. Sin embargo, no faltan las voces críticas. Algunos psicólogos advierten de que el aislamiento prolongado puede afectar a la motivación y a la sensación de pertenencia al equipo. Por eso, cada vez más compañías optan por un modelo híbrido, en el que los empleados combinan días en casa con días en la oficina."
+    },
+    {
+      "id": "b2-r-02",
+      "level": "B2",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "¿Qué solución adoptan muchas empresas?",
+      "options": [
+        "Prohibir el teletrabajo.",
+        "Combinar casa y oficina.",
+        "Pagar los desplazamientos.",
+        "Contratar psicólogos."
+      ],
+      "correct": 1,
+      "explanation": "The text says they opt for a hybrid model: days at home and days at the office.",
+      "topicId": null,
+      "passage": "El teletrabajo, que hasta hace pocos años era un privilegio de unos cuantos, se ha convertido en una opción habitual para muchas empresas. Sus defensores destacan que permite ahorrar tiempo y dinero en desplazamientos y conciliar mejor la vida laboral y familiar. Sin embargo, no faltan las voces críticas. Algunos psicólogos advierten de que el aislamiento prolongado puede afectar a la motivación y a la sensación de pertenencia al equipo. Por eso, cada vez más compañías optan por un modelo híbrido, en el que los empleados combinan días en casa con días en la oficina."
+    },
+    {
+      "id": "c1-g-01",
+      "level": "C1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Te lo advierto: como no ___ antes de las diez, nos iremos sin ti.",
+      "options": [
+        "llegaras",
+        "llegues",
+        "llegarías",
+        "llegando"
+      ],
+      "correct": 1,
+      "explanation": "Como at the start of a condition or warning (= if) takes the present subjunctive when the main clause is in the future: como no llegues.",
+      "topicId": "c1-verbs-conditional-connectors"
+    },
+    {
+      "id": "c1-v-01",
+      "level": "C1",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "La empresa ha decidido ___ medidas para reducir el consumo de energía.",
+      "options": [
+        "adoptar",
+        "hacer",
+        "cumplir",
+        "dar"
+      ],
+      "correct": 0,
+      "explanation": "The collocation is adoptar (or tomar) medidas, not hacer, cumplir or dar medidas.",
+      "topicId": "c1-vocabulary-precise-synonyms-collocations"
+    },
+    {
+      "id": "c1-g-02",
+      "level": "C1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Lamento que no ___ nadie a la reunión de ayer.",
+      "options": [
+        "vino",
+        "viniera",
+        "vendrá",
+        "venir"
+      ],
+      "correct": 1,
+      "explanation": "Lamentar que (an emotion) takes the subjunctive; ayer puts it in the past: viniera.",
+      "topicId": "c1-verbs-subjunctive-nuances"
+    },
+    {
+      "id": "c1-g-03",
+      "level": "C1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "No te imaginas ___ difícil que fue.",
+      "options": [
+        "lo",
+        "el",
+        "qué tan",
+        "cuánto"
+      ],
+      "correct": 0,
+      "explanation": "Lo + adjective + que expresses degree: lo difícil que fue.",
+      "topicId": "c1-grammar-nominalization-lo"
+    },
+    {
+      "id": "c1-g-04",
+      "level": "C1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "___ terminado el informe, se fue a casa.",
+      "options": [
+        "Una vez",
+        "Después",
+        "Al",
+        "Por"
+      ],
+      "correct": 0,
+      "explanation": "Una vez + participle: once the report was finished.",
+      "topicId": "c1-grammar-nonfinite-clauses"
+    },
+    {
+      "id": "c1-g-05",
+      "level": "C1",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Me alegro ___ que hayas aprobado.",
+      "options": [
+        "de",
+        "en",
+        "con",
+        "por"
+      ],
+      "correct": 0,
+      "explanation": "Alegrarse de que + subjunctive.",
+      "topicId": "c1-grammar-prepositional-verbs"
+    },
+    {
+      "id": "c1-v-02",
+      "level": "C1",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Lleva toda la mañana nervioso y no da ___ con bola.",
+      "options": [
+        "pie",
+        "mano",
+        "cabeza",
+        "brazo"
+      ],
+      "correct": 0,
+      "explanation": "No dar pie con bola = to get everything wrong.",
+      "topicId": "c1-vocabulary-idioms-colloquial"
+    },
+    {
+      "id": "c1-v-03",
+      "level": "C1",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "El estudio ___ de manifiesto la necesidad de nuevas medidas.",
+      "options": [
+        "pone",
+        "hace",
+        "da",
+        "lleva"
+      ],
+      "correct": 0,
+      "explanation": "Poner de manifiesto = to make evident.",
+      "topicId": "c1-vocabulary-academic-professional"
+    },
+    {
+      "id": "c1-r-01",
+      "level": "C1",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "¿Qué idea defiende el texto?",
+      "options": [
+        "La soledad solo afecta a los mayores.",
+        "Importa más la calidad de las relaciones que su número.",
+        "Las redes sociales eliminan la soledad.",
+        "No hacen falta políticas públicas."
+      ],
+      "correct": 1,
+      "explanation": "Experts insist it is about the quality of relationships, not the quantity.",
+      "topicId": null,
+      "passage": "Resulta paradójico que, en la era de la hiperconectividad, la soledad no deseada se haya convertido en uno de los grandes retos de salud pública. Lejos de ser un problema exclusivo de las personas mayores, afecta cada vez más a jóvenes que, pese a mantener cientos de contactos en las redes, afirman carecer de alguien con quien hablar de verdad. Los expertos insisten en que no se trata tanto de la cantidad de relaciones como de su calidad, y reclaman políticas que favorezcan los espacios de encuentro en los barrios."
+    },
+    {
+      "id": "c1-r-02",
+      "level": "C1",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "¿Por qué la situación resulta “paradójica”?",
+      "options": [
+        "Porque los jóvenes no usan redes.",
+        "Porque hay soledad en una época de máxima conexión.",
+        "Porque los barrios están vacíos.",
+        "Porque los mayores no se quejan."
+      ],
+      "correct": 1,
+      "explanation": "Loneliness grows in the era of hyperconnectivity.",
+      "topicId": null,
+      "passage": "Resulta paradójico que, en la era de la hiperconectividad, la soledad no deseada se haya convertido en uno de los grandes retos de salud pública. Lejos de ser un problema exclusivo de las personas mayores, afecta cada vez más a jóvenes que, pese a mantener cientos de contactos en las redes, afirman carecer de alguien con quien hablar de verdad. Los expertos insisten en que no se trata tanto de la cantidad de relaciones como de su calidad, y reclaman políticas que favorezcan los espacios de encuentro en los barrios."
+    },
+    {
+      "id": "c2-g-01",
+      "level": "C2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "¿Pagar trescientos euros por una cena? ¡Ni que ___ millonarios!",
+      "options": [
+        "fuéramos",
+        "éramos",
+        "seamos",
+        "seríamos"
+      ],
+      "correct": 0,
+      "explanation": "Ni que (= as if) takes the imperfect or pluperfect subjunctive: ni que fuéramos (or fuésemos) millonarios.",
+      "topicId": "c2-grammar-control-under-pressure"
+    },
+    {
+      "id": "c2-v-01",
+      "level": "C2",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "Ya no puedes cambiar lo que pasó. Como dice el refrán: a lo hecho, ___.",
+      "options": [
+        "pecho",
+        "dicho",
+        "techo",
+        "derecho"
+      ],
+      "correct": 0,
+      "explanation": "The proverb is a lo hecho, pecho: accept the consequences of what is done.",
+      "topicId": "c2-vocabulary-proverbs-culture-connotation"
+    },
+    {
+      "id": "c2-g-02",
+      "level": "C2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Si el arrendatario no ___ la renta en el plazo previsto, el contrato quedará resuelto.",
+      "options": [
+        "abonare",
+        "abonó",
+        "abonaría",
+        "abone"
+      ],
+      "correct": 0,
+      "explanation": "The future subjunctive (abonare) survives in legal texts; in everyday Spanish: si no abona.",
+      "topicId": "c2-grammar-archaic-literary-forms"
+    },
+    {
+      "id": "c2-g-03",
+      "level": "C2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "Por mucho que ___, no conseguirás convencerla.",
+      "options": [
+        "insistes",
+        "insistas",
+        "insistirás",
+        "insististe"
+      ],
+      "correct": 1,
+      "explanation": "Por mucho que about a hypothetical action takes the subjunctive: insistas.",
+      "topicId": "c2-grammar-control-under-pressure"
+    },
+    {
+      "id": "c2-g-04",
+      "level": "C2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "___ como sea, mañana lo resolvemos.",
+      "options": [
+        "Sea",
+        "Fuera",
+        "Es",
+        "Siendo"
+      ],
+      "correct": 0,
+      "explanation": "Sea como sea = be that as it may (a reduplicated subjunctive).",
+      "topicId": "c2-grammar-extreme-registers"
+    },
+    {
+      "id": "c2-g-05",
+      "level": "C2",
+      "skill": "grammar",
+      "type": "multiple-choice",
+      "question": "De ___ sabido, no habría venido.",
+      "options": [
+        "haberlo",
+        "habiendo",
+        "lo haber",
+        "habiéndolo"
+      ],
+      "correct": 0,
+      "explanation": "De + perfect infinitive = a past unreal condition: de haberlo sabido (had I known).",
+      "topicId": "c2-grammar-bending-rules"
+    },
+    {
+      "id": "c2-v-02",
+      "level": "C2",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "En México, “¿Qué onda?” significa…",
+      "options": [
+        "¿Qué tal?",
+        "¿Qué hora es?",
+        "¿Qué pasó con el agua?",
+        "¿Dónde está la playa?"
+      ],
+      "correct": 0,
+      "explanation": "¿Qué onda? is an informal greeting in Mexico: How's it going?",
+      "topicId": "c2-vocabulary-pan-hispanic-variation"
+    },
+    {
+      "id": "c2-v-03",
+      "level": "C2",
+      "skill": "vocabulary",
+      "type": "multiple-choice",
+      "question": "“A buen entendedor, pocas palabras bastan” se dice cuando…",
+      "options": [
+        "alguien habla demasiado",
+        "no hace falta explicar más",
+        "alguien no entiende nada",
+        "hay que repetir algo"
+      ],
+      "correct": 1,
+      "explanation": "The saying means a wise listener needs few words.",
+      "topicId": "c2-vocabulary-proverbs-culture-connotation"
+    },
+    {
+      "id": "c2-r-01",
+      "level": "C2",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "Según el texto, el autor…",
+      "options": [
+        "ignora las reglas del género.",
+        "conoce bien las reglas y juega con ellas.",
+        "sigue fielmente las convenciones.",
+        "escribe un ejercicio de estilo vacío."
+      ],
+      "correct": 1,
+      "explanation": "He knows the conventions so well that he can afford to flout them (se permite burlarlas).",
+      "topicId": null,
+      "passage": "No es que el autor desconozca las convenciones del género; antes bien, las conoce tan a fondo que se permite burlarlas con una desenvoltura casi insolente. Allí donde el lector espera el desenlace, encuentra una digresión; allí donde aguarda la confesión del culpable, un silencio que lo dice todo. Habrá quien tilde la novela de caprichosa, y no le faltará algo de razón, pero sería injusto reducirla a un mero ejercicio de estilo: bajo la ironía late una reflexión nada complaciente sobre la culpa y la memoria."
+    },
+    {
+      "id": "c2-r-02",
+      "level": "C2",
+      "skill": "reading",
+      "type": "multiple-choice",
+      "question": "¿Qué opina el crítico de quienes llaman “caprichosa” a la novela?",
+      "options": [
+        "Que se equivocan por completo.",
+        "Que tienen algo de razón, pero simplifican.",
+        "Que tienen toda la razón.",
+        "Que no la han leído."
+      ],
+      "correct": 1,
+      "explanation": "No le faltará algo de razón, but reducing it to a mere exercise in style would be unfair.",
+      "topicId": null,
+      "passage": "No es que el autor desconozca las convenciones del género; antes bien, las conoce tan a fondo que se permite burlarlas con una desenvoltura casi insolente. Allí donde el lector espera el desenlace, encuentra una digresión; allí donde aguarda la confesión del culpable, un silencio que lo dice todo. Habrá quien tilde la novela de caprichosa, y no le faltará algo de razón, pero sería injusto reducirla a un mero ejercicio de estilo: bajo la ironía late una reflexión nada complaciente sobre la culpa y la memoria."
+    }
   ]
 }

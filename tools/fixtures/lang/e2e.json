@@ -1,7 +1,7 @@
 {
-  "about": "Content the browser tests (tools/e2e.js) rely on, kept here so another language swaps one file (spec 09 rule 3). Every id must exist in content/.",
+  "about": "Content the browser tests (tools/e2e.js) rely on, kept here so another language swaps one file (spec 09 rule 3). Every id must exist in content/; deck is the deck enabled by default.",
   "topic": "a1-verbs-gustar",
-  "topicWithoutPage": "a1-functions-asking-to-repeat",
+  "topicWithoutPage": "c2-vocabulary-pan-hispanic-variation",
   "sets": ["a1-verbs-gustar-1", "a1-verbs-gustar-2"],
-  "deck": "vocab-a1-food-shopping"
+  "deck": "vocab-a1-numbers-days-months"
 }

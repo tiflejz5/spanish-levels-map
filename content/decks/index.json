@@ -2,13 +2,58 @@
   "version": 1,
   "decks": [
     {
+      "id": "vocab-a1-numbers-days-months",
+      "title": "Numbers, days and months",
+      "description": "Numbers 0–100, the days of the week and the months, for the topic a1-vocabulary-numbers-days-months.",
+      "level": "A1",
+      "file": "vocab-a1-numbers-days-months.json",
+      "count": 30,
+      "enabled": true
+    },
+    {
+      "id": "vocab-a1-family-people",
+      "title": "Family and people",
+      "description": "Family, describing people, nationalities and jobs, for the topic a1-vocabulary-family-people.",
+      "level": "A1",
+      "file": "vocab-a1-family-people.json",
+      "count": 30,
+      "enabled": false
+    },
+    {
+      "id": "vocab-a1-home-city",
+      "title": "Home and town",
+      "description": "Rooms, furniture and places in town, for the topic a1-vocabulary-home-city.",
+      "level": "A1",
+      "file": "vocab-a1-home-city.json",
+      "count": 30,
+      "enabled": false
+    },
+    {
       "id": "vocab-a1-food-shopping",
       "title": "Food, drink and shopping",
-      "description": "Sample of 8 cards. The full deck has 30–40 cards for the topic a1-vocabulary-food-shopping.",
+      "description": "Food, drink, shops, amounts and prices, for the topic a1-vocabulary-food-shopping.",
       "level": "A1",
       "file": "vocab-a1-food-shopping.json",
-      "count": 8,
-      "enabled": true
+      "count": 30,
+      "enabled": false
+    },
+    {
+      "id": "ser-estar",
+      "title": "ser or estar",
+      "description": "Choose and conjugate ser or estar in everyday sentences (A1–B1). This A1 part covers identity, origin, jobs, location, states and events.",
+      "level": "A1",
+      "file": "ser-estar.json",
+      "count": 20,
+      "enabled": false
+    },
+    {
+      "id": "verbs-stem-changing",
+      "title": "Stem-changing verbs",
+      "description": "e→ie, o→ue, e→i and u→ue in the present (A1–A2).",
+      "level": "A1",
+      "file": "verbs-stem-changing.json",
+      "count": 20,
+      "enabled": false
     }
   ]
 }

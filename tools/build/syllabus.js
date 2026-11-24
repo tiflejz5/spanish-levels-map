@@ -47,7 +47,7 @@ function build(ctx) {
 
 /**
  * Spec 06 E1: an AVAILABLE level must be complete: every topic has a page and a quiz; summary and cheat sheet exist
- * (the final-test pool is checked in tests.js). A WARNING until the first content stage, then an error.
+ * (the final-test pool is checked in tests.js). An error since the first content stage (A1 complete).
  */
 function checkAvailable(ctx) {
   Object.keys(ctx.status).forEach(function (L) {
@@ -60,7 +60,7 @@ function checkAvailable(ctx) {
     if (noQuiz.length) gaps.push(noQuiz.length + " of " + ids.length + " topics without a quiz");
     if (!(ctx.summaries || {})[L]) gaps.push("no summaries/" + L.toLowerCase() + ".md");
     if (!(ctx.cheatsheets || {})[L]) gaps.push("no cheatsheets/" + L.toLowerCase() + ".md");
-    if (gaps.length) ctx.warn("level " + L + " is available but incomplete: " + gaps.join("; ") + " (an error from the first content stage)");
+    if (gaps.length) ctx.error("level " + L + " is available but incomplete: " + gaps.join("; "));
   });
 }
 
