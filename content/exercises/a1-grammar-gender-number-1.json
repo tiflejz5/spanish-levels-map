@@ -1,0 +1,208 @@
+{
+  "version": 1,
+  "id": "a1-grammar-gender-number-1",
+  "topic": "a1-grammar-gender-number",
+  "level": "A1",
+  "title": "Gender and plurals: check yourself",
+  "intro": "10 tasks: el or la, plural endings and the usual exceptions.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-grammar-gender-number-1-01",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "gender",
+        "exceptions"
+      ],
+      "prompt": "___ mapa de la ciudad es muy grande.",
+      "options": [
+        "La",
+        "El",
+        "Las",
+        "Una"
+      ],
+      "correct": 1,
+      "explanation": "Mapa ends in -a but is masculine: el mapa.",
+      "optionNotes": [
+        "Mapa is masculine, although it ends in -a.",
+        null,
+        "Las is plural.",
+        "Una is feminine."
+      ]
+    },
+    {
+      "id": "a1-grammar-gender-number-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "gender"
+      ],
+      "prompt": "___ canción es muy bonita.",
+      "options": [
+        "El",
+        "La",
+        "Los",
+        "Un"
+      ],
+      "correct": 1,
+      "explanation": "Nouns in -ción are feminine: la canción.",
+      "optionNotes": [
+        "Nouns in -ción are feminine.",
+        null,
+        "Los is plural and masculine.",
+        "Un is masculine."
+      ]
+    },
+    {
+      "id": "a1-grammar-gender-number-1-03",
+      "type": "gap-fill",
+      "tags": [
+        "plural"
+      ],
+      "context": "There are three hotels and two cities on the map.",
+      "text": "En el mapa hay tres {{1}} y dos {{2}}. (hay = there are)",
+      "gaps": [
+        {
+          "accepted": [
+            "hoteles"
+          ],
+          "hint": "hotel"
+        },
+        {
+          "accepted": [
+            "ciudades"
+          ],
+          "hint": "ciudad"
+        }
+      ],
+      "explanation": "A noun ending in a consonant adds -es: hoteles, ciudades."
+    },
+    {
+      "id": "a1-grammar-gender-number-1-04",
+      "type": "short-answer",
+      "tags": [
+        "plural",
+        "z"
+      ],
+      "prompt": "Write the plural: un lápiz → dos ___",
+      "accepted": [
+        "lápices"
+      ],
+      "explanation": "Z becomes c before -es: lápices."
+    },
+    {
+      "id": "a1-grammar-gender-number-1-05",
+      "type": "short-answer",
+      "tags": [
+        "plural",
+        "accents"
+      ],
+      "prompt": "Write the plural: una canción → tres ___",
+      "accepted": [
+        "canciones"
+      ],
+      "explanation": "Add -es; the written accent disappears because the stress now falls on the second-to-last syllable: can-CIO-nes."
+    },
+    {
+      "id": "a1-grammar-gender-number-1-06",
+      "type": "find-error",
+      "tags": [
+        "gender",
+        "exceptions"
+      ],
+      "tokens": [
+        "La",
+        "problema",
+        "es",
+        "fácil."
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "El"
+      ],
+      "explanation": "Problema ends in -a but is masculine: El problema es fácil."
+    },
+    {
+      "id": "a1-grammar-gender-number-1-07",
+      "type": "match",
+      "tags": [
+        "gender"
+      ],
+      "mode": "translation",
+      "prompt": "Match each noun with its meaning.",
+      "pairs": [
+        [
+          "el día",
+          "the day"
+        ],
+        [
+          "la noche",
+          "the night"
+        ],
+        [
+          "la foto",
+          "the photo"
+        ],
+        [
+          "el idioma",
+          "the language"
+        ]
+      ],
+      "explanation": "Día and idioma end in -a but are masculine; foto ends in -o but is feminine (short for la fotografía)."
+    },
+    {
+      "id": "a1-grammar-gender-number-1-08",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "tags": [
+        "gender",
+        "people"
+      ],
+      "prompt": "Ana, Luis and Marta are students. In Spanish they are…",
+      "options": [
+        "las estudiantes",
+        "los estudiantes",
+        "los estudiantas",
+        "las estudiantas"
+      ],
+      "correct": 1,
+      "explanation": "A mixed group takes the masculine plural: los estudiantes. Estudiante has one form for both genders.",
+      "optionNotes": [
+        "Las estudiantes would mean only women.",
+        null,
+        "The usual feminine is la estudiante; estudiante has one form for both.",
+        "The usual feminine is la estudiante; estudiante has one form for both."
+      ]
+    },
+    {
+      "id": "a1-grammar-gender-number-1-09",
+      "type": "translate",
+      "tags": [
+        "plural"
+      ],
+      "source": "the cities",
+      "accepted": [
+        "las ciudades"
+      ],
+      "explanation": "La ciudad → las ciudades."
+    },
+    {
+      "id": "a1-grammar-gender-number-1-10",
+      "type": "translate",
+      "tags": [
+        "plural",
+        "agreement"
+      ],
+      "source": "two new hotels (nuevo = new)",
+      "accepted": [
+        "dos hoteles nuevos",
+        "dos nuevos hoteles"
+      ],
+      "explanation": "With dos, both the noun and the adjective become plural: dos hoteles nuevos."
+    }
+  ]
+}

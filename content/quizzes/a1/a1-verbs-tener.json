@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-verbs-tener",
+  "topic": "a1-verbs-tener",
+  "level": "A1",
+  "title": "Stop: tener",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-verbs-tener-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Cuántos años ___ tu hermano?",
+      "options": [
+        "es",
+        "tiene",
+        "tienes",
+        "está"
+      ],
+      "correct": 1,
+      "explanation": "Age takes tener; tu hermano is él: tiene.",
+      "optionNotes": [
+        "Age is not ser in Spanish.",
+        null,
+        "Tienes is for tú; tu hermano is él.",
+        "Age is not estar."
+      ]
+    },
+    {
+      "id": "a1-verbs-tener-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Nosotros ___ dos hijos.",
+      "options": [
+        "tienemos",
+        "tenemos",
+        "tienen",
+        "tengo"
+      ],
+      "correct": 1,
+      "explanation": "In the nosotros form the stem does not change: tenemos.",
+      "optionNotes": [
+        "The stem stays ten- in the nosotros form.",
+        null,
+        "Tienen is for ellos.",
+        "Tengo is for yo."
+      ]
+    },
+    {
+      "id": "a1-verbs-tener-q3",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "How do you say “I'm cold”?",
+      "options": [
+        "Estoy frío.",
+        "Soy frío.",
+        "Tengo frío.",
+        "Hago frío."
+      ],
+      "correct": 2,
+      "explanation": "The feeling of the body is tener: tengo frío.",
+      "optionNotes": [
+        "How your body feels takes tener, not estar.",
+        "Soy frío means “I'm a cold person” (unfriendly).",
+        null,
+        "Hace frío is for the weather; hago frío is wrong."
+      ]
+    },
+    {
+      "id": "a1-verbs-tener-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Tengo ___ hambre.",
+      "options": [
+        "mucho",
+        "mucha",
+        "muchos",
+        "muy"
+      ],
+      "correct": 1,
+      "explanation": "Hambre is feminine (el hambre, like el agua), so “very” is mucha: tengo mucha hambre.",
+      "optionNotes": [
+        "Hambre is feminine.",
+        null,
+        "Hambre is singular.",
+        "Muy goes with adjectives, not nouns."
+      ]
+    }
+  ]
+}

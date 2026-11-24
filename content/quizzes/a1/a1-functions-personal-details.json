@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-functions-personal-details",
+  "topic": "a1-functions-personal-details",
+  "level": "A1",
+  "title": "Stop: personal details",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-functions-personal-details-q1",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "At a hotel: “___ es su número de teléfono?”",
+      "options": [
+        "¿Qué",
+        "¿Cuál",
+        "¿Cómo",
+        "¿Dónde"
+      ],
+      "correct": 1,
+      "explanation": "“What is” + a piece of information is ¿Cuál es…?",
+      "optionNotes": [
+        "¿Qué es…? asks for a definition, not a number.",
+        null,
+        "¿Cómo es…? asks what something is like.",
+        "¿Dónde? means “where”."
+      ]
+    },
+    {
+      "id": "a1-functions-personal-details-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You want to know a new friend's age. You ask: “___”",
+      "options": [
+        "¿Cuántos años eres?",
+        "¿Qué edad eres?",
+        "¿Cuántos años tienes?",
+        "¿Cuántos tienes años?"
+      ],
+      "correct": 2,
+      "explanation": "Age takes tener, and a friend gets tú: ¿Cuántos años tienes?",
+      "optionNotes": [
+        "Age takes tener, not ser.",
+        "Edad takes tener too: ¿Qué edad tienes?",
+        null,
+        "The word order is ¿Cuántos años…? (años stays with cuántos)."
+      ]
+    },
+    {
+      "id": "a1-functions-personal-details-q3",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "—¿A qué te dedicas? —___",
+      "options": [
+        "Soy de Perú.",
+        "Tengo veinte años.",
+        "Soy enfermera.",
+        "Me llamo Rosa."
+      ],
+      "correct": 2,
+      "explanation": "¿A qué te dedicas? asks about your job: Soy enfermera.",
+      "optionNotes": [
+        "That answers ¿De dónde eres?",
+        "That answers ¿Cuántos años tienes?",
+        null,
+        "That answers ¿Cómo te llamas?"
+      ]
+    },
+    {
+      "id": "a1-functions-personal-details-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Pablo says: “Soy de Argentina. Soy ___.”",
+      "options": [
+        "argentinos",
+        "un argentino",
+        "de argentino",
+        "argentino"
+      ],
+      "correct": 3,
+      "explanation": "Nationalities take a small letter and no article after ser: soy argentino (a woman says argentina).",
+      "optionNotes": [
+        "Soy is one person: singular.",
+        "No article before a nationality after ser.",
+        "The nationality is an adjective, without de.",
+        null
+      ]
+    }
+  ]
+}

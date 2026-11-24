@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-grammar-gender-number",
+  "topic": "a1-grammar-gender-number",
+  "level": "A1",
+  "title": "Stop: gender and plurals",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-grammar-gender-number-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ problema es fácil.",
+      "options": [
+        "La",
+        "El",
+        "Los",
+        "Una"
+      ],
+      "correct": 1,
+      "explanation": "Problema ends in -a but is masculine: el problema.",
+      "optionNotes": [
+        "Problema is masculine, although it ends in -a.",
+        null,
+        "Los is plural; problema is singular.",
+        "Una is feminine; problema is masculine."
+      ]
+    },
+    {
+      "id": "a1-grammar-gender-number-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Son dos ___ (pencils).",
+      "options": [
+        "lápices",
+        "lápiz",
+        "lápizes",
+        "lápizs"
+      ],
+      "correct": 0,
+      "explanation": "A final z becomes c before -es: lápiz → lápices.",
+      "optionNotes": [
+        null,
+        "Dos needs the plural.",
+        "Z changes to c before -es.",
+        "A word ending in a consonant adds -es, not -s."
+      ]
+    },
+    {
+      "id": "a1-grammar-gender-number-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Madrid y Lima son ___ grandes.",
+      "options": [
+        "ciudads",
+        "ciudades",
+        "ciudad",
+        "ciudás"
+      ],
+      "correct": 1,
+      "explanation": "Ciudad ends in a consonant, so the plural adds -es: ciudades.",
+      "optionNotes": [
+        "After a consonant the plural adds -es.",
+        null,
+        "Two cities need the plural.",
+        "The d stays and -es is added."
+      ]
+    },
+    {
+      "id": "a1-grammar-gender-number-q4",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Which noun is feminine?",
+      "options": [
+        "el día",
+        "la mano",
+        "el mapa",
+        "el idioma"
+      ],
+      "correct": 1,
+      "explanation": "Mano ends in -o but is feminine: la mano.",
+      "optionNotes": [
+        "Día ends in -a but is masculine.",
+        null,
+        "Mapa ends in -a but is masculine.",
+        "Idioma ends in -a but is masculine."
+      ]
+    }
+  ]
+}

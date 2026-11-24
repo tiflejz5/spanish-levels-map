@@ -1,0 +1,219 @@
+{
+  "version": 1,
+  "id": "a1-grammar-articles-1",
+  "topic": "a1-grammar-articles",
+  "level": "A1",
+  "title": "Articles: check yourself",
+  "intro": "10 tasks: el, la, un, una, al and del, and when to use no article.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-grammar-articles-1-01",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "contractions"
+      ],
+      "prompt": "Mañana voy ___ médico.",
+      "options": [
+        "a el",
+        "al",
+        "a la",
+        "del"
+      ],
+      "correct": 1,
+      "explanation": "A + el joins into al: voy al médico.",
+      "optionNotes": [
+        "A and el always join into al.",
+        null,
+        "Médico is masculine here: el médico.",
+        "Del means “of / from the”."
+      ]
+    },
+    {
+      "id": "a1-grammar-articles-1-02",
+      "type": "gap-fill",
+      "tags": [
+        "contractions"
+      ],
+      "context": "It's the teacher's book and the doctor's car.",
+      "text": "Es el libro {{1}} profesor y el coche {{2}} médica.",
+      "gaps": [
+        {
+          "accepted": [
+            "del"
+          ]
+        },
+        {
+          "accepted": [
+            "de la"
+          ]
+        }
+      ],
+      "explanation": "De + el = del (del profesor); de + la does not change (de la médica)."
+    },
+    {
+      "id": "a1-grammar-articles-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "definite",
+        "general"
+      ],
+      "prompt": "___ niños son muy curiosos. (children in general)",
+      "options": [
+        "Unos",
+        "Los",
+        "Las",
+        "Unas"
+      ],
+      "correct": 1,
+      "explanation": "Things or people in general take the definite article: los niños.",
+      "optionNotes": [
+        "Unos niños would be “some children”, not children in general.",
+        null,
+        "Niños is masculine.",
+        "Niños is masculine."
+      ]
+    },
+    {
+      "id": "a1-grammar-articles-1-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "indefinite"
+      ],
+      "prompt": "Perdón, tengo ___ pregunta. (tengo = I have)",
+      "options": [
+        "un",
+        "una",
+        "la",
+        "unas"
+      ],
+      "correct": 1,
+      "explanation": "Pregunta is feminine singular and new: una pregunta.",
+      "optionNotes": [
+        "Pregunta is feminine.",
+        null,
+        "La would mean a specific question already known.",
+        "Unas is plural."
+      ]
+    },
+    {
+      "id": "a1-grammar-articles-1-05",
+      "type": "find-error",
+      "tags": [
+        "titles"
+      ],
+      "tokens": [
+        "Hola,",
+        "la",
+        "señora",
+        "Ruiz,",
+        "¿cómo",
+        "está?"
+      ],
+      "errorRange": [
+        1,
+        2
+      ],
+      "fixes": [
+        "señora"
+      ],
+      "explanation": "When you speak to someone directly, the title has no article: Hola, señora Ruiz, ¿cómo está?"
+    },
+    {
+      "id": "a1-grammar-articles-1-06",
+      "type": "translate",
+      "tags": [
+        "contractions"
+      ],
+      "source": "I'm going to the movies. (voy = I'm going)",
+      "accepted": [
+        "Voy al cine.",
+        "Yo voy al cine."
+      ],
+      "explanation": "A + el cine = al cine."
+    },
+    {
+      "id": "a1-grammar-articles-1-07",
+      "type": "translate",
+      "tags": [
+        "no-article",
+        "jobs"
+      ],
+      "source": "My father is a doctor.",
+      "accepted": [
+        "Mi padre es médico.",
+        "Mi papá es médico.",
+        "Mi padre es doctor.",
+        "Mi papá es doctor."
+      ],
+      "explanation": "No article before a job on its own: es médico."
+    },
+    {
+      "id": "a1-grammar-articles-1-08",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "agua"
+      ],
+      "prompt": "___ agua de este río está muy fría. (está = is)",
+      "options": [
+        "la",
+        "el",
+        "los",
+        "unos"
+      ],
+      "correct": 1,
+      "explanation": "Agua starts with a stressed a-, so the singular article is el, although agua is feminine (fría).",
+      "optionNotes": [
+        "A feminine noun with a stressed a- takes el in the singular.",
+        null,
+        "Agua is singular here.",
+        "Unos is plural."
+      ]
+    },
+    {
+      "id": "a1-grammar-articles-1-09",
+      "type": "reorder",
+      "tags": [
+        "articles",
+        "word-order"
+      ],
+      "context": "The children are from the city.",
+      "answers": [
+        "Los niños son de la ciudad."
+      ],
+      "explanation": "Los niños (the children) is the subject; de la ciudad has no contraction because ciudad is feminine."
+    },
+    {
+      "id": "a1-grammar-articles-1-10",
+      "type": "match",
+      "tags": [
+        "articles"
+      ],
+      "mode": "halves",
+      "prompt": "Match the article with the noun.",
+      "pairs": [
+        [
+          "el",
+          "problema"
+        ],
+        [
+          "las",
+          "manos"
+        ],
+        [
+          "unos",
+          "días"
+        ],
+        [
+          "una",
+          "canción"
+        ]
+      ],
+      "explanation": "El problema and unos días are masculine; las manos and una canción are feminine."
+    }
+  ]
+}

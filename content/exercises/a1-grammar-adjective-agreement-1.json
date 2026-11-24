@@ -1,0 +1,228 @@
+{
+  "version": 1,
+  "id": "a1-grammar-adjective-agreement-1",
+  "topic": "a1-grammar-adjective-agreement",
+  "level": "A1",
+  "title": "Adjectives: check yourself",
+  "intro": "10 tasks: agreement, position, nationalities and buen / gran.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-grammar-adjective-agreement-1-01",
+      "type": "paradigm",
+      "tags": [
+        "agreement"
+      ],
+      "prompt": "Write the four forms of the adjective.",
+      "lemma": "simpático",
+      "gloss": "nice",
+      "cells": [
+        {
+          "label": "un chico",
+          "accepted": [
+            "simpático"
+          ],
+          "given": true
+        },
+        {
+          "label": "una chica",
+          "accepted": [
+            "simpática"
+          ]
+        },
+        {
+          "label": "unos chicos",
+          "accepted": [
+            "simpáticos"
+          ]
+        },
+        {
+          "label": "unas chicas",
+          "accepted": [
+            "simpáticas"
+          ]
+        }
+      ],
+      "explanation": "Adjectives in -o have four forms: -o, -a, -os, -as."
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "agreement"
+      ],
+      "prompt": "Las calles de mi barrio son ___.",
+      "options": [
+        "tranquilo",
+        "tranquila",
+        "tranquilos",
+        "tranquilas"
+      ],
+      "correct": 3,
+      "explanation": "Calles is feminine plural: tranquilas.",
+      "optionNotes": [
+        "The adjective must be feminine plural.",
+        "Calles is plural.",
+        "Calles is feminine.",
+        null
+      ]
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "agreement",
+        "-e"
+      ],
+      "prompt": "Es una ciudad ___.",
+      "options": [
+        "grando",
+        "grande",
+        "granda",
+        "grandes"
+      ],
+      "correct": 1,
+      "explanation": "Grande ends in -e, so it has the same form for both genders: una ciudad grande.",
+      "optionNotes": [
+        "Grande does not have an -o form.",
+        null,
+        "Grande does not change for the feminine.",
+        "Ciudad is singular."
+      ]
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "nationalities"
+      ],
+      "context": "My friend Anna is German, and Tom and Kate are English.",
+      "text": "Mi amiga Anna es {{1}}, y Tom y Kate son {{2}}.",
+      "gaps": [
+        {
+          "accepted": [
+            "alemana"
+          ],
+          "hint": "alemán"
+        },
+        {
+          "accepted": [
+            "ingleses"
+          ],
+          "hint": "inglés"
+        }
+      ],
+      "explanation": "Alemán → alemana for a woman; inglés → ingleses for a mixed group (the accent disappears when a syllable is added). Nationalities take a small letter."
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-1-05",
+      "type": "reorder",
+      "tags": [
+        "position"
+      ],
+      "context": "It's a blue car.",
+      "answers": [
+        "Es un coche azul."
+      ],
+      "explanation": "Colors come after the noun: un coche azul."
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-1-06",
+      "type": "find-error",
+      "tags": [
+        "agreement"
+      ],
+      "tokens": [
+        "Mis",
+        "hermanas",
+        "son",
+        "muy",
+        "altos."
+      ],
+      "errorRange": [
+        4,
+        4
+      ],
+      "fixes": [
+        "altas."
+      ],
+      "explanation": "Hermanas is feminine plural: altas."
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-1-07",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "buen"
+      ],
+      "prompt": "Juan es un ___ amigo.",
+      "options": [
+        "bueno",
+        "buen",
+        "buena",
+        "bien"
+      ],
+      "correct": 1,
+      "explanation": "Bueno becomes buen before a masculine singular noun: un buen amigo.",
+      "optionNotes": [
+        "Bueno loses the -o before a masculine singular noun.",
+        null,
+        "Amigo is masculine.",
+        "Bien is an adverb (well)."
+      ]
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-1-08",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "tags": [
+        "gran"
+      ],
+      "prompt": "“Es un gran hombre” means…",
+      "options": [
+        "He's a big man.",
+        "He's a great man.",
+        "He's a very big man.",
+        "He's an old man."
+      ],
+      "correct": 1,
+      "explanation": "Gran before the noun means “great, important”; grande after the noun means “big”: un hombre grande.",
+      "optionNotes": [
+        "A big man is un hombre grande (after the noun).",
+        null,
+        "Very big would be muy grande.",
+        "Old would be mayor."
+      ]
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-1-09",
+      "type": "translate",
+      "tags": [
+        "agreement",
+        "nationalities"
+      ],
+      "source": "She is Mexican.",
+      "accepted": [
+        "Es mexicana.",
+        "Ella es mexicana."
+      ],
+      "explanation": "A woman: mexicana, with a small letter."
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-1-10",
+      "type": "translate",
+      "tags": [
+        "agreement",
+        "position"
+      ],
+      "source": "some white houses",
+      "accepted": [
+        "unas casas blancas",
+        "algunas casas blancas"
+      ],
+      "explanation": "Casas is feminine plural, so unas … blancas, and the color comes after the noun."
+    }
+  ]
+}

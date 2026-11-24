@@ -1,0 +1,250 @@
+{
+  "version": 1,
+  "id": "a1-verbs-tener-1",
+  "topic": "a1-verbs-tener",
+  "level": "A1",
+  "title": "tener: check yourself",
+  "intro": "10 tasks: the forms of tener, age, family and tener hambre / frío.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-tener-1-01",
+      "type": "paradigm",
+      "tags": [
+        "tener",
+        "forms"
+      ],
+      "prompt": "Write the present tense of tener.",
+      "lemma": "tener",
+      "gloss": "to have",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "tengo"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "tienes"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "tiene"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "tenemos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "tenéis"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "tienen"
+          ]
+        }
+      ],
+      "explanation": "Tengo; tie- in tienes, tiene, tienen; ten- in tenemos and tenéis."
+    },
+    {
+      "id": "a1-verbs-tener-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "tener",
+        "forms"
+      ],
+      "prompt": "Mis padres ___ una casa en el campo.",
+      "options": [
+        "tiene",
+        "tienen",
+        "tenemos",
+        "tienes"
+      ],
+      "correct": 1,
+      "explanation": "Mis padres = ellos: tienen.",
+      "optionNotes": [
+        "Tiene is for one person.",
+        null,
+        "Tenemos is for nosotros.",
+        "Tienes is for tú."
+      ]
+    },
+    {
+      "id": "a1-verbs-tener-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "tener",
+        "age"
+      ],
+      "prompt": "Mi hija ___ seis años.",
+      "options": [
+        "es",
+        "está",
+        "tiene",
+        "hay"
+      ],
+      "correct": 2,
+      "explanation": "Age takes tener: tiene seis años.",
+      "optionNotes": [
+        "Age is not ser.",
+        "Age is not estar.",
+        null,
+        "Hay means “there is”."
+      ]
+    },
+    {
+      "id": "a1-verbs-tener-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "tener",
+        "expressions"
+      ],
+      "context": "We're very hungry and Ana is thirsty.",
+      "text": "Tenemos mucha {{1}} y Ana tiene {{2}}.",
+      "gaps": [
+        {
+          "accepted": [
+            "hambre"
+          ]
+        },
+        {
+          "accepted": [
+            "sed"
+          ]
+        }
+      ],
+      "explanation": "Tener hambre (to be hungry), tener sed (to be thirsty)."
+    },
+    {
+      "id": "a1-verbs-tener-1-05",
+      "type": "short-answer",
+      "tags": [
+        "tener",
+        "forms"
+      ],
+      "prompt": "Complete: ¿___ (tú) hermanos?",
+      "accepted": [
+        "Tienes"
+      ],
+      "explanation": "The tú form of tener is tienes: ¿Tienes hermanos?"
+    },
+    {
+      "id": "a1-verbs-tener-1-06",
+      "type": "find-error",
+      "tags": [
+        "tener",
+        "expressions"
+      ],
+      "tokens": [
+        "Estoy",
+        "mucho",
+        "frío",
+        "hoy."
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "Tengo"
+      ],
+      "explanation": "The feeling of the body is tener frío: Tengo mucho frío hoy."
+    },
+    {
+      "id": "a1-verbs-tener-1-07",
+      "type": "translate",
+      "tags": [
+        "tener",
+        "age"
+      ],
+      "source": "How old are you? (to a friend)",
+      "accepted": [
+        "¿Cuántos años tienes?",
+        "¿Cuántos años tienes tú?",
+        "¿Tú cuántos años tienes?"
+      ],
+      "explanation": "Age: ¿Cuántos años tienes?"
+    },
+    {
+      "id": "a1-verbs-tener-1-08",
+      "type": "translate",
+      "tags": [
+        "tener",
+        "expressions"
+      ],
+      "source": "You're right. (to a friend)",
+      "accepted": [
+        "Tienes razón.",
+        "Tú tienes razón."
+      ],
+      "explanation": "Tener razón = to be right."
+    },
+    {
+      "id": "a1-verbs-tener-1-09",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "tags": [
+        "tener",
+        "expressions"
+      ],
+      "prompt": "It's 2 a.m. and you want to go to bed. You say:",
+      "options": [
+        "Tengo prisa.",
+        "Tengo sueño.",
+        "Tengo miedo.",
+        "Tengo sed."
+      ],
+      "correct": 1,
+      "explanation": "Tener sueño = to be sleepy.",
+      "optionNotes": [
+        "Tengo prisa = I'm in a hurry.",
+        null,
+        "Tengo miedo = I'm afraid.",
+        "Tengo sed = I'm thirsty."
+      ]
+    },
+    {
+      "id": "a1-verbs-tener-1-10",
+      "type": "match",
+      "tags": [
+        "tener",
+        "expressions"
+      ],
+      "mode": "translation",
+      "prompt": "Match each expression with its meaning.",
+      "pairs": [
+        [
+          "tener calor",
+          "to be hot"
+        ],
+        [
+          "tener frío",
+          "to be cold"
+        ],
+        [
+          "tener prisa",
+          "to be in a hurry"
+        ],
+        [
+          "tener miedo",
+          "to be afraid"
+        ]
+      ],
+      "explanation": "Spanish uses tener + a noun where English uses to be + an adjective."
+    }
+  ]
+}

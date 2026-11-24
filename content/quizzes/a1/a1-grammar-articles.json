@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-grammar-articles",
+  "topic": "a1-grammar-articles",
+  "level": "A1",
+  "title": "Stop: el, la, un, una",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-grammar-articles-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Voy ___ cine el sábado.",
+      "options": [
+        "al",
+        "a el",
+        "a la",
+        "del"
+      ],
+      "correct": 0,
+      "explanation": "A + el always joins into al: voy al cine.",
+      "optionNotes": [
+        null,
+        "A and el always join into al.",
+        "Cine is masculine: el cine.",
+        "Del is de + el (of / from the)."
+      ]
+    },
+    {
+      "id": "a1-grammar-articles-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Es el coche ___ profesor.",
+      "options": [
+        "de el",
+        "al",
+        "del",
+        "de la"
+      ],
+      "correct": 2,
+      "explanation": "De + el always joins into del: el coche del profesor.",
+      "optionNotes": [
+        "De and el always join into del.",
+        "Al is a + el (to the).",
+        null,
+        "Profesor is masculine: el profesor."
+      ]
+    },
+    {
+      "id": "a1-grammar-articles-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ agua de aquí es muy buena.",
+      "options": [
+        "La",
+        "El",
+        "Los",
+        "Un"
+      ],
+      "correct": 1,
+      "explanation": "Agua is feminine, but it starts with a stressed a-, so the singular article is el: el agua.",
+      "optionNotes": [
+        "A feminine noun with a stressed a- takes el in the singular.",
+        null,
+        "Agua is singular here (es, buena).",
+        "Un means “a”; the sentence is about the water here."
+      ]
+    },
+    {
+      "id": "a1-grammar-articles-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You meet Mr. Ruiz at work. You say: “___”",
+      "options": [
+        "Buenos días, el señor Ruiz.",
+        "Buenos días, Ruiz señor.",
+        "Buenos días, un señor Ruiz.",
+        "Buenos días, señor Ruiz."
+      ],
+      "correct": 3,
+      "explanation": "When you speak to someone directly, the title has no article: Buenos días, señor Ruiz.",
+      "optionNotes": [
+        "No article when you speak directly to the person.",
+        "The title comes before the name.",
+        "Un is never used with a title.",
+        null
+      ]
+    }
+  ]
+}

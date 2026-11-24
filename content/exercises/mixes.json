@@ -13,6 +13,20 @@
         "a1-grammar-subject-pronouns",
         "a1-verbs-ser"
       ]
+    },
+    {
+      "id": "mix-a1-u2",
+      "title": "Unit review: People and things",
+      "description": "Gender and plurals, articles, adjectives and tener, mixed.",
+      "level": "A1",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a1-grammar-gender-number",
+        "a1-grammar-articles",
+        "a1-grammar-adjective-agreement",
+        "a1-verbs-tener"
+      ]
     }
   ]
 }

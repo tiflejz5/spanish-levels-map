@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-grammar-adjective-agreement",
+  "topic": "a1-grammar-adjective-agreement",
+  "level": "A1",
+  "title": "Stop: adjectives",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-grammar-adjective-agreement-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Es una casa ___.",
+      "options": [
+        "blanco",
+        "blanca",
+        "blancos",
+        "blancas"
+      ],
+      "correct": 1,
+      "explanation": "Casa is feminine singular, so the adjective is blanca.",
+      "optionNotes": [
+        "Blanco is masculine; casa is feminine.",
+        null,
+        "Una casa is singular.",
+        "Una casa is singular."
+      ]
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mis amigas son muy ___.",
+      "options": [
+        "simpático",
+        "simpáticos",
+        "simpática",
+        "simpáticas"
+      ],
+      "correct": 3,
+      "explanation": "Amigas is feminine plural: simpáticas.",
+      "optionNotes": [
+        "The adjective must be feminine plural.",
+        "Simpáticos is masculine; amigas are all women.",
+        "Amigas is plural.",
+        null
+      ]
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Es ___.",
+      "options": [
+        "un rojo coche",
+        "un coche rojo",
+        "una coche roja",
+        "un coche roja"
+      ],
+      "correct": 1,
+      "explanation": "Colors come after the noun and agree with it: un coche rojo.",
+      "optionNotes": [
+        "Colors go after the noun.",
+        null,
+        "Coche is masculine: un coche rojo.",
+        "Rojo must agree with the masculine coche."
+      ]
+    },
+    {
+      "id": "a1-grammar-adjective-agreement-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ella es de Londres. Es ___.",
+      "options": [
+        "inglés",
+        "inglésa",
+        "inglesa",
+        "ingleses"
+      ],
+      "correct": 2,
+      "explanation": "Nationalities in a consonant add -a for a woman, and the accent disappears: inglesa. Nationalities take a small letter.",
+      "optionNotes": [
+        "Inglés is the masculine form.",
+        "The accent disappears when -a is added: inglesa.",
+        null,
+        "Ingleses is plural."
+      ]
+    }
+  ]
+}
