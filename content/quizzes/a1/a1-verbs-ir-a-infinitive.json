@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-verbs-ir-a-infinitive",
+  "topic": "a1-verbs-ir-a-infinitive",
+  "level": "A1",
+  "title": "Stop: ir a + infinitive",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-verbs-ir-a-infinitive-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mañana yo ___ estudiar.",
+      "options": [
+        "voy",
+        "voy a",
+        "va a",
+        "vamos a"
+      ],
+      "correct": 1,
+      "explanation": "Ir a + infinitive: voy a estudiar.",
+      "optionNotes": [
+        "You need a between ir and the infinitive.",
+        null,
+        "Va is for él, ella, usted.",
+        "Vamos is for nosotros."
+      ]
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Qué ___ a hacer este fin de semana? (tú)",
+      "options": [
+        "vas",
+        "va",
+        "voy",
+        "vais"
+      ],
+      "correct": 0,
+      "explanation": "Tú: vas a hacer.",
+      "optionNotes": [
+        null,
+        "Va is for él, ella, usted.",
+        "Voy is for yo.",
+        "Vais is for vosotros."
+      ]
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Nosotros vamos a ___ a las ocho.",
+      "options": [
+        "salimos",
+        "salir",
+        "salgo",
+        "saliendo"
+      ],
+      "correct": 1,
+      "explanation": "After ir a comes the infinitive: vamos a salir.",
+      "optionNotes": [
+        "After a, use the infinitive.",
+        null,
+        "Salgo is a conjugated form.",
+        "Spanish uses the infinitive here, not -ndo."
+      ]
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-q4",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "“Vamos a empezar” can mean…",
+      "options": [
+        "We started.",
+        "Let's start.",
+        "We always start.",
+        "Start!"
+      ],
+      "correct": 1,
+      "explanation": "Vamos a + infinitive can mean “let's”.",
+      "optionNotes": [
+        "That would be a past tense.",
+        null,
+        "That would be siempre empezamos.",
+        "That is an order to one person."
+      ]
+    }
+  ]
+}

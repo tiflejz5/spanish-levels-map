@@ -1,0 +1,229 @@
+{
+  "version": 1,
+  "id": "a1-verbs-ir-a-infinitive-1",
+  "topic": "a1-verbs-ir-a-infinitive",
+  "level": "A1",
+  "title": "ir a + infinitive: check yourself",
+  "intro": "10 tasks: plans with ir a, questions, negatives and let's.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-01",
+      "type": "paradigm",
+      "tags": [
+        "ir-a"
+      ],
+      "prompt": "Write ir a + comer for each person.",
+      "lemma": "ir a comer",
+      "gloss": "to be going to eat",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "voy a comer"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "vas a comer"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "va a comer"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "vamos a comer"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "van a comer"
+          ]
+        }
+      ],
+      "explanation": "Only ir changes: voy, vas, va, vamos, van + a comer."
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "ir-a"
+      ],
+      "prompt": "Mis padres ___ a visitar Roma.",
+      "options": [
+        "va",
+        "vamos",
+        "van",
+        "voy"
+      ],
+      "correct": 2,
+      "explanation": "Mis padres = ellos: van a visitar.",
+      "optionNotes": [
+        "Va is for one person.",
+        "Vamos is for nosotros.",
+        null,
+        "Voy is for yo."
+      ]
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "ir-a",
+        "questions"
+      ],
+      "prompt": "¿___ a venir a la fiesta? (tú)",
+      "options": [
+        "Vas",
+        "Va",
+        "Vamos",
+        "Ir"
+      ],
+      "correct": 0,
+      "explanation": "Tú: ¿Vas a venir?",
+      "optionNotes": [
+        null,
+        "Va is for él, ella, usted.",
+        "Vamos is for nosotros.",
+        "Ir must be conjugated."
+      ]
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "ir-a"
+      ],
+      "context": "Tonight I'm going to watch a movie.",
+      "text": "Esta noche {{1}} a {{2}} una película.",
+      "gaps": [
+        {
+          "accepted": [
+            "voy"
+          ]
+        },
+        {
+          "accepted": [
+            "ver",
+            "mirar"
+          ]
+        }
+      ],
+      "explanation": "Voy (ir, yo) + a + the infinitive ver."
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-05",
+      "type": "find-error",
+      "tags": [
+        "ir-a"
+      ],
+      "tokens": [
+        "Vamos",
+        "a",
+        "comemos",
+        "en",
+        "casa."
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "comer"
+      ],
+      "explanation": "After ir a, use the infinitive: Vamos a comer en casa."
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-06",
+      "type": "find-error",
+      "tags": [
+        "ir-a"
+      ],
+      "tokens": [
+        "Mañana",
+        "voy",
+        "trabajar",
+        "en",
+        "casa."
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "a trabajar"
+      ],
+      "explanation": "Do not leave out a: Mañana voy a trabajar en casa."
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-07",
+      "type": "transformation",
+      "tags": [
+        "ir-a"
+      ],
+      "source": "Estudio esta tarde.",
+      "keyword": "voy",
+      "before": "",
+      "after": "esta tarde.",
+      "answers": [
+        "Voy a estudiar",
+        "Yo voy a estudiar"
+      ],
+      "explanation": "Ir a + infinitive: Voy a estudiar esta tarde."
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-08",
+      "type": "translate",
+      "tags": [
+        "ir-a",
+        "negation"
+      ],
+      "source": "I'm not going to go out tonight.",
+      "accepted": [
+        "No voy a salir esta noche.",
+        "Esta noche no voy a salir.",
+        "Yo no voy a salir esta noche."
+      ],
+      "explanation": "No goes before voy: No voy a salir."
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-09",
+      "type": "translate",
+      "tags": [
+        "ir-a",
+        "personal-a"
+      ],
+      "source": "We're going to visit our grandmother.",
+      "accepted": [
+        "Vamos a visitar a nuestra abuela.",
+        "Nosotros vamos a visitar a nuestra abuela.",
+        "Nosotras vamos a visitar a nuestra abuela."
+      ],
+      "explanation": "Visitar + a person takes a: visitar a nuestra abuela."
+    },
+    {
+      "id": "a1-verbs-ir-a-infinitive-1-10",
+      "type": "reorder",
+      "tags": [
+        "ir-a",
+        "questions"
+      ],
+      "context": "What are you going to do tomorrow?",
+      "answers": [
+        "¿Qué vas a hacer mañana?",
+        "¿Mañana qué vas a hacer?"
+      ],
+      "explanation": "¿Qué…? then vas a hacer, then mañana (it can also come first)."
+    }
+  ]
+}

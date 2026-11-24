@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-functions-asking-to-repeat",
+  "topic": "a1-functions-asking-to-repeat",
+  "level": "A1",
+  "title": "Stop: survival phrases",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-functions-asking-to-repeat-q1",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You didn't hear. You ask a stranger (formal):",
+      "options": [
+        "¿Puede repetir, por favor?",
+        "¿Puedes repetir?",
+        "Repite.",
+        "¿Qué dices tú?"
+      ],
+      "correct": 0,
+      "explanation": "With a stranger use usted: ¿Puede repetir, por favor?",
+      "optionNotes": [
+        null,
+        "Puedes is for a friend.",
+        "This is an order, too direct.",
+        "This is informal and abrupt."
+      ]
+    },
+    {
+      "id": "a1-functions-asking-to-repeat-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "Someone speaks too fast. You say:",
+      "options": [
+        "Más rápido, por favor.",
+        "Más despacio, por favor.",
+        "Más alto, por favor.",
+        "Menos despacio, por favor."
+      ],
+      "correct": 1,
+      "explanation": "Slower = más despacio.",
+      "optionNotes": [
+        "Más rápido means faster.",
+        null,
+        "Más alto means louder.",
+        "Menos despacio means faster."
+      ]
+    },
+    {
+      "id": "a1-functions-asking-to-repeat-q3",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You want to know how to say “key” in Spanish:",
+      "options": [
+        "¿Qué significa key?",
+        "¿Cómo se dice “key” en español?",
+        "¿Cómo se escribe key?",
+        "¿Qué es key en inglés?"
+      ],
+      "correct": 1,
+      "explanation": "How do you say…? = ¿Cómo se dice…?",
+      "optionNotes": [
+        "¿Qué significa…? asks for the meaning of a Spanish word.",
+        null,
+        "That asks how to spell it.",
+        "That asks what key means in English, not how to say it in Spanish."
+      ]
+    },
+    {
+      "id": "a1-functions-asking-to-repeat-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You heard “llave” and don't know it. You ask:",
+      "options": [
+        "¿Qué significa “llave”?",
+        "¿Cómo se dice “llave”?",
+        "¿Dónde está “llave”?",
+        "¿Cuánto cuesta “llave”?"
+      ],
+      "correct": 0,
+      "explanation": "What does … mean? = ¿Qué significa…?",
+      "optionNotes": [
+        null,
+        "¿Cómo se dice? asks how to say an English word in Spanish.",
+        "That asks where the key is.",
+        "That asks the price."
+      ]
+    }
+  ]
+}

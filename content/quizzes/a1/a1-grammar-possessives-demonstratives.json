@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-grammar-possessives-demonstratives",
+  "topic": "a1-grammar-possessives-demonstratives",
+  "level": "A1",
+  "title": "Stop: my, your, this, that",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-grammar-possessives-demonstratives-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Estos son ___ hermanos.",
+      "options": [
+        "mi",
+        "mío",
+        "mis",
+        "mía"
+      ],
+      "correct": 2,
+      "explanation": "Hermanos is plural: mis hermanos.",
+      "optionNotes": [
+        "Mi is for one thing.",
+        "Mío is not used before a noun.",
+        null,
+        "Mía is not used before a noun."
+      ]
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ casa es pequeña. (our)",
+      "options": [
+        "Nuestro",
+        "Nuestra",
+        "Nuestros",
+        "Su"
+      ],
+      "correct": 1,
+      "explanation": "Nuestro agrees with casa (feminine): nuestra casa.",
+      "optionNotes": [
+        "Casa is feminine.",
+        null,
+        "Casa is singular.",
+        "Su means his, her, your or their."
+      ]
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ libro es muy bueno. (this)",
+      "options": [
+        "Este",
+        "Esto",
+        "Esta",
+        "Estos"
+      ],
+      "correct": 0,
+      "explanation": "Before a masculine singular noun: este libro.",
+      "optionNotes": [
+        null,
+        "Esto is used without a noun.",
+        "Libro is masculine.",
+        "Libro is singular."
+      ]
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-q4",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "¿Qué es ___? (You point at an unknown thing near you.)",
+      "options": [
+        "este",
+        "estos",
+        "esta",
+        "esto"
+      ],
+      "correct": 3,
+      "explanation": "For an unknown thing, without a noun: ¿Qué es esto?",
+      "optionNotes": [
+        "Este needs a known masculine noun.",
+        "Estos is plural.",
+        "Esta needs a known feminine noun.",
+        null
+      ]
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-grammar-prepositions-place-time",
+  "topic": "a1-grammar-prepositions-place-time",
+  "level": "A1",
+  "title": "Stop: en, a, de",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-grammar-prepositions-place-time-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Voy ___ la playa el sábado.",
+      "options": [
+        "en",
+        "a",
+        "de",
+        "por"
+      ],
+      "correct": 1,
+      "explanation": "Movement to a place takes a: voy a la playa.",
+      "optionNotes": [
+        "En is for where something is, not where you go.",
+        null,
+        "De means “from”.",
+        "Por is not used for the destination."
+      ]
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "La clase empieza ___ las nueve.",
+      "options": [
+        "en",
+        "a",
+        "por",
+        "de"
+      ],
+      "correct": 1,
+      "explanation": "“At” a clock time is a: a las nueve.",
+      "optionNotes": [
+        "Spanish uses a, not en, for clock times.",
+        null,
+        "Por la mañana, but a las nueve.",
+        "De means “from”."
+      ]
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Trabajo ___ la mañana.",
+      "options": [
+        "con",
+        "a",
+        "por",
+        "de"
+      ],
+      "correct": 2,
+      "explanation": "In the morning = por la mañana (in Latin America also en la mañana).",
+      "optionNotes": [
+        "Con means “with”.",
+        "A is for clock times.",
+        null,
+        "De la mañana goes with a clock time (a las diez de la mañana)."
+      ]
+    },
+    {
+      "id": "a1-grammar-prepositions-place-time-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Quieres venir ___?",
+      "options": [
+        "con mí",
+        "conmigo",
+        "con yo",
+        "con me"
+      ],
+      "correct": 1,
+      "explanation": "With me = conmigo.",
+      "optionNotes": [
+        "Con + mí joins into conmigo.",
+        null,
+        "After a preposition, yo changes.",
+        "After con, use mí, and con + mí = conmigo."
+      ]
+    }
+  ]
+}

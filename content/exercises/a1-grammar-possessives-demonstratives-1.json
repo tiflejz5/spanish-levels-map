@@ -1,0 +1,240 @@
+{
+  "version": 1,
+  "id": "a1-grammar-possessives-demonstratives-1",
+  "topic": "a1-grammar-possessives-demonstratives",
+  "level": "A1",
+  "title": "My, your, this, that: check yourself",
+  "intro": "10 tasks: possessives, demonstratives and esto / eso.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-01",
+      "type": "paradigm",
+      "tags": [
+        "demonstratives"
+      ],
+      "prompt": "Write “this” for each noun.",
+      "lemma": "este",
+      "gloss": "this",
+      "cells": [
+        {
+          "label": "libro",
+          "accepted": [
+            "este"
+          ],
+          "given": true
+        },
+        {
+          "label": "mesa",
+          "accepted": [
+            "esta"
+          ]
+        },
+        {
+          "label": "libros",
+          "accepted": [
+            "estos"
+          ]
+        },
+        {
+          "label": "mesas",
+          "accepted": [
+            "estas"
+          ]
+        }
+      ],
+      "explanation": "Este, esta, estos, estas: they agree with the noun."
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "possessives"
+      ],
+      "prompt": "¿Dónde están ___ llaves? (your, to a friend)",
+      "options": [
+        "tu",
+        "tus",
+        "tú",
+        "su"
+      ],
+      "correct": 1,
+      "explanation": "Llaves is plural: tus llaves.",
+      "optionNotes": [
+        "Llaves is plural.",
+        null,
+        "Tú with an accent means “you”.",
+        "Su is for usted, él, ella or ellos."
+      ]
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "possessives",
+        "usted"
+      ],
+      "prompt": "Señora, ¿es ___ coche?",
+      "options": [
+        "tu",
+        "su",
+        "sus",
+        "suyo"
+      ],
+      "correct": 1,
+      "explanation": "With usted (señora), the possessive is su.",
+      "optionNotes": [
+        "Tu is for a friend (tú).",
+        null,
+        "Bolso is singular.",
+        "Suyo is not used before a noun."
+      ]
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "possessives"
+      ],
+      "context": "Our parents live in Lima and our sister lives in Cusco.",
+      "text": "{{1}} padres viven en Lima y {{2}} hermana vive en Cusco.",
+      "gaps": [
+        {
+          "accepted": [
+            "Nuestros",
+            "nuestros"
+          ]
+        },
+        {
+          "accepted": [
+            "nuestra"
+          ]
+        }
+      ],
+      "explanation": "Nuestro agrees with the thing owned: nuestros padres, nuestra hermana."
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-05",
+      "type": "find-error",
+      "tags": [
+        "demonstratives"
+      ],
+      "tokens": [
+        "Esto",
+        "coche",
+        "es",
+        "nuevo."
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "Este",
+        "Ese",
+        "Aquel"
+      ],
+      "explanation": "Before a noun, use este: Este coche es nuevo."
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-06",
+      "type": "find-error",
+      "tags": [
+        "possessives"
+      ],
+      "tokens": [
+        "Nuestro",
+        "casa",
+        "es",
+        "grande."
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "Nuestra"
+      ],
+      "explanation": "Nuestro agrees with casa (feminine): Nuestra casa es grande."
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-07",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "tags": [
+        "demonstratives"
+      ],
+      "prompt": "You point at a house far away from you and your friend:",
+      "options": [
+        "esta casa",
+        "esa casa",
+        "aquella casa",
+        "aquel casa"
+      ],
+      "correct": 2,
+      "explanation": "Far from both speakers: aquella.",
+      "optionNotes": [
+        "Esta is near the speaker (you).",
+        "Esa is near the other person.",
+        null,
+        "Casa is feminine: aquella."
+      ]
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-08",
+      "type": "translate",
+      "tags": [
+        "demonstratives"
+      ],
+      "source": "What's this?",
+      "accepted": [
+        "¿Qué es esto?",
+        "¿Qué es eso?"
+      ],
+      "explanation": "An unknown thing: esto."
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-09",
+      "type": "translate",
+      "tags": [
+        "possessives"
+      ],
+      "source": "my friends",
+      "accepted": [
+        "mis amigos",
+        "mis amigas"
+      ],
+      "explanation": "Plural: mis."
+    },
+    {
+      "id": "a1-grammar-possessives-demonstratives-1-10",
+      "type": "match",
+      "tags": [
+        "possessives"
+      ],
+      "mode": "translation",
+      "prompt": "Match each phrase with its meaning.",
+      "pairs": [
+        [
+          "mi perro",
+          "my dog"
+        ],
+        [
+          "tus libros",
+          "your books"
+        ],
+        [
+          "nuestra ciudad",
+          "our city"
+        ],
+        [
+          "vuestro piso (Spain)",
+          "your apartment (you all)"
+        ]
+      ],
+      "explanation": "The possessive agrees with the thing owned."
+    }
+  ]
+}
