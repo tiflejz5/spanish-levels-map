@@ -80,7 +80,7 @@
     {"id": "a2-vocabulary-health-body", "category": "vocabulary", "title": "Body, health and feelings", "example": "la espalda, el estómago; estoy resfriado, nervioso, contento"}
    ]}
   ]},
-  {"id": "B1", "land": "Hills", "goal": "Speak in connected sentences about experiences, plans and opinions, and cope with most situations while travelling.", "units": [
+  {"id": "B1", "land": "Hills", "goal": "Speak in connected sentences about experiences, plans and opinions, and cope with most situations while traveling.", "units": [
    {"id": "b1-u1", "title": "The subjunctive arrives", "topics": [
     {"id": "b1-verbs-present-subjunctive-forms", "category": "verbs", "title": "Present subjunctive: forms", "example": "hable, coma, viva; tenga, sea, vaya, haga"},
     {"id": "b1-verbs-subjunctive-wishes-requests", "category": "verbs", "title": "Subjunctive for wishes and requests", "example": "Quiero que vengas. Espero que estés bien. Ojalá llueva."},
