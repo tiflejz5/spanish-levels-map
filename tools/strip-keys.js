@@ -3,7 +3,7 @@
  *
  *   node tools/strip-keys.js <file or folder>… [--out <file>]
  *
- * Reads trail quizzes, exercise sets, final tests and the placement pool (JSON files; a folder = every *.json in it,
+ * Reads trail quizzes, exercise sets, final tests, the placement pool and the lab contrast cards (their mini quizzes) (JSON files; a folder = every *.json in it,
  * topics.json and mixes.json skipped) and prints one JSON document: { about, tasks: [ … ] }, one task per item, in file order.
  * Every task keeps what the learner sees (prompt, options, text with gaps, hints, the English context, the set passage)
  * and loses the key and everything shown only after checking:
@@ -74,6 +74,12 @@ function stripFile(file) {
   const src = path.basename(file);
   if (Array.isArray(d.questions)) {
     return d.questions.map(function (q) { return Object.assign({ file: src, level: q.level }, stripItem(Object.assign({}, q, { type: q.type || "multiple-choice" }))); });
+  }
+  if (Array.isArray(d.contrasts)) { // lab contrast cards (spec 06 E7): the mini quiz of each card
+    return [].concat.apply([], d.contrasts.map(function (k) {
+      const title = (k.sides || []).map(function (x) { return x.name; }).join(" vs ");
+      return ((k.quiz && k.quiz.items) || []).map(function (it) { return stripItem(it, { file: src, level: k.level, set: "Contrast card: " + title }); });
+    }));
   }
   const ctx = { file: src, level: d.level || null, set: d.title || d.id, passage: d.passage || null, script: d.script || null };
   return (d.items || []).map(function (it) { return stripItem(it, ctx); });

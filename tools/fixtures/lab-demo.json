@@ -1,0 +1,49 @@
+{
+  "about": "A language-neutral lab for the unit tests of js/lab-logic.js and js/timeline.js (tools/tests.js).",
+  "axes": {
+    "columns": [{ "id": "before", "label": "Before" }, { "id": "now", "label": "Now" }, { "id": "after", "label": "After" }, { "id": "never", "label": "Never" }],
+    "rows": [{ "id": "real", "label": "Real" }, { "id": "unreal", "label": "Unreal" }]
+  },
+  "cards": [
+    { "id": "alpha", "name": "Alpha", "nameEn": "Alpha form", "column": "before", "row": "real", "level": "A1", "summary": "S.",
+      "formation": [{ "label": "Shape", "text": "alpha-ed" }], "uses": [{ "label": "Once", "text": "We alpha-ed.", "en": "We did it once." }],
+      "signals": ["then"], "traps": ["Not beta."],
+      "scenes": [{ "id": "one", "label": "Once", "description": "One point.", "elements": [{ "kind": "point", "at": -0.5, "label": "here" }] }],
+      "contrasts": [{ "with": "beta", "rule": "Alpha is once, beta is often.", "examples": ["We alpha-ed.", "We beta-ed."] }],
+      "topicIds": ["a1-verbs-ser"] },
+    { "id": "beta", "name": "Beta", "nameEn": "Beta form", "column": "before", "row": "real", "level": "A2", "summary": "S.",
+      "formation": [{ "label": "Shape", "text": "beta-ed" }], "uses": [{ "label": "Often", "text": "We beta-ed.", "en": "We did it often." }],
+      "traps": ["Not alpha."],
+      "scenes": [{ "id": "often", "label": "Often", "description": "Many points.", "elements": [{ "kind": "repeat", "from": -0.9, "to": -0.1, "count": 4 }] }],
+      "contrasts": [{ "with": "alpha", "rule": "Beta is often.", "examples": ["We beta-ed."] }],
+      "topicIds": ["a1-verbs-tener"] },
+    { "id": "gamma", "name": "Gamma", "nameEn": "Gamma form", "column": "after", "row": "unreal", "level": "B1", "summary": "S.",
+      "formation": [{ "label": "Shape", "text": "gamma-s" }], "uses": [{ "label": "Later", "text": "We gamma.", "en": "We will." }],
+      "traps": ["Rare."],
+      "scenes": [{ "id": "later", "label": "Later", "description": "Open to the future.", "elements": [{ "kind": "open-right", "from": 0.2 }] }],
+      "topicIds": ["a1-verbs-ser"] }
+  ],
+  "contrasts": [
+    { "id": "alpha-beta", "level": "A1", "summary": "Alpha or beta.",
+      "sides": [
+        { "name": "alpha", "nameEn": "once", "rules": [{ "label": "Once", "text": "One time.", "examples": [{ "text": "We alpha-ed.", "en": "Once." }] }] },
+        { "name": "beta", "nameEn": "often", "rules": [{ "text": "Many times.", "examples": [{ "text": "We beta-ed.", "en": "Often." }] }] }
+      ],
+      "traps": ["Mixing them."], "topicIds": ["a1-verbs-ser"],
+      "quiz": { "items": [
+        { "id": "ab-1", "type": "multiple-choice", "prompt": "a", "options": ["x", "y"], "correct": 0, "explanation": "e" },
+        { "id": "ab-2", "type": "multiple-choice", "prompt": "b", "options": ["x", "y"], "correct": 1, "explanation": "e" },
+        { "id": "ab-3", "type": "multiple-choice", "prompt": "c", "options": ["x", "y"], "correct": 0, "explanation": "e" },
+        { "id": "ab-4", "type": "multiple-choice", "prompt": "d", "options": ["x", "y"], "correct": 1, "explanation": "e" }
+      ] } }
+  ],
+  "trees": [
+    { "id": "which", "title": "Which form?", "level": "A1", "start": "start", "nodes": {
+      "start": { "question": "When?", "options": [{ "label": "Before", "next": "how" }, { "label": "After", "result": ["gamma"], "why": "Later." }] },
+      "how": { "question": "How often?", "options": [
+        { "label": "Once", "result": ["alpha"], "why": "One time." },
+        { "label": "Often", "result": ["beta", "alpha-beta"], "answer": "beta", "why": "Many times.", "example": { "text": "We beta-ed.", "en": "Often." } }
+      ] }
+    } }
+  ]
+}

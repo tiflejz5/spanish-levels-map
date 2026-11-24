@@ -33,9 +33,11 @@ global.window = global.window || global;
 require(path.join(__dirname, "..", "js", "config.js"));
 require(path.join(__dirname, "..", "js", "lang.js"));
 require(path.join(__dirname, "..", "js", "learning.js")); // LM.learn.SKILL_OF: syllabus category → placement skill (E10)
+require(path.join(__dirname, "..", "js", "lab-logic.js")); // LM.labLogic.validate: lab structure (spec 06 E7)
 const LANG = global.LM.lang;
 const APP = global.LM.APP;
 const FACTS = LANG.content;
+const LAB = global.LM.labLogic;
 
 const STRICT = false; // spec 10 §3: true from the first stage X (the whole placement pool exists)
 
@@ -438,20 +440,39 @@ function checkLab(p, topics) {
   const d = load(p);
   if (!d) return;
   const w = rel(p);
-  (d.cards || []).concat(d.cases || []).forEach(function (c) {
-    const at = w + " " + c.id;
-    ["id", "name", "nameEn", "level", "summary", "uses", "traps", "topicIds"].forEach(function (k) { if (!c[k] || (Array.isArray(c[k]) && !c[k].length)) err(at, "missing " + k); });
-    (c.topicIds || []).forEach(function (t) { if (!topics[t]) err(at, "topicId " + JSON.stringify(t) + " not in syllabus"); });
-  });
-  if (d.axes) {
-    const cols = new Set((d.axes.columns || []).map(function (a) { return a.id; }));
-    const rows = new Set((d.axes.rows || []).map(function (a) { return a.id; }));
-    (d.cards || []).forEach(function (c) { if (!cols.has(c.column) || !rows.has(c.row)) err(w, c.id + ": column/row not in axes"); });
-  }
+  // case models (a lab of another language: spec 09); cards, contrasts and trees are checked by checkLabDir
   (d.models || []).forEach(function (m) {
     ["singular", "plural"].forEach(function (num) {
       if (Object.keys(m[num] || {}).sort().join() !== CASES.slice().sort().join()) err(w, "model " + m.id + ": " + num + " must have all 7 cases");
       Object.keys(m[num] || {}).forEach(function (k) { charset(w, m[num][k]); });
+    });
+  });
+}
+
+/**
+ * The lab folder as one data set (spec 06 E7): LM.labLogic.validate (structure, ids, axes, scenes, contrast cards,
+ * trees: links, reachability, cycles), the target-language charset, and every quiz item of a contrast card with the
+ * item rules (E11 rule 4: one correct option, no duplicates, explanation, optionNotes).
+ */
+function checkLabDir(dir, topics) {
+  const files = list(dir, /\.json$/);
+  const pick = function (re) { return files.find(function (f) { return re.test(path.basename(f)); }); };
+  const cardsFile = pick(/^cards/), ctrFile = pick(/^contrasts/), treesFile = pick(/^trees/);
+  if (!cardsFile) return;
+  const cards = load(cardsFile) || {};
+  const ctr = ctrFile ? (load(ctrFile) || {}) : {};
+  const trees = treesFile ? (load(treesFile) || {}) : {};
+  const lab = { axes: cards.axes, cards: cards.cards || [], contrasts: ctr.contrasts || [], trees: trees.trees || [] };
+  const res = LAB.validate(lab, topics);
+  const where = rel(dir);
+  res.errors.forEach(function (e) { err(where, e); });
+  // a sample card may name a card that is not in the sample (docs/plan/examples)
+  res.warnings.forEach(function (x) { if (!(EXAMPLES && /no such card yet/.test(x))) warn(where, x); });
+  LAB.targetTexts(lab).forEach(function (t) { charset(where + " " + t.where, t.text); });
+  lab.contrasts.forEach(function (k) {
+    ((k.quiz && k.quiz.items) || []).forEach(function (it, i) {
+      const at = rel(ctrFile) + " " + k.id + " quiz #" + (i + 1);
+      checkItem(at, it, k.level);
     });
   });
 }
@@ -464,6 +485,7 @@ function checkTree(root, topics, full) {
   list(path.join(root, "decks"), /\.json$/).forEach(function (p) { if (path.basename(p) !== "index.json") checkDeck(p); });
   list(path.join(root, "tests"), /^placement.*\.json$/).forEach(function (p) { checkPlacement(p, topics, full && p.indexOf("sample") === -1); });
   list(path.join(root, "lab"), /\.json$/).forEach(function (p) { if (p.indexOf("trees") === -1) checkLab(p, topics); });
+  checkLabDir(path.join(root, "lab"), topics);
 }
 
 const topics = checkSyllabus(path.join(ARG, "syllabus.json"));
