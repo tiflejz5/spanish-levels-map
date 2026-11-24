@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-vocabulary-family-people",
+  "topic": "a1-vocabulary-family-people",
+  "level": "A1",
+  "title": "Stop: family and people",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-vocabulary-family-people-q1",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "The mother of your mother is your ___.",
+      "options": [
+        "tía",
+        "prima",
+        "abuela",
+        "hija"
+      ],
+      "correct": 2,
+      "explanation": "Your mother's mother is your grandmother: la abuela.",
+      "optionNotes": [
+        "La tía is your aunt.",
+        "La prima is your cousin.",
+        null,
+        "La hija is a daughter."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-family-people-q2",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "“Mis padres” means…",
+      "options": [
+        "my relatives",
+        "my parents",
+        "my fathers only",
+        "my brothers"
+      ],
+      "correct": 1,
+      "explanation": "Los padres usually means the father and the mother: parents.",
+      "optionNotes": [
+        "Relatives are parientes.",
+        null,
+        "Los padres is used for both parents.",
+        "Brothers are hermanos."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-family-people-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi hermana es ___.",
+      "options": [
+        "alta",
+        "alto",
+        "altos",
+        "altas"
+      ],
+      "correct": 0,
+      "explanation": "The adjective agrees with hermana: alta.",
+      "optionNotes": [
+        null,
+        "Alto is masculine.",
+        "Hermana is singular.",
+        "Hermana is singular."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-family-people-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi abuelo tiene noventa años. Es ___. (the polite word for “old”)",
+      "options": [
+        "viejo",
+        "bajo",
+        "joven",
+        "mayor"
+      ],
+      "correct": 3,
+      "explanation": "Mayor is the polite word: Mi abuelo es mayor.",
+      "optionNotes": [
+        "Viejo can sound rude about people.",
+        "Bajo means short.",
+        "Joven means young.",
+        null
+      ]
+    }
+  ]
+}

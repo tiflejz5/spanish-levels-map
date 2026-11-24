@@ -1,7 +1,7 @@
 {
   "about": "Content the browser tests (tools/e2e.js) rely on, kept here so another language swaps one file (spec 09 rule 3). Every id must exist in content/.",
   "topic": "a1-verbs-gustar",
-  "topicWithoutPage": "a1-verbs-ser",
+  "topicWithoutPage": "a1-functions-asking-to-repeat",
   "sets": ["a1-verbs-gustar-1", "a1-verbs-gustar-2"],
   "deck": "vocab-a1-food-shopping"
 }

@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-functions-greetings-introductions",
+  "topic": "a1-functions-greetings-introductions",
+  "level": "A1",
+  "title": "Stop: hello and goodbye",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-functions-greetings-introductions-q1",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "It is 4 p.m. and you enter a small shop. What do you say?",
+      "options": [
+        "Buenos días.",
+        "Buenas tardes.",
+        "Buenos tardes.",
+        "Buenas noches."
+      ],
+      "correct": 1,
+      "explanation": "From lunchtime until it gets dark, the greeting is buenas tardes.",
+      "optionNotes": [
+        "Buenos días is for the morning.",
+        null,
+        "Tarde is feminine, so it is buenas, not buenos.",
+        "Buenas noches is for after dark."
+      ]
+    },
+    {
+      "id": "a1-functions-greetings-introductions-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You meet your friend's grandfather for the first time. How do you ask his name?",
+      "options": [
+        "¿Cómo te llamas?",
+        "¿Cómo se llama usted?",
+        "¿Cómo llamas?",
+        "¿Quién te llamas?"
+      ],
+      "correct": 1,
+      "explanation": "With an older person you have just met, use usted: ¿Cómo se llama usted?",
+      "optionNotes": [
+        "Te llamas is for a friend or a child, not an older stranger.",
+        null,
+        "The question needs te or se: ¿Cómo te llamas? / ¿Cómo se llama?",
+        "The question word is cómo, not quién."
+      ]
+    },
+    {
+      "id": "a1-functions-greetings-introductions-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Lucía (a woman) meets Tom. She says: “___”",
+      "options": [
+        "Encantado.",
+        "Encantados.",
+        "Encantada.",
+        "Encantadas."
+      ],
+      "correct": 2,
+      "explanation": "Lucía is a woman speaking about herself, so she says encantada.",
+      "optionNotes": [
+        "Encantado is what a man says.",
+        "Encantados is for a group speaking together.",
+        null,
+        "Encantadas is for a group of women."
+      ]
+    },
+    {
+      "id": "a1-functions-greetings-introductions-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "—Mucho gusto. —___",
+      "options": [
+        "Igualmente.",
+        "De nada.",
+        "Adiós.",
+        "Por favor."
+      ],
+      "correct": 0,
+      "explanation": "Igualmente (likewise) is the natural answer to mucho gusto.",
+      "optionNotes": [
+        null,
+        "De nada answers gracias (thank you).",
+        "Adiós is for leaving, not for meeting.",
+        "Por favor means “please”."
+      ]
+    }
+  ]
+}

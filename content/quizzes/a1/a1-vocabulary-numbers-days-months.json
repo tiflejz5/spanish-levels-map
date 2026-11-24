@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-vocabulary-numbers-days-months",
+  "topic": "a1-vocabulary-numbers-days-months",
+  "level": "A1",
+  "title": "Stop: numbers, days, months",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-vocabulary-numbers-days-months-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "How do you write 22?",
+      "options": [
+        "veinte y dos",
+        "veintidós",
+        "veintedos",
+        "dos y veinte"
+      ],
+      "correct": 1,
+      "explanation": "21–29 are one word, and 22 has an accent: veintidós.",
+      "optionNotes": [
+        "21–29 are written as one word.",
+        null,
+        "The word starts with veinti-, not veinte-.",
+        "The tens come first."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-numbers-days-months-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "How do you say “on Monday”?",
+      "options": [
+        "en el lunes",
+        "en lunes",
+        "el lunes",
+        "los lunes"
+      ],
+      "correct": 2,
+      "explanation": "With days there is no word for “on”: el lunes. Los lunes means “on Mondays”, every week.",
+      "optionNotes": [
+        "Spanish has no en with days.",
+        "Spanish has no en with days, and it needs el.",
+        null,
+        "Los lunes means “on Mondays” (every Monday)."
+      ]
+    },
+    {
+      "id": "a1-vocabulary-numbers-days-months-q3",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Which number is cuarenta y cinco?",
+      "options": [
+        "54",
+        "35",
+        "14",
+        "45"
+      ],
+      "correct": 3,
+      "explanation": "Cuarenta is 40 and cinco is 5: 45.",
+      "optionNotes": [
+        "54 is cincuenta y cuatro.",
+        "35 is treinta y cinco.",
+        "14 is catorce.",
+        null
+      ]
+    },
+    {
+      "id": "a1-vocabulary-numbers-days-months-q4",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Mi cumpleaños es en ___. (My birthday is in August.)",
+      "options": [
+        "agosto",
+        "julio",
+        "abril",
+        "el agosto"
+      ],
+      "correct": 0,
+      "explanation": "August is agosto, written with a small letter and without an article after en.",
+      "optionNotes": [
+        null,
+        "Julio is July.",
+        "Abril is April.",
+        "After en, a month has no article."
+      ]
+    }
+  ]
+}

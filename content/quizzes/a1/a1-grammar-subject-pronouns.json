@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "id": "a1-grammar-subject-pronouns",
+  "topic": "a1-grammar-subject-pronouns",
+  "level": "A1",
+  "title": "Stop: I, you, we",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-grammar-subject-pronouns-q1",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "You talk to a police officer you don't know. Which word for “you”?",
+      "options": ["tú", "usted", "vosotros", "tu"],
+      "correct": 1,
+      "explanation": "With a stranger in a formal situation, use usted.",
+      "optionNotes": ["Tú is for friends, family and people your age.", null, "Vosotros is for a group, not one person.", "Tu without an accent means “your”."]
+    },
+    {
+      "id": "a1-grammar-subject-pronouns-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ana, Rosa and Pedro are ___.",
+      "options": ["ellas", "ustedes", "nosotros", "ellos"],
+      "correct": 3,
+      "explanation": "A mixed group takes the masculine form, even with one man: ellos.",
+      "optionNotes": ["Ellas is only for a group of women.", "Ustedes means “you” (plural), not “they”.", "Nosotros means “we”.", null]
+    },
+    {
+      "id": "a1-grammar-subject-pronouns-q3",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "In Mexico, you talk to two friends. Which word for “you”?",
+      "options": ["vosotros", "usted", "ustedes", "ellos"],
+      "correct": 2,
+      "explanation": "In Latin America, ustedes is the word for every group, friends included.",
+      "optionNotes": ["Vosotros is used for friends in Spain only.", "Usted is for one person.", null, "Ellos means “they”."]
+    },
+    {
+      "id": "a1-grammar-subject-pronouns-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Which sentence sounds most natural as an answer to “¿Cómo te llamas?”",
+      "options": ["Yo me llamo Pablo.", "Me llamo Pablo.", "Él se llama Pablo.", "Tú te llamas Pablo."],
+      "correct": 1,
+      "explanation": "The verb already shows the person, so the pronoun yo is left out unless you want contrast.",
+      "optionNotes": ["Correct grammar, but yo is extra here; use it only for contrast or emphasis.", null, "Él se llama talks about another man.", "Tú te llamas means “you are called”."]
+    }
+  ]
+}
