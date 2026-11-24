@@ -376,6 +376,7 @@ window.LM = window.LM || {};
     (root || document).querySelectorAll("[data-logo]").forEach(function (node) {
       node.removeAttribute("data-logo");
       node.replaceChildren(logo());
+      if (node.hasAttribute("aria-label")) node.setAttribute("aria-label", LM.APP.appTitle + " – home"); // the static label in index.html is a fallback
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { hydrate(); });

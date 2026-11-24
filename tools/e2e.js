@@ -22,6 +22,16 @@ const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 
+// Content and language facts of the tests: tools/fixtures/lang/e2e.json and js/config.js (spec 09 rule 3)
+const FX = JSON.parse(fs.readFileSync(path.join(ROOT, "tools", "fixtures", "lang", "e2e.json"), "utf8"));
+global.window = global.window || global;
+require(path.join(ROOT, "js", "config.js"));
+const APP = global.LM.APP;
+const TARGET = APP.targetLang;
+/** "#/a1/<rest>" from "a1-<rest>": the level, then the rest of the topic id. */
+function topicRoute(id) { return "#/" + id.slice(0, 2) + "/" + id.slice(3); }
+const TOPIC_ROUTE = topicRoute(FX.topic), NOPAGE_ROUTE = topicRoute(FX.topicWithoutPage);
+
 function findBrowser() {
   const env = process.env.CHROME_PATH;
   if (env && fs.existsSync(env)) return env;
@@ -126,9 +136,9 @@ async function main() {
   console.log("\nRoutes (spec 02 §6)");
   await test("every route of spec 02 §6 renders something, without JS errors", async function () {
     const s = await session(1280, 800, true);
-    const routes = ["#/", "#/today", "#/trail", "#/a1", "#/a2", "#/c2", "#/a1/verbs-gustar", "#/a1/verbs-ser", "#/a1/test", "#/a1/cheatsheet",
+    const routes = ["#/", "#/today", "#/trail", "#/a1", "#/a2", "#/c2", TOPIC_ROUTE, NOPAGE_ROUTE, "#/a1/test", "#/a1/cheatsheet",
       "#/placement", "#/review", "#/review/decks", "#/review/mistakes", "#/review/words", "#/review/session", "#/practice",
-      "#/practice/set/a1-verbs-gustar-1", "#/practice/session", "#/practice/weak", "#/lab", "#/writing", "#/writing/phrases", "#/stats", "#/notes"];
+      "#/practice/set/" + FX.sets[0], "#/practice/session", "#/practice/weak", "#/lab", "#/writing", "#/writing/phrases", "#/stats", "#/notes"];
     for (const r of routes) {
       await visit(s.page, r, 700);
       const t = await viewText(s.page);
@@ -150,7 +160,7 @@ async function main() {
   });
   await test("public pages without a profile are not empty and show no welcome card", async function () {
     const s = await session();
-    for (const r of ["#/", "#/a1", "#/a2", "#/a1/verbs-gustar", "#/a1/verbs-ser", "#/practice", "#/lab", "#/writing"]) {
+    for (const r of ["#/", "#/a1", "#/a2", TOPIC_ROUTE, NOPAGE_ROUTE, "#/practice", "#/lab", "#/writing"]) {
       await visit(s.page, r, 600);
       const t = await viewText(s.page);
       ok(t.length > 40, r + ": empty");
@@ -169,9 +179,9 @@ async function main() {
     a1Topics.forEach(function (t) { const n = syllabus.categories[t.category]; if (first.indexOf(n) === -1) first.push(n); });
     ok(JSON.stringify(groups.map(function (g) { return g.trim(); })) === JSON.stringify(first), "groups: " + groups.join(" | "));
     ok(await s.page.locator(".ess-item input[type=checkbox]").count() === a1Topics.length, "checkbox count");
-    await s.page.locator('li[data-topic="a1-verbs-gustar"] input').check({ force: true });
+    await s.page.locator('li[data-topic="' + FX.topic + '"] input').check({ force: true });
     await s.page.waitForTimeout(200);
-    ok((await progressOf(s.page))["a1-verbs-gustar"] === true, "progress not saved under the topic id");
+    ok((await progressOf(s.page))[FX.topic] === true, "progress not saved under the topic id");
     ok(/1 of 26 known/.test(await viewText(s.page)), "level progress text");
     await s.ctx.close();
   });
@@ -193,7 +203,7 @@ async function main() {
   });
   await test("a topic without a page: This topic is being written", async function () {
     const s = await session();
-    await visit(s.page, "#/a1/verbs-ser");
+    await visit(s.page, NOPAGE_ROUTE);
     ok(/This topic is being written/.test(await viewText(s.page)), "no being-written page");
     await s.ctx.close();
   });
@@ -215,9 +225,9 @@ async function main() {
   await test("stop sheet: topic as the checklist item; quiz ≥ 3/4 passes the stop but never ticks the topic", async function () {
     const s = await session(1280, 900, true);
     await visit(s.page, "#/trail", 1500);
-    await s.page.click('.sz-node[data-stop="a1-verbs-gustar"] button');
+    await s.page.click('.sz-node[data-stop="' + FX.topic + '"] button');
     await s.page.waitForSelector("dialog[open]");
-    ok(/gustar/.test(await s.page.innerText("dialog[open] .sz-items")), "topic not listed in the sheet");
+    ok(new RegExp(FX.topic.split("-").pop()).test(await s.page.innerText("dialog[open] .sz-items")), "topic not listed in the sheet");
     await s.page.click("dialog[open] button:has-text('Quiz')");
     for (let i = 0; i < 4; i++) {
       await s.page.waitForSelector(".ex-option");
@@ -232,9 +242,9 @@ async function main() {
       await s.page.waitForTimeout(200);
     }
     await s.page.waitForSelector(".sz-result");
-    ok(!(await progressOf(s.page))["a1-verbs-gustar"], "the quiz ticked the topic");
+    ok(!(await progressOf(s.page))[FX.topic], "the quiz ticked the topic");
     const st = await s.page.evaluate(function () { return JSON.parse(localStorage.getItem("slm.trail.p_e2e")); });
-    ok(st.version === 1 && st.stops["a1-verbs-gustar"] && st.stops["a1-verbs-gustar"].best === 4, "stored in slm.trail.<id>");
+    ok(st.version === 1 && st.stops[FX.topic] && st.stops[FX.topic].best === 4, "stored in slm.trail.<id>");
     await s.ctx.close();
   });
 
@@ -336,7 +346,7 @@ async function main() {
   await test("topic page: lang on italics, the target column and its glosses; listen buttons per row only with a voice", async function () {
     const s = await session(1280, 800, true);
     await withVoices(s.ctx, true);
-    await visit(s.page, "#/a1/verbs-gustar", 900);
+    await visit(s.page, TOPIC_ROUTE, 900);
     const r = await s.page.evaluate(function () {
       const T = LM.APP.targetLang;
       const rows = document.querySelectorAll(".md-examples tbody tr");
@@ -356,7 +366,7 @@ async function main() {
     await s.ctx.close();
     const n = await session(1280, 800, true);
     await withVoices(n.ctx, null);
-    await visit(n.page, "#/a1/verbs-gustar", 900);
+    await visit(n.page, TOPIC_ROUTE, 900);
     const hidden = await n.page.evaluate(function () {
       return { voice: document.documentElement.getAttribute("data-voice"), visible: Array.prototype.filter.call(document.querySelectorAll(".listen-btn"), function (b) { return b.offsetParent !== null; }).length };
     });
@@ -368,7 +378,7 @@ async function main() {
   await test("quotes: target-language lines, the gloss outside, one listen button; My words menu only on target-language text", async function () {
     const s = await session(1280, 800, true);
     await withVoices(s.ctx, true);
-    await visit(s.page, "#/a1/verbs-gustar", 900);
+    await visit(s.page, TOPIC_ROUTE, 900);
     const q = await s.page.evaluate(function () {
       const ex = document.querySelector(".md-examples .md-target").textContent;
       const box = document.createElement("article");
@@ -598,7 +608,7 @@ async function main() {
         const x = LM.PLACEMENT.questions.find(function (y) { return y.question === n.textContent; });
         return { correct: x.correct, lang: n.getAttribute("lang"), optLang: document.querySelector(".lt-option-text").getAttribute("lang") };
       });
-      ok(q.lang === "es" && q.optLang === "es", "placement question without lang: " + JSON.stringify(q));
+      ok(q.lang === TARGET && q.optLang === TARGET, "placement question without lang: " + JSON.stringify(q));
       await p.locator(".lt-option").nth(q.correct).click();
       await p.click(".lt-next");
     }
@@ -613,7 +623,7 @@ async function main() {
     await p.waitForTimeout(1200);
     ok(await p.locator(".sz-first").count() === 0, "first-run card after the placement test");
     if (level !== "A1") ok(new RegExp(level + " is on its way, so the trail starts at A1").test(await p.innerText(".sz-start-note")), "start note");
-    await p.click('.sz-node[data-stop="a1-verbs-gustar"] button');
+    await p.click('.sz-node[data-stop="' + FX.topic + '"] button');
     await p.waitForSelector("dialog[open]");
     await p.click("dialog[open] button:has-text('Quiz')");
     for (let i = 0; i < 4; i++) {
@@ -629,10 +639,10 @@ async function main() {
     }
     await p.waitForSelector(".sz-result.is-passed");
     const href = await p.getAttribute(".sz-result .report-link a", "href");
-    ok(href && href.indexOf(encodeURIComponent("a1-verbs-gustar: ")) !== -1, "report link: " + href);
+    ok(href && href.indexOf(encodeURIComponent(FX.topic + ": ")) !== -1, "report link: " + href);
     const pid = await p.evaluate(function () { return LM.app.getActiveProfile().id; });
     const st = await p.evaluate(function (k) { return JSON.parse(localStorage.getItem(k)); }, "slm.trail." + pid);
-    ok(st.stops["a1-verbs-gustar"] && st.stops["a1-verbs-gustar"].best === 4 && st.start && st.start.source === "test", "trail state: " + JSON.stringify(st));
+    ok(st.stops[FX.topic] && st.stops[FX.topic].best === 4 && st.start && st.start.source === "test", "trail state: " + JSON.stringify(st));
     ok(!(await elmUntouched(p)).length, "elm_* keys changed: " + (await elmUntouched(p)).join(", "));
     ok(!(await p.evaluate(function () { return Object.keys(localStorage).filter(function (k) { return !/^(slm\.|elm|e2e_)/.test(k); }); })).length, "a key outside slm.");
     ok(!p.errs.length, "JS errors: " + p.errs[0]);
@@ -643,11 +653,11 @@ async function main() {
     const s = await session(1280, 860, true, { elm: true });
     await withVoices(s.ctx, true);
     const p = s.page;
-    await visit(p, "#/practice/set/a1-verbs-gustar-1", 900);
+    await visit(p, "#/practice/set/" + FX.sets[0], 900);
     await p.click("[data-fk='start']");
     await runItems(p, false);
     ok(await p.locator(".ex-result").count() === 1, "no set result");
-    ok(/a1-verbs-gustar%3A%20/.test(await p.getAttribute(".ex-result .report-link a", "href")), "no report link on the set result");
+    ok(new RegExp(FX.topic + "%3A%20").test(await p.getAttribute(".ex-result .report-link a", "href")), "no report link on the set result");
     const n = await p.evaluate(function () { return LM.profileData.entries().length; });
     ok(n >= 8, "mistakes logged: " + n);
     const dump = await slmDump(p);
@@ -663,13 +673,13 @@ async function main() {
       return list.map(function (e) { const r = e.querySelector(".journal-row.is-right"); return { lang: r.querySelector("dd").getAttribute("lang"), listen: !!r.querySelector(".listen-btn") }; });
     });
     ok(rows.length === n, "log shows " + rows.length + " of " + n);
-    ok(rows.every(function (r) { return r.lang === "es" && r.listen; }), "right answers without lang or listen button");
+    ok(rows.every(function (r) { return r.lang === TARGET && r.listen; }), "right answers without lang or listen button");
     await visit(q, "#/review", 900);
     ok(new RegExp("Mistakes from the log " + n).test(await viewText(q)), "review page: " + (await viewText(q)).slice(0, 300));
     await visit(q, "#/review/session?only=mistakes", 1500);
     ok(/1 of \d+ · My mistakes/.test(await viewText(q)), "session header: " + (await viewText(q)).slice(0, 120));
     const it = await q.evaluate(function () { return LM.exercises.currentItem(); });
-    ok(it && it.id && /^a1-verbs-gustar-1-/.test(it.id), "the mistake is not shown as its original task");
+    ok(it && it.id && new RegExp("^" + FX.sets[0] + "-").test(it.id), "the mistake is not shown as its original task");
     await answerItem(q, it, true);
     ok(await q.locator(".ex-feedback.is-correct, .ex-verdict.is-ok, .is-correct").count() > 0, "right answer not accepted in the review session");
     ok(!q.errs.length, "JS errors: " + q.errs[0]);
@@ -689,7 +699,7 @@ async function main() {
       const b = document.querySelector(".fc-backside");
       return { lang: (b.querySelector(".fc-text") || {}).lang, listen: !!b.querySelector(".listen-btn"), report: (b.querySelector(".report-link a") || {}).href || "" };
     });
-    ok(back.lang === "es" && back.listen && /vocab-a1-food-shopping-\d+%3A/.test(back.report), JSON.stringify(back));
+    ok(back.lang === TARGET && back.listen && new RegExp(FX.deck + "-\\d+%3A").test(back.report), JSON.stringify(back));
     await visit(p, "#/a1", 800);
     ok(await p.locator('.ess-decks a[href="#/review/decks/topics/a1"]').count() === 1, "no deck link on the level page");
     ok(!p.errs.length, "JS errors: " + p.errs[0]);
@@ -701,8 +711,8 @@ async function main() {
     await withVoices(s.ctx, true);
     const p = s.page;
     await visit(p, "#/a1", 800);
-    await p.locator('li[data-topic="a1-verbs-gustar"] input').check({ force: true });
-    await visit(p, "#/practice/set/a1-verbs-gustar-2", 900);
+    await p.locator('li[data-topic="' + FX.topic + '"] input').check({ force: true });
+    await visit(p, "#/practice/set/" + FX.sets[1], 900);
     await p.click("[data-fk='start']");
     await runItems(p, function (i) { return i % 2 === 0; });
     await p.waitForTimeout(500); // the set result and the mistake cards are saved
@@ -744,7 +754,7 @@ async function main() {
     const before = await slmDump(p);
     const files = [
       [JSON.stringify({ app: "english-levels-map", kind: "backup", version: 1, data: { profiles: { version: 1, activeId: null, profiles: [] } } }), /comes from "english-levels-map"/],
-      [JSON.stringify(ELM_DATA), /not a Spanish Levels Map backup/],
+      [JSON.stringify(ELM_DATA), new RegExp("not a " + APP.appTitle + " backup")],
       ["{ not json", /not a valid JSON file/]
     ];
     for (const f of files) {
@@ -764,8 +774,8 @@ async function main() {
   await test("E12: report links on the topic page; home footer with version, privacy sentence and source link", async function () {
     const s = await session(1280, 860, false);
     const p = s.page;
-    await visit(p, "#/a1/verbs-gustar", 800);
-    ok(/a1-verbs-gustar%3A%20$/.test(await p.getAttribute("#view > .report-link a", "href")), "topic page report link");
+    await visit(p, TOPIC_ROUTE, 800);
+    ok(new RegExp(FX.topic + "%3A%20$").test(await p.getAttribute("#view > .report-link a", "href")), "topic page report link");
     await visit(p, "#/", 800);
     const foot = await p.innerText(".home-foot");
     ok(/No accounts\. Your progress stays in this browser\./.test(foot) && /Version \d+/.test(foot) && /Source code/.test(foot), "footer: " + foot);
@@ -783,8 +793,8 @@ async function main() {
     await p.fill("#welcome-name", "Private");
     await p.click(".welcome-form button.btn-primary");
     await p.goto(URL + "#/a1"); await p.waitForTimeout(600);
-    await p.locator('li[data-topic="a1-verbs-gustar"] input').check({ force: true });
-    ok(await p.evaluate(function () { return LM.state.progress["a1-verbs-gustar"] === true; }), "the tick is not kept in memory");
+    await p.locator('li[data-topic="' + FX.topic + '"] input').check({ force: true });
+    ok(await p.evaluate(function (id) { return LM.state.progress[id] === true; }, FX.topic), "the tick is not kept in memory");
     ok(!errs.length, "JS errors: " + errs[0]);
     await ctx.close();
   });
@@ -794,7 +804,7 @@ async function main() {
 
     const s = await session(320, 740, true);
     const bad = [];
-    for (const r of ["#/", "#/today", "#/a1", "#/a2", "#/a1/verbs-gustar", "#/a1/verbs-ser", "#/trail", "#/placement", "#/review", "#/review/mistakes",
+    for (const r of ["#/", "#/today", "#/a1", "#/a2", TOPIC_ROUTE, NOPAGE_ROUTE, "#/trail", "#/placement", "#/review", "#/review/mistakes",
       "#/review/words", "#/review/decks", "#/review/decks/topics/a1", "#/a1/test", "#/practice/weak", "#/stats", "#/notes", "#/nope"]) {
       await s.page.goto(URL + r); await s.page.waitForTimeout(500);
       const d = await s.page.evaluate(function () { return [document.documentElement.scrollWidth, document.documentElement.clientWidth]; });

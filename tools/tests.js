@@ -2380,7 +2380,7 @@ console.log("\nStorage key registry: slm. keys, backup file, reset, profile dele
 
   test("backup: a file of another app, an old-format file or a newer version is refused with a clear message", function () {
     const other = sampleBackup(); other.app = "english-levels-map";
-    assert.throws(function () { ST.parseBackup(other); }, /not a Spanish Levels Map backup \(it comes from "english-levels-map"\)/);
+    assert.throws(function () { ST.parseBackup(other); }, new RegExp("not a " + global.LM.APP.appTitle + " backup \\(it comes from \"english-levels-map\"\\)"));
     assert.throws(function () { ST.parseBackup({ app: "spanish-levels-map", kind: "progress", data: {} }); }, /incomplete/);
     const newer = sampleBackup(); newer.version = 2;
     assert.throws(function () { ST.parseBackup(newer); }, /newer version/);
