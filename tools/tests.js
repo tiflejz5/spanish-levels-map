@@ -2820,6 +2820,186 @@ console.log("\nstrip-keys (spec 10 §4, step 4)");
   });
 })();
 
+console.log("\nTense & Mood Lab: data-driven logic (spec 06 E7, spec 09 rule 2)");
+(function () {
+  require(path.join(__dirname, "..", "js", "lab-logic.js"));
+  require(path.join(__dirname, "..", "js", "timeline.js"));
+  const LL = global.LM.labLogic, TL = global.LM.timeline;
+  const fsL = require("fs");
+  const demo = JSON.parse(fsL.readFileSync(path.join(__dirname, "fixtures", "lab-demo.json"), "utf8"));
+  const fresh = function () { return JSON.parse(JSON.stringify(demo)); };
+  const topics = {};
+  JSON.parse(fsL.readFileSync(path.join(__dirname, "..", "content", "syllabus.json"), "utf8")).levels.forEach(function (l) { l.units.forEach(function (u) { u.topics.forEach(function (t) { topics[t.id] = t; }); }); });
+  const has = function (list, re) { return list.some(function (x) { return re.test(x); }); };
+
+  test("routes: map, card, contrasts list and card, trees list and tree, compare with and without a pair; bad shapes → null", function () {
+    assert.deepStrictEqual(LL.parseRoute("#/lab"), { tab: "map" });
+    assert.deepStrictEqual(LL.parseRoute("#/lab/alpha"), { tab: "card", id: "alpha" });
+    assert.deepStrictEqual(LL.parseRoute("#/lab/contrasts"), { tab: "contrasts", id: null });
+    assert.deepStrictEqual(LL.parseRoute("#/lab/contrast/alpha-beta"), { tab: "contrasts", id: "alpha-beta" });
+    assert.deepStrictEqual(LL.parseRoute("#/lab/pick"), { tab: "pick", id: null });
+    assert.deepStrictEqual(LL.parseRoute("#/lab/pick/which"), { tab: "pick", id: "which" });
+    assert.deepStrictEqual(LL.parseRoute("#/lab/compare"), { tab: "compare", a: null, b: null });
+    assert.deepStrictEqual(LL.parseRoute("#/lab/compare/alpha/beta"), { tab: "compare", a: "alpha", b: "beta" });
+    assert.strictEqual(LL.parseRoute("#/lab/alpha/beta"), null);
+    assert.strictEqual(LL.parseRoute("#/lab/contrasts/x"), null);
+    assert.strictEqual(LL.parseRoute("#/labx"), null);
+    ["card", "contrast", "tree"].forEach(function (k) { assert.ok(LL.parseRoute(LL.routeOf(k, "abc"))); });
+  });
+  test("grid: the axes come from the data (any number of columns and rows); several cards per cell, empty cells stay", function () {
+    const g = LL.grid(demo);
+    assert.deepStrictEqual(g.columns.map(function (c) { return c.id; }), ["before", "now", "after", "never"]);
+    assert.strictEqual(g.cells.length, 2);
+    assert.deepStrictEqual(g.cells[0][0].map(function (c) { return c.id; }), ["alpha", "beta"]);
+    assert.deepStrictEqual(g.cells[1][2].map(function (c) { return c.id; }), ["gamma"]);
+    assert.strictEqual(g.cells[0][1].length, 0);
+    assert.deepStrictEqual([LL.toneOf(demo, "before"), LL.toneOf(demo, "after"), LL.toneOf(demo, "never"), LL.toneOf(demo, "nope")], [1, 3, 1, 1]);
+    assert.strictEqual(LL.axisLabel(demo, "rows", "unreal"), "Unreal");
+  });
+  test("lookups: entry finds cards and contrast cards; contrast title; related contrast cards by topic", function () {
+    assert.strictEqual(LL.entry(demo, "alpha").kind, "card");
+    assert.strictEqual(LL.entry(demo, "alpha-beta").route, "#/lab/contrast/alpha-beta");
+    assert.strictEqual(LL.entry(demo, "nope"), null);
+    assert.strictEqual(LL.contrastTitle(demo.contrasts[0]), "alpha vs beta");
+    assert.deepStrictEqual(LL.relatedContrasts(demo, LL.card(demo, "gamma")).map(function (k) { return k.id; }), ["alpha-beta"]);
+    assert.deepStrictEqual(LL.relatedContrasts(demo, LL.card(demo, "beta")), []);
+  });
+  test("compare: rules written on either card; default pair = first contrast, else the next card; never the same card twice", function () {
+    const a = LL.card(demo, "alpha"), b = LL.card(demo, "beta");
+    assert.deepStrictEqual(LL.diffs(a, b).map(function (d) { return d.from.id; }), ["alpha", "beta"]);
+    assert.deepStrictEqual(LL.diffs(a, LL.card(demo, "gamma")), []);
+    let p = LL.comparePair(demo, null, null, null);
+    assert.deepStrictEqual([p.a.id, p.b.id], ["alpha", "beta"]);
+    p = LL.comparePair(demo, "gamma", "gamma", null);
+    assert.deepStrictEqual([p.a.id, p.b.id], ["gamma", "alpha"]);
+    p = LL.comparePair(demo, "zzz", null, "beta");
+    assert.deepStrictEqual([p.a.id, p.b.id], ["beta", "alpha"]);
+    assert.strictEqual(LL.comparePair({ axes: demo.axes, cards: [a], contrasts: [], trees: [] }), null);
+  });
+  test("trees: walk by option indexes to a question or a result; a wrong index stops; every path ends in a result", function () {
+    const t = demo.trees[0];
+    let w = LL.walk(t, []);
+    assert.strictEqual(w.node.question, "When?");
+    w = LL.walk(t, [0]);
+    assert.strictEqual(w.nodeId, "how");
+    assert.strictEqual(w.steps.length, 1);
+    w = LL.walk(t, [0, 1]);
+    assert.strictEqual(w.node, null);
+    assert.strictEqual(w.result.answer, "beta");
+    w = LL.walk(t, [0, 7]);
+    assert.strictEqual(w.nodeId, "how");
+    w = LL.walk(t, [1, 0]); // a choice after the result is ignored
+    assert.deepStrictEqual(w.result.result, ["gamma"]);
+    assert.strictEqual(LL.paths(t).length, 3);
+    assert.ok(LL.paths(t).every(function (p) { return p[p.length - 1].result; }));
+  });
+  test("validate: the fixture is clean; the real content/lab is clean", function () {
+    const r = LL.validate(demo, topics);
+    assert.deepStrictEqual(r.errors, []);
+    assert.deepStrictEqual(r.warnings, []);
+    const dir = path.join(__dirname, "..", "content", "lab");
+    const read = function (f, d) { const p = path.join(dir, f); return fsL.existsSync(p) ? JSON.parse(fsL.readFileSync(p, "utf8")) : d; };
+    const cards = read("cards.json", {});
+    const real = { axes: cards.axes, cards: cards.cards || [], contrasts: read("contrasts.json", {}).contrasts || [], trees: read("trees.json", {}).trees || [] };
+    assert.deepStrictEqual(LL.validate(real, topics).errors, []);
+  });
+  test("validate: ids (reserved route words, duplicates across cards and contrasts), axes, levels, topics", function () {
+    const d = fresh();
+    d.cards[0].id = "compare";
+    d.cards[1].column = "sideways";
+    d.cards[2].level = "D9";
+    d.contrasts[0].id = "gamma";
+    d.contrasts[0].topicIds = ["no-such-topic"];
+    d.axes.rows.push({ id: "real", label: "Again" });
+    const e = LL.validate(d, topics).errors;
+    assert.ok(has(e, /reserved route word/), "reserved");
+    assert.ok(has(e, /column\/row not in axes/), "axes");
+    assert.ok(has(e, /level must be/), "level");
+    assert.ok(has(e, /duplicate id "gamma"/), "duplicate across");
+    assert.ok(has(e, /not in syllabus/), "topic");
+    assert.ok(has(e, /axes\.rows: duplicate id real/), "axis duplicate");
+  });
+  test("validate: card fields, formation rows, uses need text and English, scene elements in -1 … 1", function () {
+    const d = fresh();
+    d.cards[0].formation = [{ label: "x" }];
+    d.cards[0].uses = [{ label: "x", text: "y" }];
+    d.cards[1].scenes[0].elements = [{ kind: "range", from: 0.5, to: 0.2 }, { kind: "spiral" }, { kind: "point", at: 3 }, { kind: "marker", at: 0 }, { kind: "repeat", from: -1, to: 0, count: 20 }];
+    d.cards[2].scenes = [];
+    const e = LL.validate(d, topics).errors;
+    ["formation\\[0\\]", "uses\\[0\\]: label, text and en", "range: from < to", "kind must be", "point: at", "marker: label", "repeat: count", "missing scenes"].forEach(function (m) {
+      assert.ok(has(e, new RegExp(m)), m);
+    });
+  });
+  test("validate: contrast with a missing card is a warning; with itself an error", function () {
+    const d = fresh();
+    d.cards[0].contrasts = [{ with: "omega", rule: "r" }, { with: "alpha", rule: "r" }];
+    const r = LL.validate(d, topics);
+    assert.ok(has(r.warnings, /contrast with "omega": no such card yet/));
+    assert.ok(has(r.errors, /cannot contrast with itself/));
+  });
+  test("validate: contrast cards need two sides with rules and examples, and a quiz of exactly 4 multiple-choice items", function () {
+    const d = fresh();
+    d.contrasts[0].sides[1].rules[0].examples = [{ text: "x" }];
+    d.contrasts[0].quiz.items.pop();
+    let e = LL.validate(d, topics).errors;
+    assert.ok(has(e, /every example needs text and en/));
+    assert.ok(has(e, /exactly 4 items/));
+    const d2 = fresh();
+    d2.contrasts[0].sides.pop();
+    d2.contrasts[0].quiz.items[1].type = "gap-fill";
+    d2.contrasts[0].quiz.items[2].id = "ab-1";
+    e = LL.validate(d2, topics).errors;
+    assert.ok(has(e, /exactly two sides/));
+    assert.ok(has(e, /multiple-choice only/));
+    assert.ok(has(e, /duplicate item id ab-1/));
+    const d3 = fresh();
+    d3.contrasts[0].quiz.items.forEach(function (it) { it.correct = 0; });
+    assert.ok(has(LL.validate(d3, topics).warnings, /always in the same position/));
+  });
+  test("validate: trees — start, next links, result ids, why, next xor result, cycles, unreachable nodes", function () {
+    const d = fresh();
+    const n = d.trees[0].nodes;
+    n.start.options[0].next = "nowhere";
+    n.how.options[0].result = ["omega"];
+    n.how.options[1].why = "";
+    n.lost = { question: "Lost?", options: [{ label: "a", next: "lost" }, { label: "b", result: ["alpha"], why: "w" }] };
+    n.both = { question: "Both?", options: [{ label: "a", next: "start", result: ["alpha"], why: "w" }, { label: "b" }] };
+    const r = LL.validate(d, topics);
+    ["next node \"nowhere\" missing", "\"omega\" is not a card", "why required", "exactly one of next and result"].forEach(function (m) { assert.ok(has(r.errors, new RegExp(m)), m); });
+    assert.ok(has(r.warnings, /node lost cannot be reached/));
+    const d2 = fresh();
+    d2.trees[0].nodes.how.options[0] = { label: "loop", next: "start" };
+    assert.ok(has(LL.validate(d2, topics).errors, /cycle/));
+    const d3 = fresh();
+    d3.trees[0].start = "zzz";
+    assert.ok(has(LL.validate(d3, topics).errors, /start node "zzz" missing/));
+  });
+  test("targetTexts: names, formation, uses, signals, contrast examples, sides, tree answers and examples (for the charset check)", function () {
+    const t = LL.targetTexts(demo).map(function (x) { return x.text; });
+    ["Alpha", "alpha-ed", "We alpha-ed.", "then", "We beta-ed.", "alpha", "beta"].forEach(function (x) { assert.ok(t.indexOf(x) !== -1, x); });
+    assert.ok(t.indexOf("We did it once.") === -1, "English stays out");
+  });
+  test("timeline: label rows never overlap in one row and stay above the axis; compact geometry is narrower", function () {
+    const wide = TL.geometry(false), narrow = TL.geometry(true);
+    assert.ok(narrow.W < wide.W);
+    const labels = [{ x: 400, text: "a long label here" }, { x: 410, text: "another long one" }, { x: 420, text: "third" }, { x: 700, text: "far" }];
+    const r = TL.layoutLabels(labels, wide);
+    assert.strictEqual(r.rows, 3);
+    const byRow = {};
+    r.items.forEach(function (l) { (byRow[l.row] = byRow[l.row] || []).push(l); });
+    Object.keys(byRow).forEach(function (k) {
+      const row = byRow[k].sort(function (a, b) { return a.x - b.x; });
+      for (let i = 1; i < row.length; i++) {
+        const wa = row[i - 1].text.length * 7.6 + 14, wb = row[i].text.length * 7.6 + 14;
+        assert.ok(row[i].x - wb / 2 >= row[i - 1].x + wa / 2 - 0.001, "overlap in row " + k);
+      }
+    });
+    assert.ok(r.items.every(function (l) { return l.y < TL.AXIS_Y; }));
+    const edge = TL.layoutLabels([{ x: 0, text: "starts at the very left edge" }], narrow).items[0];
+    assert.ok(edge.x > 0);
+  });
+})();
+
 console.log("\nResult: " + passed + " ok, " + failures.length + " failed");
 
 

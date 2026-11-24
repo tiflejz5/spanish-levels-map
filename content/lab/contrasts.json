@@ -1,0 +1,213 @@
+{
+  "version": 1,
+  "note": "Contrast cards of the Tense & Mood Lab (spec 06 E7, spec 08 §4): two columns of rules with examples and a mini quiz of 4 multiple-choice items.",
+  "contrasts": [
+    {
+      "id": "ser-estar",
+      "level": "A1",
+      "summary": "Two verbs for “to be”: ser says what something is, estar says where it is and how it is right now.",
+      "sides": [
+        {
+          "name": "ser",
+          "nameEn": "what someone or something is",
+          "rules": [
+            {
+              "label": "Identity and jobs",
+              "text": "Who or what someone is, including their job.",
+              "examples": [
+                {
+                  "text": "Soy Marta y soy enfermera.",
+                  "en": "I'm Marta and I'm a nurse."
+                }
+              ]
+            },
+            {
+              "label": "Origin",
+              "text": "Where someone or something comes from.",
+              "examples": [
+                {
+                  "text": "Mis padres son de Bogotá.",
+                  "en": "My parents are from Bogotá."
+                }
+              ]
+            },
+            {
+              "label": "What it is like",
+              "text": "Lasting characteristics: personality, looks, size, color.",
+              "examples": [
+                {
+                  "text": "Tu hermano es muy simpático.",
+                  "en": "Your brother is very nice."
+                },
+                {
+                  "text": "La casa es grande y blanca.",
+                  "en": "The house is big and white."
+                }
+              ]
+            },
+            {
+              "label": "Events",
+              "text": "Where or when an event happens: a party, a class, a concert.",
+              "examples": [
+                {
+                  "text": "La fiesta es en casa de Ana.",
+                  "en": "The party is at Ana's place."
+                }
+              ]
+            },
+            {
+              "label": "Time and dates",
+              "text": "The time, the day and the date.",
+              "examples": [
+                {
+                  "text": "Hoy es lunes y son las cinco.",
+                  "en": "Today is Monday and it's five o'clock."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "estar",
+          "nameEn": "where it is and how it is now",
+          "rules": [
+            {
+              "label": "Location",
+              "text": "Where a person or a thing is, even when it never moves. (Where an event happens takes ser.)",
+              "examples": [
+                {
+                  "text": "El museo está en el centro.",
+                  "en": "The museum is downtown."
+                },
+                {
+                  "text": "Madrid está en el centro de España.",
+                  "en": "Madrid is in the center of Spain."
+                }
+              ]
+            },
+            {
+              "label": "Feelings and states",
+              "text": "How someone feels or what state something is in at the moment.",
+              "examples": [
+                {
+                  "text": "Estoy cansada porque trabajo mucho.",
+                  "en": "I'm tired because I work a lot."
+                },
+                {
+                  "text": "La ventana está abierta.",
+                  "en": "The window is open."
+                }
+              ]
+            },
+            {
+              "label": "bien and mal",
+              "text": "Asking and saying how someone is.",
+              "examples": [
+                {
+                  "text": "¿Cómo estás? —Estoy bien, gracias.",
+                  "en": "How are you? —I'm fine, thanks."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tip": "Ask yourself: am I saying what this is, or where it is and how it is right now? What it is → ser. Where it is, or how it is now → estar.",
+      "traps": [
+        "*Soy cansado → Estoy cansado. Feelings and states take estar.",
+        "*Está médico → Es médico. Jobs take ser.",
+        "*La farmacia es en esta calle → La farmacia está en esta calle. Location takes estar.",
+        "*Soy 20 años → Tengo 20 años. Age takes tener, not ser or estar."
+      ],
+      "topicIds": [
+        "a1-verbs-ser-vs-estar-basics",
+        "a1-verbs-estar-hay",
+        "a1-verbs-ser"
+      ],
+      "quiz": {
+        "items": [
+          {
+            "id": "lab-ser-estar-q1",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Mi madre ___ profesora de inglés.",
+            "options": [
+              "es",
+              "está",
+              "tiene",
+              "hay"
+            ],
+            "correct": 0,
+            "explanation": "A job says who someone is, so it takes ser: Mi madre es profesora.",
+            "optionNotes": [
+              null,
+              "Estar is not used for jobs.",
+              "Tener does not link a person to a job.",
+              "Hay means “there is” and does not describe a person."
+            ]
+          },
+          {
+            "id": "lab-ser-estar-q2",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "¿Dónde ___ las llaves? (Where are the keys?)",
+            "options": [
+              "son",
+              "están",
+              "es",
+              "está"
+            ],
+            "correct": 1,
+            "explanation": "Location takes estar, and las llaves is plural: ¿Dónde están las llaves?",
+            "optionNotes": [
+              "Location takes estar, not ser.",
+              null,
+              "Location takes estar, and las llaves is plural.",
+              "Estar is right, but las llaves is plural: están."
+            ]
+          },
+          {
+            "id": "lab-ser-estar-q3",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Ana no va a clase hoy porque ___ enferma.",
+            "options": [
+              "es",
+              "está",
+              "tiene",
+              "ser"
+            ],
+            "correct": 1,
+            "explanation": "Being ill is a state at the moment, so it takes estar: Ana está enferma.",
+            "optionNotes": [
+              "Ser would describe what Ana is like in general, which does not fit an illness today.",
+              null,
+              "Tener needs a noun: tiene fiebre.",
+              "Ser is the infinitive; the sentence needs a conjugated verb."
+            ]
+          },
+          {
+            "id": "lab-ser-estar-q4",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Choose the correct sentence.",
+            "options": [
+              "Estoy de Valencia, pero ahora soy en Lima.",
+              "Soy de Valencia, pero ahora soy en Lima.",
+              "Soy de Valencia, pero ahora estoy en Lima.",
+              "Estoy de Valencia, pero ahora estoy en Lima."
+            ],
+            "correct": 2,
+            "explanation": "Origin takes ser (soy de Valencia) and location takes estar (estoy en Lima).",
+            "optionNotes": [
+              "Both verbs are the wrong way round.",
+              "Soy de Valencia is right, but location takes estar: estoy en Lima.",
+              null,
+              "Estoy en Lima is right, but origin takes ser: soy de Valencia."
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -804,6 +804,201 @@ async function main() {
     await s.ctx.close();
   });
 
+  console.log("\nTense & Mood Lab (stage 6, spec 06 E7)");
+  const labSrc = (function () {
+    const read = function (f) { return JSON.parse(fs.readFileSync(path.join(ROOT, "content", "lab", f), "utf8")); };
+    const c = read("cards.json");
+    return { axes: c.axes, cards: c.cards, contrasts: read("contrasts.json").contrasts, trees: read("trees.json").trees };
+  })();
+  await test("map: the grid comes from the data axes (headers, row headers, one tile per card, empty cells say so); contrast cards and trees listed", async function () {
+    const s = await session(1280, 900, false);
+    await visit(s.page, "#/lab", 900);
+    const m = await s.page.evaluate(function () {
+      return {
+        cols: Array.prototype.map.call(document.querySelectorAll(".lab-grid thead th"), function (n) { return n.textContent; }),
+        rows: Array.prototype.map.call(document.querySelectorAll(".lab-grid tbody th"), function (n) { return n.textContent; }),
+        tiles: Array.prototype.map.call(document.querySelectorAll(".lab-grid a.lab-tile"), function (n) { return n.getAttribute("href"); }),
+        cells: document.querySelectorAll(".lab-grid td.lab-cell").length,
+        empty: document.querySelectorAll(".lab-grid .lab-tile.is-empty").length,
+        lang: document.querySelector(".lab-grid .lab-tile-name").getAttribute("lang") === LM.APP.targetLang,
+        other: Array.prototype.map.call(document.querySelectorAll(".lab-section .lab-forms a.lab-tile"), function (n) { return n.getAttribute("href"); })
+      };
+    });
+    ok(m.cols.join() === labSrc.axes.columns.map(function (c) { return c.label; }).join(), "columns " + m.cols);
+    ok(m.rows.join() === labSrc.axes.rows.map(function (r) { return r.label; }).join(), "rows " + m.rows);
+    ok(m.cells === labSrc.axes.columns.length * labSrc.axes.rows.length, "cells " + m.cells);
+    ok(m.tiles.length === labSrc.cards.length && labSrc.cards.every(function (c) { return m.tiles.indexOf("#/lab/" + c.id) !== -1; }), "tiles " + m.tiles);
+    ok(m.empty > 0 && m.lang, "empty cells / lang");
+    ok(labSrc.contrasts.every(function (k) { return m.other.indexOf("#/lab/contrast/" + k.id) !== -1; }) && labSrc.trees.every(function (t) { return m.other.indexOf("#/lab/pick/" + t.id) !== -1; }), "contrasts / trees " + m.other);
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+  await test("map renders in under 500 ms on a warm cache (in-app navigation, data/lab.js from the HTTP cache)", async function () {
+    const s = await session(1280, 900, true);
+    await visit(s.page, "#/lab", 900); // the first visit fills the HTTP cache
+    const times = [];
+    for (let i = 0; i < 3; i++) {
+      await visit(s.page, "#/", 900); // a fresh page: LM.LAB is not in memory, the files are cached
+      times.push(await s.page.evaluate(function () {
+        return new Promise(function (done) {
+          const t0 = performance.now();
+          location.hash = "#/lab";
+          (function wait() { if (document.querySelector(".lab-grid a.lab-tile")) done(performance.now() - t0); else requestAnimationFrame(wait); })();
+        });
+      }));
+    }
+    times.sort(function (a, b) { return a - b; });
+    ok(times[1] < 500, "median " + Math.round(times[1]) + " ms (" + times.map(Math.round).join(", ") + ")");
+    await s.page.reload();
+    await s.page.waitForSelector(".lab-grid a.lab-tile");
+    const boot = await s.page.evaluate(function () { return performance.now(); });
+    console.log("       #/lab map: " + times.map(Math.round).join(" / ") + " ms after navigation; full page reload on #/lab: " + Math.round(boot) + " ms");
+    await s.ctx.close();
+  });
+  await test("card: formation rows from the data, timeline role=img with its description as text, scene chips switch the scene, listen buttons, notes button", async function () {
+    const s = await session(1280, 900, true);
+    const c = labSrc.cards.find(function (x) { return x.scenes.length > 1; });
+    await visit(s.page, "#/lab/" + c.id, 900);
+    const d = await s.page.evaluate(function () {
+      const svg = document.querySelector(".tl-svg");
+      return {
+        rows: document.querySelectorAll(".lab-formation tbody tr").length,
+        role: svg.getAttribute("role"), label: svg.getAttribute("aria-label"), caption: document.querySelector(".tl-caption").textContent,
+        chips: document.querySelectorAll(".tl-scenes .chip-btn").length, pressed: document.querySelector(".tl-scenes .chip-btn[aria-pressed=true]").textContent,
+        listen: document.querySelectorAll(".lab-uses .listen-btn").length, notes: !!document.querySelector("[data-note-key='lab:" + location.hash.split("/").pop() + "']"),
+        current: document.querySelector(".lab-tab[aria-current=page]").textContent
+      };
+    });
+    ok(d.rows === c.formation.length, "formation rows " + d.rows);
+    ok(d.role === "img" && d.label.indexOf(c.scenes[0].description) !== -1 && d.caption.indexOf(c.scenes[0].description) !== -1, "timeline a11y");
+    ok(d.chips === c.scenes.length && d.pressed === c.scenes[0].label, "chips");
+    ok(d.listen === c.uses.length, "listen buttons " + d.listen);
+    ok(d.notes, "notes button");
+    ok(d.current === "Card", "tab " + d.current);
+    await s.page.click(".tl-scenes .chip-btn >> nth=1");
+    const after = await s.page.evaluate(function () { return [document.querySelector(".tl-caption").textContent, document.activeElement.getAttribute("aria-pressed")]; });
+    ok(after[0].indexOf(c.scenes[1].description) !== -1 && after[1] === "true", "scene switch: " + after.join(" | "));
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+  await test("contrast card: two sides, examples with listen buttons, Common mistakes; the mini quiz runs 4 items in the engine and comes back", async function () {
+    const s = await session(1280, 900, true);
+    const k = labSrc.contrasts[0];
+    await visit(s.page, "#/lab/contrast/" + k.id, 900);
+    const d = await s.page.evaluate(function () {
+      return { sides: Array.prototype.map.call(document.querySelectorAll(".lab-side-title > span[lang]"), function (n) { return n.textContent; }),
+        ex: document.querySelectorAll(".lab-rule-ex .listen-btn").length, traps: document.querySelectorAll(".lab-traps li").length,
+        current: document.querySelector(".lab-tab[aria-current=page]").textContent };
+    });
+    ok(d.sides.join() === k.sides.map(function (x) { return x.name; }).join(), "sides " + d.sides);
+    const nEx = [].concat.apply([], k.sides.map(function (x) { return x.rules; })).reduce(function (n, r) { return n + r.examples.length; }, 0);
+    ok(d.ex === nEx, "listen " + d.ex + " / " + nEx);
+    ok(d.traps === k.traps.length && d.current === "Contrasts", "traps / tab");
+    await s.page.click(".lab-quiz .btn-primary");
+    await s.page.waitForTimeout(500);
+    ok(await s.page.evaluate(function () { return location.hash; }) === "#/practice/session", "quiz route");
+    for (let i = 0; i < 4; i++) {
+      await s.page.waitForSelector(".ex-option");
+      const r = await s.page.evaluate(function () {
+        const it = LM.exercises.currentItem();
+        const opts = [].slice.call(document.querySelectorAll(".ex-option .ex-option-text")).map(function (b) { return b.innerText.trim(); });
+        return { id: it.id, idx: opts.indexOf(it.options[it.correct].trim()) };
+      });
+      ok(r.id === k.quiz.items[i].id, "item " + (i + 1) + ": " + r.id);
+      await s.page.locator(".ex-option").nth(r.idx).click();
+      await s.page.click(".ex-check");
+      await s.page.click(".ex-next");
+      await s.page.waitForTimeout(200);
+    }
+    const t = await viewText(s.page);
+    ok(/4\s*\/\s*4|4 of 4|100/.test(t), "result screen: " + t.slice(0, 160));
+    ok(await s.page.locator('#view a[href="#/lab/contrast/' + k.id + '"]').count() > 0, "a way back to the contrast card");
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+  await test("decide: the tree walks to a result (answer in the target language, example, linked card), Back and Start over work, focus moves to the new question", async function () {
+    const s = await session(1280, 900, false);
+    const t = labSrc.trees[0];
+    await visit(s.page, "#/lab/pick", 900);
+    ok((await s.page.innerText(".lab-question")) === t.nodes[t.start].question, "first question");
+    const deep = t.nodes[t.start].options.findIndex(function (o) { return o.next; });
+    await s.page.click(".lab-answer >> nth=" + deep);
+    await s.page.waitForTimeout(100);
+    ok(await s.page.evaluate(function () { return document.activeElement.id; }) === "lab-q", "focus on the new question");
+    const node = t.nodes[t.nodes[t.start].options[deep].next];
+    ok((await s.page.innerText(".lab-question")) === node.question, "second question");
+    await s.page.click(".lab-answer >> nth=0");
+    await s.page.waitForTimeout(100);
+    const r = await s.page.evaluate(function () {
+      return { word: (document.querySelector(".lab-answer-word") || {}).textContent, lang: document.querySelector(".lab-answer-word").getAttribute("lang") === LM.APP.targetLang,
+        ex: document.querySelector(".lab-result-ex .lab-say span").textContent, links: document.querySelectorAll(".lab-results .btn").length,
+        path: document.querySelectorAll(".lab-path li").length, focus: document.activeElement.classList.contains("lab-result-title") };
+    });
+    const o = node.options[0];
+    ok(r.word === o.answer && r.lang, "answer " + r.word);
+    ok(r.ex === o.example.text && r.links === o.result.length && r.path === 3 && r.focus, "result details " + JSON.stringify(r));
+    await s.page.click("text=Back");
+    ok((await s.page.innerText(".lab-question")) === node.question, "Back");
+    await s.page.click("text=Start over");
+    ok((await s.page.innerText(".lab-question")) === t.nodes[t.start].question, "Start over");
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+  await test("compare: two cards side by side with compact timelines; the selects change the address; the rule written for the pair is listed", async function () {
+    const s = await session(1280, 900, false);
+    const a = labSrc.cards.find(function (c) { return (c.contrasts || []).some(function (k) { return labSrc.cards.some(function (x) { return x.id === k.with; }); }); });
+    const b = a.contrasts.find(function (k) { return labSrc.cards.some(function (x) { return x.id === k.with; }); }).with;
+    await visit(s.page, "#/lab/compare/" + a.id + "/" + b, 900);
+    const d = await s.page.evaluate(function () {
+      return { cols: document.querySelectorAll(".lab-compare-col").length, compact: document.querySelectorAll(".lab-compare .tl-svg.is-compact").length,
+        rules: document.querySelectorAll(".lab-diff tbody tr").length, a: document.getElementById("lab-a").value, b: document.getElementById("lab-b").value };
+    });
+    ok(d.cols === 2 && d.compact === 2 && d.rules >= 1 && d.a === a.id && d.b === b, JSON.stringify(d));
+    const third = labSrc.cards.find(function (c) { return c.id !== a.id && c.id !== b; });
+    await s.page.selectOption("#lab-b", third.id);
+    await s.page.waitForTimeout(300);
+    ok(await s.page.evaluate(function () { return location.hash; }) === "#/lab/compare/" + a.id + "/" + third.id, "select → address");
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+  await test("search finds lab cards, contrast cards and trees; a topic page's practice section links to its Lab entry", async function () {
+    const s = await session(1280, 900, true);
+    await visit(s.page, "#/", 700);
+    const hits = await s.page.evaluate(function () {
+      return LM.loadModule("data/search-index.js").then(function () {
+        return LM.SEARCH_INDEX.records.filter(function (r) { return r.group === "lab"; }).map(function (r) { return r.route; });
+      });
+    });
+    labSrc.cards.forEach(function (c) { ok(hits.indexOf("#/lab/" + c.id) !== -1, "search: card " + c.id); });
+    labSrc.contrasts.forEach(function (k) { ok(hits.indexOf("#/lab/contrast/" + k.id) !== -1, "search: contrast " + k.id); });
+    labSrc.trees.forEach(function (t) { ok(hits.indexOf("#/lab/pick/" + t.id) !== -1, "search: tree " + t.id); });
+    await s.page.keyboard.press("/");
+    await s.page.keyboard.type(labSrc.contrasts[0].sides[1].name);
+    await s.page.waitForTimeout(400);
+    ok(await s.page.locator('#search-list [href="#/lab/contrast/' + labSrc.contrasts[0].id + '"], #search-list [data-route="#/lab/contrast/' + labSrc.contrasts[0].id + '"]').count() > 0
+      || /Contrast card/.test(await s.page.innerText("#search-list")), "search panel shows the contrast card");
+    await s.ctx.close();
+  });
+  await test("lab on a phone (390 and 320 px): the grid becomes blocks with column labels, no horizontal scroll on every lab view", async function () {
+    const s = await session(320, 740, true);
+    const routes = ["#/lab", "#/lab/" + labSrc.cards[0].id, "#/lab/contrasts", "#/lab/contrast/" + labSrc.contrasts[0].id, "#/lab/pick", "#/lab/compare"];
+    const bad = [];
+    for (const r of routes) {
+      await visit(s.page, r, 700);
+      const d = await s.page.evaluate(function () { return [document.documentElement.scrollWidth, document.documentElement.clientWidth]; });
+      if (d[0] > d[1]) bad.push(r + " (" + d[0] + ">" + d[1] + ")");
+    }
+    ok(!bad.length, "horizontal scroll: " + bad.join("; "));
+    await visit(s.page, "#/lab", 700);
+    const g = await s.page.evaluate(function () {
+      const td = document.querySelector(".lab-grid td.lab-cell");
+      return { display: getComputedStyle(td).display, label: getComputedStyle(td, "::before").content, head: getComputedStyle(document.querySelector(".lab-grid thead")).display };
+    });
+    ok(g.display === "block" && g.head === "none" && g.label.length > 2, JSON.stringify(g));
+    ok(!s.page.errs.length, "JS errors: " + s.page.errs[0]);
+    await s.ctx.close();
+  });
+
   await browser.close();
   server.close();
   console.log("\nE2E: " + passed + " ok, " + failures.length + " failed");
