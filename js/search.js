@@ -59,7 +59,7 @@ window.LM = window.LM || {};
   function saveRecent(q) {
     q = String(q || "").trim().slice(0, 80);
     if (q.length < 2) return;
-    const items = [q].concat(recent().filter(function (x) { return x.toLocaleLowerCase("pl") !== q.toLocaleLowerCase("pl"); })).slice(0, 5);
+    const items = [q].concat(recent().filter(function (x) { return x.toLowerCase() !== q.toLowerCase(); })).slice(0, 5);
     try { localStorage.setItem(recentKey(), JSON.stringify({ version: 1, items: items })); } catch (e) { /* no access — nothing to do */ }
   }
 

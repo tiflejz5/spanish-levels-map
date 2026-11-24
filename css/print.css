@@ -8,7 +8,7 @@
  * Cheat sheet layout (two columns, a header with the level code): section "CHEAT SHEET" at the end of the file.
  */
 
-@page { size: A4; margin: 12mm; }
+@page { size: auto; margin: 12mm; } /* the paper size comes from the print dialog: A4 and US Letter both fit (spec 11 §5) */
 
 @media print {
   .page-toc { display: none !important; }
@@ -21,8 +21,8 @@
   /* Interface we do not print */
   .sidebar, .topbar, .banners, .nav-overlay, .toast-region, dialog, .fc-sel-menu, .fw-tip,
   .page-head, .page-foot, .c1-page-tools, .known-check, .notes-btn, .notes-panel,
-  .ex-topic, .page-nav, .level-final-card,
-  .btn, button, .md-answers-toggle, .no-print, .cheatsheet-tools, #menu-btn {
+  .ex-topic,
+  .btn, button, .md-answers-toggle, .cheatsheet-tools, #menu-btn {
     display: none !important;
   }
 
@@ -80,7 +80,7 @@
   .cheatsheet.md .md-table, .cheatsheet.md .md-table-wrap { margin: 0 0 3pt; }
   .cheatsheet.md table { font-size: 9.5pt; width: 100% !important; table-layout: auto; break-inside: avoid; }
   .cheatsheet.md th, .cheatsheet.md td { padding: 1pt 3pt !important; }
-  .cheatsheet.md .wiki-link, .cheatsheet.md .md-wiki, .cheatsheet.md a.chip { display: none !important; }
+  .cheatsheet.md .wiki-link, .cheatsheet.md a.chip { display: none !important; }
   .cheatsheet-view .view, .cheatsheet-view { padding: 0 !important; }
 }
 

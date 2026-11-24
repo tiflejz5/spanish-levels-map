@@ -44,10 +44,6 @@ window.LM = window.LM || {};
     return new Date(Number(day.slice(0, 4)), Number(day.slice(5, 7)) - 1, Number(day.slice(8, 10)), 12);
   }
 
-  /** A number that counts up from zero on entry (js/motion.js reads data-count). */
-  function bigNumber(value, cls) {
-    return el("span", { class: "num today-number" + (cls ? " " + cls : ""), "data-count": String(value), text: String(value) });
-  }
 
   function tile(cls, label, children) {
     return el("section", { class: "card bento-tile " + cls, "aria-label": label }, children);
@@ -79,10 +75,6 @@ window.LM = window.LM || {};
     let last = 0;
     stats.forEach(function (s, k) { if (!s.soon) last = k; });
     return last;
-  }
-
-  function levelName(id) {
-    return LM.syl.landName(id);
   }
 
   /** Next unticked topic of a level (its page when it exists). */
@@ -380,7 +372,6 @@ window.LM = window.LM || {};
     const list = el("ol", { class: "trail-stations" });
     stats.forEach(function (s, i) {
       const pt = g.pts[i];
-      const name = levelName(s.id);
       const here = i === cur;
       const passed = LM.final ? LM.final.passedText(s.id) : null; // "A1 passed Nov 12, 2026" (final test)
       list.appendChild(el("li", {
@@ -389,7 +380,7 @@ window.LM = window.LM || {};
       }, el("a", {
         class: "trail-link",
         href: LM.app.levelHash(s.id),
-        "aria-label": "Level " + s.id + (name ? ", " + name : "") + ": " + (s.soon ? "coming soon" : s.skipped ? "skipped by the placement test" : s.percent + (s.trail ? "% of the trail stops" : "% of the topics known")) + (here ? " – you are here" : "") + (passed ? ". " + passed : "")
+        "aria-label": LM.ui.landLabel(s.id) + ": " + (s.soon ? "coming soon" : s.skipped ? "skipped by the placement test" : s.percent + (s.trail ? "% of the trail stops" : "% of the topics known")) + (here ? " – you are here" : "") + (passed ? ". " + passed : "")
       }, [
         el("span", { class: "trail-ring" }, [
           LM.ui.progressRing(s.skipped ? 100 : s.percent, { size: 56, stroke: 5, node: LM.ui.landIcon(s.id, { size: 26 }) }),

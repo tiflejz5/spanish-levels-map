@@ -517,7 +517,7 @@ window.LM = window.LM || {};
 
   /** Answer comparison for finding duplicates (case and spaces do not matter). */
   function sameAnswer(a, b) {
-    const n = function (s) { return String(s || "").toLocaleLowerCase("pl").replace(/\s+/g, " ").trim(); };
+    const n = function (s) { return String(s || "").toLowerCase().replace(/\s+/g, " ").trim(); };
     return n(a) === n(b);
   }
 

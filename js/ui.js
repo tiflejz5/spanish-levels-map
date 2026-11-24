@@ -204,24 +204,39 @@ window.LM = window.LM || {};
   }
 
   /** The mark alone (40 × 40). */
+  let logoSeq = 0;
+
+  /** The map mark: circle, dotted trail and needle in the level gradient (A1 → C2, tokens --lvl-a1 … --lvl-c2). */
   function logoMark(size) {
+    const gid = "logo-grad-" + (++logoSeq);
     const svg = svgEl("svg", { class: "logo-mark", width: size || 34, height: size || 34, viewBox: "0 0 40 40", "aria-hidden": "true", focusable: "false" });
+    const grad = svgEl("linearGradient", { id: gid, x1: 4, y1: 36, x2: 36, y2: 4, gradientUnits: "userSpaceOnUse" });
+    ["a1", "a2", "b1", "b2", "c1", "c2"].forEach(function (l, i) {
+      grad.appendChild(svgEl("stop", { offset: i / 5, style: "stop-color: var(--lvl-" + l + ")" }));
+    });
+    const defs = svgEl("defs", {});
+    defs.appendChild(grad);
+    svg.appendChild(defs);
+    const paint = "url(#" + gid + ")";
     // Circle (edge of the map) and a dotted trail from A1 (bottom left) to C2 (top right)
-    svg.appendChild(svgEl("circle", { cx: 20, cy: 20, r: 17, fill: "none", stroke: "currentColor", "stroke-width": 2.2 }));
+    svg.appendChild(svgEl("circle", { cx: 20, cy: 20, r: 17, fill: "none", stroke: paint, "stroke-width": 2.2 }));
     svg.appendChild(svgEl("path", {
       d: "M9.5 28.5c4-1.5 3.5-6.5 8-7.5s6.5 1.5 9.5-2.5 2.5-6 3.5-7.5",
       fill: "none", stroke: "currentColor", "stroke-width": 2.2, "stroke-linecap": "round", "stroke-dasharray": "0.1 4.2"
     }));
     // Compass needle (north in the gradient, south in the line colour)
     const needle = svgEl("g", { transform: "rotate(40 20 20)" });
-    needle.appendChild(svgEl("path", { d: "M20 8.5 23.2 20h-6.4z", fill: "currentColor" }));
+    needle.appendChild(svgEl("path", { d: "M20 8.5 23.2 20h-6.4z", fill: paint }));
     needle.appendChild(svgEl("path", { d: "M20 31.5 16.8 20h6.4z", class: "logo-needle-s" }));
     svg.appendChild(needle);
     svg.appendChild(svgEl("circle", { cx: 20, cy: 20, r: 2.1, class: "logo-pin" }));
     return svg;
   }
 
-  /** Mark + app name (display font). */
+  /**
+   * Mark + wordmark (display font, spec 11 §1): the language name in the accent, the rest in ink
+   * ("Spanish" + " Levels Map"). The split comes from LM.APP.language, so another app keeps it.
+   */
   function logo(opts) {
     opts = opts || {};
     const wrap = document.createElement("span");
@@ -229,7 +244,14 @@ window.LM = window.LM || {};
     wrap.appendChild(logoMark(opts.size));
     const word = document.createElement("span");
     word.className = "logo-word";
-    word.textContent = LM.APP.appTitle;
+    const title = LM.APP.appTitle, lang = LM.APP.language || "";
+    if (lang && title.indexOf(lang) === 0) {
+      const accent = document.createElement("span");
+      accent.className = "logo-word-accent";
+      accent.textContent = lang;
+      word.appendChild(accent);
+      word.appendChild(document.createTextNode(title.slice(lang.length)));
+    } else word.textContent = title;
     wrap.appendChild(word);
     return wrap;
   }
@@ -354,6 +376,7 @@ window.LM = window.LM || {};
     (root || document).querySelectorAll("[data-logo]").forEach(function (node) {
       node.removeAttribute("data-logo");
       node.replaceChildren(logo());
+      if (node.hasAttribute("aria-label")) node.setAttribute("aria-label", LM.APP.appTitle + " – home"); // the static label in index.html is a fallback
     });
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", function () { hydrate(); });

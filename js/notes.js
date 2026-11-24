@@ -169,7 +169,7 @@ window.LM = window.LM || {};
     const count = el("p", { class: "journal-count", "aria-live": "polite" });
     function paint() {
       const q = filter.query.trim();
-      const fold = LM.searchLogic ? LM.searchLogic.fold : function (s) { return String(s).toLocaleLowerCase("pl"); };
+      const fold = LM.searchLogic ? LM.searchLogic.fold : function (s) { return String(s).toLowerCase(); };
       const shown = all.filter(function (n) { return !q || fold(n.title + " " + n.text).indexOf(fold(q)) !== -1; });
       count.textContent = "Notes: " + shown.length + " of " + all.length;
       listBox.replaceChildren();

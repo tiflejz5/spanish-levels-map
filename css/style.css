@@ -81,14 +81,14 @@
   --track-mix: #ddd3bd;
 
   /* Accent (links, focus, highlights) and the primary button in ink color */
-  --accent: #2c55c4;
-  --accent-bg: #1d2433;       /* fill of the primary button */
-  --accent-hover: #2d374d;
-  --accent-soft: rgba(44, 85, 196, 0.1);
+  --accent: #7e3a0c;          /* terracotta (spec 11 §2): links, primary buttons, focus, wordmark */
+  --accent-bg: #7e3a0c;       /* fill of the primary button = the accent */
+  --accent-hover: #5e2b08;
+  --accent-soft: rgba(126, 58, 12, 0.1);
   --on-accent: #fffdf9;       /* text on accent, success and error fills */
   --info-bg: #eef2fb;
   --info-border: #cfd9f1;
-  --selection: rgba(44, 85, 196, 0.2);
+  --selection: rgba(126, 58, 12, 0.18);
 
   /* States (reserved — do not use as level colors) */
   --success: #1c6e3d;
@@ -116,8 +116,8 @@
   --shadow: 0 1px 2px rgba(60, 44, 18, 0.05), 0 4px 10px rgba(60, 44, 18, 0.05), 0 12px 24px -12px rgba(60, 44, 18, 0.1);
   --shadow-hover: 0 2px 4px rgba(60, 44, 18, 0.06), 0 10px 22px rgba(60, 44, 18, 0.08), 0 22px 40px -18px rgba(60, 44, 18, 0.16);
   --shadow-lg: 0 4px 10px rgba(29, 36, 51, 0.08), 0 24px 60px rgba(29, 36, 51, 0.2);
-  --focus-ring: 0 0 0 3px rgba(44, 85, 196, 0.35);
-  --focus-color: #2c55c4;
+  --focus-ring: 0 0 0 3px rgba(126, 58, 12, 0.4);
+  --focus-color: #7e3a0c;
 
   /* Legacy exam accent: navy and gold */
   --c1-navy: #1b2647;
@@ -173,14 +173,14 @@
   --hairline: rgba(234, 240, 250, 0.08);
   --track-mix: #2b3757;
 
-  --accent: #8db0ff;
-  --accent-bg: #eaf0fa;
-  --accent-hover: #ffffff;
-  --accent-soft: rgba(141, 176, 255, 0.14);
+  --accent: #f6ae84;
+  --accent-bg: #f6ae84;
+  --accent-hover: #fbd0b5;
+  --accent-soft: rgba(246, 174, 132, 0.14);
   --on-accent: #0e1526;
   --info-bg: rgba(141, 176, 255, 0.08);
   --info-border: rgba(141, 176, 255, 0.3);
-  --selection: rgba(141, 176, 255, 0.3);
+  --selection: rgba(246, 174, 132, 0.3);
 
   --success: #6fd796;
   --success-fill: #2fa35d;
@@ -207,8 +207,8 @@
   --shadow: 0 1px 2px rgba(2, 6, 16, 0.5), 0 8px 22px rgba(2, 6, 16, 0.35), 0 0 0 1px rgba(234, 240, 250, 0.03);
   --shadow-hover: 0 2px 6px rgba(2, 6, 16, 0.55), 0 14px 32px rgba(2, 6, 16, 0.45), 0 0 0 1px rgba(234, 240, 250, 0.08);
   --shadow-lg: 0 10px 30px rgba(2, 6, 16, 0.6), 0 30px 70px rgba(2, 6, 16, 0.55);
-  --focus-ring: 0 0 0 3px rgba(141, 176, 255, 0.5);
-  --focus-color: #8db0ff;
+  --focus-ring: 0 0 0 3px rgba(246, 174, 132, 0.55);
+  --focus-color: #f6ae84;
 
   --c1-navy: #0a1124;
   --c1-gold: #e9c25c;
@@ -403,7 +403,6 @@ button, input, textarea, select { font: inherit; color: inherit; }
 .btn:active:not(:disabled) { transform: scale(0.98); }
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 a.btn { text-decoration: none; }
-.btn-block { width: 100%; }
 
 .btn-primary { background: var(--accent-bg); color: var(--on-accent); box-shadow: var(--shadow-sm); }
 .btn-primary:hover:not(:disabled) { background: var(--accent-hover); box-shadow: var(--shadow); }
@@ -411,9 +410,9 @@ a.btn { text-decoration: none; }
 .btn-secondary { background: transparent; border-color: var(--line-strong); color: var(--ink); }
 .btn-secondary:hover:not(:disabled) { background: var(--surface-raised); border-color: var(--line-control); box-shadow: var(--shadow-sm); }
 
-.btn-link, .btn-ghost { background: transparent; color: var(--accent); text-decoration: none; }
-.btn-link:hover:not(:disabled), .btn-ghost:hover:not(:disabled),
-.btn-link:focus-visible, .btn-ghost:focus-visible { background: transparent; text-decoration: underline; text-underline-offset: 3px; }
+.btn-link { background: transparent; color: var(--accent); text-decoration: none; }
+.btn-link:hover:not(:disabled),
+.btn-link:focus-visible { background: transparent; text-decoration: underline; text-underline-offset: 3px; }
 
 .btn-danger { background: var(--surface); border-color: var(--danger-border); color: var(--danger); }
 .btn-danger:hover:not(:disabled) { background: var(--danger-soft); }
@@ -461,7 +460,6 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .field-label { display: block; font-size: var(--fs-xs); font-weight: 600; color: var(--ink-muted); margin-bottom: 4px; }
 
 /* ===================== LEVEL HEADER ===================== */
-.level-header { margin-bottom: 28px; }
 
 .level-title {
   display: flex;
@@ -484,13 +482,7 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 }
 
 /* ===================== CATEGORIES (segmented control) ===================== */
-.category-bar {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 28px;
-}
+
 .segmented {
   display: inline-flex;
   flex-wrap: wrap;
@@ -806,18 +798,10 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .crumb:focus-visible,
 .c1-back a:hover { text-decoration: underline; text-underline-offset: 3px; }
 
-.page-crumb {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--fs-sm);
-  font-weight: 500;
-  color: var(--ink-muted);
-}
 .page-head .known-check { margin-left: auto; }
 .known-check-lg { padding: 6px 16px 6px 8px; font-size: var(--fs-sm-plus); }
 .known-check-lg input { width: 24px; height: 24px; }
-.page-edit-hint { margin-bottom: 20px; }
+
 .page-foot { margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--line); }
 
 /* Markdown content */
@@ -1038,8 +1022,6 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 .c1-part.is-ok { background: var(--success-soft); color: var(--success); }
 .c1-part.is-bad { background: var(--danger-soft); color: var(--danger); }
 
-.c1-gap { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
-
 /* ===================== TIMER ===================== */
 .c1-timer { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 8px 12px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
 .c1-timer-label { font-size: var(--fs-xs-plus); color: var(--ink-muted); }
@@ -1066,9 +1048,6 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
 
 /* ===================== TRENER SPEAKING ===================== */
 
-.c1-speak { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
-.c1-speak > .card { width: 100%; margin: 0; }
-
 .c1-rec-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .c1-rec-hint { font-size: var(--fs-xs-plus); color: var(--ink-muted); flex: 1; min-width: 200px; }
 .c1-rec-status { margin-top: 10px; font-size: var(--fs-sm); }
@@ -1081,9 +1060,7 @@ textarea.field { resize: vertical; min-height: 44px; overflow: hidden; }
   .c1-writing-bar { top: var(--topbar-h-compact); }
 }
 @media (max-width: 760px) {
-
   .c1-writing-area { min-height: 320px; }
-
 }
 
 /* ===================== WELCOME SCREEN (no profiles) ===================== */
@@ -1203,7 +1180,6 @@ html.theme-anim *::after {
   .task-item label { min-height: 44px; align-items: center; }
   .task-item input { margin-top: 0; }
   /* Gap fields in exercises: also 44 px on touch screens */
-
 }
 
 /* ===================== REDUCED MOTION ===================== */
@@ -1251,7 +1227,7 @@ textarea.field { overflow: auto; }
 .journal-status.is-due { color: var(--accent); }
 .journal-status.is-mastered { color: var(--success); }
 .journal-source { font-size: var(--fs-xs-plus); color: var(--ink-muted); }
-.journal-context, .review-context { white-space: pre-wrap; font-size: var(--fs-md); line-height: 1.55; margin-bottom: 10px; overflow-wrap: anywhere; }
+.journal-context { white-space: pre-wrap; font-size: var(--fs-md); line-height: 1.55; margin-bottom: 10px; overflow-wrap: anywhere; }
 .journal-answers { margin: 0 0 12px; display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-sm-plus); }
 .journal-row { display: flex; flex-wrap: wrap; gap: 4px 10px; margin: 0; }
 .journal-row dt { min-width: 120px; color: var(--ink-muted); font-weight: 600; font-size: var(--fs-xs-plus); padding-top: 2px; }
@@ -1261,21 +1237,12 @@ textarea.field { overflow: auto; }
 .journal-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 
 /* Review session */
-.review-progress { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
-.review-progress .progress { flex: 1; }
-.review-card { padding: 28px 32px; }
-.review-context { font-size: var(--fs-xl); }
-.review-answer { margin: 6px 0 20px; padding: 14px 18px; border-radius: var(--radius); background: var(--surface-2); animation: view-in var(--dur-base) var(--ease-out); }
-.review-answer p { margin: 0 0 6px; }
-.review-answer p:last-child { margin-bottom: 0; }
+
 .review-label { color: var(--ink-muted); font-size: var(--fs-sm); }
-.journal-rule { white-space: pre-wrap; color: var(--ink); }
-.review-summary h2 { margin-bottom: 10px; }
-.review-summary p { margin-bottom: 10px; }
 
 @media (max-width: 760px) {
   .form-row { grid-template-columns: 1fr; }
-  .journal-entry, .review-card { padding: 18px 16px; }
+  .journal-entry { padding: 18px 16px; }
   .journal-row dt { min-width: 0; width: 100%; }
 }
 
@@ -1287,50 +1254,28 @@ textarea.field { overflow: auto; }
   margin-top: var(--space-2);
 }
 .bento-tile { margin: 0; padding: 22px 24px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.bento-hero { grid-column: span 8; }
-.bento-reviews { grid-column: span 4; }
+
 .bento-tip { grid-column: span 12; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; border-color: var(--info-border); background: var(--info-bg); }
-.bento-trail { grid-column: span 12; }
-.bento-streak { grid-column: span 5; }
+
 .bento-shortcuts { grid-column: span 12; }
 .bento-exam { grid-column: span 6; }
-.bento.has-exam .bento-streak { grid-column: span 6; }
+
 /* With an exam: streak | exam | add a mistake, and "Continue" in a separate wide row */
 
 .tile-title { font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 620; letter-spacing: -0.01em; margin: 0; }
-.tile-big { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 10px; margin: 0; }
+
 .today-number { font-family: var(--font-display); font-size: var(--fs-3xl); font-weight: 640; letter-spacing: -0.03em; line-height: 1; color: var(--ink); }
-.tile-unit { font-size: var(--fs-sm-plus); color: var(--ink-muted); font-weight: 500; }
-.tile-action { align-self: flex-start; margin-top: auto; }
 
 /* Hero: greeting, suggestion, the "Your map" ring; contour background only here */
-.bento-hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-5);
-  padding: 28px 32px;
-  background: linear-gradient(135deg, var(--surface) 40%, var(--surface-2));
-}
+
 .hero-text { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .today-date { font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); margin: 0; }
 .today-date::first-letter { text-transform: uppercase; }
 .hero-title { font-size: var(--fs-2xl); font-weight: 640; line-height: var(--lh-tight); margin: 0; }
-.hero-nudge { max-width: 52ch; font-size: var(--fs-md); color: var(--ink); margin: 0; }
-.hero-cta { display: flex; width: fit-content; align-items: center; gap: 4px; margin-top: 6px; color: var(--accent); font-weight: 600; text-decoration: none; white-space: nowrap; }
-.hero-cta:hover { text-decoration: underline; }
-.hero-cta .icon { transition: transform var(--dur-fast) var(--ease-out); }
-.hero-cta:hover .icon { transform: translateX(3px); }
+
 .hero-ring { display: flex; flex-direction: column; align-items: center; gap: 8px; flex-shrink: 0; }
-.hero-ring-label { display: flex; flex-direction: column; align-items: center; margin: 0; font-size: var(--fs-sm); color: var(--ink-muted); }
-.hero-ring-label strong { font-family: var(--font-display); font-size: var(--fs-md); font-weight: 620; color: var(--ink); }
 
 /* Reviews: zero state with a compass */
-.tile-empty { display: flex; align-items: center; gap: 14px; margin-top: auto; }
-.tile-empty-title { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 620; margin: 0 0 2px; }
 
 /* Streak: flame and week */
 .streak-row { display: flex; align-items: center; gap: 12px; }
@@ -1340,24 +1285,15 @@ textarea.field { overflow: auto; }
 .week-dot { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; border: 2px solid var(--line-control); color: var(--on-accent); transition: transform var(--transition); }
 .week-day.is-active .week-dot { background: var(--success-fill); border-color: var(--success-fill); }
 .week-day.is-today .week-dot { box-shadow: 0 0 0 3px var(--surface), 0 0 0 5px var(--accent); }
-.week-label { font-size: var(--fs-xs); color: var(--ink-muted); }
-.week-day.is-today .week-label { color: var(--ink); font-weight: 600; }
 
 /* Exam: the exam accent colors */
 
 /* Kontynuuj */
-.today-continue {
-  display: flex; align-items: center; gap: 12px; width: 100%;
-  min-height: 52px; padding: 10px 14px; border: 1px solid var(--line); border-radius: var(--radius);
-  background: var(--surface-2); color: var(--ink); font-weight: 600; text-decoration: none;
-  transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
-}
-.today-continue:hover { border-color: var(--line-control); background: var(--surface-raised); }
 
 .today-tip-body { display: flex; flex-direction: column; gap: 4px; }
 
 /* Trail A1 → C2: SVG + stations (links) above it */
-.trail-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+
 .trail-stage { position: relative; width: 100%; aspect-ratio: var(--trail-ratio, 1000 / 280); margin-top: 4px; }
 .trail-stage.is-vertical { aspect-ratio: auto; }
 .trail-svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
@@ -1393,21 +1329,18 @@ textarea.field { overflow: auto; }
 /* Tablet: 6 kolumn */
 @media (max-width: 1023px) {
   .bento { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .bento-hero, .bento-reviews { grid-column: span 6; }
-  .bento-streak { grid-column: span 3; }
+
   .bento-exam { grid-column: span 3; }
-  .bento-reviews { flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-  .bento-reviews .tile-title { flex-basis: 100%; }
-  .bento-reviews .tile-action, .bento-reviews .tile-empty { margin-top: 0; }
-  .bento-trail, .bento-shortcuts { grid-column: span 6; }
+
+  .bento-shortcuts { grid-column: span 6; }
 }
 /* Telefon: jedna kolumna */
 @media (max-width: 640px) {
   .bento { grid-template-columns: 1fr; }
   .bento > * { grid-column: auto !important; }
-  .bento-hero { flex-direction: column; align-items: flex-start; padding: 22px 18px; }
+
   .hero-ring { flex-direction: row; gap: 14px; }
-  .hero-ring-label { align-items: flex-start; }
+
   .bento-tile { padding: 18px 16px; }
 }
 
@@ -1555,6 +1488,7 @@ textarea.field { overflow: auto; }
 .logo-mark { flex-shrink: 0; transition: transform var(--dur-slow) var(--ease-out); }
 .logo-needle-s { fill: var(--line-control); }
 .logo-pin { fill: var(--surface); stroke: var(--ink); stroke-width: 1.2; }
+.logo-word-accent { color: var(--accent); }
 .logo-word {
   font-family: var(--font-display);
   font-optical-sizing: auto;
@@ -1631,7 +1565,6 @@ textarea.field { overflow: auto; }
   white-space: nowrap;
   color: var(--ink-muted);
 }
-.sb-sep { height: 1px; margin: 12px 6px; background: var(--line); }
 
 /* An item: icon column (48 px, centered in the bar) + label */
 .sb-item {
@@ -1907,27 +1840,17 @@ textarea.field { overflow: auto; }
 .lt-result-note { font-family: var(--font); font-size: var(--fs-sm); font-weight: 600; color: var(--ink-muted); }
 
 /* Mistake log: category bar next to an entry and a review card */
-.journal-entry, .review-card { position: relative; border-left-width: 1px; }
-.journal-entry::before, .review-card::before {
+.journal-entry { position: relative; border-left-width: 1px; }
+.journal-entry::before {
   content: ""; position: absolute; left: -1px; top: 14px; bottom: 14px; width: 5px;
   border-radius: 0 4px 4px 0; background: var(--cat, var(--cat-other));
 }
 .cat-uoe { --cat: var(--cat-uoe); } .cat-reading { --cat: var(--cat-reading); } .cat-writing { --cat: var(--cat-writing); }
 .cat-listening { --cat: var(--cat-listening); } .cat-speaking { --cat: var(--cat-speaking); } .cat-grammar { --cat: var(--cat-grammar); }
 .cat-vocab { --cat: var(--cat-vocab); } .cat-other { --cat: var(--cat-other); }
-.journal-entry .c1-chip, .review-card .c1-chip { background: color-mix(in srgb, var(--cat) 14%, var(--surface)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cat) 40%, transparent); }
+.journal-entry .c1-chip { background: color-mix(in srgb, var(--cat) 14%, var(--surface)); color: var(--ink); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cat) 40%, transparent); }
 
 /* Review session: a big card, two clear buttons */
-.review-card { padding: 32px 36px; }
-.review-context { font-family: var(--font-display); font-size: var(--fs-xl); font-weight: 560; line-height: 1.45; }
-.review-card .tool-actions { gap: 12px; }
-.review-btn { min-height: 48px; padding: 10px 22px; font-size: var(--fs-md); }
-.review-btn.is-known { background: var(--success-fill); color: var(--on-accent); }
-.review-btn.is-known:hover:not(:disabled) { background: color-mix(in srgb, var(--success-fill) 85%, var(--ink)); }
-@media (max-width: 760px) {
-  .review-card { padding: 22px 18px; }
-  .review-btn { flex: 1 1 100%; }
-}
 
 /* ===================== TOPIC PAGE CONTENT (DESIGN.md section 3.7) ===================== */
 /* Type: about 65–72 characters per line, headings in the display font, a clear hierarchy */
@@ -2027,7 +1950,6 @@ textarea.field { overflow: auto; }
     flex-wrap: nowrap;
   }
   /* One line: "Back to the A2 list" + "I know this" (the back button already gives the level) */
-  .page-view .page-head .page-crumb { display: none; }
 
   .callout { padding: 16px 16px 4px; }
   .callout-examples { padding-left: 18px; }
@@ -2063,17 +1985,11 @@ textarea.field { overflow: auto; }
 .c1-words { font-size: var(--fs-md-plus); }
 .c1-words strong { font-family: var(--font-display); font-size: var(--fs-xl); }
 .c1-timer.is-running { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
-html.focus-mode :is(.sb-panel, .topbar, .c1-masthead, .exam-cover.is-compact, .c1-crumb, .c1-back, .c1-pager, .c1-lead, .c1-writing-actions, .c1-checklist, .c1-speak-bar, .c1-sp-tip, .c1-rec-row) {
-  opacity: 0.3;
-  transition: opacity var(--dur-slow) var(--ease-out);
-}
-html.focus-mode :is(.sb-panel, .topbar, .c1-masthead, .exam-cover.is-compact, .c1-crumb, .c1-back, .c1-pager, .c1-lead, .c1-writing-actions, .c1-checklist, .c1-speak-bar, .c1-sp-tip, .c1-rec-row):is(:hover, :focus-within) { opacity: 1; }
+
 html.focus-mode .c1-writing-area { box-shadow: 0 0 0 4px var(--accent-soft); }
 
 @media (max-width: 760px) {
-
   .c1-ex.card { padding: 22px 16px 20px; }
-
 }
 
 /* ===================== EXERCISES — the exercise engine (DESIGN.md section 3.9) ===================== */
@@ -2218,7 +2134,6 @@ html.focus-mode .c1-writing-area { box-shadow: 0 0 0 4px var(--accent-soft); }
   .ex-para-label { margin-top: 8px; }
   .ex-para-input { width: 100%; }
 }
-
 
 /* Match pairs (match): two columns, on a phone one under the other */
 .ex-match-prompt { margin: 0 0 12px; font-weight: 600; }
@@ -2626,8 +2541,6 @@ a.lab-tile:hover { border-color: var(--line-strong); box-shadow: var(--shadow); 
 .st-sub { margin: 14px 0 8px; font-size: var(--fs-xs-plus); font-weight: 600; color: var(--ink-muted); }
 .st-empty { margin: 4px 0; color: var(--ink-muted); }
 .st-small-note { margin: 10px 0 0; font-size: var(--fs-sm); color: var(--ink-muted); }
-.st-hero-empty { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 16px; padding: 20px 22px; max-width: 760px; }
-.st-hero-title { margin: 0 0 4px; font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 600; }
 
 /* Number tiles */
 .st-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); gap: 10px; }
@@ -2805,7 +2718,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 /* ===================== EXAMS: registry, navigation, "Coming soon" (DESIGN.md 3.13) ===================== */
 /* The "Exams" group in the left panel: chips with the code in the exam color from the registry (--exam-accent) */
 .exams-nav .sb-caption { margin-top: 14px; }
-.exams-nav + .c1-nav > .sb-sep { display: none; }
+
 .exam-list { margin-bottom: 4px; }
 .exam-chip-badge {
   display: inline-grid; place-content: center; min-width: 34px; height: 34px; padding: 0 4px; border-radius: 10px;
@@ -3014,11 +2927,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 /* Elements hidden with the hidden attribute (selection button, form fields) must not come back through display */
 .cards-view [hidden] { display: none; }
 .btn-large { min-height: 52px; padding: 12px 24px; font-size: var(--fs-md); }
-.fc-hero { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 20px 24px; margin-bottom: 24px; }
-.fc-hero-label { margin: 0; font-size: var(--fs-xs-plus); font-weight: 600; color: var(--ink-muted); }
-.fc-hero-count { margin: 2px 0 6px; font-size: var(--fs-md); color: var(--ink-muted); }
-.fc-hero-count strong { font-family: var(--font-display); font-size: 2.25rem; color: var(--ink); }
-.fc-done-title { margin: 0; font-family: var(--font-display); font-size: var(--fs-lg); font-weight: 600; }
+
 .fc-empty { margin-bottom: 24px; }
 .fc-actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 8px 0 16px; }
 .fc-study-now { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin: 8px 0 4px; }
@@ -3077,7 +2986,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 @media (prefers-reduced-motion: reduce) { .fc-backside.is-anim { animation: none; } .fc-switch-track, .fc-switch-thumb { transition: none; } }
 .fc-answer { color: var(--accent); }
 .fc-extra { margin: 6px 0 0; }
-.fc-words-tile { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; margin-bottom: var(--space-4, 16px); }
+
 .fw-row .fc-row-main { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .fw-word { font-size: 1.1rem; }
 .fw-meaning { max-width: 28rem; min-height: 44px; }
@@ -3125,7 +3034,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
   .fc-grades { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fc-card { padding: 18px; }
   .fc-text { font-size: 1.2rem; }
-  .fc-hero { padding: 16px; }
+
   .fc-deck-list { grid-template-columns: 1fr; }
 }
 
@@ -3160,8 +3069,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 }
 
 /* Flashcards: integrations — the "Today" tile, the selection button, Mistake log, Stats */
-.bento-cards { grid-column: span 12; }
-@media (max-width: 1023px) { .bento-cards { grid-column: span 6; } }
+
 /* Menu on text selection (My words): "Add to My words" and "Make a flashcard…" */
 .fc-sel-menu {
   position: fixed; z-index: 60; display: flex; flex-wrap: wrap; gap: 6px; max-width: calc(100vw - 16px); padding: 6px;
@@ -3169,7 +3077,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 }
 .fc-sel-menu[hidden] { display: none; }
 .fc-sel-menu .btn { min-height: 44px; }
-.journal-in-cards { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 6px; font-size: var(--fs-sm); font-weight: 600; color: var(--success); }
+
 .st-cards { grid-column: 1 / -1; }
 .fc-st-bars { display: flex; align-items: flex-end; gap: 3px; height: 96px; margin: 4px 0 12px; padding: 0 2px; border-bottom: 1px solid var(--line-strong); }
 .fc-st-bar { flex: 1 1 0; min-width: 2px; border-radius: 3px 3px 0 0; background: var(--accent); }
@@ -3365,7 +3273,6 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .rec-item-actions .btn { min-height: 44px; }
 .rec-btn:disabled { opacity: .6; cursor: not-allowed; }
 
-.sp-flow { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 10px 0; }
 .sp-switch { margin: 6px 0; }
 .sp-note-banner { margin: 0 0 14px; padding: 12px 14px; border-left: 4px solid var(--accent); border-radius: var(--radius); background: var(--accent-soft); font-weight: 600; }
 .sp-situation { margin: 0 0 10px; }
@@ -3416,7 +3323,7 @@ a.notes-item-title { color: var(--accent); text-decoration: underline; text-unde
 .hub-section > .tool-note, .lab-section > .tool-note, .c1-group-title + .tool-note { max-width: var(--measure); }
 
 /* A1: the Today and level hero without a card frame and background, so the h1 sits on the shared left edge; a line separates it from the content */
-.bento-hero, .level-hero {
+.level-hero {
   padding-inline: 0;
   background: none;
   border: 0;
@@ -3537,7 +3444,7 @@ li.empty-state { list-style: none; }
 
 /* ===================== CHECK: touch targets ≥ 44 px, links without underline, shortcuts as rows ===================== */
 .menu-btn { min-height: 44px; }
-.hero-cta { min-height: 44px; }
+
 .level-link, .c1-exam-box-title, .exam-box .exam-box-title { min-height: 44px; display: inline-flex; align-items: center; }
 a.chip-btn { text-decoration: none; }
 .exam-box .exam-box-title { text-decoration: none; }

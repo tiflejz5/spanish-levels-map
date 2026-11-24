@@ -317,6 +317,17 @@ window.LM = window.LM || {};
   function linkLevelTable(root) {
     const section = levelsSection(root);
     if (!section) return;
+    // A "Status" column follows content/levels.json (spec 06 E1), whatever the Markdown says
+    const heads = Array.prototype.map.call(section.querySelectorAll("thead th"), function (th) { return th.textContent.trim().toLowerCase(); });
+    const statusAt = heads.indexOf("status");
+    section.querySelectorAll("tbody tr").forEach(function (tr) {
+      const id = tr.cells[0] ? tr.cells[0].textContent.trim().toUpperCase() : "";
+      const cell = statusAt > 0 ? tr.cells[statusAt] : null;
+      if (cell && LM.LEVEL_IDS.indexOf(id) !== -1) {
+        const on = LM.syl.isAvailable(id);
+        cell.replaceChildren(el("span", { class: "chip" + (on ? " is-available" : " is-soon"), text: on ? "available" : "coming soon" }));
+      }
+    });
     section.querySelectorAll("tbody tr").forEach(function (tr) {
       const cell = tr.cells[0];
       const code = cell ? cell.textContent.trim().toUpperCase() : "";
