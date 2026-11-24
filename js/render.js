@@ -177,8 +177,9 @@ window.LM = window.LM || {};
       if (passedText) n.ringWrap.appendChild(LM.ui.stamp(level.id, { size: 16 })); // ✓ stamp in the corner of the circle
       n.a.classList.toggle("is-passed", !!passedText);
       n.a.classList.toggle("is-current", level.id === currentId);
-      n.a.setAttribute("aria-label", "Level " + level.id + (name ? ", " + name : "") + (soon ? ": coming soon" : ": " + s.done + " of " + s.total +
-        " topics known (" + s.percent + "%)") + (passedText ? ". " + passedText : "") + (level.id === currentId ? ". Current land" : ""));
+      // The name starts with the visible text (WCAG 2.5.3 label in name), then the context a screen reader needs
+      n.a.setAttribute("aria-label", n.title.textContent + " " + n.count.textContent + (soon ? ": this level is coming soon" : ": " + s.percent + "% of the level's topics") +
+        (passedText ? ". " + passedText : "") + (level.id === currentId ? ". Current land" : ""));
     });
 
     // Below the levels: the "Exams" group from the registry (hidden while it is empty)

@@ -8,7 +8,7 @@
  * Cheat sheet layout (two columns, a header with the level code): section "CHEAT SHEET" at the end of the file.
  */
 
-@page { size: A4; margin: 12mm; }
+@page { size: auto; margin: 12mm; } /* the paper size comes from the print dialog: A4 and US Letter both fit (spec 11 §5) */
 
 @media print {
   .page-toc { display: none !important; }
