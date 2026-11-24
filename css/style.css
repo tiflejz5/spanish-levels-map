@@ -81,14 +81,14 @@
   --track-mix: #ddd3bd;
 
   /* Accent (links, focus, highlights) and the primary button in ink color */
-  --accent: #2c55c4;
-  --accent-bg: #1d2433;       /* fill of the primary button */
-  --accent-hover: #2d374d;
-  --accent-soft: rgba(44, 85, 196, 0.1);
+  --accent: #7e3a0c;          /* terracotta (spec 11 §2): links, primary buttons, focus, wordmark */
+  --accent-bg: #7e3a0c;       /* fill of the primary button = the accent */
+  --accent-hover: #5e2b08;
+  --accent-soft: rgba(126, 58, 12, 0.1);
   --on-accent: #fffdf9;       /* text on accent, success and error fills */
   --info-bg: #eef2fb;
   --info-border: #cfd9f1;
-  --selection: rgba(44, 85, 196, 0.2);
+  --selection: rgba(126, 58, 12, 0.18);
 
   /* States (reserved — do not use as level colors) */
   --success: #1c6e3d;
@@ -116,8 +116,8 @@
   --shadow: 0 1px 2px rgba(60, 44, 18, 0.05), 0 4px 10px rgba(60, 44, 18, 0.05), 0 12px 24px -12px rgba(60, 44, 18, 0.1);
   --shadow-hover: 0 2px 4px rgba(60, 44, 18, 0.06), 0 10px 22px rgba(60, 44, 18, 0.08), 0 22px 40px -18px rgba(60, 44, 18, 0.16);
   --shadow-lg: 0 4px 10px rgba(29, 36, 51, 0.08), 0 24px 60px rgba(29, 36, 51, 0.2);
-  --focus-ring: 0 0 0 3px rgba(44, 85, 196, 0.35);
-  --focus-color: #2c55c4;
+  --focus-ring: 0 0 0 3px rgba(126, 58, 12, 0.4);
+  --focus-color: #7e3a0c;
 
   /* Legacy exam accent: navy and gold */
   --c1-navy: #1b2647;
@@ -173,14 +173,14 @@
   --hairline: rgba(234, 240, 250, 0.08);
   --track-mix: #2b3757;
 
-  --accent: #8db0ff;
-  --accent-bg: #eaf0fa;
-  --accent-hover: #ffffff;
-  --accent-soft: rgba(141, 176, 255, 0.14);
+  --accent: #f6ae84;
+  --accent-bg: #f6ae84;
+  --accent-hover: #fbd0b5;
+  --accent-soft: rgba(246, 174, 132, 0.14);
   --on-accent: #0e1526;
   --info-bg: rgba(141, 176, 255, 0.08);
   --info-border: rgba(141, 176, 255, 0.3);
-  --selection: rgba(141, 176, 255, 0.3);
+  --selection: rgba(246, 174, 132, 0.3);
 
   --success: #6fd796;
   --success-fill: #2fa35d;
@@ -207,8 +207,8 @@
   --shadow: 0 1px 2px rgba(2, 6, 16, 0.5), 0 8px 22px rgba(2, 6, 16, 0.35), 0 0 0 1px rgba(234, 240, 250, 0.03);
   --shadow-hover: 0 2px 6px rgba(2, 6, 16, 0.55), 0 14px 32px rgba(2, 6, 16, 0.45), 0 0 0 1px rgba(234, 240, 250, 0.08);
   --shadow-lg: 0 10px 30px rgba(2, 6, 16, 0.6), 0 30px 70px rgba(2, 6, 16, 0.55);
-  --focus-ring: 0 0 0 3px rgba(141, 176, 255, 0.5);
-  --focus-color: #8db0ff;
+  --focus-ring: 0 0 0 3px rgba(246, 174, 132, 0.55);
+  --focus-color: #f6ae84;
 
   --c1-navy: #0a1124;
   --c1-gold: #e9c25c;
@@ -1555,6 +1555,7 @@ textarea.field { overflow: auto; }
 .logo-mark { flex-shrink: 0; transition: transform var(--dur-slow) var(--ease-out); }
 .logo-needle-s { fill: var(--line-control); }
 .logo-pin { fill: var(--surface); stroke: var(--ink); stroke-width: 1.2; }
+.logo-word-accent { color: var(--accent); }
 .logo-word {
   font-family: var(--font-display);
   font-optical-sizing: auto;
