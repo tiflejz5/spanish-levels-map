@@ -12,10 +12,10 @@ The engine is a port of `english-levels-map` (the owner's Polish app for learnin
 
 | Level | Land | Status |
 |---|---|---|
-| A1 | Meadow | available (content being written: 1 of 26 topic pages) |
+| A1 | Meadow | available: all 26 topics, summary, cheat sheet, final test |
 | A2 – C2 | Forest, Hills, Lake, Mountains, Summit | coming soon (the topics are visible) |
 
-Content: 130 topics in `content/syllabus.json`; 1 topic page, 1 quiz, 3 exercise sets, 1 deck sample, a temporary placement pool (12 questions) and A1 final-test pool (10 items); Lab: 4 cards, 1 contrast card, 1 decision tree.
+Content: 130 topics in `content/syllabus.json`. A1: 26 topic pages, 26 trail quizzes (104 items), 19 exercise sets (190 items), 5 unit reviews, a level summary, a cheat sheet, a final-test pool of 30 items, 6 flashcard decks (160 cards). Placement test: 60 questions (10 per level). Lab: 4 cards, 1 contrast card, 1 decision tree.
 
 ## Run it
 
