@@ -1,0 +1,127 @@
+{
+  "version": 1,
+  "note": "Decision trees of the Tense & Mood Lab (spec 06 E7, spec 08 §4). A result names card or contrast card ids and may give the answer word, why it fits and an example.",
+  "trees": [
+    {
+      "id": "ser-or-estar",
+      "title": "ser or estar?",
+      "level": "A1",
+      "intro": "Think of the sentence you want to say with “to be”. A few questions lead to the right verb, and sometimes it is neither of the two.",
+      "start": "start",
+      "nodes": {
+        "start": {
+          "question": "What does “to be” tell us in your sentence?",
+          "help": "Pick the closest answer.",
+          "options": [
+            {
+              "label": "Where a person or a thing is",
+              "result": [
+                "ser-estar"
+              ],
+              "answer": "estar",
+              "why": "Location takes estar, even for places that never move.",
+              "example": {
+                "text": "Mi oficina está cerca de la estación.",
+                "en": "My office is near the station."
+              }
+            },
+            {
+              "label": "Where an event happens: a party, a class, a concert",
+              "result": [
+                "ser-estar"
+              ],
+              "answer": "ser",
+              "why": "Events take ser, also for where they happen.",
+              "example": {
+                "text": "La clase es en el aula 3.",
+                "en": "The class is in room 3."
+              }
+            },
+            {
+              "label": "Who someone is, their job, or where they are from",
+              "result": [
+                "ser-estar"
+              ],
+              "answer": "ser",
+              "why": "Identity, jobs and origin take ser.",
+              "example": {
+                "text": "Soy Diego, soy de Quito y soy cocinero.",
+                "en": "I'm Diego, I'm from Quito and I'm a cook."
+              }
+            },
+            {
+              "label": "The time, the day or the date",
+              "result": [
+                "ser-estar"
+              ],
+              "answer": "ser",
+              "why": "The time and dates take ser.",
+              "example": {
+                "text": "Son las tres y media.",
+                "en": "It's half past three."
+              }
+            },
+            {
+              "label": "How old someone is",
+              "result": [
+                "ser-estar"
+              ],
+              "answer": "tener",
+              "why": "Spanish does not use “to be” for age. Age takes tener.",
+              "example": {
+                "text": "Mi hermana tiene quince años.",
+                "en": "My sister is fifteen."
+              }
+            },
+            {
+              "label": "What someone or something is like, or how they are",
+              "next": "describe"
+            }
+          ]
+        },
+        "describe": {
+          "question": "Is it what they are like in general, or how they are at the moment?",
+          "help": "Would you say it to describe them to someone who has never met them, or about today?",
+          "options": [
+            {
+              "label": "What they are like in general: personality, looks, size, color",
+              "result": [
+                "ser-estar"
+              ],
+              "answer": "ser",
+              "why": "Lasting characteristics take ser.",
+              "example": {
+                "text": "Mi abuelo es alto y muy tranquilo.",
+                "en": "My grandfather is tall and very calm."
+              }
+            },
+            {
+              "label": "How they feel or how they are right now: tired, glad, ill, busy",
+              "result": [
+                "ser-estar"
+              ],
+              "answer": "estar",
+              "why": "Feelings and states at the moment take estar.",
+              "example": {
+                "text": "Hoy estamos muy ocupados.",
+                "en": "We're very busy today."
+              }
+            },
+            {
+              "label": "Just “How are you?” or “I'm fine”",
+              "result": [
+                "ser-estar"
+              ],
+              "answer": "estar",
+              "why": "Bien and mal go with estar.",
+              "example": {
+                "text": "¿Cómo está tu padre? —Está bien, gracias.",
+                "en": "How is your father? —He's fine, thanks."
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}
