@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-verbs-reflexive-routine",
+  "topic": "a1-verbs-reflexive-routine",
+  "level": "A1",
+  "title": "Stop: daily routine",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-verbs-reflexive-routine-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Yo ___ levanto a las siete.",
+      "options": [
+        "se",
+        "te",
+        "me",
+        "nos"
+      ],
+      "correct": 2,
+      "explanation": "Yo takes the pronoun me: me levanto.",
+      "optionNotes": [
+        "Se is for él, ella, ellos.",
+        "Te is for tú.",
+        null,
+        "Nos is for nosotros."
+      ]
+    },
+    {
+      "id": "a1-verbs-reflexive-routine-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mis hijos ___ acuestan a las nueve.",
+      "options": [
+        "se",
+        "les",
+        "me",
+        "os"
+      ],
+      "correct": 0,
+      "explanation": "Ellos takes se: se acuestan.",
+      "optionNotes": [
+        null,
+        "Les is not a reflexive pronoun.",
+        "Me is for yo.",
+        "Os is for vosotros."
+      ]
+    },
+    {
+      "id": "a1-verbs-reflexive-routine-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Yo ___ a las once.",
+      "options": [
+        "me acosto",
+        "me acuesto",
+        "acuesto",
+        "se acuesta"
+      ],
+      "correct": 1,
+      "explanation": "Acostarse changes o → ue and needs me: me acuesto.",
+      "optionNotes": [
+        "The stem changes: acuesto.",
+        null,
+        "The reflexive pronoun me is missing.",
+        "Se acuesta is for él or ella."
+      ]
+    },
+    {
+      "id": "a1-verbs-reflexive-routine-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Me lavo ___ dientes.",
+      "options": [
+        "mis",
+        "los",
+        "tus",
+        "sus"
+      ],
+      "correct": 1,
+      "explanation": "With body parts Spanish uses the article: me lavo los dientes.",
+      "optionNotes": [
+        "The pronoun me already says whose teeth; use los.",
+        null,
+        "Tus would mean your teeth.",
+        "Sus would mean his, her, their or your (usted) teeth; with body parts use los."
+      ]
+    }
+  ]
+}

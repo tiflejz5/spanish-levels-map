@@ -1,0 +1,278 @@
+{
+  "version": 1,
+  "id": "a1-verbs-present-irregular-1",
+  "topic": "a1-verbs-present-irregular",
+  "level": "A1",
+  "title": "Irregular verbs: check yourself",
+  "intro": "10 tasks: stem changes, yo forms in -go and ir.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-present-irregular-1-01",
+      "type": "paradigm",
+      "tags": [
+        "stem-change",
+        "o-ue"
+      ],
+      "prompt": "Write the present tense of poder.",
+      "lemma": "poder",
+      "gloss": "can, to be able to",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "puedo"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "puedes"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "puede"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "podemos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "podéis"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "pueden"
+          ]
+        }
+      ],
+      "explanation": "o → ue in every form except nosotros and vosotros."
+    },
+    {
+      "id": "a1-verbs-present-irregular-1-02",
+      "type": "paradigm",
+      "tags": [
+        "ir"
+      ],
+      "prompt": "Write the present tense of ir.",
+      "lemma": "ir",
+      "gloss": "to go",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "voy"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "vas"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "va"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "vamos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "vais"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "van"
+          ]
+        }
+      ],
+      "explanation": "Ir is fully irregular: voy, vas, va, vamos, vais, van."
+    },
+    {
+      "id": "a1-verbs-present-irregular-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "stem-change",
+        "e-ie"
+      ],
+      "prompt": "¿A qué hora ___ la película?",
+      "options": [
+        "empeza",
+        "empieza",
+        "empiezan",
+        "empezamos"
+      ],
+      "correct": 1,
+      "explanation": "Empezar changes e → ie: la película empieza.",
+      "optionNotes": [
+        "The stem changes: empieza.",
+        null,
+        "La película is singular.",
+        "Empezamos is for nosotros."
+      ]
+    },
+    {
+      "id": "a1-verbs-present-irregular-1-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "stem-change",
+        "jugar"
+      ],
+      "prompt": "Mi hermano ___ al fútbol los domingos.",
+      "options": [
+        "juga",
+        "juega",
+        "jugamos",
+        "juego"
+      ],
+      "correct": 1,
+      "explanation": "Jugar changes u → ue: juega.",
+      "optionNotes": [
+        "Jugar changes the stem: juega.",
+        null,
+        "Jugamos is for nosotros.",
+        "Juego is for yo."
+      ]
+    },
+    {
+      "id": "a1-verbs-present-irregular-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "yo-go"
+      ],
+      "context": "I leave home at eight and I make dinner at night.",
+      "text": "{{1}} de casa a las ocho y {{2}} la cena por la noche.",
+      "gaps": [
+        {
+          "accepted": [
+            "Salgo",
+            "salgo",
+            "Yo salgo",
+            "yo salgo"
+          ],
+          "hint": "salir"
+        },
+        {
+          "accepted": [
+            "hago"
+          ],
+          "hint": "hacer"
+        }
+      ],
+      "explanation": "Salir and hacer have a yo form in -go: salgo, hago."
+    },
+    {
+      "id": "a1-verbs-present-irregular-1-06",
+      "type": "find-error",
+      "tags": [
+        "stem-change"
+      ],
+      "tokens": [
+        "Nosotros",
+        "quieremos",
+        "un",
+        "café."
+      ],
+      "errorRange": [
+        1,
+        1
+      ],
+      "fixes": [
+        "queremos"
+      ],
+      "explanation": "No stem change in nosotros: queremos."
+    },
+    {
+      "id": "a1-verbs-present-irregular-1-07",
+      "type": "short-answer",
+      "tags": [
+        "saber"
+      ],
+      "prompt": "—¿Dónde está la estación? —No ___. (I don't know)",
+      "accepted": [
+        "sé",
+        "lo sé"
+      ],
+      "explanation": "The yo form of saber is sé, with an accent."
+    },
+    {
+      "id": "a1-verbs-present-irregular-1-08",
+      "type": "translate",
+      "tags": [
+        "pedir"
+      ],
+      "source": "I order a pizza. (pedir)",
+      "accepted": [
+        "Pido una pizza.",
+        "Yo pido una pizza.",
+        "Pido pizza.",
+        "Yo pido pizza."
+      ],
+      "explanation": "Pedir changes e → i: pido."
+    },
+    {
+      "id": "a1-verbs-present-irregular-1-09",
+      "type": "translate",
+      "tags": [
+        "dormir"
+      ],
+      "source": "Do you sleep well? (to a friend)",
+      "accepted": [
+        "¿Duermes bien?",
+        "¿Tú duermes bien?",
+        "¿Duermes tú bien?"
+      ],
+      "explanation": "Dormir changes o → ue: duermes."
+    },
+    {
+      "id": "a1-verbs-present-irregular-1-10",
+      "type": "match",
+      "tags": [
+        "yo-forms"
+      ],
+      "mode": "halves",
+      "prompt": "Match each infinitive with its yo form.",
+      "pairs": [
+        [
+          "hacer",
+          "hago"
+        ],
+        [
+          "poner",
+          "pongo"
+        ],
+        [
+          "conocer",
+          "conozco"
+        ],
+        [
+          "traer",
+          "traigo"
+        ]
+      ],
+      "explanation": "Hago, pongo, conozco and traigo: the irregularity is only in the yo form."
+    }
+  ]
+}
