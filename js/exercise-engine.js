@@ -1785,7 +1785,7 @@ window.LM = window.LM || {};
           "Check yourself"
         ]),
         sets.length ? el("div", { class: "ex-set-grid" }, sets.map(setCard)) : null,
-        tense ? el("p", { class: "ex-topic-lab" }, el("a", { class: "btn btn-secondary", href: "#/lab/" + tense.id }, LM.ui.withIcon("flask-conical", "See it on the timeline: " + tense.name))) : null
+        tense ? el("p", { class: "ex-topic-lab" }, el("a", { class: "btn btn-secondary", href: tense.route || "#/lab/" + tense.id }, LM.ui.withIcon("flask-conical", (tense.kind === "contrast" ? "Contrast card in the Lab: " : "See it on the timeline: ") + tense.name))) : null
       ]);
       box.hidden = false;
     });

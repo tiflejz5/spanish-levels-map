@@ -8,6 +8,8 @@
  */
 "use strict";
 
+function LM_LAB() { global.window = global.window || global; require("../../js/lab-logic.js"); return global.LM.labLogic; }
+
 const C = require("./common");
 
 const TEXT_MAX = 4000;
@@ -83,11 +85,23 @@ function build(ctx) {
   (ctx.mixes || []).forEach(function (m) {
     add({ id: "mix:" + m.id, group: "exercises", title: m.title, summary: m.description || "", text: "Mixed set. Topics: " + (m.topics || []).map(function (t) { return (ctx.topics[t] || {}).title || t; }).join(", "), category: "Mixed set", route: "#/practice/mix/" + m.id });
   });
-  // Lab
-  (ctx.lab || []).forEach(function (card) {
+  // Lab: cards, contrast cards, decision trees (routes from js/lab-logic.js)
+  const LAB = LM_LAB();
+  const lab = ctx.lab || { cards: [], contrasts: [], trees: [] };
+  lab.cards.forEach(function (card) {
     add({ id: "lab:" + card.id, group: "lab", title: card.name, headings: card.nameEn ? [card.nameEn] : [], summary: card.summary || "",
-      text: [].concat((card.uses || []).map(function (u) { return (u.label || "") + " " + (u.example || u.text || ""); }), card.signals || [], card.traps || []).join(" "),
-      level: card.level, category: "Tense & Mood Lab", route: "#/lab/" + card.id });
+      text: [].concat((card.uses || []).map(function (u) { return (u.label || "") + " " + (u.text || "") + " " + (u.en || ""); }), card.signals || [], card.traps || []).join(" "),
+      level: card.level, category: "Lab card", route: LAB.routeOf("card", card.id) });
+  });
+  lab.contrasts.forEach(function (k) {
+    add({ id: "lab:" + k.id, group: "lab", title: LAB.contrastTitle(k), headings: (k.sides || []).map(function (s) { return s.nameEn; }), summary: k.summary || "",
+      text: [].concat.apply([], (k.sides || []).map(function (s) { return (s.rules || []).map(function (r) { return (r.label || "") + " " + r.text; }); })).concat(k.traps || []).join(" "),
+      level: k.level, category: "Contrast card", route: LAB.routeOf("contrast", k.id) });
+  });
+  lab.trees.forEach(function (t) {
+    add({ id: "lab-tree:" + t.id, group: "lab", title: t.title, summary: t.intro || "",
+      text: Object.keys(t.nodes || {}).map(function (n) { return t.nodes[n].question + " " + (t.nodes[n].options || []).map(function (o) { return o.label + " " + (o.answer || ""); }).join(" "); }).join(" "),
+      level: t.level, category: "Decision tree", route: LAB.routeOf("tree", t.id) });
   });
   // Phrase bank
   if (ctx.phrases) {
