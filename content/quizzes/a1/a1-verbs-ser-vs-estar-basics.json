@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-verbs-ser-vs-estar-basics",
+  "topic": "a1-verbs-ser-vs-estar-basics",
+  "level": "A1",
+  "title": "Stop: ser or estar",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Madrid ___ en el centro de España.",
+      "options": [
+        "es",
+        "está",
+        "hay",
+        "son"
+      ],
+      "correct": 1,
+      "explanation": "Location of places takes estar: Madrid está en el centro.",
+      "optionNotes": [
+        "Location takes estar, not ser.",
+        null,
+        "Hay is for something new, not a named city.",
+        "Madrid is singular."
+      ]
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "La fiesta ___ en casa de Rosa.",
+      "options": [
+        "está",
+        "hay",
+        "es",
+        "estás"
+      ],
+      "correct": 2,
+      "explanation": "Where an event takes place uses ser: la fiesta es en casa de Rosa.",
+      "optionNotes": [
+        "Events take ser for their place.",
+        "Hay would need un / una (hay una fiesta).",
+        null,
+        "Estás is for tú."
+      ]
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-q3",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "“Los niños están aburridos” means…",
+      "options": [
+        "The children are boring.",
+        "The children are bored.",
+        "The children are tired.",
+        "The children are rich."
+      ],
+      "correct": 1,
+      "explanation": "Aburrido with estar means bored; with ser it means boring.",
+      "optionNotes": [
+        "Boring would be son aburridos.",
+        null,
+        "Tired is cansados.",
+        "Rich is ricos."
+      ]
+    },
+    {
+      "id": "a1-verbs-ser-vs-estar-basics-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi hermana ___ médica.",
+      "options": [
+        "está",
+        "es",
+        "hay",
+        "está una"
+      ],
+      "correct": 1,
+      "explanation": "A job takes ser, without un / una: es médica.",
+      "optionNotes": [
+        "Jobs take ser.",
+        null,
+        "Hay means “there is”.",
+        "Jobs take ser and no article."
+      ]
+    }
+  ]
+}

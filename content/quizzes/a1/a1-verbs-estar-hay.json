@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-verbs-estar-hay",
+  "topic": "a1-verbs-estar-hay",
+  "level": "A1",
+  "title": "Stop: estar and hay",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-verbs-estar-hay-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Yo ___ en la oficina.",
+      "options": [
+        "soy",
+        "estoy",
+        "hay",
+        "está"
+      ],
+      "correct": 1,
+      "explanation": "Where you are takes estar: estoy.",
+      "optionNotes": [
+        "Location takes estar, not ser.",
+        null,
+        "Hay means “there is”.",
+        "Está is for él, ella, usted."
+      ]
+    },
+    {
+      "id": "a1-verbs-estar-hay-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ un supermercado en mi calle.",
+      "options": [
+        "Está",
+        "Es",
+        "Hay",
+        "Están"
+      ],
+      "correct": 2,
+      "explanation": "Something new with un takes hay: hay un supermercado.",
+      "optionNotes": [
+        "Está goes with a known thing (el supermercado).",
+        "Ser is not used for where things are.",
+        null,
+        "Están is plural and needs a known thing."
+      ]
+    },
+    {
+      "id": "a1-verbs-estar-hay-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Dónde ___ las llaves?",
+      "options": [
+        "hay",
+        "son",
+        "está",
+        "están"
+      ],
+      "correct": 3,
+      "explanation": "A known thing (las llaves) takes estar, plural: están.",
+      "optionNotes": [
+        "Hay is for something new (un, dos…), not for las llaves.",
+        "Location takes estar.",
+        "Las llaves is plural.",
+        null
+      ]
+    },
+    {
+      "id": "a1-verbs-estar-hay-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ana ___ muy cansada hoy.",
+      "options": [
+        "está",
+        "es",
+        "hay",
+        "esta"
+      ],
+      "correct": 0,
+      "explanation": "A state now takes estar: está (with an accent).",
+      "optionNotes": [
+        null,
+        "Being tired now is a state: estar.",
+        "Hay means “there is”.",
+        "Esta without an accent means “this”."
+      ]
+    }
+  ]
+}

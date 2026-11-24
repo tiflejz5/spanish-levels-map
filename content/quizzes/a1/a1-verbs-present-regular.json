@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-verbs-present-regular",
+  "topic": "a1-verbs-present-regular",
+  "level": "A1",
+  "title": "Stop: present tense",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-verbs-present-regular-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Nosotros ___ en Valencia.",
+      "options": [
+        "vivemos",
+        "vivimos",
+        "viven",
+        "vivo"
+      ],
+      "correct": 1,
+      "explanation": "Vivir is an -ir verb: nosotros vivimos.",
+      "optionNotes": [
+        "-ir verbs end in -imos, not -emos.",
+        null,
+        "Viven is for ellos.",
+        "Vivo is for yo."
+      ]
+    },
+    {
+      "id": "a1-verbs-present-regular-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Tú ___ inglés?",
+      "options": [
+        "hablas",
+        "habla",
+        "hablo",
+        "hablan"
+      ],
+      "correct": 0,
+      "explanation": "The tú ending of -ar verbs is -as: hablas.",
+      "optionNotes": [
+        null,
+        "Habla is for él, ella and usted.",
+        "Hablo is for yo.",
+        "Hablan is for ellos."
+      ]
+    },
+    {
+      "id": "a1-verbs-present-regular-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi padre ___ en un hospital.",
+      "options": [
+        "trabajo",
+        "trabajas",
+        "trabajan",
+        "trabaja"
+      ],
+      "correct": 3,
+      "explanation": "Mi padre = él: trabaja.",
+      "optionNotes": [
+        "Trabajo is for yo.",
+        "Trabajas is for tú.",
+        "Trabajan is for ellos.",
+        null
+      ]
+    },
+    {
+      "id": "a1-verbs-present-regular-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ellos no ___ carne.",
+      "options": [
+        "comen",
+        "come",
+        "comemos",
+        "comes"
+      ],
+      "correct": 0,
+      "explanation": "Ellos: comen. No goes before the verb.",
+      "optionNotes": [
+        null,
+        "Come is for one person.",
+        "Comemos is for nosotros.",
+        "Comes is for tú."
+      ]
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "version": 1,
+  "id": "a1-verbs-present-regular-1",
+  "topic": "a1-verbs-present-regular",
+  "level": "A1",
+  "title": "Present tense: check yourself",
+  "intro": "10 tasks: the endings of -ar, -er and -ir verbs, questions and negatives.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-present-regular-1-01",
+      "type": "paradigm",
+      "tags": [
+        "present",
+        "-ir"
+      ],
+      "prompt": "Write the present tense of vivir.",
+      "lemma": "vivir",
+      "gloss": "to live",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "vivo"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "vives"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "vive"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "vivimos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "vivís"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "viven"
+          ]
+        }
+      ],
+      "explanation": "-ir verbs: -o, -es, -e, -imos, -ís, -en."
+    },
+    {
+      "id": "a1-verbs-present-regular-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "present",
+        "-ar"
+      ],
+      "prompt": "Mis amigos ___ mucho.",
+      "options": [
+        "estudia",
+        "estudian",
+        "estudiamos",
+        "estudias"
+      ],
+      "correct": 1,
+      "explanation": "Mis amigos = ellos: estudian.",
+      "optionNotes": [
+        "Estudia is for one person.",
+        null,
+        "Estudiamos is for nosotros.",
+        "Estudias is for tú."
+      ]
+    },
+    {
+      "id": "a1-verbs-present-regular-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "present",
+        "-er"
+      ],
+      "prompt": "¿Vosotros ___ cerveza? (Spain)",
+      "options": [
+        "bebéis",
+        "bebís",
+        "beben",
+        "bebemos"
+      ],
+      "correct": 0,
+      "explanation": "Beber is an -er verb: vosotros bebéis.",
+      "optionNotes": [
+        null,
+        "-ís is the vosotros ending of -ir verbs.",
+        "Beben is for ellos or ustedes.",
+        "Bebemos is for nosotros."
+      ]
+    },
+    {
+      "id": "a1-verbs-present-regular-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "present"
+      ],
+      "context": "I work in a bank and my sister studies at the university.",
+      "text": "Yo {{1}} en un banco y mi hermana {{2}} en la universidad.",
+      "gaps": [
+        {
+          "accepted": [
+            "trabajo"
+          ],
+          "hint": "trabajar"
+        },
+        {
+          "accepted": [
+            "estudia"
+          ],
+          "hint": "estudiar"
+        }
+      ],
+      "explanation": "Yo → -o (trabajo); mi hermana = ella → -a (estudia)."
+    },
+    {
+      "id": "a1-verbs-present-regular-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "present",
+        "-er",
+        "-ir"
+      ],
+      "context": "We read the newspaper and we write emails.",
+      "text": "Nosotros {{1}} el periódico y {{2}} correos.",
+      "gaps": [
+        {
+          "accepted": [
+            "leemos"
+          ],
+          "hint": "leer"
+        },
+        {
+          "accepted": [
+            "escribimos"
+          ],
+          "hint": "escribir"
+        }
+      ],
+      "explanation": "-er verbs: -emos (leemos); -ir verbs: -imos (escribimos)."
+    },
+    {
+      "id": "a1-verbs-present-regular-1-06",
+      "type": "find-error",
+      "tags": [
+        "present",
+        "-er"
+      ],
+      "tokens": [
+        "Mi",
+        "hermana",
+        "comes",
+        "en",
+        "casa."
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "come"
+      ],
+      "explanation": "-es is the tú ending; mi hermana (ella) takes come."
+    },
+    {
+      "id": "a1-verbs-present-regular-1-07",
+      "type": "short-answer",
+      "tags": [
+        "present",
+        "-ar"
+      ],
+      "prompt": "Complete: ¿Dónde ___ (tú, trabajar)?",
+      "accepted": [
+        "trabajas"
+      ],
+      "explanation": "Tú + -ar verb: trabajas."
+    },
+    {
+      "id": "a1-verbs-present-regular-1-08",
+      "type": "translate",
+      "tags": [
+        "present",
+        "negation"
+      ],
+      "source": "I don't speak French.",
+      "accepted": [
+        "No hablo francés.",
+        "Yo no hablo francés."
+      ],
+      "explanation": "No goes before the verb: no hablo."
+    },
+    {
+      "id": "a1-verbs-present-regular-1-09",
+      "type": "translate",
+      "tags": [
+        "present",
+        "questions"
+      ],
+      "source": "Do you live here? (to a friend)",
+      "accepted": [
+        "¿Vives aquí?",
+        "¿Tú vives aquí?",
+        "¿Vives tú aquí?",
+        "¿Vives acá?",
+        "¿Tú vives acá?",
+        "¿Vives por aquí?"
+      ],
+      "explanation": "No “do” in Spanish questions: ¿Vives aquí?"
+    },
+    {
+      "id": "a1-verbs-present-regular-1-10",
+      "type": "reorder",
+      "tags": [
+        "present",
+        "word-order"
+      ],
+      "context": "My parents don't drink coffee.",
+      "answers": [
+        "Mis padres no beben café."
+      ],
+      "explanation": "Subject, then no, then the verb: mis padres no beben café."
+    }
+  ]
+}
