@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a1-grammar-alphabet-pronunciation",
+  "topic": "a1-grammar-alphabet-pronunciation",
+  "level": "A1",
+  "title": "Stop: alphabet and stress",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-grammar-alphabet-pronunciation-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Which letter is silent in Spanish?",
+      "options": [
+        "j",
+        "h",
+        "ñ",
+        "r"
+      ],
+      "correct": 1,
+      "explanation": "On its own, h is never pronounced: hola sounds like “ola”. (Ch is a separate sound, as in chocolate.)",
+      "optionNotes": [
+        "J is a breathy sound from the throat, as in José.",
+        null,
+        "Ñ sounds like ny in canyon.",
+        "R is a tap or a roll, never silent."
+      ]
+    },
+    {
+      "id": "a1-grammar-alphabet-pronunciation-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Which syllable is stressed in “hablan”?",
+      "options": [
+        "ha (the first)",
+        "blan (the last)",
+        "both equally",
+        "it depends on the speaker"
+      ],
+      "correct": 0,
+      "explanation": "A word ending in a vowel, n or s is stressed on the second-to-last syllable: HA-blan.",
+      "optionNotes": [
+        null,
+        "The last syllable is stressed only when the word ends in another consonant (hotel) or has a written accent.",
+        "Every Spanish word has one strong syllable.",
+        "The stress rules are the same for everyone."
+      ]
+    },
+    {
+      "id": "a1-grammar-alphabet-pronunciation-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Which word means “dog”?",
+      "options": [
+        "pero",
+        "pelo",
+        "perro",
+        "pera"
+      ],
+      "correct": 2,
+      "explanation": "Perro has a rolled rr. Pero, with one tapped r, means “but”.",
+      "optionNotes": [
+        "Pero means “but”: one r is a quick tap.",
+        "Pelo means “hair”.",
+        null,
+        "Pera means “pear”."
+      ]
+    },
+    {
+      "id": "a1-grammar-alphabet-pronunciation-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Which question is written correctly?",
+      "options": [
+        "Como te llamas?",
+        "¿Como te llamas?",
+        "Cómo te llamas?",
+        "¿Cómo te llamas?"
+      ],
+      "correct": 3,
+      "explanation": "A Spanish question opens with ¿, and the question word cómo has a written accent.",
+      "optionNotes": [
+        "It needs ¿ at the start and the accent on cómo.",
+        "Cómo needs its accent.",
+        "A question needs ¿ at the start.",
+        null
+      ]
+    }
+  ]
+}

@@ -1,0 +1,244 @@
+{
+  "version": 1,
+  "id": "a1-verbs-ser-1",
+  "topic": "a1-verbs-ser",
+  "level": "A1",
+  "title": "ser: check yourself",
+  "intro": "10 tasks: the forms of ser, origin, jobs and descriptions.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a1-verbs-ser-1-01",
+      "type": "paradigm",
+      "tags": [
+        "ser",
+        "forms"
+      ],
+      "prompt": "Write the present tense of ser.",
+      "lemma": "ser",
+      "gloss": "to be",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "soy"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "eres"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "es"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "somos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "sois"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "son"
+          ]
+        }
+      ],
+      "explanation": "Ser is irregular: soy, eres, es, somos, sois, son."
+    },
+    {
+      "id": "a1-verbs-ser-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "ser",
+        "forms"
+      ],
+      "prompt": "Ustedes ___ de Colombia, ¿verdad?",
+      "options": [
+        "sois",
+        "es",
+        "somos",
+        "son"
+      ],
+      "correct": 3,
+      "explanation": "Ustedes takes the same form as ellos: son.",
+      "optionNotes": [
+        "Sois is for vosotros.",
+        "Es is for one person.",
+        "Somos is for nosotros.",
+        null
+      ]
+    },
+    {
+      "id": "a1-verbs-ser-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "ser",
+        "jobs"
+      ],
+      "prompt": "Mi madre ___.",
+      "options": [
+        "es una enfermera",
+        "es enfermera",
+        "está enfermera",
+        "son enfermera"
+      ],
+      "correct": 1,
+      "explanation": "A job after ser has no article: Es enfermera.",
+      "optionNotes": [
+        "No una before a job on its own.",
+        null,
+        "Jobs take ser, not estar.",
+        "Mi madre is one person: es."
+      ]
+    },
+    {
+      "id": "a1-verbs-ser-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "ser",
+        "origin"
+      ],
+      "context": "We're from Chile. And you? (to a friend)",
+      "text": "Nosotros {{1}} {{2}} Chile. ¿Y tú?",
+      "gaps": [
+        {
+          "accepted": [
+            "somos"
+          ],
+          "hint": "ser"
+        },
+        {
+          "accepted": [
+            "de"
+          ]
+        }
+      ],
+      "explanation": "Origin is ser + de + place: somos de Chile."
+    },
+    {
+      "id": "a1-verbs-ser-1-05",
+      "type": "short-answer",
+      "tags": [
+        "ser",
+        "forms"
+      ],
+      "prompt": "Complete: ¿___ (tú) de aquí?",
+      "accepted": [
+        "eres",
+        "Eres"
+      ],
+      "explanation": "The tú form of ser is eres: ¿Eres de aquí?"
+    },
+    {
+      "id": "a1-verbs-ser-1-06",
+      "type": "find-error",
+      "tags": [
+        "ser",
+        "jobs"
+      ],
+      "tokens": [
+        "Mi",
+        "padre",
+        "es",
+        "un",
+        "médico."
+      ],
+      "errorRange": [
+        3,
+        4
+      ],
+      "fixes": [
+        "médico."
+      ],
+      "explanation": "No un before a job on its own: Mi padre es médico."
+    },
+    {
+      "id": "a1-verbs-ser-1-07",
+      "type": "translate",
+      "tags": [
+        "ser",
+        "negation"
+      ],
+      "source": "I'm not from here.",
+      "accepted": [
+        "No soy de aquí.",
+        "Yo no soy de aquí.",
+        "No soy de acá."
+      ],
+      "explanation": "No goes before the verb: No soy de aquí."
+    },
+    {
+      "id": "a1-verbs-ser-1-08",
+      "type": "translate",
+      "tags": [
+        "ser",
+        "questions"
+      ],
+      "source": "Where are you from? (formal)",
+      "accepted": [
+        "¿De dónde es usted?",
+        "¿De dónde es?",
+        "¿Usted de dónde es?",
+        "¿De dónde es Ud.?"
+      ],
+      "explanation": "Origin is ser de; with usted the verb is es. De goes to the front with dónde."
+    },
+    {
+      "id": "a1-verbs-ser-1-09",
+      "type": "reorder",
+      "tags": [
+        "ser",
+        "word-order"
+      ],
+      "context": "My friends are very nice.",
+      "answers": [
+        "Mis amigos son muy simpáticos."
+      ],
+      "explanation": "Subject, then son, then muy and the description."
+    },
+    {
+      "id": "a1-verbs-ser-1-10",
+      "type": "match",
+      "tags": [
+        "ser",
+        "uses"
+      ],
+      "mode": "response",
+      "prompt": "Match each question with the answer.",
+      "pairs": [
+        [
+          "¿De dónde eres?",
+          "Soy de Canadá."
+        ],
+        [
+          "¿Eres estudiante?",
+          "No, soy profesor."
+        ],
+        [
+          "¿Qué día es hoy?",
+          "Hoy es lunes."
+        ],
+        [
+          "¿Sois hermanos? (Spain)",
+          "Sí, somos hermanos."
+        ]
+      ],
+      "explanation": "Ser answers questions about origin (soy de…), jobs and roles (soy profesor), days (hoy es…) and who people are (somos hermanos)."
+    }
+  ]
+}

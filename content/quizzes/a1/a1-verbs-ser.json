@@ -1,0 +1,50 @@
+{
+  "version": 1,
+  "id": "a1-verbs-ser",
+  "topic": "a1-verbs-ser",
+  "level": "A1",
+  "title": "Stop: ser",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a1-verbs-ser-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Nosotros ___ de Argentina.",
+      "options": ["son", "somos", "sois", "es"],
+      "correct": 1,
+      "explanation": "The nosotros form of ser is somos.",
+      "optionNotes": ["Son is for ellos, ellas and ustedes.", null, "Sois is for vosotros.", "Es is for él, ella and usted."]
+    },
+    {
+      "id": "a1-verbs-ser-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi hermano ___ médico.",
+      "options": ["es un", "está", "es", "son"],
+      "correct": 2,
+      "explanation": "A job after ser has no article: Es médico.",
+      "optionNotes": ["No un before a job on its own.", "Jobs take ser, not estar.", null, "Mi hermano is one person: es."]
+    },
+    {
+      "id": "a1-verbs-ser-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "How do you say “I'm 30 years old”?",
+      "options": ["Soy 30 años.", "Estoy 30 años.", "Soy de 30 años.", "Tengo 30 años."],
+      "correct": 3,
+      "explanation": "Age takes tener in Spanish: Tengo 30 años.",
+      "optionNotes": ["Ser is not used for age.", "Estar is not used for age.", "Ser de is for origin, not age.", null]
+    },
+    {
+      "id": "a1-verbs-ser-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿___ (tú) estudiante?",
+      "options": ["Eres", "Es", "Soy", "Sois"],
+      "correct": 0,
+      "explanation": "The tú form of ser is eres.",
+      "optionNotes": [null, "Es is for él, ella and usted.", "Soy is for yo.", "Sois is for vosotros."]
+    }
+  ]
+}

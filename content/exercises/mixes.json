@@ -1,4 +1,18 @@
 {
   "version": 1,
-  "mixes": []
+  "mixes": [
+    {
+      "id": "mix-a1-u1",
+      "title": "Unit review: Sounds and first words",
+      "description": "Sounds and spelling, subject pronouns and ser, mixed.",
+      "level": "A1",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a1-grammar-alphabet-pronunciation",
+        "a1-grammar-subject-pronouns",
+        "a1-verbs-ser"
+      ]
+    }
+  ]
 }
