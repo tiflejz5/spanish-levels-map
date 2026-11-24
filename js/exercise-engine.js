@@ -1325,6 +1325,7 @@ window.LM = window.LM || {};
       wrong.length ? el("button", { type: "button", class: "btn btn-primary", onclick: retryWrong }, LM.ui.withIcon("rotate-ccw", "Retry mistakes only (" + wrong.length + ")")) : null,
       el("button", { type: "button", class: "btn " + (wrong.length ? "btn-secondary" : "btn-primary"), onclick: redo }, run.isMix ? "Draw a new set" : "Do it again (new order)"),
       t ? el("a", { class: "btn btn-secondary", href: t.href }, "Back to the topic") : null,
+      !t && run.back ? el("a", { class: "btn btn-secondary", href: run.back.href }, run.back.label) : null, // e.g. a Lab contrast card quiz
       !run.isMix ? el("a", { class: "btn btn-link", href: mix ? BASE + "/mix/" + mix.id : BASE + "/mixes" }, LM.ui.withIcon("arrow-right", "Next: a mixed set")) : el("a", { class: "btn btn-link", href: BASE }, "Practice")
     ];
 

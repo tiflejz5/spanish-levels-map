@@ -254,7 +254,7 @@ window.LM = window.LM || {};
       box.replaceChildren();
       U.appendChildren(box, [
         setIds.length ? el("div", { class: "ex-set-grid" }, setIds.map(function (s) { return index.sets[s]; }).filter(Boolean).map(LM.exercises.setCard))
-          : el("p", { class: "tool-note", text: "Exercise sets for this form are still being written." }),
+          : el("p", { class: "tool-note", text: "Exercise sets for these topics are still being written." }),
         mixes.length ? el("p", { class: "lab-practice-links" }, mixes.map(function (m) {
           return el("a", { class: "btn btn-secondary", href: LM.exercises.BASE + "/mix/" + m.id }, LM.ui.withIcon("shuffle", "Mixed set: " + m.title));
         })) : null,
