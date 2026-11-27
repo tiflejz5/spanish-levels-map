@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-grammar-comparatives-superlatives",
+  "topic": "a2-grammar-comparatives-superlatives",
+  "level": "A2",
+  "title": "Stop: comparatives and superlatives",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-grammar-comparatives-superlatives-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi hermana es más alta ___ yo.",
+      "options": [
+        "como",
+        "que",
+        "de",
+        "a"
+      ],
+      "correct": 1,
+      "explanation": "Más + adjective + que.",
+      "optionNotes": [
+        "Como goes with tan: tan alta como.",
+        null,
+        "Más de is only for numbers: más de diez.",
+        "Comparisons take que, not a."
+      ]
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Este restaurante es ___ que el otro.",
+      "options": [
+        "más bueno",
+        "más mejor",
+        "mejor",
+        "el mejor"
+      ],
+      "correct": 2,
+      "explanation": "Bueno has its own comparative: mejor.",
+      "optionNotes": [
+        "The comparative of bueno is mejor.",
+        "Mejor already means “more good”: no más.",
+        null,
+        "El mejor is the superlative (the best)."
+      ]
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "El tren es tan rápido ___ el avión.",
+      "options": [
+        "que",
+        "como",
+        "de",
+        "tan"
+      ],
+      "correct": 1,
+      "explanation": "Tan + adjective + como (as … as).",
+      "optionNotes": [
+        "After tan comes como, not que.",
+        null,
+        "De is used after superlatives and with numbers.",
+        "Tan appears only once."
+      ]
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Es la ciudad más bonita ___ país.",
+      "options": [
+        "por el",
+        "del",
+        "que el",
+        "como el"
+      ],
+      "correct": 1,
+      "explanation": "After a superlative, “in” is de: del país.",
+      "optionNotes": [
+        "After a superlative, “in” is de, not por.",
+        null,
+        "Que is for comparing two things.",
+        "Como is for tan … como."
+      ]
+    }
+  ]
+}

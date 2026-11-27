@@ -92,6 +92,20 @@
         "a2-verbs-preterite-vs-imperfect-basics",
         "a2-verbs-present-perfect"
       ]
+    },
+    {
+      "id": "mix-a2-u3",
+      "title": "Unit review: Objects and comparisons",
+      "description": "Direct and indirect object pronouns, comparisons, indefinites and quantifiers, mixed.",
+      "level": "A2",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a2-grammar-direct-object-pronouns",
+        "a2-grammar-indirect-object-pronouns",
+        "a2-grammar-comparatives-superlatives",
+        "a2-grammar-indefinites-quantifiers"
+      ]
     }
   ]
 }

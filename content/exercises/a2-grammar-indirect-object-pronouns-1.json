@@ -1,0 +1,250 @@
+{
+  "version": 1,
+  "id": "a2-grammar-indirect-object-pronouns-1",
+  "topic": "a2-grammar-indirect-object-pronouns",
+  "level": "A2",
+  "title": "Indirect object pronouns: check yourself",
+  "intro": "10 tasks: me, te, le, nos, os, les, where they go, and the person twice.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-01",
+      "type": "paradigm",
+      "tags": [
+        "indirect-object-pronouns"
+      ],
+      "prompt": "Write the indirect object pronoun.",
+      "lemma": "indirect object pronouns",
+      "gloss": "to me, to you, to him…",
+      "cells": [
+        {
+          "label": "to me",
+          "accepted": [
+            "me"
+          ],
+          "given": true
+        },
+        {
+          "label": "to you (a friend)",
+          "accepted": [
+            "te"
+          ]
+        },
+        {
+          "label": "to her",
+          "accepted": [
+            "le"
+          ]
+        },
+        {
+          "label": "to us",
+          "accepted": [
+            "nos"
+          ]
+        },
+        {
+          "label": "to you all (Spain)",
+          "accepted": [
+            "os"
+          ]
+        },
+        {
+          "label": "to them",
+          "accepted": [
+            "les"
+          ]
+        }
+      ],
+      "explanation": "Le and les are for him, her, you (formal) and them; they do not change for gender."
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "indirect-object-pronouns",
+        "le-les"
+      ],
+      "prompt": "¿Qué ___ vas a regalar a tus padres?",
+      "options": [
+        "le",
+        "les",
+        "los",
+        "lo"
+      ],
+      "correct": 1,
+      "explanation": "A tus padres = several people: les.",
+      "optionNotes": [
+        "Le is for one person.",
+        null,
+        "Los is the direct pronoun (them), not “to them”.",
+        "Lo is the direct pronoun (him, it)."
+      ]
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "indirect-object-pronouns",
+        "lo-le"
+      ],
+      "prompt": "La profesora ___ explicó la regla a Tomás.",
+      "options": [
+        "lo",
+        "la",
+        "le",
+        "se"
+      ],
+      "correct": 2,
+      "explanation": "Tomás receives the explanation: le explicó (to him).",
+      "optionNotes": [
+        "Lo means “him” or “it”, not “to him”.",
+        "La means “her” or “it”.",
+        null,
+        "Se is reflexive here; the teacher explains something to Tomás."
+      ]
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "indirect-object-pronouns",
+        "position"
+      ],
+      "prompt": "Todavía no ___ nada a Marta.",
+      "options": [
+        "le he dicho",
+        "he le dicho",
+        "he dicho le",
+        "la he dicho"
+      ],
+      "correct": 0,
+      "explanation": "The pronoun goes before haber: no le he dicho.",
+      "optionNotes": [
+        null,
+        "Nothing goes between haber and the participle.",
+        "The pronoun goes before haber, not after the participle.",
+        "With decir, the person who is told is an indirect object: le."
+      ]
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "indirect-object-pronouns",
+        "requests"
+      ],
+      "context": "“Can you lend me your bike?” (to a friend)",
+      "text": "¿{{1}} prestas tu bicicleta?",
+      "gaps": [
+        {
+          "accepted": [
+            "Me"
+          ]
+        }
+      ],
+      "explanation": "To me = me, before the verb."
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-06",
+      "type": "find-error",
+      "tags": [
+        "indirect-object-pronouns",
+        "lo-le"
+      ],
+      "tokens": [
+        "Lo",
+        "di",
+        "un",
+        "regalo",
+        "a",
+        "él,",
+        "no",
+        "a",
+        "ella."
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "Le"
+      ],
+      "explanation": "He receives the present: le (to him), not lo. With a él, the pronoun le is needed."
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-07",
+      "type": "find-error",
+      "tags": [
+        "indirect-object-pronouns",
+        "position"
+      ],
+      "tokens": [
+        "Mando",
+        "les",
+        "un",
+        "correo",
+        "cada",
+        "semana."
+      ],
+      "errorRange": [
+        0,
+        1
+      ],
+      "fixes": [
+        "Les mando"
+      ],
+      "explanation": "The pronoun goes before the conjugated verb: Les mando un correo."
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-08",
+      "type": "reorder",
+      "tags": [
+        "indirect-object-pronouns",
+        "doubling"
+      ],
+      "context": "I gave Marta a book (as a present).",
+      "answers": [
+        "Le regalé un libro a Marta.",
+        "A Marta le regalé un libro.",
+        "Le regalé a Marta un libro."
+      ],
+      "explanation": "Le before the verb, and a Marta to say who it is."
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-09",
+      "type": "short-answer",
+      "tags": [
+        "indirect-object-pronouns",
+        "infinitive"
+      ],
+      "prompt": "Attach the pronoun: Te voy a escribir. → Voy a ___.",
+      "accepted": [
+        "escribirte"
+      ],
+      "explanation": "With an infinitive the pronoun can be attached: escribirte."
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-1-10",
+      "type": "translate",
+      "tags": [
+        "indirect-object-pronouns",
+        "le-les"
+      ],
+      "source": "I told them the truth.",
+      "accepted": [
+        "Les dije la verdad.",
+        "Yo les dije la verdad.",
+        "Les he dicho la verdad.",
+        "Yo les he dicho la verdad.",
+        "Les conté la verdad.",
+        "Les dije la verdad a ellos.",
+        "Les dije la verdad a ellas."
+      ],
+      "hint": "to tell = decir",
+      "explanation": "To them = les, before the verb."
+    }
+  ]
+}

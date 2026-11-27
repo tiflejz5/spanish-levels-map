@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-grammar-direct-object-pronouns",
+  "topic": "a2-grammar-direct-object-pronouns",
+  "level": "A2",
+  "title": "Stop: direct object pronouns",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-grammar-direct-object-pronouns-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "—¿Dónde compraste la camisa?\n—___ compré en el mercado.",
+      "options": [
+        "Lo",
+        "La",
+        "Le",
+        "Las"
+      ],
+      "correct": 1,
+      "explanation": "Camisa is feminine and singular, so the pronoun is la.",
+      "optionNotes": [
+        "Lo is for a masculine noun: el libro → lo.",
+        null,
+        "Le is the indirect pronoun (to him, to her).",
+        "Las is plural."
+      ]
+    },
+    {
+      "id": "a2-grammar-direct-object-pronouns-q2",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Which sentence is correct?",
+      "options": [
+        "Veo lo todos los días.",
+        "Lo veo todos los días.",
+        "Veo todos los días lo.",
+        "Lo veo lo todos los días."
+      ],
+      "correct": 1,
+      "explanation": "The pronoun goes before the conjugated verb: Lo veo.",
+      "optionNotes": [
+        "The pronoun goes before a conjugated verb, not after it.",
+        null,
+        "The pronoun cannot go at the end of the sentence.",
+        "The pronoun appears only once."
+      ]
+    },
+    {
+      "id": "a2-grammar-direct-object-pronouns-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ayer visité ___ mi abuela.",
+      "options": [
+        "a",
+        "—",
+        "la",
+        "de"
+      ],
+      "correct": 0,
+      "explanation": "A person as the direct object takes the personal a: visité a mi abuela.",
+      "optionNotes": [
+        null,
+        "A person as the object needs a.",
+        "La before mi abuela is not possible: you need the personal a.",
+        "Visitar takes no de."
+      ]
+    },
+    {
+      "id": "a2-grammar-direct-object-pronouns-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "—¿Tienes las entradas?\n—Sí, ___ tengo.",
+      "options": [
+        "los",
+        "las",
+        "la",
+        "—"
+      ],
+      "correct": 1,
+      "explanation": "Entradas is feminine plural: las tengo. Spanish needs the pronoun in the short answer.",
+      "optionNotes": [
+        "Los is for masculine plural nouns.",
+        null,
+        "La is singular; entradas is plural.",
+        "Spanish needs the pronoun: Sí, las tengo."
+      ]
+    }
+  ]
+}

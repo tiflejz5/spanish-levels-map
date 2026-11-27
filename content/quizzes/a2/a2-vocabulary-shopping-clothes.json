@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-vocabulary-shopping-clothes",
+  "topic": "a2-vocabulary-shopping-clothes",
+  "level": "A2",
+  "title": "Stop: shopping and clothes",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-vocabulary-shopping-clothes-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Estos zapatos me ___ pequeños.",
+      "options": [
+        "queda",
+        "quedan",
+        "quedo",
+        "quedamos"
+      ],
+      "correct": 1,
+      "explanation": "Quedar works like gustar: plural thing, quedan.",
+      "optionNotes": [
+        "The shoes are plural: quedan.",
+        null,
+        "The shoes are the subject, not me.",
+        "The shoes are the subject: quedan."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-shopping-clothes-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You want a bigger size of a shirt. You say:",
+      "options": [
+        "¿Tiene una talla más grande?",
+        "¿Tiene un número más grande?",
+        "¿Tiene una medida más grande?",
+        "¿Tiene una talla más mayor?"
+      ],
+      "correct": 0,
+      "explanation": "Clothes have a talla; número is for shoes.",
+      "optionNotes": [
+        null,
+        "Número is for shoes, not shirts.",
+        "Medida is a measurement, not a clothes size.",
+        "Más mayor is not possible; for size say más grande."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-shopping-clothes-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Busco una falda ___.",
+      "options": [
+        "negro",
+        "negra",
+        "negros",
+        "negras"
+      ],
+      "correct": 1,
+      "explanation": "The color agrees with falda (feminine singular): negra.",
+      "optionNotes": [
+        "Falda is feminine: negra.",
+        null,
+        "Falda is feminine singular.",
+        "Falda is singular."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-shopping-clothes-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Me encanta esta camisa. ___ llevo.",
+      "options": [
+        "Me lo",
+        "Me la",
+        "Me le",
+        "Me las"
+      ],
+      "correct": 1,
+      "explanation": "Camisa is feminine singular: Me la llevo (I'll take it).",
+      "optionNotes": [
+        "Lo is for a masculine noun.",
+        null,
+        "For a thing, use la, not le.",
+        "Las is plural."
+      ]
+    }
+  ]
+}

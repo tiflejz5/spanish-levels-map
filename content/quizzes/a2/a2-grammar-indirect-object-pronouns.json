@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-grammar-indirect-object-pronouns",
+  "topic": "a2-grammar-indirect-object-pronouns",
+  "level": "A2",
+  "title": "Stop: indirect object pronouns",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-grammar-indirect-object-pronouns-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mañana ___ doy el regalo a mi hermano.",
+      "options": [
+        "lo",
+        "le",
+        "la",
+        "les"
+      ],
+      "correct": 1,
+      "explanation": "The person who receives something is the indirect object: le doy (to him).",
+      "optionNotes": [
+        "Lo is the direct pronoun (him, it), not “to him”.",
+        null,
+        "La is the direct pronoun (her, it).",
+        "Les is plural; mi hermano is one person."
+      ]
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mis primos viven en Lima. ___ escribo cada semana.",
+      "options": [
+        "Le",
+        "Los",
+        "Les",
+        "Lo"
+      ],
+      "correct": 2,
+      "explanation": "Escribir a alguien takes an indirect object; for several people: les.",
+      "optionNotes": [
+        "Le is for one person; mis primos are several.",
+        "Los is the direct pronoun (them), not “to them”.",
+        null,
+        "Lo is the direct pronoun and singular."
+      ]
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-q3",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You ask a friend to pass you the salt. You say:",
+      "options": [
+        "¿Me pasas la sal?",
+        "¿Pasas me la sal?",
+        "¿Te pasas la sal?",
+        "¿Le pasas la sal?"
+      ],
+      "correct": 0,
+      "explanation": "To me = me, before the verb: ¿Me pasas la sal?",
+      "optionNotes": [
+        null,
+        "The pronoun goes before the conjugated verb.",
+        "Te would mean “to you”.",
+        "Le would mean “to him” or “to her”."
+      ]
+    },
+    {
+      "id": "a2-grammar-indirect-object-pronouns-q4",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Which sentence is correct?",
+      "options": [
+        "Le voy a escribirle a Ana.",
+        "Voy a escribirle a Ana.",
+        "Voy le a escribir a Ana.",
+        "Voy a escribir le a Ana."
+      ],
+      "correct": 1,
+      "explanation": "With an infinitive, the pronoun is attached to it (escribirle) or goes before ir (Le voy a escribir), never twice.",
+      "optionNotes": [
+        "The pronoun appears only once.",
+        null,
+        "The pronoun cannot go between voy and a.",
+        "An attached pronoun is written together with the infinitive: escribirle."
+      ]
+    }
+  ]
+}
