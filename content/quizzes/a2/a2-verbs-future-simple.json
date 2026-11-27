@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-verbs-future-simple",
+  "topic": "a2-verbs-future-simple",
+  "level": "A2",
+  "title": "Stop: future simple",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-verbs-future-simple-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mañana ___ la cena yo. (hacer)",
+      "options": [
+        "haceré",
+        "haré",
+        "hice",
+        "hiciré"
+      ],
+      "correct": 1,
+      "explanation": "Hacer has the future stem har-: haré.",
+      "optionNotes": [
+        "Hacer has an irregular stem: har-.",
+        null,
+        "Hice is the preterite.",
+        "This form does not exist; the stem is har-."
+      ]
+    },
+    {
+      "id": "a2-verbs-future-simple-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿___ a mi fiesta el sábado? (tú, venir)",
+      "options": [
+        "Venirás",
+        "Vendrás",
+        "Vendremos",
+        "Vendrá"
+      ],
+      "correct": 1,
+      "explanation": "Venir has the future stem vendr-: vendrás.",
+      "optionNotes": [
+        "Venir has an irregular stem: vendr-.",
+        null,
+        "Vendremos is for nosotros.",
+        "Vendrá is for él, ella, usted."
+      ]
+    },
+    {
+      "id": "a2-verbs-future-simple-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Si ___, nos quedaremos en casa.",
+      "options": [
+        "llueve",
+        "lloverá",
+        "llovió",
+        "llover"
+      ],
+      "correct": 0,
+      "explanation": "After si (if), use the present: si llueve.",
+      "optionNotes": [
+        null,
+        "After si, Spanish uses the present, not the future.",
+        "Llovió is the preterite (it rained).",
+        "After si you need a conjugated verb."
+      ]
+    },
+    {
+      "id": "a2-verbs-future-simple-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Te ___ esta noche, te lo prometo.",
+      "options": [
+        "llamare",
+        "llamaré",
+        "llamé",
+        "llamará"
+      ],
+      "correct": 1,
+      "explanation": "Yo form of the future: -é, with an accent: llamaré.",
+      "optionNotes": [
+        "The yo ending is -é, with an accent.",
+        null,
+        "Llamé is the preterite (I called).",
+        "Llamará is for él, ella, usted."
+      ]
+    }
+  ]
+}

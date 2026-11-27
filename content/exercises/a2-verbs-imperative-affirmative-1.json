@@ -1,0 +1,267 @@
+{
+  "version": 1,
+  "id": "a2-verbs-imperative-affirmative-1",
+  "topic": "a2-verbs-imperative-affirmative",
+  "level": "A2",
+  "title": "Affirmative imperative: check yourself",
+  "intro": "10 tasks: tú, usted and ustedes forms, irregular verbs and pronouns.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-verbs-imperative-affirmative-1-01",
+      "type": "paradigm",
+      "tags": [
+        "imperative",
+        "tu-irregular"
+      ],
+      "prompt": "Write the tú imperative.",
+      "lemma": "irregular tú imperatives",
+      "gloss": "come!, do!, go out!…",
+      "cells": [
+        {
+          "label": "venir",
+          "accepted": [
+            "ven"
+          ],
+          "given": true
+        },
+        {
+          "label": "hacer",
+          "accepted": [
+            "haz"
+          ]
+        },
+        {
+          "label": "salir",
+          "accepted": [
+            "sal"
+          ]
+        },
+        {
+          "label": "poner",
+          "accepted": [
+            "pon"
+          ]
+        },
+        {
+          "label": "decir",
+          "accepted": [
+            "di"
+          ]
+        },
+        {
+          "label": "tener",
+          "accepted": [
+            "ten"
+          ]
+        }
+      ],
+      "explanation": "Eight verbs have a short tú imperative: di, haz, ve, pon, sal, sé, ten, ven."
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-1-02",
+      "type": "match",
+      "tags": [
+        "imperative",
+        "usted"
+      ],
+      "mode": "halves",
+      "prompt": "Match each infinitive with its usted imperative.",
+      "pairs": [
+        [
+          "tomar",
+          "tome"
+        ],
+        [
+          "seguir",
+          "siga"
+        ],
+        [
+          "cruzar",
+          "cruce"
+        ],
+        [
+          "ir",
+          "vaya"
+        ]
+      ],
+      "explanation": "From the yo form with the vowel swapped (tomo → tome, sigo → siga); cruzar → cruce for spelling; ir → vaya."
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "imperative",
+        "tu"
+      ],
+      "prompt": "(to a friend) ___ la primera calle a la izquierda.",
+      "options": [
+        "Toma",
+        "Tome",
+        "Tomó",
+        "Tomar"
+      ],
+      "correct": 0,
+      "explanation": "The tú imperative is the él form of the present: toma.",
+      "optionNotes": [
+        null,
+        "Tome is the usted form.",
+        "Tomó is the preterite.",
+        "The infinitive is not used for this."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-1-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "imperative",
+        "ustedes"
+      ],
+      "prompt": "(a teacher to the class) ___ sus libros, por favor.",
+      "options": [
+        "Abran",
+        "Abren",
+        "Abrid",
+        "Abre"
+      ],
+      "correct": 0,
+      "explanation": "Ustedes imperative of an -ir verb: -an. Abran.",
+      "optionNotes": [
+        null,
+        "Abren is the present.",
+        "Abrid is the vosotros form (Spain); with sus, the teacher speaks as ustedes.",
+        "Abre is the tú form."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-1-05",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "imperative",
+        "pronouns"
+      ],
+      "prompt": "(formal) Pase y ___, por favor.",
+      "options": [
+        "siéntese",
+        "se siente",
+        "siéntase",
+        "siéntate"
+      ],
+      "correct": 0,
+      "explanation": "Usted imperative of sentarse with the pronoun attached: siéntese.",
+      "optionNotes": [
+        null,
+        "Se before the verb is a statement, not an instruction.",
+        "Sentarse → siente: siéntese.",
+        "Siéntate is the tú form."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-1-06",
+      "type": "gap-fill",
+      "tags": [
+        "imperative",
+        "directions"
+      ],
+      "context": "Directions to a stranger: “Go straight on and turn right.”",
+      "text": "{{1}} todo recto y {{2}} a la derecha.",
+      "gaps": [
+        {
+          "accepted": [
+            "Siga"
+          ],
+          "hint": "seguir"
+        },
+        {
+          "accepted": [
+            "gire"
+          ],
+          "hint": "girar"
+        }
+      ],
+      "explanation": "Usted forms: seguir → siga, girar → gire."
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-1-07",
+      "type": "find-error",
+      "tags": [
+        "imperative",
+        "spelling"
+      ],
+      "tokens": [
+        "Sigua",
+        "todo",
+        "recto",
+        "hasta",
+        "la",
+        "plaza."
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "Siga"
+      ],
+      "explanation": "From yo sigo: siga. No u is needed before a."
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-1-08",
+      "type": "find-error",
+      "tags": [
+        "imperative",
+        "accent"
+      ],
+      "tokens": [
+        "Dime",
+        "tu",
+        "número",
+        "y",
+        "llamame",
+        "esta",
+        "noche."
+      ],
+      "errorRange": [
+        4,
+        4
+      ],
+      "fixes": [
+        "llámame"
+      ],
+      "explanation": "Dime sets the tú register; the tú imperative with a pronoun attached needs an accent on the stressed syllable: llámame."
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-1-09",
+      "type": "transformation",
+      "tags": [
+        "imperative",
+        "pronouns"
+      ],
+      "source": "¿Me pasas la sal? (Say it as a direct instruction.)",
+      "keyword": "pásame",
+      "before": "",
+      "after": "por favor.",
+      "answers": [
+        "Pásame la sal"
+      ],
+      "explanation": "Pronoun attached to the tú imperative, with an accent: pásame."
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-1-10",
+      "type": "translate",
+      "tags": [
+        "imperative",
+        "tu-irregular"
+      ],
+      "source": "Tell me the truth. (to a friend)",
+      "accepted": [
+        "Dime la verdad."
+      ],
+      "hint": "to tell = decir",
+      "explanation": "Tú: di + me = dime. (Usted: dígame.)"
+    }
+  ]
+}

@@ -1,0 +1,274 @@
+{
+  "version": 1,
+  "id": "a2-verbs-future-simple-1",
+  "topic": "a2-verbs-future-simple",
+  "level": "A2",
+  "title": "Future simple: check yourself",
+  "intro": "10 tasks: endings, irregular stems, si + present and habrá.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-verbs-future-simple-1-01",
+      "type": "paradigm",
+      "tags": [
+        "future",
+        "tener"
+      ],
+      "prompt": "Write the future of tener.",
+      "lemma": "tener",
+      "gloss": "to have",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "tendré"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "tendrás"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "tendrá"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "tendremos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "tendréis"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "tendrán"
+          ]
+        }
+      ],
+      "explanation": "Tener has the stem tendr- and the regular endings: -é, -ás, -á, -emos, -éis, -án."
+    },
+    {
+      "id": "a2-verbs-future-simple-1-02",
+      "type": "match",
+      "tags": [
+        "future",
+        "irregular"
+      ],
+      "mode": "halves",
+      "prompt": "Match each infinitive with its future (yo).",
+      "pairs": [
+        [
+          "poder",
+          "podré"
+        ],
+        [
+          "salir",
+          "saldré"
+        ],
+        [
+          "decir",
+          "diré"
+        ],
+        [
+          "querer",
+          "querré"
+        ]
+      ],
+      "explanation": "Irregular stems: podr-, saldr-, dir-, querr-."
+    },
+    {
+      "id": "a2-verbs-future-simple-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "future",
+        "endings"
+      ],
+      "prompt": "El año que viene mis padres ___ en la costa.",
+      "options": [
+        "vivirán",
+        "vivieron",
+        "viviremos",
+        "vivirá"
+      ],
+      "correct": 0,
+      "explanation": "Mis padres = ellos: -án. Vivirán.",
+      "optionNotes": [
+        null,
+        "Vivieron is the preterite.",
+        "Viviremos is for nosotros.",
+        "Vivirá is for él, ella, usted."
+      ]
+    },
+    {
+      "id": "a2-verbs-future-simple-1-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "future",
+        "habra"
+      ],
+      "prompt": "Mañana ___ mucha gente en el concierto.",
+      "options": [
+        "habrá",
+        "hubo",
+        "habré",
+        "habrán"
+      ],
+      "correct": 0,
+      "explanation": "The future of hay is habrá; it never changes for the plural.",
+      "optionNotes": [
+        null,
+        "Hubo is the preterite (there was).",
+        "Habré is the yo form of haber.",
+        "Like hay, habrá does not change for the plural."
+      ]
+    },
+    {
+      "id": "a2-verbs-future-simple-1-05",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "future",
+        "si-clauses"
+      ],
+      "prompt": "Si tengo tiempo, te ___.",
+      "options": [
+        "ayudaba",
+        "ayudaré",
+        "ayudaría",
+        "ayudé"
+      ],
+      "correct": 1,
+      "explanation": "Si + present, future in the other part: te ayudaré.",
+      "optionNotes": [
+        "Ayudaba is the imperfect.",
+        null,
+        "Ayudaría is the conditional (I would help).",
+        "Ayudé is the preterite."
+      ]
+    },
+    {
+      "id": "a2-verbs-future-simple-1-06",
+      "type": "gap-fill",
+      "tags": [
+        "future",
+        "predictions"
+      ],
+      "context": "“It will be sunny tomorrow and the temperature will be 25 degrees.”",
+      "text": "Mañana {{1}} sol y la temperatura {{2}} de 25 grados.",
+      "gaps": [
+        {
+          "accepted": [
+            "hará"
+          ],
+          "hint": "hacer"
+        },
+        {
+          "accepted": [
+            "será"
+          ],
+          "hint": "ser"
+        }
+      ],
+      "explanation": "Hacer → hará (irregular stem har-); ser → será (regular)."
+    },
+    {
+      "id": "a2-verbs-future-simple-1-07",
+      "type": "find-error",
+      "tags": [
+        "future",
+        "irregular"
+      ],
+      "tokens": [
+        "El",
+        "lunes",
+        "teneré",
+        "más",
+        "tiempo."
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "tendré"
+      ],
+      "explanation": "Tener has the future stem tendr-: tendré."
+    },
+    {
+      "id": "a2-verbs-future-simple-1-08",
+      "type": "find-error",
+      "tags": [
+        "future",
+        "si-clauses"
+      ],
+      "tokens": [
+        "Si",
+        "lloverá",
+        "mañana,",
+        "no",
+        "iremos",
+        "a",
+        "la",
+        "playa."
+      ],
+      "errorRange": [
+        1,
+        1
+      ],
+      "fixes": [
+        "llueve"
+      ],
+      "explanation": "After si, use the present: si llueve."
+    },
+    {
+      "id": "a2-verbs-future-simple-1-09",
+      "type": "transformation",
+      "tags": [
+        "future",
+        "ir-a"
+      ],
+      "source": "Voy a comprar un coche nuevo.",
+      "keyword": "compraré",
+      "before": "",
+      "after": "nuevo.",
+      "answers": [
+        "Compraré un coche",
+        "Yo compraré un coche",
+        "Me compraré un coche",
+        "Yo me compraré un coche"
+      ],
+      "explanation": "Ir a + infinitive and the future can say the same: compraré."
+    },
+    {
+      "id": "a2-verbs-future-simple-1-10",
+      "type": "translate",
+      "tags": [
+        "future",
+        "promises"
+      ],
+      "source": "I'll call you tomorrow. (to a friend)",
+      "accepted": [
+        "Te llamaré mañana.",
+        "Mañana te llamaré.",
+        "Yo te llamaré mañana.",
+        "Te llamo mañana.",
+        "Mañana te llamo."
+      ],
+      "hint": "to call = llamar",
+      "explanation": "A promise: te llamaré. The present (te llamo) is also normal for this."
+    }
+  ]
+}

@@ -1,0 +1,257 @@
+{
+  "version": 1,
+  "id": "a2-grammar-indefinites-quantifiers-1",
+  "topic": "a2-grammar-indefinites-quantifiers",
+  "level": "A2",
+  "title": "Indefinites and quantifiers: check yourself",
+  "intro": "10 tasks: algo, nada, alguien, nadie, algún, ningún, otro, mucho and muy.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-01",
+      "type": "paradigm",
+      "tags": [
+        "quantifiers",
+        "agreement"
+      ],
+      "prompt": "Write mucho in the right form, or muy.",
+      "lemma": "mucho",
+      "gloss": "a lot of, many",
+      "cells": [
+        {
+          "label": "___ tiempo",
+          "accepted": [
+            "mucho"
+          ],
+          "given": true
+        },
+        {
+          "label": "___ gente",
+          "accepted": [
+            "mucha"
+          ]
+        },
+        {
+          "label": "___ libros",
+          "accepted": [
+            "muchos"
+          ]
+        },
+        {
+          "label": "___ horas",
+          "accepted": [
+            "muchas"
+          ]
+        },
+        {
+          "label": "Trabaja ___.",
+          "accepted": [
+            "mucho"
+          ]
+        },
+        {
+          "label": "Es ___ caro.",
+          "accepted": [
+            "muy"
+          ]
+        }
+      ],
+      "explanation": "With a noun, mucho agrees. With a verb it does not change. Before an adjective, “very” is muy."
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-02",
+      "type": "multiple-choice",
+      "kind": "function",
+      "tags": [
+        "indefinites",
+        "negation"
+      ],
+      "prompt": "—¿Quieres algo?\n—No, ___, gracias.",
+      "options": [
+        "nada",
+        "algo",
+        "nadie",
+        "ningún"
+      ],
+      "correct": 0,
+      "explanation": "No, nada = No, nothing.",
+      "optionNotes": [
+        null,
+        "After no, use the negative word nada.",
+        "Nadie is for people.",
+        "Ningún needs a noun after it."
+      ]
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "indefinites",
+        "personal-a"
+      ],
+      "prompt": "No conozco ___ en esta ciudad.",
+      "options": [
+        "a nadie",
+        "nadie",
+        "a alguien",
+        "alguien"
+      ],
+      "correct": 0,
+      "explanation": "After no use nadie; as an object it takes the personal a: no conozco a nadie.",
+      "optionNotes": [
+        null,
+        "Nadie as an object of conocer takes the personal a.",
+        "After no, use the negative word nadie.",
+        "After no use nadie, with the personal a."
+      ]
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "indefinites",
+        "ningun"
+      ],
+      "prompt": "No hay ___ problema.",
+      "options": [
+        "ninguno",
+        "ningún",
+        "algún",
+        "nada"
+      ],
+      "correct": 1,
+      "explanation": "Before a masculine noun, ninguno loses the -o: ningún problema.",
+      "optionNotes": [
+        "Before a masculine noun, ninguno becomes ningún.",
+        null,
+        "After no, use the negative form ningún.",
+        "Nada is not used before a noun."
+      ]
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-05",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "quantifiers",
+        "demasiado"
+      ],
+      "prompt": "No puedo comer esta sopa. Tiene ___ sal.",
+      "options": [
+        "demasiado",
+        "demasiada",
+        "demasiados",
+        "muy"
+      ],
+      "correct": 1,
+      "explanation": "Sal is feminine singular: demasiada sal (too much salt).",
+      "optionNotes": [
+        "Sal is feminine: demasiada.",
+        null,
+        "Sal is singular.",
+        "Muy goes before adjectives, not nouns."
+      ]
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-06",
+      "type": "gap-fill",
+      "tags": [
+        "indefinites"
+      ],
+      "context": "“Is anybody home?” “No, there's nobody.”",
+      "text": "—¿Hay {{1}} en casa?\n—No, no hay {{2}}.",
+      "gaps": [
+        {
+          "accepted": [
+            "alguien"
+          ]
+        },
+        {
+          "accepted": [
+            "nadie"
+          ]
+        }
+      ],
+      "explanation": "Alguien in the question, nadie after no."
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-07",
+      "type": "find-error",
+      "tags": [
+        "otro"
+      ],
+      "tokens": [
+        "¿Me",
+        "trae",
+        "un",
+        "otro",
+        "café,",
+        "por",
+        "favor?"
+      ],
+      "errorRange": [
+        2,
+        3
+      ],
+      "fixes": [
+        "otro"
+      ],
+      "explanation": "Otro never takes un: otro café."
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-08",
+      "type": "find-error",
+      "tags": [
+        "quantifiers",
+        "muy-mucho"
+      ],
+      "tokens": [
+        "Este",
+        "hotel",
+        "es",
+        "mucho",
+        "caro."
+      ],
+      "errorRange": [
+        3,
+        3
+      ],
+      "fixes": [
+        "muy"
+      ],
+      "explanation": "Before an adjective, “very” is muy."
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-09",
+      "type": "transformation",
+      "tags": [
+        "indefinites",
+        "negation"
+      ],
+      "source": "Nadie viene a la reunión.",
+      "keyword": "no",
+      "before": "",
+      "after": "a la reunión.",
+      "answers": [
+        "No viene nadie"
+      ],
+      "explanation": "With nadie after the verb you need no before it."
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-1-10",
+      "type": "translate",
+      "tags": [
+        "quantifiers"
+      ],
+      "source": "I have very little time.",
+      "accepted": [
+        "Tengo muy poco tiempo.",
+        "Yo tengo muy poco tiempo."
+      ],
+      "hint": "time = el tiempo",
+      "explanation": "Poco agrees with tiempo (masculine); muy goes before poco."
+    }
+  ]
+}

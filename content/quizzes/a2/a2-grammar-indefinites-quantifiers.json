@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-grammar-indefinites-quantifiers",
+  "topic": "a2-grammar-indefinites-quantifiers",
+  "level": "A2",
+  "title": "Stop: indefinites and quantifiers",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-grammar-indefinites-quantifiers-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "—¿Está Javier?\n—No, no hay ___ en la oficina.",
+      "options": [
+        "alguien",
+        "nadie",
+        "algo",
+        "ningún"
+      ],
+      "correct": 1,
+      "explanation": "After no, use the negative word: no hay nadie (there's nobody).",
+      "optionNotes": [
+        "After no, Spanish uses the negative word nadie.",
+        null,
+        "Algo is for things, and after no you need the negative word.",
+        "Ningún needs a noun after it."
+      ]
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Tienes ___ libro de cocina?",
+      "options": [
+        "alguno",
+        "algún",
+        "algo",
+        "alguien"
+      ],
+      "correct": 1,
+      "explanation": "Before a masculine noun, alguno loses the -o: algún libro.",
+      "optionNotes": [
+        "Before a masculine noun, alguno becomes algún.",
+        null,
+        "Algo is not used before a noun.",
+        "Alguien means “somebody”."
+      ]
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Quiero ___ café, por favor.",
+      "options": [
+        "un otro",
+        "otro",
+        "uno otro",
+        "el otro un"
+      ],
+      "correct": 1,
+      "explanation": "Otro never takes un: otro café.",
+      "optionNotes": [
+        "Otro never takes un or una.",
+        null,
+        "Otro never takes uno.",
+        "This word order is not possible."
+      ]
+    },
+    {
+      "id": "a2-grammar-indefinites-quantifiers-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "En la fiesta había ___ gente.",
+      "options": [
+        "muchos",
+        "mucho",
+        "mucha",
+        "muy"
+      ],
+      "correct": 2,
+      "explanation": "Gente is feminine singular: mucha gente.",
+      "optionNotes": [
+        "Gente is singular: mucha.",
+        "Gente is feminine: mucha.",
+        null,
+        "Muy goes before adjectives, not nouns."
+      ]
+    }
+  ]
+}

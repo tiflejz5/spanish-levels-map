@@ -1,0 +1,270 @@
+{
+  "version": 1,
+  "id": "a2-grammar-comparatives-superlatives-1",
+  "topic": "a2-grammar-comparatives-superlatives",
+  "level": "A2",
+  "title": "Comparatives and superlatives: check yourself",
+  "intro": "10 tasks: más … que, tan … como, mejor, peor, mayor and the superlative.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-01",
+      "type": "paradigm",
+      "tags": [
+        "comparatives",
+        "irregular"
+      ],
+      "prompt": "Write the comparative (better, worse, older, younger).",
+      "lemma": "irregular comparatives",
+      "gloss": "bueno, malo, grande, pequeño",
+      "cells": [
+        {
+          "label": "bueno (good) → better",
+          "accepted": [
+            "mejor"
+          ],
+          "given": true
+        },
+        {
+          "label": "malo (bad) → worse",
+          "accepted": [
+            "peor"
+          ]
+        },
+        {
+          "label": "grande (for age) → older",
+          "accepted": [
+            "mayor"
+          ]
+        },
+        {
+          "label": "pequeño (for age) → younger",
+          "accepted": [
+            "menor"
+          ]
+        },
+        {
+          "label": "bien (well) → better",
+          "accepted": [
+            "mejor"
+          ]
+        },
+        {
+          "label": "mal (badly) → worse",
+          "accepted": [
+            "peor"
+          ]
+        }
+      ],
+      "explanation": "Bueno and bien → mejor; malo and mal → peor; for age, mayor and menor."
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "comparatives",
+        "que-como"
+      ],
+      "prompt": "Hoy hace menos frío ___ ayer.",
+      "options": [
+        "que",
+        "como",
+        "de",
+        "tan"
+      ],
+      "correct": 0,
+      "explanation": "Menos … que.",
+      "optionNotes": [
+        null,
+        "Como goes with tan or tanto.",
+        "De is for numbers: menos de diez.",
+        "Tan cannot follow menos."
+      ]
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "comparatives",
+        "tanto"
+      ],
+      "prompt": "No tengo ___ libros como tú.",
+      "options": [
+        "tan",
+        "tantos",
+        "tanto",
+        "tantas"
+      ],
+      "correct": 1,
+      "explanation": "Before a noun use tanto, which agrees: tantos libros.",
+      "optionNotes": [
+        "Tan goes before an adjective, not a noun.",
+        null,
+        "Libros is masculine plural: tantos.",
+        "Libros is masculine: tantos."
+      ]
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "comparatives",
+        "mas-de"
+      ],
+      "prompt": "En el concierto había más ___ mil personas.",
+      "options": [
+        "que",
+        "de",
+        "como",
+        "a"
+      ],
+      "correct": 1,
+      "explanation": "Before a number, “more than” is más de.",
+      "optionNotes": [
+        "Before a number use de, not que.",
+        null,
+        "Como is for tan … como.",
+        "Comparisons take que or de, not a."
+      ]
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "superlatives"
+      ],
+      "context": "“It's the tallest building in the city.”",
+      "text": "Es el edificio {{1}} alto {{2}} la ciudad.",
+      "gaps": [
+        {
+          "accepted": [
+            "más"
+          ]
+        },
+        {
+          "accepted": [
+            "de"
+          ]
+        }
+      ],
+      "explanation": "Superlative: el + noun + más + adjective + de."
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-06",
+      "type": "find-error",
+      "tags": [
+        "comparatives",
+        "irregular"
+      ],
+      "tokens": [
+        "Esta",
+        "película",
+        "es",
+        "más",
+        "mejor",
+        "que",
+        "la",
+        "otra."
+      ],
+      "errorRange": [
+        3,
+        4
+      ],
+      "fixes": [
+        "mejor"
+      ],
+      "explanation": "Mejor already means “more good”: es mejor que la otra."
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-07",
+      "type": "find-error",
+      "tags": [
+        "comparatives",
+        "mas-de"
+      ],
+      "tokens": [
+        "Mi",
+        "abuela",
+        "tiene",
+        "más",
+        "que",
+        "noventa",
+        "años."
+      ],
+      "errorRange": [
+        4,
+        4
+      ],
+      "fixes": [
+        "de"
+      ],
+      "explanation": "Before a number, “more than” is más de."
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-08",
+      "type": "transformation",
+      "tags": [
+        "comparatives",
+        "tan-como"
+      ],
+      "source": "Pedro es alto. Su padre es alto también. (They are the same height.)",
+      "keyword": "tan",
+      "before": "Pedro es",
+      "after": "su padre.",
+      "answers": [
+        "tan alto como"
+      ],
+      "explanation": "Equal: tan + adjective + como."
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-09",
+      "type": "match",
+      "tags": [
+        "comparatives",
+        "superlatives"
+      ],
+      "mode": "translation",
+      "prompt": "Match each phrase with its meaning.",
+      "pairs": [
+        [
+          "más caro que",
+          "more expensive than"
+        ],
+        [
+          "menos caro que",
+          "less expensive than"
+        ],
+        [
+          "tan caro como",
+          "as expensive as"
+        ],
+        [
+          "el más caro",
+          "the most expensive"
+        ]
+      ],
+      "explanation": "Más / menos … que compares; tan … como says equal; el más … is the superlative."
+    },
+    {
+      "id": "a2-grammar-comparatives-superlatives-1-10",
+      "type": "translate",
+      "tags": [
+        "superlatives",
+        "irregular"
+      ],
+      "source": "She is the youngest in the family.",
+      "accepted": [
+        "Es la menor de la familia.",
+        "Ella es la menor de la familia.",
+        "Es la más joven de la familia.",
+        "Ella es la más joven de la familia.",
+        "Es la más pequeña de la familia.",
+        "Ella es la más pequeña de la familia."
+      ],
+      "explanation": "Superlative: la menor / la más joven + de la familia."
+    }
+  ]
+}
