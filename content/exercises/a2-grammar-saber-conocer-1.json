@@ -1,0 +1,265 @@
+{
+  "version": 1,
+  "id": "a2-grammar-saber-conocer-1",
+  "topic": "a2-grammar-saber-conocer",
+  "level": "A2",
+  "title": "saber, conocer, pedir, preguntar: check yourself",
+  "intro": "10 tasks: knowing facts, people and places; asking for things and asking questions.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-grammar-saber-conocer-1-01",
+      "type": "paradigm",
+      "tags": [
+        "pedir",
+        "present"
+      ],
+      "prompt": "Write the present of pedir.",
+      "lemma": "pedir",
+      "gloss": "to ask for, to order",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "pido"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "pides"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "pide"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "pedimos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "pedís"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "piden"
+          ]
+        }
+      ],
+      "explanation": "Pedir changes e → i in the stressed forms: pido, pides, pide, piden; not in pedimos and pedís."
+    },
+    {
+      "id": "a2-grammar-saber-conocer-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "saber",
+        "skills"
+      ],
+      "prompt": "Mi abuela ___ hacer un pan buenísimo.",
+      "options": [
+        "conoce",
+        "sabes",
+        "sabe",
+        "conoce a"
+      ],
+      "correct": 2,
+      "explanation": "A skill: saber + infinitive. Mi abuela = ella, so sabe.",
+      "optionNotes": [
+        "Conocer is for people and places, not skills.",
+        "Sabes is the tú form.",
+        null,
+        "Conocer is not used for skills, and a is not needed."
+      ]
+    },
+    {
+      "id": "a2-grammar-saber-conocer-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "conocer",
+        "personal-a"
+      ],
+      "prompt": "¿Conoces ___ Laura?",
+      "options": [
+        "a",
+        "la",
+        "de",
+        "con"
+      ],
+      "correct": 0,
+      "explanation": "A person after conocer takes the personal a.",
+      "optionNotes": [
+        null,
+        "Names of people take no article here; they take a.",
+        "Conocer does not take de.",
+        "Conocer does not take con."
+      ]
+    },
+    {
+      "id": "a2-grammar-saber-conocer-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "saber",
+        "conocer"
+      ],
+      "context": "“I know Lima very well, but I don't know where your hotel is.”",
+      "text": "{{1}} Lima muy bien, pero no {{2}} dónde está tu hotel.",
+      "gaps": [
+        {
+          "accepted": [
+            "Conozco",
+            "Yo conozco"
+          ],
+          "hint": "conocer"
+        },
+        {
+          "accepted": [
+            "sé"
+          ],
+          "hint": "saber"
+        }
+      ],
+      "explanation": "A place you know: conocer (conozco). Information after dónde: saber (sé)."
+    },
+    {
+      "id": "a2-grammar-saber-conocer-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "pedir",
+        "present"
+      ],
+      "context": "“At the bar I always order a coffee with milk.”",
+      "text": "En el bar siempre {{1}} un café con leche.",
+      "gaps": [
+        {
+          "accepted": [
+            "pido"
+          ],
+          "hint": "pedir"
+        }
+      ],
+      "explanation": "Ordering is pedir; e → i in the yo form: pido."
+    },
+    {
+      "id": "a2-grammar-saber-conocer-1-06",
+      "type": "find-error",
+      "tags": [
+        "pedir",
+        "preguntar"
+      ],
+      "tokens": [
+        "En",
+        "el",
+        "restaurante",
+        "pregunté",
+        "un",
+        "vaso",
+        "de",
+        "agua."
+      ],
+      "errorRange": [
+        3,
+        3
+      ],
+      "fixes": [
+        "pedí"
+      ],
+      "explanation": "Asking for something is pedir: En el restaurante pedí un vaso de agua."
+    },
+    {
+      "id": "a2-grammar-saber-conocer-1-07",
+      "type": "find-error",
+      "tags": [
+        "saber",
+        "conocer"
+      ],
+      "tokens": [
+        "No",
+        "conozco",
+        "cuántos",
+        "años",
+        "tiene."
+      ],
+      "errorRange": [
+        1,
+        1
+      ],
+      "fixes": [
+        "sé"
+      ],
+      "explanation": "Information after cuántos, dónde or qué takes saber: No sé cuántos años tiene."
+    },
+    {
+      "id": "a2-grammar-saber-conocer-1-08",
+      "type": "short-answer",
+      "tags": [
+        "conocer",
+        "preterite"
+      ],
+      "prompt": "Conocer in the preterite means “met”. Complete: Yo ___ a mi novio en una fiesta.",
+      "accepted": [
+        "conocí"
+      ],
+      "explanation": "Meeting someone for the first time: conocer in the preterite, conocí."
+    },
+    {
+      "id": "a2-grammar-saber-conocer-1-09",
+      "type": "match",
+      "tags": [
+        "saber",
+        "conocer",
+        "pedir"
+      ],
+      "mode": "response",
+      "prompt": "Match each question with the best reply.",
+      "pairs": [
+        [
+          "¿Sabes dónde está el baño?",
+          "Sí, al lado de la cocina."
+        ],
+        [
+          "¿Conoces a Marta?",
+          "Sí, es mi vecina."
+        ],
+        [
+          "¿Qué vas a pedir?",
+          "La sopa del día."
+        ],
+        [
+          "¿Sabes tocar la guitarra?",
+          "No, pero sé tocar el piano."
+        ]
+      ],
+      "explanation": "Saber: information and skills. Conocer: people. Pedir: what you order."
+    },
+    {
+      "id": "a2-grammar-saber-conocer-1-10",
+      "type": "translate",
+      "tags": [
+        "saber"
+      ],
+      "source": "I don't know his phone number.",
+      "accepted": [
+        "No sé su número de teléfono.",
+        "Yo no sé su número de teléfono.",
+        "No sé su número.",
+        "Yo no sé su número.",
+        "No sé cuál es su número de teléfono.",
+        "No me sé su número de teléfono."
+      ],
+      "hint": "number = el número",
+      "explanation": "A fact or a piece of information takes saber: no sé."
+    }
+  ]
+}

@@ -1,0 +1,234 @@
+{
+  "version": 1,
+  "id": "a2-grammar-connectors-basic-1",
+  "topic": "a2-grammar-connectors-basic",
+  "level": "A2",
+  "title": "Connectors: check yourself",
+  "intro": "10 tasks: y / e, pero, porque, por eso, así que, también and tampoco.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-grammar-connectors-basic-1-01",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "pero"
+      ],
+      "prompt": "Quería ir a la fiesta, ___ no pude.",
+      "options": [
+        "porque",
+        "pero",
+        "por eso",
+        "cuando"
+      ],
+      "correct": 1,
+      "explanation": "Contrast: pero (but).",
+      "optionNotes": [
+        "Porque gives a cause; “I wanted to go because I couldn't” makes no sense.",
+        null,
+        "Por eso gives a result; it makes no sense here.",
+        "Cuando means “when”; it makes no sense here."
+      ]
+    },
+    {
+      "id": "a2-grammar-connectors-basic-1-02",
+      "type": "multiple-choice",
+      "kind": "function",
+      "tags": [
+        "tampoco"
+      ],
+      "prompt": "—No tengo hambre.\n—Yo ___. (Me neither.)",
+      "options": [
+        "también",
+        "tampoco",
+        "también no",
+        "sí"
+      ],
+      "correct": 1,
+      "explanation": "To agree with a negative sentence, use tampoco.",
+      "optionNotes": [
+        "También agrees with a positive sentence.",
+        null,
+        "Spanish never says también no.",
+        "Yo sí means “I am”, so it disagrees."
+      ]
+    },
+    {
+      "id": "a2-grammar-connectors-basic-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "y-e"
+      ],
+      "prompt": "Hablo francés ___ inglés. (I speak French and English.)",
+      "options": [
+        "y",
+        "e",
+        "u",
+        "a"
+      ],
+      "correct": 1,
+      "explanation": "Before a word that starts with the sound i (i-, hi-), y becomes e: francés e inglés.",
+      "optionNotes": [
+        "Before inglés, y becomes e.",
+        null,
+        "U means “or” (before o-).",
+        "A means “to”."
+      ]
+    },
+    {
+      "id": "a2-grammar-connectors-basic-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "porque",
+        "questions"
+      ],
+      "context": "“Why didn't you come?” “Because I was sick.”",
+      "text": "—¿{{1}} no viniste? —{{2}} estaba enfermo.",
+      "gaps": [
+        {
+          "accepted": [
+            "Por qué"
+          ]
+        },
+        {
+          "accepted": [
+            "Porque"
+          ]
+        }
+      ],
+      "explanation": "Why? is ¿por qué?, two words with an accent. Because is porque, one word without an accent."
+    },
+    {
+      "id": "a2-grammar-connectors-basic-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "asi-que",
+        "result"
+      ],
+      "context": "“It was raining, so we stayed at home.”",
+      "text": "Llovía, {{1}} nos quedamos en casa.",
+      "gaps": [
+        {
+          "accepted": [
+            "así que",
+            "por eso",
+            "entonces",
+            "por lo tanto"
+          ]
+        }
+      ],
+      "explanation": "A result: así que or por eso (so, that's why); entonces is also common in speech."
+    },
+    {
+      "id": "a2-grammar-connectors-basic-1-06",
+      "type": "find-error",
+      "tags": [
+        "porque",
+        "accents"
+      ],
+      "tokens": [
+        "¿Porque",
+        "no",
+        "vienes",
+        "a",
+        "la",
+        "fiesta?"
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "¿Por qué"
+      ],
+      "explanation": "A question with “why” takes por qué: two words and an accent."
+    },
+    {
+      "id": "a2-grammar-connectors-basic-1-07",
+      "type": "find-error",
+      "tags": [
+        "y-e"
+      ],
+      "tokens": [
+        "Mis",
+        "hijos",
+        "se",
+        "llaman",
+        "Pablo",
+        "y",
+        "Iván."
+      ],
+      "errorRange": [
+        5,
+        5
+      ],
+      "fixes": [
+        "e"
+      ],
+      "explanation": "Before Iván (sound i), y becomes e: Pablo e Iván."
+    },
+    {
+      "id": "a2-grammar-connectors-basic-1-08",
+      "type": "transformation",
+      "tags": [
+        "porque"
+      ],
+      "source": "Estoy cansado. No salgo esta noche.",
+      "keyword": "porque",
+      "before": "No salgo esta noche",
+      "after": ".",
+      "answers": [
+        "porque estoy cansado",
+        "porque estoy cansada",
+        "porque yo estoy cansado",
+        "porque yo estoy cansada"
+      ],
+      "explanation": "Porque introduces the cause: No salgo esta noche porque estoy cansado."
+    },
+    {
+      "id": "a2-grammar-connectors-basic-1-09",
+      "type": "match",
+      "tags": [
+        "tambien",
+        "tampoco"
+      ],
+      "mode": "response",
+      "prompt": "Match each sentence with the best reply.",
+      "pairs": [
+        [
+          "No me gusta el café.",
+          "A mí tampoco."
+        ],
+        [
+          "Me encanta esta canción.",
+          "A mí también."
+        ],
+        [
+          "No trabajo mañana.",
+          "Yo tampoco."
+        ],
+        [
+          "Vivo en el centro.",
+          "Yo también."
+        ]
+      ],
+      "explanation": "También after a positive sentence, tampoco after a negative one. With gustar and encantar the reply starts with a mí."
+    },
+    {
+      "id": "a2-grammar-connectors-basic-1-10",
+      "type": "translate",
+      "tags": [
+        "tampoco"
+      ],
+      "source": "My brother doesn't eat meat either.",
+      "accepted": [
+        "Mi hermano tampoco come carne.",
+        "Mi hermano no come carne tampoco.",
+        "Tampoco come carne mi hermano."
+      ],
+      "hint": "meat = la carne",
+      "explanation": "Tampoco before the verb replaces no; after the verb you need no before it."
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-functions-tickets-bookings-problems",
+  "topic": "a2-functions-tickets-bookings-problems",
+  "level": "A2",
+  "title": "Stop: bookings and problems",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-functions-tickets-bookings-problems-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Quería reservar una mesa ___ cuatro personas.",
+      "options": [
+        "por",
+        "en",
+        "para",
+        "a"
+      ],
+      "correct": 2,
+      "explanation": "The number of people in a booking takes para.",
+      "optionNotes": [
+        "Por is not used for the number of people.",
+        "En is not used here.",
+        null,
+        "A is not used here."
+      ]
+    },
+    {
+      "id": "a2-functions-tickets-bookings-problems-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "El aire acondicionado no ___.",
+      "options": [
+        "funciona",
+        "trabaja",
+        "es",
+        "hace"
+      ],
+      "correct": 0,
+      "explanation": "Machines that do not work: no funciona.",
+      "optionNotes": [
+        null,
+        "Trabajar is for people: a machine funciona.",
+        "Ser does not say if something works.",
+        "Hacer does not say if something works."
+      ]
+    },
+    {
+      "id": "a2-functions-tickets-bookings-problems-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "La habitación ___ sucia.",
+      "options": [
+        "es",
+        "tiene",
+        "hay",
+        "está"
+      ],
+      "correct": 3,
+      "explanation": "A state at the moment takes estar: está sucia.",
+      "optionNotes": [
+        "A state at the moment takes estar, not ser.",
+        "Tener does not go with an adjective like this.",
+        "Hay does not go with an adjective like this.",
+        null
+      ]
+    },
+    {
+      "id": "a2-functions-tickets-bookings-problems-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "At the hotel desk, you say you have a booking:",
+      "options": [
+        "Estoy una reserva a nombre de Ruiz.",
+        "Tengo una reserva por nombre de Ruiz.",
+        "Tengo una reserva a nombre de Ruiz.",
+        "Tengo una reserva al nombre Ruiz."
+      ],
+      "correct": 2,
+      "explanation": "The phrase is tener una reserva a nombre de…",
+      "optionNotes": [
+        "You have a booking: tener, not estar.",
+        "The phrase is a nombre de, not por nombre de.",
+        null,
+        "The phrase is a nombre de, not al nombre."
+      ]
+    }
+  ]
+}

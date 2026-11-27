@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-grammar-por-para-basics",
+  "topic": "a2-grammar-por-para-basics",
+  "level": "A2",
+  "title": "Stop: por and para",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-grammar-por-para-basics-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Este regalo es ___ ti.",
+      "options": [
+        "por",
+        "para",
+        "a",
+        "de"
+      ],
+      "correct": 1,
+      "explanation": "The person who gets something takes para: es para ti.",
+      "optionNotes": [
+        "Por is for a cause or a route, not for the person who gets something.",
+        null,
+        "A ti means “to you”, not “for you” here.",
+        "De ti would mean “of you” or “from you”."
+      ]
+    },
+    {
+      "id": "a2-grammar-por-para-basics-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Gracias ___ la invitación.",
+      "options": [
+        "para",
+        "de",
+        "por",
+        "a"
+      ],
+      "correct": 2,
+      "explanation": "Thanks always take por: gracias por la invitación.",
+      "optionNotes": [
+        "English “for” is not para after gracias.",
+        "Gracias takes por, not de.",
+        null,
+        "Gracias takes por, not a."
+      ]
+    },
+    {
+      "id": "a2-grammar-por-para-basics-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ahorro dinero ___ comprar una bicicleta. (I'm saving money to buy a bike.)",
+      "options": [
+        "para",
+        "por",
+        "de",
+        "a"
+      ],
+      "correct": 0,
+      "explanation": "Purpose (in order to) is para + infinitive.",
+      "optionNotes": [
+        null,
+        "Por + infinitive gives a cause, not a purpose.",
+        "De is not used for a purpose.",
+        "A is not used for a purpose after ahorrar."
+      ]
+    },
+    {
+      "id": "a2-grammar-por-para-basics-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Te llamo ___ teléfono esta noche.",
+      "options": [
+        "para",
+        "en",
+        "por",
+        "con"
+      ],
+      "correct": 2,
+      "explanation": "The means of communication takes por: por teléfono.",
+      "optionNotes": [
+        "Para is for a goal, not a means.",
+        "Spanish says por teléfono, not en teléfono.",
+        null,
+        "Spanish says por teléfono, not con teléfono."
+      ]
+    }
+  ]
+}

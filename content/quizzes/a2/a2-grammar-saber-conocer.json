@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-grammar-saber-conocer",
+  "topic": "a2-grammar-saber-conocer",
+  "level": "A2",
+  "title": "Stop: saber, conocer, pedir, preguntar",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-grammar-saber-conocer-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿___ a mi hermano Pablo?",
+      "options": [
+        "Sabes",
+        "Conoces",
+        "Pides",
+        "Conozco"
+      ],
+      "correct": 1,
+      "explanation": "A person you are familiar with takes conocer (+ a).",
+      "optionNotes": [
+        "Saber is for facts and skills, not people.",
+        null,
+        "Pedir means “to ask for”.",
+        "Conozco is the yo form; the question is to tú: conoces."
+      ]
+    },
+    {
+      "id": "a2-grammar-saber-conocer-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "No ___ dónde está la estación.",
+      "options": [
+        "sé",
+        "conozco",
+        "sabo",
+        "conoce"
+      ],
+      "correct": 0,
+      "explanation": "Information after dónde, qué or cuándo takes saber; the yo form is sé.",
+      "optionNotes": [
+        null,
+        "Conocer is for people and places, not for information after dónde.",
+        "The yo form of saber is irregular: sé.",
+        "Conocer does not go with dónde, and conoce is not the yo form."
+      ]
+    },
+    {
+      "id": "a2-grammar-saber-conocer-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "En el restaurante, Carlos ___ la cuenta.",
+      "options": [
+        "preguntó",
+        "pidió por",
+        "pedió",
+        "pidió"
+      ],
+      "correct": 3,
+      "explanation": "Asking for something is pedir, without a preposition; the preterite is pidió (e → i).",
+      "optionNotes": [
+        "Preguntar is for questions, not for asking for something.",
+        "Pedir already means “ask for”: no por.",
+        "Pedir changes e → i in the preterite: pidió.",
+        null
+      ]
+    },
+    {
+      "id": "a2-grammar-saber-conocer-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ayer yo ___ a un señor dónde estaba el museo.",
+      "options": [
+        "le pedí",
+        "le conocí",
+        "le pregunté",
+        "lo pregunté"
+      ],
+      "correct": 2,
+      "explanation": "Asking a question is preguntar; le is the person you ask.",
+      "optionNotes": [
+        "Pedir is for asking for something, not for asking a question.",
+        "Conocer means “to know” or “to meet”, not “to ask”.",
+        null,
+        "The person you ask is an indirect object: le, not lo."
+      ]
+    }
+  ]
+}
