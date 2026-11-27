@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-verbs-preterite-irregular",
+  "topic": "a2-verbs-preterite-irregular",
+  "level": "A2",
+  "title": "Stop: irregular preterite",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-verbs-preterite-irregular-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "El sábado pasado (yo) ___ al cine con Diego.",
+      "options": [
+        "fue",
+        "fui",
+        "fuiste",
+        "voy"
+      ],
+      "correct": 1,
+      "explanation": "Ir in the preterite: fui, fuiste, fue… The yo form is fui.",
+      "optionNotes": [
+        "Fue is for él, ella, usted.",
+        null,
+        "Fuiste is for tú.",
+        "Voy is the present; el sábado pasado needs the past."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-irregular-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi hermana ___ la cena anoche. (hacer)",
+      "options": [
+        "hació",
+        "hizó",
+        "hizo",
+        "hice"
+      ],
+      "correct": 2,
+      "explanation": "Hacer has the stem hic- and writes hizo with z in the él / ella form. Irregular preterites have no written accent.",
+      "optionNotes": [
+        "Hacer is irregular: hice, hiciste, hizo.",
+        "Irregular preterites have no written accent.",
+        null,
+        "Hice is for yo."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-irregular-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Por qué no ___ (tú) venir a la fiesta?",
+      "options": [
+        "pudiste",
+        "podiste",
+        "pudistes",
+        "pudo"
+      ],
+      "correct": 0,
+      "explanation": "Poder has the stem pud- in the preterite: pude, pudiste, pudo.",
+      "optionNotes": [
+        null,
+        "Poder changes its stem to pud-.",
+        "The tú form has no final -s.",
+        "Pudo is for él, ella, usted."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-irregular-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mis padres ___ que sí. (decir)",
+      "options": [
+        "dijieron",
+        "dijeron",
+        "decieron",
+        "dijo"
+      ],
+      "correct": 1,
+      "explanation": "Decir has the stem dij-; after j the ellos form ends in -eron: dijeron.",
+      "optionNotes": [
+        "After j the ending is -eron, not -ieron.",
+        null,
+        "Decir changes its stem to dij-.",
+        "Dijo is for él, ella, usted; mis padres = ellos."
+      ]
+    }
+  ]
+}

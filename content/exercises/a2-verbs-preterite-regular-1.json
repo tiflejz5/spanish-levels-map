@@ -1,0 +1,254 @@
+{
+  "version": 1,
+  "id": "a2-verbs-preterite-regular-1",
+  "topic": "a2-verbs-preterite-regular",
+  "level": "A2",
+  "title": "Regular preterite: check yourself",
+  "intro": "10 tasks: endings, accents, spelling changes and time words.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-verbs-preterite-regular-1-01",
+      "type": "paradigm",
+      "tags": [
+        "preterite",
+        "ar-verbs"
+      ],
+      "prompt": "Write the preterite of trabajar.",
+      "lemma": "trabajar",
+      "gloss": "to work",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "trabajé"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "trabajaste"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "trabajó"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "trabajamos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "trabajasteis"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "trabajaron"
+          ]
+        }
+      ],
+      "explanation": "-ar verbs: -é, -aste, -ó, -amos, -asteis, -aron. The yo and él forms have a written accent."
+    },
+    {
+      "id": "a2-verbs-preterite-regular-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "preterite",
+        "agreement"
+      ],
+      "prompt": "El verano pasado mis primos ___ en un hotel.",
+      "options": [
+        "trabajó",
+        "trabajaron",
+        "trabajamos",
+        "trabajan"
+      ],
+      "correct": 1,
+      "explanation": "Mis primos = ellos: trabajaron.",
+      "optionNotes": [
+        "Trabajó is for one person.",
+        null,
+        "Trabajamos is for nosotros.",
+        "Trabajan is the present; el verano pasado needs the past."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-regular-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "preterite",
+        "accents"
+      ],
+      "prompt": "Ayer mi madre ___ a casa muy tarde.",
+      "options": [
+        "llego",
+        "llegó",
+        "llegué",
+        "llegaste"
+      ],
+      "correct": 1,
+      "explanation": "Mi madre = ella: llegó, with an accent on the o.",
+      "optionNotes": [
+        "Without the accent, llego is the present: “I arrive”.",
+        null,
+        "Llegué is for yo.",
+        "Llegaste is for tú."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-regular-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "preterite",
+        "ar-verbs"
+      ],
+      "context": "Last night I had dinner at home and listened to music.",
+      "text": "Anoche {{1}} en casa y {{2}} música.",
+      "gaps": [
+        {
+          "accepted": [
+            "cené",
+            "yo cené"
+          ],
+          "hint": "cenar"
+        },
+        {
+          "accepted": [
+            "escuché"
+          ],
+          "hint": "escuchar"
+        }
+      ],
+      "explanation": "The yo form of -ar verbs in the preterite ends in -é: cené, escuché."
+    },
+    {
+      "id": "a2-verbs-preterite-regular-1-05",
+      "type": "find-error",
+      "tags": [
+        "preterite",
+        "tu-form"
+      ],
+      "tokens": [
+        "Ayer",
+        "tú",
+        "comistes",
+        "en",
+        "casa."
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "comiste"
+      ],
+      "explanation": "The tú form of the preterite has no final -s: comiste."
+    },
+    {
+      "id": "a2-verbs-preterite-regular-1-06",
+      "type": "find-error",
+      "tags": [
+        "preterite",
+        "time-words"
+      ],
+      "tokens": [
+        "Ayer",
+        "por",
+        "la",
+        "tarde",
+        "yo",
+        "juego",
+        "al",
+        "tenis",
+        "con",
+        "Marta."
+      ],
+      "errorRange": [
+        5,
+        5
+      ],
+      "fixes": [
+        "jugué"
+      ],
+      "explanation": "Ayer por la tarde is a finished time, so the verb is in the preterite: jugué (g → gu before é)."
+    },
+    {
+      "id": "a2-verbs-preterite-regular-1-07",
+      "type": "short-answer",
+      "tags": [
+        "preterite",
+        "spelling"
+      ],
+      "prompt": "Write the yo form of the preterite: empezar → (yo) ___",
+      "accepted": [
+        "empecé"
+      ],
+      "explanation": "Verbs in -zar write -cé in the yo form: empecé."
+    },
+    {
+      "id": "a2-verbs-preterite-regular-1-08",
+      "type": "transformation",
+      "tags": [
+        "preterite",
+        "time-words"
+      ],
+      "source": "Todos los días como en casa.",
+      "keyword": "ayer",
+      "before": "",
+      "after": "en casa.",
+      "answers": [
+        "Ayer comí",
+        "Ayer yo comí",
+        "Yo ayer comí",
+        "Comí ayer"
+      ],
+      "explanation": "Ayer is a finished time: the present como becomes the preterite comí."
+    },
+    {
+      "id": "a2-verbs-preterite-regular-1-09",
+      "type": "reorder",
+      "tags": [
+        "preterite",
+        "hace"
+      ],
+      "context": "I finished college five years ago.",
+      "answers": [
+        "Terminé la universidad hace cinco años.",
+        "Hace cinco años terminé la universidad."
+      ],
+      "explanation": "Hace + a length of time means “ago”. It can go at the end or at the start."
+    },
+    {
+      "id": "a2-verbs-preterite-regular-1-10",
+      "type": "translate",
+      "tags": [
+        "preterite",
+        "questions"
+      ],
+      "source": "Did you call your mother yesterday? (to a friend)",
+      "accepted": [
+        "¿Llamaste a tu madre ayer?",
+        "¿Ayer llamaste a tu madre?",
+        "¿Llamaste ayer a tu madre?",
+        "¿Tú llamaste a tu madre ayer?",
+        "¿Llamaste tú a tu madre ayer?",
+        "¿Llamaste a tu mamá ayer?",
+        "¿Ayer llamaste a tu mamá?",
+        "¿Llamaste ayer a tu mamá?"
+      ],
+      "hint": "to call = llamar",
+      "explanation": "No “did” in Spanish: llamaste carries the past. A person after llamar takes a."
+    }
+  ]
+}

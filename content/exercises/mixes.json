@@ -67,6 +67,18 @@
         "a1-grammar-prepositions-place-time",
         "a1-verbs-ir-a-infinitive"
       ]
+    },
+    {
+      "id": "mix-a2-u1",
+      "title": "Unit review: Talking about the past",
+      "description": "Regular and irregular verbs in the pretérito indefinido, mixed.",
+      "level": "A2",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a2-verbs-preterite-regular",
+        "a2-verbs-preterite-irregular"
+      ]
     }
   ]
 }
