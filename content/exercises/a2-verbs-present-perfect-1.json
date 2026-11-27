@@ -1,0 +1,264 @@
+{
+  "version": 1,
+  "id": "a2-verbs-present-perfect-1",
+  "topic": "a2-verbs-present-perfect",
+  "level": "A2",
+  "title": "Present perfect: check yourself",
+  "intro": "10 tasks: haber, participles, ya, todavía no and nunca.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-verbs-present-perfect-1-01",
+      "type": "paradigm",
+      "tags": [
+        "present-perfect",
+        "hacer"
+      ],
+      "prompt": "Write the present perfect of hacer.",
+      "lemma": "hacer",
+      "gloss": "to do, to make",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "he hecho"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "has hecho"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "ha hecho"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "hemos hecho"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "habéis hecho"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "han hecho"
+          ]
+        }
+      ],
+      "explanation": "Only haber changes: he, has, ha, hemos, habéis, han. The participle hecho is irregular and never changes."
+    },
+    {
+      "id": "a2-verbs-present-perfect-1-02",
+      "type": "match",
+      "tags": [
+        "present-perfect",
+        "participles"
+      ],
+      "mode": "halves",
+      "prompt": "Match each infinitive with its participle.",
+      "pairs": [
+        [
+          "decir",
+          "dicho"
+        ],
+        [
+          "poner",
+          "puesto"
+        ],
+        [
+          "ver",
+          "visto"
+        ],
+        [
+          "abrir",
+          "abierto"
+        ]
+      ],
+      "explanation": "These participles are irregular: dicho, puesto, visto, abierto."
+    },
+    {
+      "id": "a2-verbs-present-perfect-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "present-perfect",
+        "haber"
+      ],
+      "prompt": "Mis padres nunca ___ en avión.",
+      "options": [
+        "han viajado",
+        "ha viajado",
+        "han viajados",
+        "hemos viajado"
+      ],
+      "correct": 0,
+      "explanation": "Mis padres = ellos: han viajado. The participle does not change.",
+      "optionNotes": [
+        null,
+        "Ha is for él, ella, usted.",
+        "The participle after haber never changes: viajado.",
+        "Hemos is for nosotros."
+      ]
+    },
+    {
+      "id": "a2-verbs-present-perfect-1-04",
+      "type": "multiple-choice",
+      "kind": "function",
+      "tags": [
+        "present-perfect",
+        "todavia-no"
+      ],
+      "prompt": "—¿Has terminado el informe?\n—No, ___.",
+      "options": [
+        "todavía no",
+        "ya",
+        "nunca",
+        "alguna vez"
+      ],
+      "correct": 0,
+      "explanation": "No, todavía no = No, not yet.",
+      "optionNotes": [
+        null,
+        "Ya means “already”: it does not fit after no.",
+        "No, nunca would mean “no, never”, which does not answer the question.",
+        "Alguna vez means “ever”."
+      ]
+    },
+    {
+      "id": "a2-verbs-present-perfect-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "present-perfect",
+        "experiences"
+      ],
+      "context": "“Have you ever been to Peru?” “No, I've never been there.” (to a friend)",
+      "text": "—¿{{1}} alguna vez en Perú?\n—No, nunca {{2}} allí.",
+      "gaps": [
+        {
+          "accepted": [
+            "Has estado",
+            "Tú has estado"
+          ],
+          "hint": "estar"
+        },
+        {
+          "accepted": [
+            "he estado"
+          ],
+          "hint": "estar"
+        }
+      ],
+      "explanation": "Experiences take the present perfect: has estado, he estado."
+    },
+    {
+      "id": "a2-verbs-present-perfect-1-06",
+      "type": "find-error",
+      "tags": [
+        "present-perfect",
+        "participles"
+      ],
+      "tokens": [
+        "¿Quién",
+        "ha",
+        "abrido",
+        "la",
+        "ventana?"
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "abierto"
+      ],
+      "explanation": "Abrir has an irregular participle: abierto."
+    },
+    {
+      "id": "a2-verbs-present-perfect-1-07",
+      "type": "find-error",
+      "tags": [
+        "present-perfect",
+        "participles"
+      ],
+      "tokens": [
+        "Mi",
+        "hermana",
+        "ha",
+        "escrita",
+        "una",
+        "novela."
+      ],
+      "errorRange": [
+        3,
+        3
+      ],
+      "fixes": [
+        "escrito"
+      ],
+      "explanation": "The participle after haber never changes: ha escrito."
+    },
+    {
+      "id": "a2-verbs-present-perfect-1-08",
+      "type": "short-answer",
+      "tags": [
+        "present-perfect",
+        "participles"
+      ],
+      "prompt": "Write the participle: volver → ___",
+      "accepted": [
+        "vuelto"
+      ],
+      "explanation": "Volver has an irregular participle: vuelto."
+    },
+    {
+      "id": "a2-verbs-present-perfect-1-09",
+      "type": "transformation",
+      "tags": [
+        "present-perfect",
+        "experiences"
+      ],
+      "source": "Visité México en 2019. (Say it as a life experience, without the date.)",
+      "keyword": "estado",
+      "before": "",
+      "after": "en México.",
+      "answers": [
+        "He estado",
+        "Yo he estado",
+        "Ya he estado"
+      ],
+      "explanation": "Without a finished time, a life experience takes the present perfect: He estado en México."
+    },
+    {
+      "id": "a2-verbs-present-perfect-1-10",
+      "type": "translate",
+      "tags": [
+        "present-perfect",
+        "todavia-no"
+      ],
+      "source": "I haven't eaten yet.",
+      "accepted": [
+        "Todavía no he comido.",
+        "Aún no he comido.",
+        "No he comido todavía.",
+        "No he comido aún.",
+        "Yo todavía no he comido.",
+        "Todavía no comí.",
+        "Aún no comí.",
+        "No comí todavía."
+      ],
+      "hint": "to eat = comer",
+      "explanation": "Todavía no / aún no + present perfect. In much of Latin America the preterite is also normal: Todavía no comí."
+    }
+  ]
+}

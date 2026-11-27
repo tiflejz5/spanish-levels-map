@@ -5,6 +5,7 @@ Rules for every writer and reviewer of content (spec 10 §1). The owner's correc
 ## Owner
 
 - Calibration after A1 unit 1 (2026-11-24): no corrections. Explanations, pace and English level stay as in unit 1.
+- Calibration after A2 unit 1 (2026-11-27): no corrections. A2 keeps the A1 style; pages may run close to the 700-word limit.
 
 ## From the reviews
 
@@ -16,3 +17,5 @@ Rules for every writer and reviewer of content (spec 10 §1). The owner's correc
 6. **Accepted answers** include with / without the subject pronoun, *usted* with and without *usted*, *Ud.*, and the Latin American variants that the page mentions (*acá*).
 7. **English:** American spelling (*traveling*, *color*), short sentences; speaker labels in dialogues are English (*Tom and Elena*).
 8. **Multiple choice:** options must differ after normalisation (case and surrounding punctuation are ignored), so never contrast options only by capitals; questions without a ___ gap in a set use `kind: "meaning"`.
+9. **No italics inside a Spanish table cell.** The Spanish column of a `| Spanish | English |` table is already marked as Spanish; `*…*` inside it shows as literal asterisks. Write regional notes there as plain text: *Lo pasé muy bien. (Latin America also: La pasé muy bien.)*
+10. **Translate items** have at most 8 accepted answers (validator); pick the natural variants and drop rare word orders first.

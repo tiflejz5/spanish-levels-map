@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-verbs-preterite-vs-imperfect-basics",
+  "topic": "a2-verbs-preterite-vs-imperfect-basics",
+  "level": "A2",
+  "title": "Stop: indefinido or imperfecto",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-verbs-preterite-vs-imperfect-basics-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mientras (yo) ___ la cena, sonó el teléfono. (preparar)",
+      "options": [
+        "preparaba",
+        "preparé",
+        "preparo",
+        "he preparado"
+      ],
+      "correct": 0,
+      "explanation": "The action in progress is in the imperfect; the event that interrupts it is in the preterite.",
+      "optionNotes": [
+        null,
+        "The cooking was in progress when the phone rang: imperfect.",
+        "Preparo is the present.",
+        "The present perfect does not describe an action in progress."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-vs-imperfect-basics-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ayer ___ a mi profesora en el supermercado. (ver)",
+      "options": [
+        "veía",
+        "vi",
+        "ví",
+        "he visto"
+      ],
+      "correct": 1,
+      "explanation": "One finished action yesterday: preterite. Ver is vi, without an accent.",
+      "optionNotes": [
+        "Veía describes a habit or a background, not one event.",
+        null,
+        "Vi has no written accent.",
+        "Ayer is a finished time: preterite, not the present perfect."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-vs-imperfect-basics-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Cuando era niño, ___ a la playa todos los veranos.",
+      "options": [
+        "fui",
+        "iba",
+        "voy",
+        "fue"
+      ],
+      "correct": 1,
+      "explanation": "Todos los veranos is a repeated habit in the past: imperfect, iba.",
+      "optionNotes": [
+        "A repeated habit takes the imperfect, not the preterite.",
+        null,
+        "Voy is the present.",
+        "Fue is for él, ella, usted, and it is the preterite."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-vs-imperfect-basics-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ las diez cuando llegamos al hotel.",
+      "options": [
+        "Fueron",
+        "Eran",
+        "Son",
+        "Estaban"
+      ],
+      "correct": 1,
+      "explanation": "The time is the background of the event: imperfect, eran.",
+      "optionNotes": [
+        "The time is a background, so it takes the imperfect.",
+        null,
+        "Son is the present.",
+        "The time is told with ser, not estar."
+      ]
+    }
+  ]
+}

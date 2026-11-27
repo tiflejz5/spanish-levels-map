@@ -79,6 +79,19 @@
         "a2-verbs-preterite-regular",
         "a2-verbs-preterite-irregular"
       ]
+    },
+    {
+      "id": "mix-a2-u2",
+      "title": "Unit review: How things used to be",
+      "description": "Imperfect, indefinido or imperfecto, and the present perfect, mixed.",
+      "level": "A2",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a2-verbs-imperfect",
+        "a2-verbs-preterite-vs-imperfect-basics",
+        "a2-verbs-present-perfect"
+      ]
     }
   ]
 }

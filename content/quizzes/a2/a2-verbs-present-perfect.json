@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-verbs-present-perfect",
+  "topic": "a2-verbs-present-perfect",
+  "level": "A2",
+  "title": "Stop: present perfect",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-verbs-present-perfect-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿___ estado alguna vez en Cuba? (tú)",
+      "options": [
+        "Has",
+        "Hay",
+        "Tienes",
+        "Eres"
+      ],
+      "correct": 0,
+      "explanation": "The present perfect is haber + participle: has estado.",
+      "optionNotes": [
+        null,
+        "Hay means “there is”.",
+        "The helper verb is haber, not tener.",
+        "Eres is ser in the present."
+      ]
+    },
+    {
+      "id": "a2-verbs-present-perfect-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Todavía no he ___ la cena. (hacer)",
+      "options": [
+        "hacido",
+        "hecho",
+        "hice",
+        "hacer"
+      ],
+      "correct": 1,
+      "explanation": "Hacer has an irregular participle: hecho.",
+      "optionNotes": [
+        "Hacer does not take -ido: the participle is hecho.",
+        null,
+        "Hice is the preterite.",
+        "After haber comes the participle, not the infinitive."
+      ]
+    },
+    {
+      "id": "a2-verbs-present-perfect-q3",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Which sentence is correct?",
+      "options": [
+        "Nunca he estado en Chile.",
+        "He nunca estado en Chile.",
+        "Nunca estado he en Chile.",
+        "He estado nunca en Chile."
+      ],
+      "correct": 0,
+      "explanation": "Nunca goes before haber. After the verb you need no: No he estado nunca en Chile.",
+      "optionNotes": [
+        null,
+        "Nothing goes between haber and the participle.",
+        "Haber comes before the participle.",
+        "Nunca after the verb needs no before it: No he estado nunca."
+      ]
+    },
+    {
+      "id": "a2-verbs-present-perfect-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ayer ___ con Marta.",
+      "options": [
+        "he hablado",
+        "hablé",
+        "hablo",
+        "he hablé"
+      ],
+      "correct": 1,
+      "explanation": "Ayer is a finished time, so it takes the preterite everywhere.",
+      "optionNotes": [
+        "Ayer is a finished time: preterite, not the present perfect.",
+        null,
+        "Hablo is the present.",
+        "After haber comes the participle: hablado."
+      ]
+    }
+  ]
+}
