@@ -8,7 +8,7 @@ window.LM = window.LM || {};
 (function (LM) {
   "use strict";
 
-  LM.VERSION = "159"; // lm-version (rewritten by tools/build.js --bump; do not edit by hand)
+  LM.VERSION = "160"; // lm-version (rewritten by tools/build.js --bump; do not edit by hand)
 
   LM.APP = {
     id: "es",
