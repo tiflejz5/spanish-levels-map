@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-functions-invitations-plans",
+  "topic": "a2-functions-invitations-plans",
+  "level": "A2",
+  "title": "Stop: invitations and plans",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-functions-invitations-plans-q1",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You want to suggest going to the movies. You say:",
+      "options": [
+        "¿Vas al cine?",
+        "¿Vamos al cine?",
+        "¿Fuimos al cine?",
+        "¿Vamos en el cine?"
+      ],
+      "correct": 1,
+      "explanation": "A suggestion often uses the nosotros present as a question: ¿Vamos al cine?",
+      "optionNotes": [
+        "¿Vas al cine? only asks if the other person is going.",
+        null,
+        "Fuimos is the past: “did we go?”.",
+        "Going to a place takes a: al cine."
+      ]
+    },
+    {
+      "id": "a2-functions-invitations-plans-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Te ___ ir a la playa mañana? (Spain)",
+      "options": [
+        "apeteces",
+        "apetezco",
+        "apetecen",
+        "apetece"
+      ],
+      "correct": 3,
+      "explanation": "Apetecer works like gustar: te apetece + infinitive.",
+      "optionNotes": [
+        "Apeteces would mean “you are appealing”.",
+        "The person is not the subject: me apetece, not yo apetezco.",
+        "Apetecen is for plural things; an infinitive takes apetece.",
+        null
+      ]
+    },
+    {
+      "id": "a2-functions-invitations-plans-q3",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "—¿Quedamos el sábado?\n—___ (You say no politely.)",
+      "options": [
+        "Lo siento, el sábado no sé.",
+        "Lo siento, el sábado no puedo.",
+        "No.",
+        "Lo siento, el sábado no conozco."
+      ],
+      "correct": 1,
+      "explanation": "A polite no: lo siento + no puedo, often with a reason.",
+      "optionNotes": [
+        "No sé means “I don't know”.",
+        null,
+        "A bare no sounds rude.",
+        "Conocer is for people and places."
+      ]
+    },
+    {
+      "id": "a2-functions-invitations-plans-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Quedamos ___ las ocho? (Spain)",
+      "options": [
+        "a",
+        "en",
+        "por",
+        "de"
+      ],
+      "correct": 0,
+      "explanation": "A clock time takes a: a las ocho.",
+      "optionNotes": [
+        null,
+        "Spanish does not use en with clock times.",
+        "Por la tarde is a part of the day, not a clock time.",
+        "De does not mark a clock time here."
+      ]
+    }
+  ]
+}

@@ -120,6 +120,19 @@
         "a2-verbs-future-simple",
         "a2-verbs-imperative-affirmative"
       ]
+    },
+    {
+      "id": "mix-a2-u5",
+      "title": "Unit review: Getting things done",
+      "description": "por and para, saber / conocer and pedir / preguntar, and basic connectors with también and tampoco, mixed.",
+      "level": "A2",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a2-grammar-por-para-basics",
+        "a2-grammar-saber-conocer",
+        "a2-grammar-connectors-basic"
+      ]
     }
   ]
 }

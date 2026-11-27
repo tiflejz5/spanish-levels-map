@@ -1,0 +1,236 @@
+{
+  "version": 1,
+  "id": "a2-grammar-por-para-basics-1",
+  "topic": "a2-grammar-por-para-basics",
+  "level": "A2",
+  "title": "por and para: check yourself",
+  "intro": "10 tasks: purpose, people, thanks, price, means and route.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-grammar-por-para-basics-1-01",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "por",
+        "price"
+      ],
+      "prompt": "Pagué veinte euros ___ estos zapatos.",
+      "options": [
+        "para",
+        "por",
+        "de",
+        "en"
+      ],
+      "correct": 1,
+      "explanation": "The price you pay for something takes por.",
+      "optionNotes": [
+        "Para is for a goal or a person, not a price.",
+        null,
+        "De is not used for the price you pay.",
+        "En is not used for the price you pay."
+      ]
+    },
+    {
+      "id": "a2-grammar-por-para-basics-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "para",
+        "deadline"
+      ],
+      "prompt": "Necesito el informe ___ el viernes. (I need the report by Friday.)",
+      "options": [
+        "por",
+        "hasta",
+        "para",
+        "en"
+      ],
+      "correct": 2,
+      "explanation": "A deadline (by) takes para.",
+      "optionNotes": [
+        "A deadline is para, not por.",
+        "Hasta means “until”, not “by”.",
+        null,
+        "Days take no en."
+      ]
+    },
+    {
+      "id": "a2-grammar-por-para-basics-1-03",
+      "type": "multiple-choice",
+      "kind": "function",
+      "tags": [
+        "para",
+        "purpose"
+      ],
+      "prompt": "—¿Para qué estudias español?\n—___",
+      "options": [
+        "Por la mañana.",
+        "Para viajar por Sudamérica.",
+        "Con mi hermana.",
+        "Desde enero."
+      ],
+      "correct": 1,
+      "explanation": "¿Para qué? asks for the purpose; the answer is para + infinitive.",
+      "optionNotes": [
+        "This answers “when?”.",
+        null,
+        "This answers “who with?”.",
+        "This answers “since when?”."
+      ]
+    },
+    {
+      "id": "a2-grammar-por-para-basics-1-04",
+      "type": "gap-fill",
+      "tags": [
+        "por",
+        "para",
+        "thanks"
+      ],
+      "context": "“Thanks a lot for the present. It's perfect for my new house.”",
+      "text": "Muchas gracias {{1}} el regalo. Es perfecto {{2}} mi nueva casa.",
+      "gaps": [
+        {
+          "accepted": [
+            "por"
+          ]
+        },
+        {
+          "accepted": [
+            "para"
+          ]
+        }
+      ],
+      "explanation": "Thanks take por; the thing or person something is meant for takes para."
+    },
+    {
+      "id": "a2-grammar-por-para-basics-1-05",
+      "type": "short-answer",
+      "tags": [
+        "para",
+        "questions"
+      ],
+      "prompt": "Ask what this thing is for: ¿___ sirve esto?",
+      "accepted": [
+        "Para qué"
+      ],
+      "explanation": "¿Para qué? asks for the purpose: ¿Para qué sirve esto? (What is this for?)"
+    },
+    {
+      "id": "a2-grammar-por-para-basics-1-06",
+      "type": "find-error",
+      "tags": [
+        "por",
+        "means"
+      ],
+      "tokens": [
+        "Hablo",
+        "con",
+        "mi",
+        "abuela",
+        "para",
+        "teléfono",
+        "los",
+        "domingos."
+      ],
+      "errorRange": [
+        4,
+        4
+      ],
+      "fixes": [
+        "por"
+      ],
+      "explanation": "The means of communication takes por: por teléfono."
+    },
+    {
+      "id": "a2-grammar-por-para-basics-1-07",
+      "type": "find-error",
+      "tags": [
+        "por",
+        "cause"
+      ],
+      "tokens": [
+        "No",
+        "salimos",
+        "para",
+        "la",
+        "lluvia."
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "por",
+        "a causa de"
+      ],
+      "explanation": "A cause (because of) takes por: por la lluvia."
+    },
+    {
+      "id": "a2-grammar-por-para-basics-1-08",
+      "type": "match",
+      "tags": [
+        "por",
+        "para"
+      ],
+      "mode": "translation",
+      "prompt": "Match each sentence with its meaning.",
+      "pairs": [
+        [
+          "Es para ti.",
+          "It's for you."
+        ],
+        [
+          "Gracias por todo.",
+          "Thanks for everything."
+        ],
+        [
+          "Lo compré por diez euros.",
+          "I bought it for ten euros."
+        ],
+        [
+          "Paso por el parque.",
+          "I go through the park."
+        ],
+        [
+          "Es para el lunes.",
+          "It's due on Monday."
+        ]
+      ],
+      "explanation": "Para: the person and the deadline. Por: the cause, the price and the route."
+    },
+    {
+      "id": "a2-grammar-por-para-basics-1-09",
+      "type": "translate",
+      "tags": [
+        "por",
+        "thanks"
+      ],
+      "source": "Thanks for your help. (to a friend)",
+      "accepted": [
+        "Gracias por tu ayuda.",
+        "Muchas gracias por tu ayuda.",
+        "Gracias por la ayuda.",
+        "Muchas gracias por la ayuda.",
+        "Gracias por ayudarme.",
+        "Muchas gracias por ayudarme."
+      ],
+      "hint": "help = la ayuda",
+      "explanation": "Thanks take por, with a noun or an infinitive."
+    },
+    {
+      "id": "a2-grammar-por-para-basics-1-10",
+      "type": "reorder",
+      "tags": [
+        "para",
+        "purpose"
+      ],
+      "context": "I'm saving money to buy a house.",
+      "answers": [
+        "Ahorro dinero para comprar una casa.",
+        "Para comprar una casa, ahorro dinero."
+      ],
+      "explanation": "Purpose: para + infinitive (in order to)."
+    }
+  ]
+}

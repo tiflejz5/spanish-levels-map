@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-vocabulary-health-body",
+  "topic": "a2-vocabulary-health-body",
+  "level": "A2",
+  "title": "Stop: body, health and feelings",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-vocabulary-health-body-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Me lavo ___ manos antes de comer.",
+      "options": [
+        "mis",
+        "las",
+        "los",
+        "unas"
+      ],
+      "correct": 1,
+      "explanation": "With parts of the body, Spanish uses the article, not the possessive: las manos.",
+      "optionNotes": [
+        "With body parts, use the article: me already says whose hands.",
+        null,
+        "Mano is feminine: las manos.",
+        "Unas is indefinite; you mean your own hands."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-health-body-q2",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "“I have a cold.”",
+      "options": [
+        "Tengo frío.",
+        "Soy resfriado.",
+        "Tengo un frío.",
+        "Estoy resfriado."
+      ],
+      "correct": 3,
+      "explanation": "A cold: estoy resfriado, or estoy resfriada for a woman (also: tengo un resfriado).",
+      "optionNotes": [
+        "Tengo frío means “I'm cold”.",
+        "A state of health takes estar, not ser.",
+        "Un frío is a word-for-word translation; a cold is un resfriado.",
+        null
+      ]
+    },
+    {
+      "id": "a2-vocabulary-health-body-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Hoy mi hermana ___ muy nerviosa: tiene un examen.",
+      "options": [
+        "es",
+        "tiene",
+        "está",
+        "hace"
+      ],
+      "correct": 2,
+      "explanation": "How someone feels at the moment takes estar.",
+      "optionNotes": [
+        "Es nerviosa would describe her character, not how she feels today.",
+        "Tener does not go with nerviosa.",
+        null,
+        "Hacer does not go with nerviosa."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-health-body-q4",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "What does Está embarazada mean?",
+      "options": [
+        "She's pregnant.",
+        "She's embarrassed.",
+        "She's tired.",
+        "She's angry."
+      ],
+      "correct": 0,
+      "explanation": "Embarazada is a false friend: it means “pregnant”. “I'm embarrassed” is me da vergüenza.",
+      "optionNotes": [
+        null,
+        "This is the false friend: embarazada does not mean “embarrassed”.",
+        "Tired is cansada.",
+        "Angry is enfadada (Spain) or enojada (Latin America)."
+      ]
+    }
+  ]
+}

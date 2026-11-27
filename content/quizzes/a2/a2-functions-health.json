@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-functions-health",
+  "topic": "a2-functions-health",
+  "level": "A2",
+  "title": "Stop: health",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-functions-health-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Me ___ la cabeza.",
+      "options": [
+        "duele",
+        "duelen",
+        "duelo",
+        "dolo"
+      ],
+      "correct": 0,
+      "explanation": "Doler works like gustar: one thing hurts, so duele.",
+      "optionNotes": [
+        null,
+        "Duelen is for plural things: me duelen los pies.",
+        "The person is not the subject: me duele, not duelo.",
+        "Dolo is not a form of doler."
+      ]
+    },
+    {
+      "id": "a2-functions-health-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Me ___ los pies.",
+      "options": [
+        "duele",
+        "duelen",
+        "duelo",
+        "duelan"
+      ],
+      "correct": 1,
+      "explanation": "Los pies is plural, so the verb is duelen.",
+      "optionNotes": [
+        "Duele is for one thing.",
+        null,
+        "The person is not the subject.",
+        "Duelan is not the right form here."
+      ]
+    },
+    {
+      "id": "a2-functions-health-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ fiebre y tos.",
+      "options": [
+        "Estoy",
+        "Soy",
+        "Tengo",
+        "Hay"
+      ],
+      "correct": 2,
+      "explanation": "Fever and cough take tener: tengo fiebre, tengo tos.",
+      "optionNotes": [
+        "Estar goes with adjectives like resfriado, not with fiebre.",
+        "Ser is not used for symptoms.",
+        null,
+        "Hay means “there is”."
+      ]
+    },
+    {
+      "id": "a2-functions-health-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "At the pharmacy: ¿Tiene algo ___ la tos?",
+      "options": [
+        "por",
+        "en",
+        "para",
+        "a"
+      ],
+      "correct": 2,
+      "explanation": "A remedy “for” a problem takes para: algo para la tos.",
+      "optionNotes": [
+        "Por gives a cause, not a purpose.",
+        "En is not used here.",
+        null,
+        "A is not used here."
+      ]
+    }
+  ]
+}

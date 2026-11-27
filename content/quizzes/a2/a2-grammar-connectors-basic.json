@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-grammar-connectors-basic",
+  "topic": "a2-grammar-connectors-basic",
+  "level": "A2",
+  "title": "Stop: connectors",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-grammar-connectors-basic-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "No voy a la playa ___ hace frío.",
+      "options": [
+        "por qué",
+        "porque",
+        "por",
+        "para"
+      ],
+      "correct": 1,
+      "explanation": "“Because” is porque: one word, no accent.",
+      "optionNotes": [
+        "¿Por qué? is “why?”, a question.",
+        null,
+        "Por alone cannot join two sentences.",
+        "Para alone cannot join two sentences."
+      ]
+    },
+    {
+      "id": "a2-grammar-connectors-basic-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "—No tengo perro.\n—___ (Me neither.)",
+      "options": [
+        "Yo también.",
+        "Me tampoco.",
+        "Yo tampoco.",
+        "Yo también no."
+      ],
+      "correct": 2,
+      "explanation": "To agree with a negative sentence, use yo tampoco.",
+      "optionNotes": [
+        "También agrees with a positive sentence.",
+        "Me tampoco is not used; with tener the reply starts with yo.",
+        null,
+        "Spanish never says también no: use tampoco."
+      ]
+    },
+    {
+      "id": "a2-grammar-connectors-basic-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ana ___ Isabel son hermanas.",
+      "options": [
+        "y",
+        "e",
+        "o",
+        "u"
+      ],
+      "correct": 1,
+      "explanation": "Before a word that starts with the sound i (i-, hi-), y becomes e.",
+      "optionNotes": [
+        "Before Isabel, y becomes e.",
+        null,
+        "O means “or”.",
+        "U is the form of “or” before o-."
+      ]
+    },
+    {
+      "id": "a2-grammar-connectors-basic-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Perdí el autobús; ___ llegué tarde.",
+      "options": [
+        "por qué",
+        "para eso",
+        "por eso",
+        "porque eso"
+      ],
+      "correct": 2,
+      "explanation": "Por eso (that's why) gives the result.",
+      "optionNotes": [
+        "¿Por qué? is “why?”, a question.",
+        "Para eso means “for that purpose”.",
+        null,
+        "Porque eso is not a connector."
+      ]
+    }
+  ]
+}
