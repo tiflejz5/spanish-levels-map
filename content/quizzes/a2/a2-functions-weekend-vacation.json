@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-functions-weekend-vacation",
+  "topic": "a2-functions-weekend-vacation",
+  "level": "A2",
+  "title": "Stop: last weekend",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-functions-weekend-vacation-q1",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "Monday morning. You ask a friend about the weekend that just ended:",
+      "options": [
+        "¿Qué tal el fin de semana?",
+        "¿Qué haces los fines de semana?",
+        "¿Qué vas a hacer el fin de semana?",
+        "¿Cómo estás el fin de semana?"
+      ],
+      "correct": 0,
+      "explanation": "¿Qué tal el fin de semana? asks how a weekend went.",
+      "optionNotes": [
+        null,
+        "This asks what your friend usually does on weekends.",
+        "This asks about plans for the next weekend.",
+        "This is not a natural question."
+      ]
+    },
+    {
+      "id": "a2-functions-weekend-vacation-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You had a great time at a party. You say:",
+      "options": [
+        "Tuve un buen tiempo.",
+        "Lo pasé muy bien.",
+        "Hizo muy buen tiempo.",
+        "Me pasó muy bien."
+      ],
+      "correct": 1,
+      "explanation": "“Have a good time” is pasarlo bien (Latin America also: pasarla bien): Lo pasé muy bien.",
+      "optionNotes": [
+        "A word-for-word translation of “I had a good time”; Spanish does not say this.",
+        null,
+        "This means “The weather was very good”.",
+        "Me pasó means “it happened to me”; this is not Spanish."
+      ]
+    },
+    {
+      "id": "a2-functions-weekend-vacation-q3",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "—Fui a Cuba de vacaciones y lo pasé genial.\n—___",
+      "options": [
+        "¡Qué pena!",
+        "¡Qué suerte!",
+        "¿Qué vas a hacer?",
+        "De nada."
+      ],
+      "correct": 1,
+      "explanation": "¡Qué suerte! (Lucky you!) reacts to good news.",
+      "optionNotes": [
+        "¡Qué pena! reacts to bad news.",
+        null,
+        "This asks about plans, not about the trip.",
+        "De nada answers gracias."
+      ]
+    },
+    {
+      "id": "a2-functions-weekend-vacation-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "___ fuimos al museo, después comimos y al final volvimos al hotel.",
+      "options": [
+        "Primero",
+        "Al final",
+        "Porque",
+        "Pero"
+      ],
+      "correct": 0,
+      "explanation": "A story starts with primero, goes on with después or luego and ends with al final.",
+      "optionNotes": [
+        null,
+        "Al final is for the last action, and the sentence already has one.",
+        "Porque means “because”.",
+        "Pero means “but”."
+      ]
+    }
+  ]
+}

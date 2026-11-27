@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-functions-describing",
+  "topic": "a2-functions-describing",
+  "level": "A2",
+  "title": "Stop: describing",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-functions-describing-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi padre ___ los ojos azules.",
+      "options": [
+        "es",
+        "está",
+        "tiene",
+        "hay"
+      ],
+      "correct": 2,
+      "explanation": "Features (eyes, hair) take tener and the article: tiene los ojos azules.",
+      "optionNotes": [
+        "Ser + eyes is not possible: say tiene.",
+        "Estar is for location and states, not features.",
+        null,
+        "Hay means “there is”."
+      ]
+    },
+    {
+      "id": "a2-functions-describing-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You want to know what your friend's new apartment is like (Spain). You ask:",
+      "options": [
+        "¿Cómo es tu piso nuevo?",
+        "¿Qué es tu piso nuevo?",
+        "¿Cómo tiene tu piso nuevo?",
+        "¿Cuál es tu piso nuevo?"
+      ],
+      "correct": 0,
+      "explanation": "“What is it like?” is ¿Cómo es…?",
+      "optionNotes": [
+        null,
+        "¿Qué es…? asks for a definition.",
+        "This is not Spanish.",
+        "¿Cuál es…? asks which one."
+      ]
+    },
+    {
+      "id": "a2-functions-describing-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Pablo es una persona muy ___.",
+      "options": [
+        "simpático",
+        "simpática",
+        "simpáticos",
+        "simpáticas"
+      ],
+      "correct": 1,
+      "explanation": "The adjective agrees with persona, which is feminine, also for a man.",
+      "optionNotes": [
+        "The adjective agrees with persona (feminine), not with Pablo.",
+        null,
+        "Persona is singular.",
+        "Persona is singular."
+      ]
+    },
+    {
+      "id": "a2-functions-describing-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "The table is made of wood:",
+      "options": [
+        "La mesa es de madera.",
+        "La mesa está de madera.",
+        "La mesa tiene madera.",
+        "La mesa es madera."
+      ],
+      "correct": 0,
+      "explanation": "What something is made of: ser de + material.",
+      "optionNotes": [
+        null,
+        "The material takes ser, not estar.",
+        "Tiene madera means “it has wood (in it)”.",
+        "The material needs de."
+      ]
+    }
+  ]
+}

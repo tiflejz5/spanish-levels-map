@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-vocabulary-free-time-weather",
+  "topic": "a2-vocabulary-free-time-weather",
+  "level": "A2",
+  "title": "Stop: free time and weather",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-vocabulary-free-time-weather-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Hoy ___ mucho calor.",
+      "options": [
+        "hace",
+        "es",
+        "está",
+        "tiene"
+      ],
+      "correct": 0,
+      "explanation": "Weather takes hacer: hace calor, hace frío, hace sol.",
+      "optionNotes": [
+        null,
+        "Weather takes hacer, not ser.",
+        "Está is used with nublado, not with calor.",
+        "Tener calor is for a person who feels hot."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-free-time-weather-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You feel very cold. You say:",
+      "options": [
+        "Estoy muy frío.",
+        "Tengo mucho frío.",
+        "Soy muy frío.",
+        "Tengo muy frío."
+      ],
+      "correct": 1,
+      "explanation": "People feel cold or hot with tener, and frío is a noun, so mucho: Tengo mucho frío.",
+      "optionNotes": [
+        "Estar frío describes how something feels to the touch; a person feels cold with tener.",
+        null,
+        "Ser frío means being a cold, distant person.",
+        "Frío is a noun here, so it takes mucho, not muy."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-free-time-weather-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi hermana ___ la guitarra en un grupo.",
+      "options": [
+        "juega",
+        "hace",
+        "pone",
+        "toca"
+      ],
+      "correct": 3,
+      "explanation": "Instruments take tocar: tocar la guitarra.",
+      "optionNotes": [
+        "Jugar is for games and sports.",
+        "Hacer is not used with instruments.",
+        "Poner means “to put”.",
+        null
+      ]
+    },
+    {
+      "id": "a2-vocabulary-free-time-weather-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Hoy no hace sol. ___ nublado.",
+      "options": [
+        "Hace",
+        "Está",
+        "Es",
+        "Hay"
+      ],
+      "correct": 1,
+      "explanation": "Nublado is an adjective: está nublado.",
+      "optionNotes": [
+        "Hace goes with nouns (calor, sol), not with nublado.",
+        null,
+        "Nublado here takes estar, not ser.",
+        "Hay goes with nouns: hay niebla."
+      ]
+    }
+  ]
+}

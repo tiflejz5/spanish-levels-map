@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-verbs-imperfect",
+  "topic": "a2-verbs-imperfect",
+  "level": "A2",
+  "title": "Stop: imperfect",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-verbs-imperfect-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Cuando ___ niño, vivía en Sevilla.",
+      "options": [
+        "fui",
+        "era",
+        "estaba",
+        "soy"
+      ],
+      "correct": 1,
+      "explanation": "Childhood is a description of the past: ser in the imperfect, era.",
+      "optionNotes": [
+        "Fui tells a single event; being a child is a background description.",
+        null,
+        "Being a child is not a state with estar.",
+        "Soy is the present."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperfect-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "De pequeños, mis hermanos y yo ___ al fútbol todos los días.",
+      "options": [
+        "jugábamos",
+        "jugabamos",
+        "jugaban",
+        "jugamos"
+      ],
+      "correct": 0,
+      "explanation": "A habit in the past takes the imperfect. Mis hermanos y yo = nosotros: jugábamos, with an accent.",
+      "optionNotes": [
+        null,
+        "The nosotros form of -ar verbs has a written accent: jugábamos.",
+        "Jugaban is for ellos; the subject includes yo.",
+        "Jugamos is the present or the preterite; a past habit takes the imperfect."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperfect-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Antes ___ un cine en esta calle.",
+      "options": [
+        "hay",
+        "había",
+        "habían",
+        "estaba"
+      ],
+      "correct": 1,
+      "explanation": "Hay in the imperfect is había, for one thing or many.",
+      "optionNotes": [
+        "Hay is the present; antes needs the past.",
+        null,
+        "Había never changes: había un cine, había muchos cines.",
+        "Un cine is new information, so it takes hay / había, not estar."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperfect-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Cuando era pequeña, mi abuelo ___ historias todas las noches. (contar)",
+      "options": [
+        "cuentaba",
+        "contaba",
+        "cuenta",
+        "contía"
+      ],
+      "correct": 1,
+      "explanation": "The imperfect has no stem changes: contar → contaba.",
+      "optionNotes": [
+        "Stem changes (o → ue) do not happen in the imperfect.",
+        null,
+        "Cuenta is the present.",
+        "-ar verbs take -aba, not -ía."
+      ]
+    }
+  ]
+}

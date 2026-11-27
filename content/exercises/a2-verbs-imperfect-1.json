@@ -1,0 +1,287 @@
+{
+  "version": 1,
+  "id": "a2-verbs-imperfect-1",
+  "topic": "a2-verbs-imperfect",
+  "level": "A2",
+  "title": "Imperfect: check yourself",
+  "intro": "10 tasks: endings and accents, ser, ir and había, habits and descriptions.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-verbs-imperfect-1-01",
+      "type": "paradigm",
+      "tags": [
+        "imperfect",
+        "ar-verbs"
+      ],
+      "prompt": "Write the imperfect of trabajar.",
+      "lemma": "trabajar",
+      "gloss": "to work",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "trabajaba"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "trabajabas"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "trabajaba"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "trabajábamos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "trabajabais"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "trabajaban"
+          ]
+        }
+      ],
+      "explanation": "-ar verbs: -aba, -abas, -aba, -ábamos, -abais, -aban. Only nosotros has a written accent."
+    },
+    {
+      "id": "a2-verbs-imperfect-1-02",
+      "type": "paradigm",
+      "tags": [
+        "imperfect",
+        "ser"
+      ],
+      "prompt": "Write the imperfect of ser.",
+      "lemma": "ser",
+      "gloss": "to be",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "era"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "eras"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "era"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "éramos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "erais"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "eran"
+          ]
+        }
+      ],
+      "explanation": "Ser is one of the three irregular verbs in the imperfect: era, eras, era, éramos, erais, eran."
+    },
+    {
+      "id": "a2-verbs-imperfect-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "imperfect",
+        "er-ir-verbs"
+      ],
+      "prompt": "Antes mis padres ___ en Valencia.",
+      "options": [
+        "vivían",
+        "vivian",
+        "vivíamos",
+        "viven"
+      ],
+      "correct": 0,
+      "explanation": "Antes points to how things used to be: imperfect. Mis padres = ellos: vivían.",
+      "optionNotes": [
+        null,
+        "-ía- always has a written accent: vivían.",
+        "Vivíamos is for nosotros.",
+        "Viven is the present; antes needs the past."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperfect-1-04",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "tags": [
+        "imperfect",
+        "habits"
+      ],
+      "prompt": "Which sentence describes a habit in the past?",
+      "options": [
+        "Ayer fui al parque.",
+        "Todos los domingos íbamos al parque.",
+        "Mañana voy al parque.",
+        "He ido al parque."
+      ],
+      "correct": 1,
+      "explanation": "A repeated action in the past (todos los domingos) takes the imperfect: íbamos.",
+      "optionNotes": [
+        "One finished action yesterday.",
+        null,
+        "A plan for tomorrow.",
+        "The present perfect: something done recently or once."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperfect-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "imperfect",
+        "descriptions"
+      ],
+      "context": "When I was little, I had a cat called Luna.",
+      "text": "Cuando {{1}} pequeña, {{2}} un gato que se llamaba Luna.",
+      "gaps": [
+        {
+          "accepted": [
+            "era"
+          ],
+          "hint": "ser"
+        },
+        {
+          "accepted": [
+            "tenía"
+          ],
+          "hint": "tener"
+        }
+      ],
+      "explanation": "Descriptions of the past take the imperfect: era pequeña, tenía un gato."
+    },
+    {
+      "id": "a2-verbs-imperfect-1-06",
+      "type": "find-error",
+      "tags": [
+        "imperfect",
+        "haber"
+      ],
+      "tokens": [
+        "Antes",
+        "habían",
+        "muchos",
+        "árboles",
+        "en",
+        "esta",
+        "calle."
+      ],
+      "errorRange": [
+        1,
+        1
+      ],
+      "fixes": [
+        "había"
+      ],
+      "explanation": "Había (there was / there were) never changes, even with a plural noun. Habían is heard in speech, but the standard form is había."
+    },
+    {
+      "id": "a2-verbs-imperfect-1-07",
+      "type": "find-error",
+      "tags": [
+        "imperfect",
+        "accents"
+      ],
+      "tokens": [
+        "Mis",
+        "abuelos",
+        "vivian",
+        "en",
+        "el",
+        "campo."
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "vivían"
+      ],
+      "explanation": "The imperfect ending -ía always has a written accent: vivían."
+    },
+    {
+      "id": "a2-verbs-imperfect-1-08",
+      "type": "short-answer",
+      "tags": [
+        "imperfect",
+        "ir"
+      ],
+      "prompt": "Write the imperfect: (nosotros) ir → ___",
+      "accepted": [
+        "íbamos"
+      ],
+      "explanation": "Ir is irregular in the imperfect: iba, ibas, iba, íbamos, ibais, iban."
+    },
+    {
+      "id": "a2-verbs-imperfect-1-09",
+      "type": "transformation",
+      "tags": [
+        "imperfect",
+        "then-and-now"
+      ],
+      "source": "Ahora vivo en Madrid. (In the past: Sevilla.)",
+      "keyword": "antes",
+      "before": "",
+      "after": "en Sevilla.",
+      "answers": [
+        "Antes vivía",
+        "Antes yo vivía",
+        "Yo antes vivía"
+      ],
+      "explanation": "How things used to be takes the imperfect: Antes vivía en Sevilla."
+    },
+    {
+      "id": "a2-verbs-imperfect-1-10",
+      "type": "translate",
+      "tags": [
+        "imperfect",
+        "used-to"
+      ],
+      "source": "I used to go to the gym every day.",
+      "accepted": [
+        "Iba al gimnasio todos los días.",
+        "Antes iba al gimnasio todos los días.",
+        "Yo iba al gimnasio todos los días.",
+        "Todos los días iba al gimnasio.",
+        "Antes yo iba al gimnasio todos los días.",
+        "Yo antes iba al gimnasio todos los días.",
+        "Iba todos los días al gimnasio.",
+        "Solía ir al gimnasio todos los días."
+      ],
+      "hint": "gym = el gimnasio",
+      "explanation": "“Used to” is usually just the imperfect: iba. Solía ir (soler) says the same."
+    }
+  ]
+}

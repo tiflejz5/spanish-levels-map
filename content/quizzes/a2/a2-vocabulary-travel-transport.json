@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-vocabulary-travel-transport",
+  "topic": "a2-vocabulary-travel-transport",
+  "level": "A2",
+  "title": "Stop: travel",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-vocabulary-travel-transport-q1",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "At a train station, where do you wait for the train?",
+      "options": [
+        "en el andén",
+        "en la puerta de embarque",
+        "en el horario",
+        "en la recepción"
+      ],
+      "correct": 0,
+      "explanation": "El andén is the platform where you get on the train.",
+      "optionNotes": [
+        null,
+        "La puerta de embarque is the gate at an airport.",
+        "El horario is the timetable.",
+        "La recepción is the front desk of a hotel."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-travel-transport-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Llegamos ___ hotel a las diez de la noche.",
+      "options": [
+        "en el",
+        "al",
+        "a el",
+        "por el"
+      ],
+      "correct": 1,
+      "explanation": "The place you arrive in takes a, and a + el = al: llegamos al hotel.",
+      "optionNotes": [
+        "In standard Spanish the place you arrive in takes a; llegar en is non-standard.",
+        null,
+        "A + el always becomes al.",
+        "Por does not mark the place you arrive in."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-travel-transport-q3",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "You want a ticket to go to Toledo and come back. You ask for (Spain):",
+      "options": [
+        "un billete de ida",
+        "un billete de ida y vuelta",
+        "un billete de vuelta y ida",
+        "un billete doble"
+      ],
+      "correct": 1,
+      "explanation": "Round-trip = de ida y vuelta (“of going and coming back”).",
+      "optionNotes": [
+        "De ida is one-way only.",
+        null,
+        "The fixed order is ida y vuelta.",
+        "Doble is for a double room, not a ticket."
+      ]
+    },
+    {
+      "id": "a2-vocabulary-travel-transport-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Fuimos a Sevilla ___ tren.",
+      "options": [
+        "por",
+        "en",
+        "a",
+        "con"
+      ],
+      "correct": 1,
+      "explanation": "Transportation takes en: en tren, en avión, en autobús.",
+      "optionNotes": [
+        "Por is not used for the means of transportation here.",
+        null,
+        "A is for a pie (on foot), not for vehicles.",
+        "Con is not used with a means of transportation."
+      ]
+    }
+  ]
+}

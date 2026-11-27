@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-verbs-preterite-regular",
+  "topic": "a2-verbs-preterite-regular",
+  "level": "A2",
+  "title": "Stop: regular preterite",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-verbs-preterite-regular-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ayer Marta ___ con su jefe.",
+      "options": [
+        "hablo",
+        "habló",
+        "hablé",
+        "hablaste"
+      ],
+      "correct": 1,
+      "explanation": "Marta = ella. The preterite of hablar for él, ella, usted is habló, with an accent on the o.",
+      "optionNotes": [
+        "Without the accent, hablo is the present: “I speak”.",
+        null,
+        "Hablé is for yo.",
+        "Hablaste is for tú."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-regular-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Anoche (yo) ___ en un restaurante mexicano.",
+      "options": [
+        "comé",
+        "comí",
+        "comió",
+        "como"
+      ],
+      "correct": 1,
+      "explanation": "-er and -ir verbs take -í in the yo form of the preterite: comí.",
+      "optionNotes": [
+        "-é is the -ar ending; -er verbs take -í.",
+        null,
+        "Comió is for él, ella, usted.",
+        "Como is the present; anoche needs the past."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-regular-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿A qué hora ___ (tú) a casa ayer?",
+      "options": [
+        "llegastes",
+        "llegó",
+        "llegaste",
+        "llegué"
+      ],
+      "correct": 2,
+      "explanation": "The tú form of the preterite ends in -aste for -ar verbs: llegaste.",
+      "optionNotes": [
+        "The tú form of the preterite has no final -s.",
+        "Llegó is for él, ella, usted.",
+        null,
+        "Llegué is for yo."
+      ]
+    },
+    {
+      "id": "a2-verbs-preterite-regular-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Ayer (yo) ___ las llaves por toda la casa. (buscar)",
+      "options": [
+        "buscé",
+        "busqué",
+        "buscó",
+        "busco"
+      ],
+      "correct": 1,
+      "explanation": "Verbs in -car write -qué in the yo form of the preterite: busqué.",
+      "optionNotes": [
+        "-car verbs change c to qu before é: busqué.",
+        null,
+        "Buscó is for él, ella, usted.",
+        "Busco is the present; ayer needs the past."
+      ]
+    }
+  ]
+}
