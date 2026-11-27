@@ -1,0 +1,256 @@
+{
+  "version": 1,
+  "id": "a2-verbs-estar-gerund-1",
+  "topic": "a2-verbs-estar-gerund",
+  "level": "A2",
+  "title": "estar + gerundio: check yourself",
+  "intro": "10 tasks: estar, gerunds, irregular forms and pronouns.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-verbs-estar-gerund-1-01",
+      "type": "paradigm",
+      "tags": [
+        "estar-gerund",
+        "hacer"
+      ],
+      "prompt": "Write estar + the gerund of hacer.",
+      "lemma": "hacer",
+      "gloss": "to do, to make",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "estoy haciendo"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "estás haciendo"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "está haciendo"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "estamos haciendo"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "estáis haciendo"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "están haciendo"
+          ]
+        }
+      ],
+      "explanation": "Only estar changes: estoy, estás, está, estamos, estáis, están. The gerund haciendo never changes."
+    },
+    {
+      "id": "a2-verbs-estar-gerund-1-02",
+      "type": "match",
+      "tags": [
+        "gerund",
+        "irregular"
+      ],
+      "mode": "halves",
+      "prompt": "Match each infinitive with its gerund.",
+      "pairs": [
+        [
+          "pedir",
+          "pidiendo"
+        ],
+        [
+          "oír",
+          "oyendo"
+        ],
+        [
+          "decir",
+          "diciendo"
+        ],
+        [
+          "dormir",
+          "durmiendo"
+        ]
+      ],
+      "explanation": "Pedir and decir change e → i, dormir changes o → u, and oír takes -yendo."
+    },
+    {
+      "id": "a2-verbs-estar-gerund-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "estar-gerund",
+        "estar"
+      ],
+      "prompt": "Mis padres ___ viendo una película.",
+      "options": [
+        "está",
+        "están",
+        "son",
+        "estamos"
+      ],
+      "correct": 1,
+      "explanation": "Mis padres = ellos: están.",
+      "optionNotes": [
+        "Está is for él, ella, usted.",
+        null,
+        "The helper verb is estar, not ser.",
+        "Estamos is for nosotros."
+      ]
+    },
+    {
+      "id": "a2-verbs-estar-gerund-1-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "estar-gerund",
+        "plans"
+      ],
+      "prompt": "Mañana ___ a Granada con mi hermana.",
+      "options": [
+        "voy",
+        "estoy yendo",
+        "estoy ir",
+        "soy yendo"
+      ],
+      "correct": 0,
+      "explanation": "For a plan, Spanish uses the present (or ir a), not estar + gerund.",
+      "optionNotes": [
+        null,
+        "Estar + gerund is not standard for future plans.",
+        "After estar comes the gerund, and plans do not use it.",
+        "Ser is never the helper verb."
+      ]
+    },
+    {
+      "id": "a2-verbs-estar-gerund-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "estar-gerund",
+        "questions"
+      ],
+      "context": "“What are you doing?” “I'm making dinner.” (to a friend)",
+      "text": "—¿Qué {{1}}?\n—{{2}} la cena.",
+      "gaps": [
+        {
+          "accepted": [
+            "estás haciendo",
+            "haces"
+          ],
+          "hint": "hacer"
+        },
+        {
+          "accepted": [
+            "Estoy preparando",
+            "Estoy haciendo",
+            "Preparo",
+            "Hago"
+          ],
+          "hint": "preparar / hacer"
+        }
+      ],
+      "explanation": "Estar + gerund for what is happening now. The simple present is also correct here."
+    },
+    {
+      "id": "a2-verbs-estar-gerund-1-06",
+      "type": "find-error",
+      "tags": [
+        "gerund",
+        "irregular"
+      ],
+      "tokens": [
+        "Estoy",
+        "leiendo",
+        "un",
+        "libro",
+        "muy",
+        "bueno."
+      ],
+      "errorRange": [
+        1,
+        1
+      ],
+      "fixes": [
+        "leyendo"
+      ],
+      "explanation": "Between vowels, i becomes y: leyendo."
+    },
+    {
+      "id": "a2-verbs-estar-gerund-1-07",
+      "type": "find-error",
+      "tags": [
+        "gerund",
+        "noun"
+      ],
+      "tokens": [
+        "Nadando",
+        "es",
+        "muy",
+        "bueno",
+        "para",
+        "la",
+        "salud."
+      ],
+      "errorRange": [
+        0,
+        0
+      ],
+      "fixes": [
+        "Nadar"
+      ],
+      "explanation": "As a noun (“swimming is good”), Spanish uses the infinitive: Nadar es bueno."
+    },
+    {
+      "id": "a2-verbs-estar-gerund-1-08",
+      "type": "short-answer",
+      "tags": [
+        "estar-gerund",
+        "pronouns"
+      ],
+      "prompt": "Attach the pronoun: Me estoy duchando. → Estoy ___.",
+      "accepted": [
+        "duchándome"
+      ],
+      "explanation": "The pronoun can be attached to the gerund; then it needs an accent: duchándome."
+    },
+    {
+      "id": "a2-verbs-estar-gerund-1-09",
+      "type": "short-answer",
+      "tags": [
+        "gerund"
+      ],
+      "prompt": "Write the gerund: servir → ___",
+      "accepted": [
+        "sirviendo"
+      ],
+      "explanation": "Servir changes e → i in the gerund: sirviendo."
+    },
+    {
+      "id": "a2-verbs-estar-gerund-1-10",
+      "type": "translate",
+      "tags": [
+        "estar-gerund"
+      ],
+      "source": "It's raining a lot.",
+      "accepted": [
+        "Está lloviendo mucho.",
+        "Llueve mucho."
+      ],
+      "hint": "to rain = llover",
+      "explanation": "Estar + gerund for the weather right now: está lloviendo. Llueve mucho is also correct."
+    }
+  ]
+}

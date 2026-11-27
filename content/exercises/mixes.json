@@ -106,6 +106,20 @@
         "a2-grammar-comparatives-superlatives",
         "a2-grammar-indefinites-quantifiers"
       ]
+    },
+    {
+      "id": "mix-a2-u4",
+      "title": "Unit review: Now and next",
+      "description": "estar + gerundio, obligation and ability, the future and the affirmative imperative, mixed.",
+      "level": "A2",
+      "count": 12,
+      "mode": "learn",
+      "topics": [
+        "a2-verbs-estar-gerund",
+        "a2-verbs-obligation-ability",
+        "a2-verbs-future-simple",
+        "a2-verbs-imperative-affirmative"
+      ]
     }
   ]
 }

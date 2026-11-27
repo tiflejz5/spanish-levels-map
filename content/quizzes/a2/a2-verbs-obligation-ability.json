@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-verbs-obligation-ability",
+  "topic": "a2-verbs-obligation-ability",
+  "level": "A2",
+  "title": "Stop: obligation and ability",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-verbs-obligation-ability-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mañana tengo ___ trabajar temprano.",
+      "options": [
+        "que",
+        "de",
+        "a",
+        "—"
+      ],
+      "correct": 0,
+      "explanation": "Tener que + infinitive = have to.",
+      "optionNotes": [
+        null,
+        "Tener takes que before the infinitive, not de.",
+        "Tener takes que, not a.",
+        "Tener needs que before the infinitive."
+      ]
+    },
+    {
+      "id": "a2-verbs-obligation-ability-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi hija tiene cuatro años y ya ___ leer.",
+      "options": [
+        "tiene que",
+        "sabe",
+        "conoce",
+        "debe"
+      ],
+      "correct": 1,
+      "explanation": "A learned skill takes saber: sabe leer.",
+      "optionNotes": [
+        "Tiene que means “has to”; a learned skill takes saber.",
+        null,
+        "Conocer is for people and places, not skills.",
+        "Deber means “must, should”."
+      ]
+    },
+    {
+      "id": "a2-verbs-obligation-ability-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "En el museo ___ hablar en voz baja.",
+      "options": [
+        "hay",
+        "hay que",
+        "tiene",
+        "debe que"
+      ],
+      "correct": 1,
+      "explanation": "A general rule for everyone: hay que + infinitive.",
+      "optionNotes": [
+        "Hay alone means “there is”; a rule needs hay que.",
+        null,
+        "Tener needs que and a person: tienes que.",
+        "Deber takes the infinitive without que."
+      ]
+    },
+    {
+      "id": "a2-verbs-obligation-ability-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "Tomorrow is a holiday. You tell a friend: “You don't have to come.”",
+      "options": [
+        "No debes venir.",
+        "No tienes que venir.",
+        "No puedes venir.",
+        "No sabes venir."
+      ],
+      "correct": 1,
+      "explanation": "“Don't have to” (not necessary) is no tener que.",
+      "optionNotes": [
+        "No debes means “you mustn't”: it forbids.",
+        null,
+        "No puedes means “you can't”.",
+        "Saber is for skills."
+      ]
+    }
+  ]
+}

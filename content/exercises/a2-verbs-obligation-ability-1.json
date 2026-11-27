@@ -1,0 +1,263 @@
+{
+  "version": 1,
+  "id": "a2-verbs-obligation-ability-1",
+  "topic": "a2-verbs-obligation-ability",
+  "level": "A2",
+  "title": "Obligation and ability: check yourself",
+  "intro": "10 tasks: tener que, hay que, deber, necesitar, poder and saber.",
+  "passage": null,
+  "items": [
+    {
+      "id": "a2-verbs-obligation-ability-1-01",
+      "type": "paradigm",
+      "tags": [
+        "poder",
+        "present"
+      ],
+      "prompt": "Write the present of poder.",
+      "lemma": "poder",
+      "gloss": "can, to be able to",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "puedo"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "puedes"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "puede"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "podemos"
+          ]
+        },
+        {
+          "label": "vosotros (Spain)",
+          "accepted": [
+            "podéis"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "pueden"
+          ]
+        }
+      ],
+      "explanation": "Poder changes o → ue in the stressed forms: puedo, puedes, puede, pueden; not in podemos and podéis."
+    },
+    {
+      "id": "a2-verbs-obligation-ability-1-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "tener-que"
+      ],
+      "prompt": "Nosotros ___ estudiar para el examen.",
+      "options": [
+        "tenemos que",
+        "tenemos",
+        "hay que nosotros",
+        "tienen que"
+      ],
+      "correct": 0,
+      "explanation": "Tener que agrees with the person: nosotros tenemos que.",
+      "optionNotes": [
+        null,
+        "Tener needs que before the infinitive.",
+        "Hay que has no person.",
+        "Tienen is for ellos, ellas, ustedes."
+      ]
+    },
+    {
+      "id": "a2-verbs-obligation-ability-1-03",
+      "type": "multiple-choice",
+      "kind": "form",
+      "tags": [
+        "saber",
+        "poder"
+      ],
+      "prompt": "—¿___ nadar?\n—Sí, aprendí de niño.",
+      "options": [
+        "Sabes",
+        "Conoces",
+        "Debes",
+        "Tienes"
+      ],
+      "correct": 0,
+      "explanation": "A learned skill: saber + infinitive.",
+      "optionNotes": [
+        null,
+        "Conocer is for people and places.",
+        "Deber means “must, should”.",
+        "Tener needs que and does not mean “can”."
+      ]
+    },
+    {
+      "id": "a2-verbs-obligation-ability-1-04",
+      "type": "multiple-choice",
+      "kind": "function",
+      "tags": [
+        "deber"
+      ],
+      "prompt": "Estás muy cansado. ___ descansar más.",
+      "options": [
+        "Debes",
+        "Debes que",
+        "Hay",
+        "Sabes"
+      ],
+      "correct": 0,
+      "explanation": "Advice: deber + infinitive, without que.",
+      "optionNotes": [
+        null,
+        "Deber takes the infinitive directly.",
+        "Hay alone means “there is”.",
+        "Saber is for skills."
+      ]
+    },
+    {
+      "id": "a2-verbs-obligation-ability-1-05",
+      "type": "gap-fill",
+      "tags": [
+        "poder",
+        "permission"
+      ],
+      "context": "“Can I open the window?”",
+      "text": "¿{{1}} abrir la ventana?",
+      "gaps": [
+        {
+          "accepted": [
+            "Puedo",
+            "Se puede"
+          ]
+        }
+      ],
+      "explanation": "Permission: poder + infinitive."
+    },
+    {
+      "id": "a2-verbs-obligation-ability-1-06",
+      "type": "find-error",
+      "tags": [
+        "tener-que"
+      ],
+      "tokens": [
+        "Hoy",
+        "tengo",
+        "limpiar",
+        "la",
+        "casa."
+      ],
+      "errorRange": [
+        1,
+        1
+      ],
+      "fixes": [
+        "tengo que"
+      ],
+      "explanation": "Tener needs que before the infinitive: tengo que limpiar."
+    },
+    {
+      "id": "a2-verbs-obligation-ability-1-07",
+      "type": "find-error",
+      "tags": [
+        "hay-que"
+      ],
+      "tokens": [
+        "Hay",
+        "que",
+        "compramos",
+        "pan",
+        "para",
+        "la",
+        "cena."
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "comprar"
+      ],
+      "explanation": "After hay que comes the infinitive: hay que comprar."
+    },
+    {
+      "id": "a2-verbs-obligation-ability-1-08",
+      "type": "transformation",
+      "tags": [
+        "tener-que",
+        "past"
+      ],
+      "source": "Ayer fue necesario trabajar hasta las nueve. (Say it about yourself.)",
+      "keyword": "tuve",
+      "before": "Ayer",
+      "after": "trabajar hasta las nueve.",
+      "answers": [
+        "tuve que",
+        "yo tuve que"
+      ],
+      "explanation": "One time in the past: tuve que + infinitive."
+    },
+    {
+      "id": "a2-verbs-obligation-ability-1-09",
+      "type": "match",
+      "tags": [
+        "obligation",
+        "ability"
+      ],
+      "mode": "translation",
+      "prompt": "Match each sentence with its meaning.",
+      "pairs": [
+        [
+          "Tengo que ir.",
+          "I have to go."
+        ],
+        [
+          "No debo ir.",
+          "I mustn't go."
+        ],
+        [
+          "Puedo ir.",
+          "I can go."
+        ],
+        [
+          "No tengo que ir.",
+          "I don't have to go."
+        ]
+      ],
+      "explanation": "Tener que = have to; no deber = must not; poder = can; no tener que = not necessary."
+    },
+    {
+      "id": "a2-verbs-obligation-ability-1-10",
+      "type": "translate",
+      "tags": [
+        "saber"
+      ],
+      "source": "I can't drive.",
+      "accepted": [
+        "No sé conducir.",
+        "No sé manejar.",
+        "Yo no sé conducir.",
+        "Yo no sé manejar.",
+        "No puedo conducir.",
+        "No puedo manejar.",
+        "Yo no puedo conducir.",
+        "Yo no puedo manejar."
+      ],
+      "hint": "to drive = conducir (Spain) / manejar (Latin America)",
+      "explanation": "A skill you don't have: no sé conducir. No puedo conducir is also correct if something stops you now."
+    }
+  ]
+}

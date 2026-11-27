@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-functions-directions",
+  "topic": "a2-functions-directions",
+  "level": "A2",
+  "title": "Stop: directions",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-functions-directions-q1",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "Perdone, ¿___ ir a la estación?",
+      "options": [
+        "para",
+        "por",
+        "a",
+        "de"
+      ],
+      "correct": 0,
+      "explanation": "¿Para ir a…? is the usual short way to ask the way.",
+      "optionNotes": [
+        null,
+        "The phrase is ¿para ir a…?",
+        "A cannot start this question.",
+        "De cannot start this question."
+      ]
+    },
+    {
+      "id": "a2-functions-directions-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Siga todo recto y gire ___ izquierda.",
+      "options": [
+        "en la",
+        "a la",
+        "por la",
+        "la"
+      ],
+      "correct": 1,
+      "explanation": "Directions take a: a la izquierda, a la derecha.",
+      "optionNotes": [
+        "Directions take a, not en.",
+        null,
+        "Por is not used for turning.",
+        "You need a before la izquierda."
+      ]
+    },
+    {
+      "id": "a2-functions-directions-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "¿Dónde ___ el museo?",
+      "options": [
+        "es",
+        "está",
+        "hay",
+        "tiene"
+      ],
+      "correct": 1,
+      "explanation": "Location takes estar: ¿Dónde está?",
+      "optionNotes": [
+        "Location takes estar, not ser.",
+        null,
+        "Hay goes with un / una: ¿Hay un museo?",
+        "Tener does not express location."
+      ]
+    },
+    {
+      "id": "a2-functions-directions-q4",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "Someone asks you the way, but you are a tourist. You say:",
+      "options": [
+        "Lo siento, no soy de aquí.",
+        "Lo siento, no estoy de aquí.",
+        "Lo siento, no soy aquí.",
+        "Lo siento, no es de aquí."
+      ],
+      "correct": 0,
+      "explanation": "Origin takes ser de: no soy de aquí.",
+      "optionNotes": [
+        null,
+        "Origin takes ser, not estar.",
+        "You need de: soy de aquí.",
+        "Es is for él, ella, usted; you are talking about yourself."
+      ]
+    }
+  ]
+}

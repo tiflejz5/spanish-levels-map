@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-verbs-imperative-affirmative",
+  "topic": "a2-verbs-imperative-affirmative",
+  "level": "A2",
+  "title": "Stop: affirmative imperative",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-verbs-imperative-affirmative-q1",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "You tell a friend: ___ aquí un momento. (venir)",
+      "options": [
+        "Viene",
+        "Ven",
+        "Venga",
+        "Vienes"
+      ],
+      "correct": 1,
+      "explanation": "The tú imperative of venir is irregular: ven.",
+      "optionNotes": [
+        "Viene is the él form, and venir has an irregular imperative: ven.",
+        null,
+        "Venga is the usted form.",
+        "Vienes is the present."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-q2",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You tell a stranger: ___ a la derecha. (girar)",
+      "options": [
+        "Gira",
+        "Gire",
+        "Giras",
+        "Girar"
+      ],
+      "correct": 1,
+      "explanation": "Usted imperative of an -ar verb: -e. Gire.",
+      "optionNotes": [
+        "Gira is the tú form.",
+        null,
+        "Giras is the present.",
+        "The infinitive is not used for this."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-q3",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "You ask a friend to call you tomorrow:",
+      "options": [
+        "Me llama mañana.",
+        "Llámame mañana.",
+        "Me llámame mañana.",
+        "Llama me mañana."
+      ],
+      "correct": 1,
+      "explanation": "Pronouns are attached to the imperative, and the stress needs an accent: llámame.",
+      "optionNotes": [
+        "Me before the verb makes a statement, not an instruction.",
+        null,
+        "The pronoun appears only once, attached to the end.",
+        "The pronoun is written together with the verb."
+      ]
+    },
+    {
+      "id": "a2-verbs-imperative-affirmative-q4",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "___ la cama, por favor. (hacer, tú)",
+      "options": [
+        "Haz",
+        "Hace",
+        "Haga",
+        "Hacer"
+      ],
+      "correct": 0,
+      "explanation": "The tú imperative of hacer is irregular: haz.",
+      "optionNotes": [
+        null,
+        "Hace is the él form; the imperative is haz.",
+        "Haga is the usted form.",
+        "The infinitive is not used for this."
+      ]
+    }
+  ]
+}

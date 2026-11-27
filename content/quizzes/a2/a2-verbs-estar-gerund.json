@@ -1,0 +1,90 @@
+{
+  "version": 1,
+  "id": "a2-verbs-estar-gerund",
+  "topic": "a2-verbs-estar-gerund",
+  "level": "A2",
+  "title": "Stop: estar + gerundio",
+  "passScore": 3,
+  "items": [
+    {
+      "id": "a2-verbs-estar-gerund-q1",
+      "type": "multiple-choice",
+      "kind": "function",
+      "prompt": "—¿Qué haces?\n—___ leyendo una novela.",
+      "options": [
+        "Soy",
+        "Estoy",
+        "Tengo",
+        "Voy"
+      ],
+      "correct": 1,
+      "explanation": "Actions in progress: estar + gerund.",
+      "optionNotes": [
+        "The helper verb is estar, not ser.",
+        null,
+        "Tener is not used with the gerund.",
+        "Voy leyendo means “I read bit by bit”, not “I'm reading”."
+      ]
+    },
+    {
+      "id": "a2-verbs-estar-gerund-q2",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Los niños están ___.",
+      "options": [
+        "dormiendo",
+        "durmiendo",
+        "dormido",
+        "duermen"
+      ],
+      "correct": 1,
+      "explanation": "Dormir changes o → u in the gerund: durmiendo.",
+      "optionNotes": [
+        "Dormir changes o → u: durmiendo.",
+        null,
+        "Dormido is the participle (asleep).",
+        "After estar comes the gerund."
+      ]
+    },
+    {
+      "id": "a2-verbs-estar-gerund-q3",
+      "type": "multiple-choice",
+      "kind": "form",
+      "prompt": "Mi abuela está ___ el periódico.",
+      "options": [
+        "leiendo",
+        "leendo",
+        "leyendo",
+        "leído"
+      ],
+      "correct": 2,
+      "explanation": "Between vowels, i becomes y: leyendo.",
+      "optionNotes": [
+        "Between two vowels, i becomes y.",
+        "The gerund ending of -er verbs is -iendo / -yendo.",
+        null,
+        "Leído is the participle."
+      ]
+    },
+    {
+      "id": "a2-verbs-estar-gerund-q4",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "prompt": "Which sentence is correct for a plan?",
+      "options": [
+        "Mañana estoy yendo a Sevilla.",
+        "Mañana voy a Sevilla.",
+        "Mañana estoy ir a Sevilla.",
+        "Mañana soy yendo a Sevilla."
+      ],
+      "correct": 1,
+      "explanation": "Plans take the present or ir a, never estar + gerund.",
+      "optionNotes": [
+        "Estar + gerund is not standard for future plans.",
+        null,
+        "After estar comes the gerund, and plans do not use it.",
+        "The helper verb is estar, and plans do not use it."
+      ]
+    }
+  ]
+}
