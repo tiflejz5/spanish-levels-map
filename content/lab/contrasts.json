@@ -208,6 +208,735 @@
           }
         ]
       }
+    },
+    {
+      "id": "indefinido-imperfecto",
+      "level": "A2",
+      "summary": "Two simple past tenses: the indefinido tells what happened, the imperfecto describes the scene and habits.",
+      "sides": [
+        {
+          "name": "indefinido",
+          "nameEn": "what happened",
+          "rules": [
+            {
+              "label": "One finished action",
+              "text": "An event at a definite time.",
+              "examples": [
+                {
+                  "text": "Ayer vi una película muy buena.",
+                  "en": "Yesterday I saw a very good movie."
+                }
+              ]
+            },
+            {
+              "label": "A chain of events",
+              "text": "Actions one after the other that move the story on.",
+              "examples": [
+                {
+                  "text": "Abrí la puerta y entré.",
+                  "en": "I opened the door and went in."
+                }
+              ]
+            },
+            {
+              "label": "A closed period",
+              "text": "A period with a clear end, counted as one event.",
+              "examples": [
+                {
+                  "text": "Viví en Roma tres años.",
+                  "en": "I lived in Rome for three years."
+                }
+              ]
+            },
+            {
+              "label": "The interruption",
+              "text": "The new event that cuts into an action in progress.",
+              "examples": [
+                {
+                  "text": "Dormía cuando sonó el teléfono.",
+                  "en": "I was sleeping when the phone rang."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "imperfecto",
+          "nameEn": "the scene and habits",
+          "rules": [
+            {
+              "label": "Background",
+              "text": "What things were like, the weather, the time, how someone felt.",
+              "examples": [
+                {
+                  "text": "Hacía sol cuando llegamos a la playa.",
+                  "en": "It was sunny when we got to the beach."
+                }
+              ]
+            },
+            {
+              "label": "Action in progress",
+              "text": "Something going on, with no end in view (“was doing”).",
+              "examples": [
+                {
+                  "text": "Cenábamos cuando llamó Ana.",
+                  "en": "We were having dinner when Ana called."
+                }
+              ]
+            },
+            {
+              "label": "Habits",
+              "text": "What used to happen again and again.",
+              "examples": [
+                {
+                  "text": "De niño iba a la playa todos los veranos.",
+                  "en": "As a child I went to the beach every summer."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tip": "Think of a film: the imperfecto is the scene in the background, the indefinido is the action that moves the story on.",
+      "traps": [
+        "*De niño fui a la playa todos los veranos → De niño iba a la playa todos los veranos. A habit takes the imperfecto.",
+        "*Cuando llegué, mi madre cocinó (meaning she was in the middle of it) → Cuando llegué, mi madre cocinaba. Cocinó would mean she started cooking after I arrived.",
+        "*Ayer veía una película muy buena → Ayer vi una película muy buena. One finished action yesterday.",
+        "*Estaba en Roma tres días → Estuve en Roma tres días. A closed period is an event."
+      ],
+      "topicIds": [
+        "a2-verbs-preterite-vs-imperfect-basics",
+        "a2-verbs-imperfect",
+        "a2-verbs-preterite-regular"
+      ],
+      "quiz": {
+        "items": [
+          {
+            "id": "lab-indefinido-imperfecto-q1",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "___ las once cuando terminó la película.",
+            "options": [
+              "Fueron",
+              "Eran",
+              "Son",
+              "Fue"
+            ],
+            "correct": 1,
+            "explanation": "The time in the past is background, so it takes the imperfecto: Eran las once.",
+            "optionNotes": [
+              "The time is background, not an event: eran.",
+              null,
+              "Son is the present; the story is in the past.",
+              "The time is background, and las once is plural: eran."
+            ]
+          },
+          {
+            "id": "lab-indefinido-imperfecto-q2",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Ayer estaba muy cansada, así que ___ temprano.",
+            "options": [
+              "me acostaba",
+              "me acosté",
+              "me acuesto",
+              "me acostaré"
+            ],
+            "correct": 1,
+            "explanation": "Going to bed early yesterday is one finished event, so it takes the indefinido: me acosté. Being tired is the background (estaba).",
+            "optionNotes": [
+              "The imperfecto would describe a habit or a background; going to bed yesterday is one event.",
+              null,
+              "Me acuesto is the present.",
+              "Me acostaré is the future."
+            ]
+          },
+          {
+            "id": "lab-indefinido-imperfecto-q3",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Cuando ___ niña, vivía en Cádiz.",
+            "options": [
+              "fui",
+              "estuve",
+              "era",
+              "estaba"
+            ],
+            "correct": 2,
+            "explanation": "Childhood is a background description: cuando era niña.",
+            "optionNotes": [
+              "Childhood is background, not an event: era.",
+              "Being a child is what you were, so ser, and background: era.",
+              null,
+              "Being a child is what you were, not a state: ser, so era."
+            ]
+          },
+          {
+            "id": "lab-indefinido-imperfecto-q4",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Choose the correct sentence.",
+            "options": [
+              "El año pasado empecé a correr.",
+              "El año pasado empezaba a correr una vez.",
+              "Antes corrí todos los días.",
+              "De repente, empezaba a llover."
+            ],
+            "correct": 0,
+            "explanation": "Starting something last year is one event: empecé.",
+            "optionNotes": [
+              null,
+              "Una vez marks one event, so it takes the indefinido: empecé.",
+              "Todos los días is a habit: corría.",
+              "De repente marks a sudden event: empezó a llover."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "perfecto-indefinido",
+      "level": "A2",
+      "summary": "Two ways to say what happened: the perfecto looks at the past from now, the indefinido places it at a finished time.",
+      "sides": [
+        {
+          "name": "perfecto",
+          "nameEn": "the past seen from now",
+          "rules": [
+            {
+              "label": "Experiences",
+              "text": "Something in your life up to now; when is not said.",
+              "examples": [
+                {
+                  "text": "¿Has estado alguna vez en México?",
+                  "en": "Have you ever been to Mexico?"
+                }
+              ]
+            },
+            {
+              "label": "Already, not yet",
+              "text": "With ya, todavía no, aún no.",
+              "examples": [
+                {
+                  "text": "Todavía no he visto la película.",
+                  "en": "I haven't seen the movie yet."
+                }
+              ]
+            },
+            {
+              "label": "A time that is not over (Spain)",
+              "text": "Hoy, esta mañana, esta semana, este año.",
+              "examples": [
+                {
+                  "text": "Esta semana hemos ido dos veces al cine.",
+                  "en": "This week we've been to the movies twice."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "indefinido",
+          "nameEn": "at a finished time",
+          "rules": [
+            {
+              "label": "A finished time",
+              "text": "Ayer, anoche, el año pasado, en 2019, hace dos años: everywhere.",
+              "examples": [
+                {
+                  "text": "Ayer comí paella.",
+                  "en": "Yesterday I had paella."
+                }
+              ]
+            },
+            {
+              "label": "Today in Latin America",
+              "text": "In most of Latin America people also use it for today and often for ya and todavía no.",
+              "examples": [
+                {
+                  "text": "Hoy desayuné tarde. ¿Ya comiste?",
+                  "en": "I had breakfast late today. Have you eaten yet?"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tip": "Is the time finished (ayer, el año pasado)? → indefinido, everywhere. No time, or a time that goes on until now? → perfecto, especially in Spain.",
+      "traps": [
+        "*Ayer he visto a Marta → Ayer vi a Marta. Ayer is a finished time.",
+        "*He ya comido → Ya he comido. Nothing goes between haber and the participle.",
+        "*¿Has hacido la cena? → ¿Has hecho la cena? Hacer has the participle hecho.",
+        "Hoy desayuné tarde is not a mistake: it is the normal Latin American form."
+      ],
+      "topicIds": [
+        "a2-verbs-present-perfect",
+        "a2-verbs-preterite-regular"
+      ],
+      "quiz": {
+        "items": [
+          {
+            "id": "lab-perfecto-indefinido-q1",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "El año pasado ___ a Perú con mis padres.",
+            "options": [
+              "he viajado",
+              "viajé",
+              "viajo",
+              "he viajada"
+            ],
+            "correct": 1,
+            "explanation": "El año pasado is a finished time, so it takes the indefinido everywhere: viajé.",
+            "optionNotes": [
+              "A finished time (el año pasado) does not take the perfecto.",
+              null,
+              "Viajo is the present.",
+              "A finished time takes the indefinido, and the participle never changes."
+            ]
+          },
+          {
+            "id": "lab-perfecto-indefinido-q2",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "¿___ alguna vez pulpo? (tú, an experience)",
+            "options": [
+              "He comido",
+              "Has comida",
+              "Has comido",
+              "Has comiendo"
+            ],
+            "correct": 2,
+            "explanation": "An experience with alguna vez takes the perfecto: has + the participle comido.",
+            "optionNotes": [
+              "He is for yo; the question is to tú: has.",
+              "The participle after haber never changes: comido.",
+              null,
+              "Comiendo is the gerund; the perfecto needs the participle comido."
+            ]
+          },
+          {
+            "id": "lab-perfecto-indefinido-q3",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Choose the correct sentence.",
+            "options": [
+              "He ya terminado.",
+              "Ayer he terminado el libro.",
+              "Ya terminado he.",
+              "Ya he terminado."
+            ],
+            "correct": 3,
+            "explanation": "Ya goes before haber, and nothing goes between haber and the participle: Ya he terminado.",
+            "optionNotes": [
+              "Nothing goes between haber and the participle.",
+              "Ayer is a finished time: terminé.",
+              "Haber comes before the participle.",
+              null
+            ]
+          },
+          {
+            "id": "lab-perfecto-indefinido-q4",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Anoche ___ con mi hermana por teléfono.",
+            "options": [
+              "hablé",
+              "he hablado",
+              "hablo",
+              "habla"
+            ],
+            "correct": 0,
+            "explanation": "Anoche is a finished time, so it takes the indefinido: hablé.",
+            "optionNotes": [
+              null,
+              "Anoche is a finished time; the perfecto does not fit.",
+              "Hablo is the present.",
+              "Habla is the present, for él / ella."
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "por-para",
+      "level": "A2",
+      "summary": "Two words for English “for”: para looks ahead to a goal, por looks at the cause or the way.",
+      "sides": [
+        {
+          "name": "para",
+          "nameEn": "the goal",
+          "rules": [
+            {
+              "label": "Purpose",
+              "text": "para + infinitive: in order to.",
+              "examples": [
+                {
+                  "text": "Estudio español para viajar.",
+                  "en": "I study Spanish so I can travel."
+                }
+              ]
+            },
+            {
+              "label": "Who gets it",
+              "text": "The person something is for.",
+              "examples": [
+                {
+                  "text": "Este regalo es para ti.",
+                  "en": "This present is for you."
+                }
+              ]
+            },
+            {
+              "label": "Destination",
+              "text": "Where you are heading.",
+              "examples": [
+                {
+                  "text": "El tren para Sevilla sale a las diez.",
+                  "en": "The train to Seville leaves at ten."
+                }
+              ]
+            },
+            {
+              "label": "Deadline",
+              "text": "By a time or a day.",
+              "examples": [
+                {
+                  "text": "Necesito el informe para el lunes.",
+                  "en": "I need the report by Monday."
+                }
+              ]
+            },
+            {
+              "label": "Opinion",
+              "text": "para mí: in my view.",
+              "examples": [
+                {
+                  "text": "Para mí, es demasiado caro.",
+                  "en": "For me, it's too expensive."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "por",
+          "nameEn": "the cause and the way",
+          "rules": [
+            {
+              "label": "Cause, thanks",
+              "text": "Because of; gracias + what you thank someone for takes por.",
+              "examples": [
+                {
+                  "text": "Gracias por la ayuda.",
+                  "en": "Thanks for the help."
+                },
+                {
+                  "text": "No salimos por la lluvia.",
+                  "en": "We didn't go out because of the rain."
+                }
+              ]
+            },
+            {
+              "label": "Through a place",
+              "text": "Through, along, around.",
+              "examples": [
+                {
+                  "text": "Me gusta pasear por el centro.",
+                  "en": "I like walking around downtown."
+                }
+              ]
+            },
+            {
+              "label": "Means",
+              "text": "By phone, by email.",
+              "examples": [
+                {
+                  "text": "Te llamo por teléfono.",
+                  "en": "I'll call you on the phone."
+                }
+              ]
+            },
+            {
+              "label": "Price",
+              "text": "What you pay for something.",
+              "examples": [
+                {
+                  "text": "Compré la chaqueta por cuarenta euros.",
+                  "en": "I bought the jacket for forty euros."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tip": "Ask: is it a goal ahead (what for, who for, where to, by when)? → para. Is it the cause or the way (why, through where, how, for how much)? → por.",
+      "traps": [
+        "*Gracias para el regalo → Gracias por el regalo. Thanks take por.",
+        "*Estudio español por viajar → Estudio español para viajar. “In order to” is para.",
+        "*Compré el libro para diez euros → Compré el libro por diez euros. The price takes por.",
+        "*Viví en Lima para dos años → Viví en Lima dos años. A length of time needs no para."
+      ],
+      "topicIds": [
+        "a2-grammar-por-para-basics"
+      ],
+      "quiz": {
+        "items": [
+          {
+            "id": "lab-por-para-q1",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Ahorro dinero ___ comprar una casa.",
+            "options": [
+              "por",
+              "para",
+              "a",
+              "de"
+            ],
+            "correct": 1,
+            "explanation": "Purpose (in order to) is para + infinitive.",
+            "optionNotes": [
+              "Por is for the cause; a purpose takes para.",
+              null,
+              "A is not used for a purpose here.",
+              "De does not express a purpose."
+            ]
+          },
+          {
+            "id": "lab-por-para-q2",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Muchas gracias ___ tu ayuda.",
+            "options": [
+              "para",
+              "a",
+              "por",
+              "de"
+            ],
+            "correct": 2,
+            "explanation": "Gracias + what you thank someone for takes por.",
+            "optionNotes": [
+              "Thanks take por, not para.",
+              "A is not used after gracias.",
+              null,
+              "Gracias takes por."
+            ]
+          },
+          {
+            "id": "lab-por-para-q3",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Pagué veinte euros ___ la camiseta.",
+            "options": [
+              "por",
+              "para",
+              "en",
+              "con"
+            ],
+            "correct": 0,
+            "explanation": "The price you pay for something takes por.",
+            "optionNotes": [
+              null,
+              "The price takes por, not para.",
+              "En is not used for the price you pay.",
+              "Con is not used for a price."
+            ]
+          },
+          {
+            "id": "lab-por-para-q4",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Tengo que terminar el trabajo ___ el viernes.",
+            "options": [
+              "por",
+              "en",
+              "de",
+              "para"
+            ],
+            "correct": 3,
+            "explanation": "A deadline (by Friday) takes para.",
+            "optionNotes": [
+              "A deadline takes para.",
+              "En el viernes is not Spanish; the deadline takes para.",
+              "De does not mark a deadline.",
+              null
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "saber-conocer",
+      "level": "A2",
+      "summary": "Two verbs for English “to know”: saber for facts and skills, conocer for people and places.",
+      "sides": [
+        {
+          "name": "saber",
+          "nameEn": "facts, information, skills",
+          "rules": [
+            {
+              "label": "A fact",
+              "text": "Information you have.",
+              "examples": [
+                {
+                  "text": "Sé su número.",
+                  "en": "I know his number."
+                }
+              ]
+            },
+            {
+              "label": "+ que, si, dónde, cuándo…",
+              "text": "Information in a clause.",
+              "examples": [
+                {
+                  "text": "No sé dónde vive.",
+                  "en": "I don't know where she lives."
+                }
+              ]
+            },
+            {
+              "label": "+ infinitive",
+              "text": "A skill you learned.",
+              "examples": [
+                {
+                  "text": "Mi hijo sabe tocar el piano.",
+                  "en": "My son can play the piano."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "conocer",
+          "nameEn": "people, places and things you are familiar with",
+          "rules": [
+            {
+              "label": "A person",
+              "text": "With personal a.",
+              "examples": [
+                {
+                  "text": "Conozco a Lucía.",
+                  "en": "I know Lucía."
+                }
+              ]
+            },
+            {
+              "label": "A place",
+              "text": "A town, a country, a restaurant.",
+              "examples": [
+                {
+                  "text": "Conozco Lima muy bien.",
+                  "en": "I know Lima very well."
+                }
+              ]
+            },
+            {
+              "label": "Meeting someone",
+              "text": "In the preterite: met for the first time.",
+              "examples": [
+                {
+                  "text": "Conocí a Laura en el trabajo.",
+                  "en": "I met Laura at work."
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "tip": "Can you put “that”, “where” or a skill after it? → saber. Is it a person or a place you have met? → conocer.",
+      "traps": [
+        "*Sé Madrid / *Sé a tu hermano → Conozco Madrid / Conozco a tu hermano. People and places take conocer.",
+        "*No conozco dónde vive → No sé dónde vive. Information after dónde takes saber.",
+        "*Conozco nadar → Sé nadar. A skill is saber + infinitive.",
+        "Yo forms: sé (with an accent) and conozco."
+      ],
+      "topicIds": [
+        "a2-grammar-saber-conocer"
+      ],
+      "quiz": {
+        "items": [
+          {
+            "id": "lab-saber-conocer-q1",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "¿___ a mi novio? Te lo presento.",
+            "options": [
+              "Sabes",
+              "Conoces",
+              "Sabe",
+              "Conozco"
+            ],
+            "correct": 1,
+            "explanation": "A person takes conocer, with personal a: ¿Conoces a mi novio?",
+            "optionNotes": [
+              "Saber is for facts and skills, not for people.",
+              null,
+              "Saber is the wrong verb for a person.",
+              "Conozco is yo; the question is to tú."
+            ]
+          },
+          {
+            "id": "lab-saber-conocer-q2",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "No ___ a qué hora abre el museo.",
+            "options": [
+              "conozco",
+              "conoce",
+              "sé",
+              "sabo"
+            ],
+            "correct": 2,
+            "explanation": "Information after a qué hora takes saber: No sé a qué hora abre.",
+            "optionNotes": [
+              "Information in a clause takes saber.",
+              "Information takes saber, and the subject is yo.",
+              null,
+              "The yo form of saber is sé."
+            ]
+          },
+          {
+            "id": "lab-saber-conocer-q3",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "Mi abuela ___ hablar tres idiomas.",
+            "options": [
+              "sabe",
+              "conoce",
+              "sabes",
+              "conoces"
+            ],
+            "correct": 0,
+            "explanation": "A skill is saber + infinitive: sabe hablar.",
+            "optionNotes": [
+              null,
+              "A skill takes saber, not conocer.",
+              "Sabes is for tú; mi abuela takes sabe.",
+              "A skill takes saber, and mi abuela takes the él / ella form."
+            ]
+          },
+          {
+            "id": "lab-saber-conocer-q4",
+            "type": "multiple-choice",
+            "kind": "form",
+            "prompt": "___ a mi mejor amiga en el colegio, el primer día de clase.",
+            "options": [
+              "Supe",
+              "Sabía",
+              "Conocía",
+              "Conocí"
+            ],
+            "correct": 3,
+            "explanation": "Meeting someone for the first time is conocer in the preterite: Conocí a mi mejor amiga.",
+            "optionNotes": [
+              "Saber is not used for people.",
+              "Saber is not used for people.",
+              "Meeting someone is one event, so the preterite: conocí.",
+              null
+            ]
+          }
+        ]
+      }
     }
   ]
 }

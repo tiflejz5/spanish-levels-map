@@ -517,6 +517,486 @@
       "setTags": [
         "ir-a"
       ]
+    },
+    {
+      "id": "preterito-perfecto",
+      "name": "Pretérito perfecto",
+      "nameEn": "Present perfect",
+      "column": "past",
+      "row": "indicative",
+      "level": "A2",
+      "summary": "The past seen from now: experiences, things done or not done yet and, in Spain, today.",
+      "formation": [
+        {
+          "label": "Person order",
+          "text": "yo, tú, él / ella / usted, nosotros, vosotros (Spain), ellos / ellas / ustedes"
+        },
+        {
+          "label": "haber + participle",
+          "text": "he, has, ha, hemos, habéis, han + hablado / comido / vivido"
+        },
+        {
+          "label": "Participles",
+          "text": "-ar → -ado (hablado) · -er / -ir → -ido (comido, vivido)"
+        },
+        {
+          "label": "Irregular participles",
+          "text": "hecho, dicho, puesto, vuelto, visto, escrito, abierto, roto"
+        }
+      ],
+      "uses": [
+        {
+          "label": "Experiences (no time given)",
+          "text": "¿Has estado alguna vez en México?",
+          "en": "Have you ever been to Mexico?"
+        },
+        {
+          "label": "Already and not yet",
+          "text": "Todavía no he comido.",
+          "en": "I haven't eaten yet."
+        },
+        {
+          "label": "Never",
+          "text": "Nunca he viajado en avión.",
+          "en": "I've never traveled by plane."
+        },
+        {
+          "label": "A time that is not over (Spain)",
+          "text": "Hoy he trabajado mucho.",
+          "en": "I've worked a lot today."
+        }
+      ],
+      "signals": [
+        "ya",
+        "todavía no",
+        "aún no",
+        "alguna vez",
+        "nunca",
+        "hoy",
+        "esta mañana",
+        "esta semana",
+        "este año"
+      ],
+      "scenes": [
+        {
+          "id": "experience",
+          "label": "Experience",
+          "description": "Something that happened at some time in your life up to now; when is not important.",
+          "elements": [
+            {
+              "kind": "range",
+              "from": -0.95,
+              "to": 0,
+              "label": "my life so far"
+            },
+            {
+              "kind": "point",
+              "at": -0.45,
+              "label": "been to Peru"
+            }
+          ]
+        },
+        {
+          "id": "not-yet",
+          "label": "Not yet",
+          "description": "Something expected that has not happened up to now.",
+          "elements": [
+            {
+              "kind": "range",
+              "from": -0.6,
+              "to": 0,
+              "label": "not yet"
+            },
+            {
+              "kind": "marker",
+              "at": 0,
+              "label": "now"
+            }
+          ]
+        },
+        {
+          "id": "today",
+          "label": "Today (Spain)",
+          "description": "A finished action inside a time that is not over yet: today, this week, this year.",
+          "elements": [
+            {
+              "kind": "range",
+              "from": -0.35,
+              "to": 0,
+              "label": "today"
+            },
+            {
+              "kind": "point",
+              "at": -0.2,
+              "label": "worked a lot"
+            }
+          ]
+        }
+      ],
+      "traps": [
+        "With a finished time (ayer, el año pasado, en 2019) use the preterite everywhere: Ayer vi a Marta, never ayer he visto.",
+        "Nothing goes between haber and the participle: Ya he comido (not he ya comido), No lo he visto.",
+        "The participle after haber never changes: Ella ha comido, ellos han comido.",
+        "Spain vs Latin America: in most of Latin America people use the preterite for today and often for ya and todavía no: Hoy desayuné tarde. ¿Ya comiste?"
+      ],
+      "contrasts": [
+        {
+          "with": "preterito-indefinido",
+          "rule": "Perfecto looks at the past from now, with no finished time. Indefinido places the action at a finished time.",
+          "examples": [
+            "¿Has estado alguna vez en Perú?",
+            "Estuve en Perú el año pasado."
+          ]
+        }
+      ],
+      "topicIds": [
+        "a2-verbs-present-perfect"
+      ],
+      "setTags": [
+        "present-perfect"
+      ]
+    },
+    {
+      "id": "estar-gerundio",
+      "name": "estar + gerundio",
+      "nameEn": "be + -ing (in progress)",
+      "column": "present",
+      "row": "indicative",
+      "level": "A2",
+      "summary": "An action in progress right now, or a temporary situation these days.",
+      "formation": [
+        {
+          "label": "Person order",
+          "text": "yo, tú, él / ella / usted, nosotros, vosotros (Spain), ellos / ellas / ustedes"
+        },
+        {
+          "label": "estar + gerund",
+          "text": "estoy, estás, está, estamos, estáis, están + hablando / comiendo / escribiendo"
+        },
+        {
+          "label": "Gerunds",
+          "text": "-ar → -ando (hablando) · -er / -ir → -iendo (comiendo, viviendo)"
+        },
+        {
+          "label": "Irregular gerunds",
+          "text": "leyendo, oyendo, trayendo, yendo · pidiendo, diciendo, sirviendo, viniendo · durmiendo, muriendo"
+        },
+        {
+          "label": "Pronouns",
+          "text": "me estoy duchando = estoy duchándome"
+        }
+      ],
+      "uses": [
+        {
+          "label": "Right now",
+          "text": "Está hablando por teléfono.",
+          "en": "She's on the phone."
+        },
+        {
+          "label": "These days",
+          "text": "Este mes estamos trabajando mucho.",
+          "en": "We're working a lot this month."
+        },
+        {
+          "label": "Today, unlike usual",
+          "text": "Normalmente trabajo en casa, pero hoy estoy trabajando en la oficina.",
+          "en": "I usually work at home, but today I'm working at the office."
+        }
+      ],
+      "signals": [
+        "ahora",
+        "ahora mismo",
+        "en este momento",
+        "estos días",
+        "hoy"
+      ],
+      "scenes": [
+        {
+          "id": "now",
+          "label": "Right now",
+          "description": "An action that has started and is going on at the moment of speaking.",
+          "elements": [
+            {
+              "kind": "range",
+              "from": -0.15,
+              "to": 0.15,
+              "label": "I'm making dinner"
+            }
+          ]
+        },
+        {
+          "id": "these-days",
+          "label": "These days",
+          "description": "A temporary situation around now, not a permanent one.",
+          "elements": [
+            {
+              "kind": "range",
+              "from": -0.45,
+              "to": 0.45,
+              "label": "this month"
+            }
+          ]
+        }
+      ],
+      "traps": [
+        "Never for future plans: English “I'm leaving tomorrow” is Mañana salgo or Mañana voy a salir.",
+        "The helper is estar, never ser: Estoy trabajando.",
+        "Verbs for states usually do not take it: Tengo un coche (not estoy teniendo un coche), Sé la respuesta (not estoy sabiendo).",
+        "As a noun (“swimming is good”) Spanish uses the infinitive: Nadar es bueno."
+      ],
+      "contrasts": [
+        {
+          "with": "presente",
+          "rule": "Estar + gerundio stresses that the action is in progress now. The presente is for habits and facts, and can also describe what is happening.",
+          "examples": [
+            "Normalmente trabajo en casa.",
+            "Hoy estoy trabajando en la oficina."
+          ]
+        }
+      ],
+      "topicIds": [
+        "a2-verbs-estar-gerund"
+      ],
+      "setTags": [
+        "estar-gerund"
+      ]
+    },
+    {
+      "id": "futuro-simple",
+      "name": "Futuro simple",
+      "nameEn": "Future",
+      "column": "future",
+      "row": "indicative",
+      "level": "A2",
+      "summary": "Predictions, promises and the more distant future.",
+      "formation": [
+        {
+          "label": "Person order",
+          "text": "yo, tú, él / ella / usted, nosotros, vosotros (Spain), ellos / ellas / ustedes"
+        },
+        {
+          "label": "infinitive + ending",
+          "text": "hablaré, hablarás, hablará, hablaremos, hablaréis, hablarán (the same for -er and -ir)"
+        },
+        {
+          "label": "Irregular stems",
+          "text": "tendr-, pondr-, saldr-, vendr-, querr-, har-, dir-, podr-, sabr-, habr- (habrá = there will be)"
+        }
+      ],
+      "uses": [
+        {
+          "label": "Predictions",
+          "text": "Mañana lloverá en el norte.",
+          "en": "It will rain in the north tomorrow."
+        },
+        {
+          "label": "Promises",
+          "text": "Te llamaré esta noche.",
+          "en": "I'll call you tonight."
+        },
+        {
+          "label": "The more distant future",
+          "text": "El año que viene viviremos en Valencia.",
+          "en": "Next year we'll live in Valencia."
+        },
+        {
+          "label": "After si + present",
+          "text": "Si llueve, nos quedaremos en casa.",
+          "en": "If it rains, we'll stay at home."
+        }
+      ],
+      "signals": [
+        "mañana",
+        "pasado mañana",
+        "la semana que viene",
+        "el año que viene",
+        "el próximo año",
+        "dentro de dos días",
+        "pronto",
+        "algún día"
+      ],
+      "scenes": [
+        {
+          "id": "prediction",
+          "label": "Prediction",
+          "description": "What you think will happen later; nothing is decided now.",
+          "elements": [
+            {
+              "kind": "point",
+              "at": 0.55,
+              "label": "it will rain"
+            }
+          ]
+        },
+        {
+          "id": "promise",
+          "label": "Promise",
+          "description": "You decide now and promise an action for later.",
+          "elements": [
+            {
+              "kind": "marker",
+              "at": 0,
+              "label": "I promise"
+            },
+            {
+              "kind": "point",
+              "at": 0.35,
+              "label": "I'll call you"
+            }
+          ]
+        }
+      ],
+      "traps": [
+        "After si, use the present, not the future: Si llueve, no saldremos (not si lloverá).",
+        "Every form has a written accent except nosotros: hablaré, but hablaremos.",
+        "Irregular stems are short: haré (not haceré), tendré (not teneré), diré (not deciré).",
+        "For an offer right now (“I'll get it!”), Spanish uses the present: ¡Ya voy! Yo te ayudo."
+      ],
+      "contrasts": [
+        {
+          "with": "ir-a-infinitivo",
+          "rule": "Ir a + infinitivo is the usual choice in conversation for plans already decided. The futuro is typical for predictions and promises.",
+          "examples": [
+            "Esta tarde voy a ver a Marta.",
+            "Algún día tendremos una casa en el campo."
+          ]
+        }
+      ],
+      "topicIds": [
+        "a2-verbs-future-simple"
+      ],
+      "setTags": [
+        "future"
+      ]
+    },
+    {
+      "id": "imperativo",
+      "name": "Imperativo",
+      "nameEn": "Imperative",
+      "column": "present",
+      "row": "other",
+      "level": "A2",
+      "summary": "Instructions, directions, offers and requests: “do this”.",
+      "formation": [
+        {
+          "label": "tú",
+          "text": "the él / ella form of the present: habla, come, sube, sigue"
+        },
+        {
+          "label": "Eight irregular tú forms",
+          "text": "di, haz, ve, pon, sal, sé, ten, ven"
+        },
+        {
+          "label": "usted / ustedes",
+          "text": "yo form, drop -o, swap the vowel: hable / hablen, coma / coman, tenga / tengan"
+        },
+        {
+          "label": "Irregular usted forms",
+          "text": "vaya, sea, sepa, dé"
+        },
+        {
+          "label": "vosotros (Spain)",
+          "text": "infinitive with -d instead of -r: hablad, comed, venid"
+        },
+        {
+          "label": "Pronouns",
+          "text": "attached, often with an accent: llámame, dígame, siéntese"
+        }
+      ],
+      "uses": [
+        {
+          "label": "Directions",
+          "text": "Sigue todo recto y toma la primera a la izquierda.",
+          "en": "Go straight ahead and take the first left. (Todo recto is Spain; Latin America: sigue derecho.)"
+        },
+        {
+          "label": "Instructions and recipes",
+          "text": "Corta las cebollas y ponlas en la sartén.",
+          "en": "Cut the onions and put them in the pan."
+        },
+        {
+          "label": "Offers and invitations",
+          "text": "Pasa, pasa. Siéntate.",
+          "en": "Come in, come in. Sit down."
+        },
+        {
+          "label": "To a stranger (usted)",
+          "text": "Siga por esta calle.",
+          "en": "Keep going along this street."
+        }
+      ],
+      "signals": [
+        "por favor",
+        "perdone",
+        "perdona",
+        "primero",
+        "después",
+        "al final de la calle"
+      ],
+      "scenes": [
+        {
+          "id": "instruction",
+          "label": "Instruction",
+          "description": "Said now, for an action the listener does right after.",
+          "elements": [
+            {
+              "kind": "marker",
+              "at": 0,
+              "label": "turn right!"
+            },
+            {
+              "kind": "point",
+              "at": 0.2,
+              "label": "they turn"
+            }
+          ]
+        },
+        {
+          "id": "steps",
+          "label": "Steps",
+          "description": "A chain of instructions, one after the other.",
+          "elements": [
+            {
+              "kind": "point",
+              "at": 0.15,
+              "label": "go straight ahead"
+            },
+            {
+              "kind": "point",
+              "at": 0.4,
+              "label": "turn left"
+            },
+            {
+              "kind": "point",
+              "at": 0.65,
+              "label": "cross"
+            }
+          ]
+        }
+      ],
+      "traps": [
+        "The tú form looks like the present: habla, come. Context and tone show it is an instruction.",
+        "Ve (go) and ven (come) are easy to mix up: Ve a la tienda. Ven a mi casa.",
+        "Pronouns are attached, and the stressed syllable often needs an accent: llámame, not me llama or llamame.",
+        "This card is about “do”; “don't” has other forms and comes later."
+      ],
+      "contrasts": [
+        {
+          "with": "presente",
+          "rule": "The tú imperative looks like the él / ella present, but gives an order. Between friends, a question in the present is often softer.",
+          "examples": [
+            "Pásame la sal.",
+            "¿Me pasas la sal?"
+          ]
+        }
+      ],
+      "topicIds": [
+        "a2-verbs-imperative-affirmative",
+        "a2-functions-directions"
+      ],
+      "setTags": [
+        "imperative"
+      ]
     }
   ]
 }

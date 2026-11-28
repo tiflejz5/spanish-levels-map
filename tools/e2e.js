@@ -931,6 +931,11 @@ async function main() {
     const s = await session(1280, 900, false);
     const t = labSrc.trees[0];
     await visit(s.page, "#/lab/pick", 900);
+    if (labSrc.trees.length > 1) { // more trees: #/lab/pick lists them, each tree has its own address
+      const listed = await s.page.evaluate(function () { return document.body.innerText; });
+      ok(labSrc.trees.every(function (x) { return listed.indexOf(x.title) !== -1; }), "every tree listed");
+      await visit(s.page, "#/lab/pick/" + t.id, 900);
+    }
     ok((await s.page.innerText(".lab-question")) === t.nodes[t.start].question, "first question");
     const deep = t.nodes[t.start].options.findIndex(function (o) { return o.next; });
     await s.page.click(".lab-answer >> nth=" + deep);
