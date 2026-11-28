@@ -1,68 +1,291 @@
 {
   "about": "Language fixtures for tools/tests.js (spec 05 §6, spec 09 rule 3). Another target language swaps this folder. Test data only, never shipped.",
   "stripMarks": [
-    ["Árbol, pingüino y ñandú", "Arbol, pinguino y nandu"],
-    ["¿Qué tal, señora?", "¿Que tal, senora?"],
-    ["ÉL ESTÁ AQUÍ", "EL ESTA AQUI"]
+    [
+      "Árbol, pingüino y ñandú",
+      "Arbol, pinguino y nandu"
+    ],
+    [
+      "¿Qué tal, señora?",
+      "¿Que tal, senora?"
+    ],
+    [
+      "ÉL ESTÁ AQUÍ",
+      "EL ESTA AQUI"
+    ]
   ],
   "fold": [
-    ["ÁRBOL Pingüino Ñandú", "arbol pinguino nandu"],
-    ["«Él dijo: ‘sí’»", "\"el dijo: 'si'\""],
-    ["Canción", "cancion"]
+    [
+      "ÁRBOL Pingüino Ñandú",
+      "arbol pinguino nandu"
+    ],
+    [
+      "«Él dijo: ‘sí’»",
+      "\"el dijo: 'si'\""
+    ],
+    [
+      "Canción",
+      "cancion"
+    ]
   ],
   "normalizeAnswer": [
-    ["  Habló  ", "habló"],
-    ["Estoy   cansada.", "estoy cansada"],
-    ["¿Dónde?", "¿dónde?"],
-    ["L’Hospitalet", "l'hospitalet"]
+    [
+      "  Habló  ",
+      "habló"
+    ],
+    [
+      "Estoy   cansada.",
+      "estoy cansada"
+    ],
+    [
+      "¿Dónde?",
+      "¿dónde?"
+    ],
+    [
+      "L’Hospitalet",
+      "l'hospitalet"
+    ]
   ],
   "normalizeSentence": [
-    ["¿Dónde está la estación?", "dónde está la estación"],
-    ["¡Qué bien, gracias!", "qué bien gracias"],
-    ["—No me gusta el frío. —A mí tampoco.", "no me gusta el frío a mí tampoco"],
-    ["Dijo: «Vuelvo mañana».", "dijo vuelvo mañana"],
-    ["Es un acuerdo franco-alemán…", "es un acuerdo franco-alemán"]
+    [
+      "¿Dónde está la estación?",
+      "dónde está la estación"
+    ],
+    [
+      "¡Qué bien, gracias!",
+      "qué bien gracias"
+    ],
+    [
+      "—No me gusta el frío. —A mí tampoco.",
+      "no me gusta el frío a mí tampoco"
+    ],
+    [
+      "Dijo: «Vuelvo mañana».",
+      "dijo vuelvo mañana"
+    ],
+    [
+      "Es un acuerdo franco-alemán…",
+      "es un acuerdo franco-alemán"
+    ]
   ],
   "countWords": [
-    ["¿Qué tal? Muy bien, gracias.", 5],
-    ["El fin de semana — en Sevilla", 6],
-    ["  ", 0]
+    [
+      "¿Qué tal? Muy bien, gracias.",
+      5
+    ],
+    [
+      "El fin de semana — en Sevilla",
+      6
+    ],
+    [
+      "  ",
+      0
+    ]
   ],
   "match": [
-    { "answer": "Habló", "accepted": ["habló"], "ok": true },
-    { "answer": "MADRID", "accepted": ["Madrid"], "ok": true },
-    { "answer": "hablo", "accepted": ["habló"], "near": "accents", "closest": "habló" },
-    { "answer": "esta", "accepted": ["estoy", "está"], "near": "accents", "closest": "está" },
-    { "answer": "hablas", "accepted": ["hablan"], "near": "ending", "closest": "hablan" },
-    { "answer": "cansado", "accepted": ["cansada"], "near": "ending", "closest": "cansada" },
-    { "answer": "trabajo", "accepted": ["trabajaba"], "near": "ending", "closest": "trabajaba" },
-    { "answer": "bibloteca", "accepted": ["biblioteca"], "near": "typo", "closest": "biblioteca" },
-    { "answer": "vemtana", "accepted": ["ventana"], "near": "typo", "closest": "ventana" },
-    { "answer": "sol", "accepted": ["sal"], "near": null },
-    { "answer": "maleta", "accepted": ["mochila"], "near": null },
-    { "answer": "", "accepted": ["mochila"], "near": null, "answered": false },
-    { "answer": "¿dónde está el baño", "accepted": ["¿Dónde está el baño?"], "sentence": true, "ok": true },
-    { "answer": "Manana voy a la estacion", "accepted": ["Mañana voy a la estación."], "sentence": true, "near": "accents" },
-    { "answer": "mi nombre es lucia", "accepted": ["Me llamo Lucía.", "Mi nombre es Lucía."], "sentence": true, "near": "accents", "closest": "Mi nombre es Lucía.", "index": 1 },
-    { "answer": "Vivo en una ciudad pequeña y tranqila", "accepted": ["Vivo en una ciudad pequeña y tranquila."], "sentence": true, "near": "typo" },
-    { "answer": "Vivo en una ciudad grande", "accepted": ["Vivo en una ciudad pequeña y tranquila."], "sentence": true, "near": null }
+    {
+      "answer": "Habló",
+      "accepted": [
+        "habló"
+      ],
+      "ok": true
+    },
+    {
+      "answer": "MADRID",
+      "accepted": [
+        "Madrid"
+      ],
+      "ok": true
+    },
+    {
+      "answer": "hablo",
+      "accepted": [
+        "habló"
+      ],
+      "near": "accents",
+      "closest": "habló"
+    },
+    {
+      "answer": "esta",
+      "accepted": [
+        "estoy",
+        "está"
+      ],
+      "near": "accents",
+      "closest": "está"
+    },
+    {
+      "answer": "hablas",
+      "accepted": [
+        "hablan"
+      ],
+      "near": "ending",
+      "closest": "hablan"
+    },
+    {
+      "answer": "cansado",
+      "accepted": [
+        "cansada"
+      ],
+      "near": "ending",
+      "closest": "cansada"
+    },
+    {
+      "answer": "trabajo",
+      "accepted": [
+        "trabajaba"
+      ],
+      "near": "ending",
+      "closest": "trabajaba"
+    },
+    {
+      "answer": "bibloteca",
+      "accepted": [
+        "biblioteca"
+      ],
+      "near": "typo",
+      "closest": "biblioteca"
+    },
+    {
+      "answer": "vemtana",
+      "accepted": [
+        "ventana"
+      ],
+      "near": "typo",
+      "closest": "ventana"
+    },
+    {
+      "answer": "sol",
+      "accepted": [
+        "sal"
+      ],
+      "near": null
+    },
+    {
+      "answer": "maleta",
+      "accepted": [
+        "mochila"
+      ],
+      "near": null
+    },
+    {
+      "answer": "",
+      "accepted": [
+        "mochila"
+      ],
+      "near": null,
+      "answered": false
+    },
+    {
+      "answer": "¿dónde está el baño",
+      "accepted": [
+        "¿Dónde está el baño?"
+      ],
+      "sentence": true,
+      "ok": true
+    },
+    {
+      "answer": "Manana voy a la estacion",
+      "accepted": [
+        "Mañana voy a la estación."
+      ],
+      "sentence": true,
+      "near": "accents"
+    },
+    {
+      "answer": "mi nombre es lucia",
+      "accepted": [
+        "Me llamo Lucía.",
+        "Mi nombre es Lucía."
+      ],
+      "sentence": true,
+      "near": "accents",
+      "closest": "Mi nombre es Lucía.",
+      "index": 1
+    },
+    {
+      "answer": "Vivo en una ciudad pequeña y tranqila",
+      "accepted": [
+        "Vivo en una ciudad pequeña y tranquila."
+      ],
+      "sentence": true,
+      "near": "typo"
+    },
+    {
+      "answer": "Vivo en una ciudad grande",
+      "accepted": [
+        "Vivo en una ciudad pequeña y tranquila."
+      ],
+      "sentence": true,
+      "near": null
+    }
   ],
-  "lenient": { "item": { "type": "short-answer", "prompt": "Ayer ___ (yo, hablar) con mi jefe.", "accepted": ["hablé"] }, "answer": "hable" },
+  "lenient": {
+    "item": {
+      "type": "short-answer",
+      "prompt": "Ayer ___ (yo, hablar) con mi jefe.",
+      "accepted": [
+        "hablé"
+      ]
+    },
+    "answer": "hable"
+  },
   "wordDiff": {
     "model": "ayer fuimos al cine con Marta",
     "got": "ayer fuimos cine con marta también",
-    "changes": [{ "op": "missing", "word": "al" }, { "op": "replace", "word": "Marta", "got": "marta" }, { "op": "extra", "got": "también" }],
-    "lowerChanges": [{ "op": "missing", "word": "al" }, { "op": "extra", "got": "también" }]
+    "changes": [
+      {
+        "op": "missing",
+        "word": "al"
+      },
+      {
+        "op": "replace",
+        "word": "Marta",
+        "got": "marta"
+      },
+      {
+        "op": "extra",
+        "got": "también"
+      }
+    ],
+    "lowerChanges": [
+      {
+        "op": "missing",
+        "word": "al"
+      },
+      {
+        "op": "extra",
+        "got": "también"
+      }
+    ]
   },
   "sentences": {
     "text": "Hablé ayer con la Dra. Ruiz sobre el viaje. ¿Vienes con nosotros el sábado? ¡Claro que sí! Lo dijo el Sr. García en la reunión. Compra algo, p. ej. Fruta o pan. Nadie lo esperaba.",
     "cases": [
-      ["sábado", "¿Vienes con nosotros el sábado?"],
-      ["Ruiz", "Hablé ayer con la Dra. Ruiz sobre el viaje."],
-      ["Claro", "¡Claro que sí!"],
-      ["García", "Lo dijo el Sr. García en la reunión."],
-      ["pan", "Compra algo, p. ej. Fruta o pan."],
-      ["esperaba", "Nadie lo esperaba."]
+      [
+        "sábado",
+        "¿Vienes con nosotros el sábado?"
+      ],
+      [
+        "Ruiz",
+        "Hablé ayer con la Dra. Ruiz sobre el viaje."
+      ],
+      [
+        "Claro",
+        "¡Claro que sí!"
+      ],
+      [
+        "García",
+        "Lo dijo el Sr. García en la reunión."
+      ],
+      [
+        "pan",
+        "Compra algo, p. ej. Fruta o pan."
+      ],
+      [
+        "esperaba",
+        "Nadie lo esperaba."
+      ]
     ],
     "count": 6
   },
@@ -93,61 +316,290 @@
     ]
   },
   "cloze": [
-    ["El fin de semana fuimos a Cádiz.", "Cádiz", "El fin de semana fuimos a {{Cádiz}}."],
-    ["Es un acuerdo franco-alemán.", "franco-alemán", "Es un acuerdo {{franco-alemán}}."],
-    ["Pasé por la pasarela.", "pasé", "{{Pasé}} por la pasarela."],
-    ["Pasé por la pasarela.", "pasa", null],
-    ["Los años pasan rápido.", "año", null],
-    ["Mañana es el cumpleaños de Ñico.", "cumpleaños", "Mañana es el {{cumpleaños}} de Ñico."],
-    ["¿Cuánto cuesta este queso?", "cuánto", "¿{{Cuánto}} cuesta este queso?"]
+    [
+      "El fin de semana fuimos a Cádiz.",
+      "Cádiz",
+      "El fin de semana fuimos a {{Cádiz}}."
+    ],
+    [
+      "Es un acuerdo franco-alemán.",
+      "franco-alemán",
+      "Es un acuerdo {{franco-alemán}}."
+    ],
+    [
+      "Pasé por la pasarela.",
+      "pasé",
+      "{{Pasé}} por la pasarela."
+    ],
+    [
+      "Pasé por la pasarela.",
+      "pasa",
+      null
+    ],
+    [
+      "Los años pasan rápido.",
+      "año",
+      null
+    ],
+    [
+      "Mañana es el cumpleaños de Ñico.",
+      "cumpleaños",
+      "Mañana es el {{cumpleaños}} de Ñico."
+    ],
+    [
+      "¿Cuánto cuesta este queso?",
+      "cuánto",
+      "¿{{Cuánto}} cuesta este queso?"
+    ]
   ],
   "selection": [
-    ["  ¿cuánto? ", "cuánto"],
-    ["«qué bien»", "qué bien"],
-    ["¡Hola!", "Hola"]
+    [
+      "  ¿cuánto? ",
+      "cuánto"
+    ],
+    [
+      "«qué bien»",
+      "qué bien"
+    ],
+    [
+      "¡Hola!",
+      "Hola"
+    ]
   ],
   "examCountWords": [
-    { "text": "Hola, ¿qué tal? :) Un saludo, XYZ", "n": 6 },
-    { "text": "Hola, ¿qué tal? :) Un saludo, XYZ", "placeholders": ["XYZ"], "n": 5 },
-    { "text": "Querida Ana: te escribo", "opening": "Querida Ana:", "n": 2 }
+    {
+      "text": "Hola, ¿qué tal? :) Un saludo, XYZ",
+      "n": 6
+    },
+    {
+      "text": "Hola, ¿qué tal? :) Un saludo, XYZ",
+      "placeholders": [
+        "XYZ"
+      ],
+      "n": 5
+    },
+    {
+      "text": "Querida Ana: te escribo",
+      "opening": "Querida Ana:",
+      "n": 2
+    }
   ],
   "speech": [
-    { "item": { "type": "short-answer", "prompt": "Señora: ¿Dónde está la farmacia?\nJoven: Está ___ la esquina.", "accepted": ["en"] }, "before": "¿Dónde está la farmacia? Está … la esquina.", "after": "¿Dónde está la farmacia? Está en la esquina." }
+    {
+      "item": {
+        "type": "short-answer",
+        "prompt": "Señora: ¿Dónde está la farmacia?\nJoven: Está ___ la esquina.",
+        "accepted": [
+          "en"
+        ]
+      },
+      "before": "¿Dónde está la farmacia? Está … la esquina.",
+      "after": "¿Dónde está la farmacia? Está en la esquina."
+    }
   ],
   "search": {
     "records": [
-      { "id": "1", "group": "pages", "title": "Pretérito perfecto", "headings": ["Common mistakes", "How it works"], "summary": "Past actions linked to the present.", "text": "Haber + participio. He estado en París dos veces." },
-      { "id": "2", "group": "pages", "title": "Pretérito imperfecto", "headings": [], "summary": "Routine in the past.", "text": "Vivía en Málaga." },
-      { "id": "3", "group": "lab", "title": "Indefinido", "headings": [], "summary": "Finished events.", "text": "Pretérito perfecto versus indefinido." },
-      { "id": "4", "group": "exercises", "title": "Posesivos átonos – check yourself", "headings": [], "summary": "", "text": "" }
+      {
+        "id": "1",
+        "group": "pages",
+        "title": "Pretérito perfecto",
+        "headings": [
+          "Common mistakes",
+          "How it works"
+        ],
+        "summary": "Past actions linked to the present.",
+        "text": "Haber + participio. He estado en París dos veces."
+      },
+      {
+        "id": "2",
+        "group": "pages",
+        "title": "Pretérito imperfecto",
+        "headings": [],
+        "summary": "Routine in the past.",
+        "text": "Vivía en Málaga."
+      },
+      {
+        "id": "3",
+        "group": "lab",
+        "title": "Indefinido",
+        "headings": [],
+        "summary": "Finished events.",
+        "text": "Pretérito perfecto versus indefinido."
+      },
+      {
+        "id": "4",
+        "group": "exercises",
+        "title": "Posesivos átonos – check yourself",
+        "headings": [],
+        "summary": "",
+        "text": ""
+      }
     ],
     "queries": [
-      ["malaga", ["2"]],
-      ["Málaga", ["2"]],
-      ["atonos", ["4"]],
-      ["átonos", ["4"]],
-      ["preterito paris", ["1"]],
-      ["zzzz", []]
+      [
+        "malaga",
+        [
+          "2"
+        ]
+      ],
+      [
+        "Málaga",
+        [
+          "2"
+        ]
+      ],
+      [
+        "atonos",
+        [
+          "4"
+        ]
+      ],
+      [
+        "átonos",
+        [
+          "4"
+        ]
+      ],
+      [
+        "preterito paris",
+        [
+          "1"
+        ]
+      ],
+      [
+        "zzzz",
+        []
+      ]
     ],
-    "prefix": ["pret", ["1", "2"]],
-    "titleFirst": ["preterito perfecto", "1"],
+    "prefix": [
+      "pret",
+      [
+        "1",
+        "2"
+      ]
+    ],
+    "titleFirst": [
+      "preterito perfecto",
+      "1"
+    ],
     "typo": "pretreito",
     "typoTarget": "preterito",
-    "snippet": { "text": "Vivía en Málaga desde hace <b>cinco</b> años.", "query": "malaga", "hit": "Málaga" },
-    "highlight": { "text": "Pretérito perfecto", "query": "pret", "hits": ["Pretérito"] },
-    "accentedHighlight": { "text": "Canción de cumpleaños", "query": "cancion", "hits": ["Canción"] }
+    "snippet": {
+      "text": "Vivía en Málaga desde hace <b>cinco</b> años.",
+      "query": "malaga",
+      "hit": "Málaga"
+    },
+    "highlight": {
+      "text": "Pretérito perfecto",
+      "query": "pret",
+      "hits": [
+        "Pretérito"
+      ]
+    },
+    "accentedHighlight": {
+      "text": "Canción de cumpleaños",
+      "query": "cancion",
+      "hits": [
+        "Canción"
+      ]
+    }
   },
   "cards": {
-    "typo": { "answer": "bibloteca", "accepted": ["biblioteca"] },
-    "accents": { "answer": "cafe", "accepted": ["el café", "café"] },
-    "ending": { "answer": "cansado", "accepted": ["cansada"] },
-    "wrong": { "answer": "sol", "accepted": ["sal"] },
-    "alternatives": { "text": "¿Cuánto {{cuesta|vale}} este queso?", "answer": "VALE" },
+    "typo": {
+      "answer": "bibloteca",
+      "accepted": [
+        "biblioteca"
+      ]
+    },
+    "accents": {
+      "answer": "cafe",
+      "accepted": [
+        "el café",
+        "café"
+      ]
+    },
+    "ending": {
+      "answer": "cansado",
+      "accepted": [
+        "cansada"
+      ]
+    },
+    "wrong": {
+      "answer": "sol",
+      "accepted": [
+        "sal"
+      ]
+    },
+    "alternatives": {
+      "text": "¿Cuánto {{cuesta|vale}} este queso?",
+      "answer": "VALE"
+    },
     "speech": [
-      { "card": { "type": "basic", "front": "I agree.", "back": "Estoy de acuerdo." }, "front": "", "back": "Estoy de acuerdo." },
-      { "card": { "type": "basic", "front": "¿Qué hora es?", "back": "What time is it?" }, "front": "¿Qué hora es?", "back": "¿Qué hora es?" },
-      { "card": { "type": "typed", "front": "bread", "back": "el pan", "accepted": ["el pan", "pan"] }, "front": "", "back": "el pan" },
-      { "card": { "type": "cloze", "text": "Quería un café con {{leche}}, por favor." }, "front": "Quería un café con … , por favor.", "back": "Quería un café con leche, por favor." }
+      {
+        "card": {
+          "type": "basic",
+          "front": "I agree.",
+          "back": "Estoy de acuerdo."
+        },
+        "front": "",
+        "back": "Estoy de acuerdo."
+      },
+      {
+        "card": {
+          "type": "basic",
+          "front": "¿Qué hora es?",
+          "back": "What time is it?"
+        },
+        "front": "¿Qué hora es?",
+        "back": "¿Qué hora es?"
+      },
+      {
+        "card": {
+          "type": "typed",
+          "front": "bread",
+          "back": "el pan",
+          "accepted": [
+            "el pan",
+            "pan"
+          ]
+        },
+        "front": "",
+        "back": "el pan"
+      },
+      {
+        "card": {
+          "type": "cloze",
+          "text": "Quería un café con {{leche}}, por favor."
+        },
+        "front": "Quería un café con … , por favor.",
+        "back": "Quería un café con leche, por favor."
+      }
     ]
-  }
+  },
+  "genderTwin": [
+    [
+      "cansado",
+      "cansada"
+    ],
+    [
+      "contentas",
+      "contentos"
+    ],
+    [
+      "leyendo",
+      null
+    ],
+    [
+      "haciendo",
+      null
+    ],
+    [
+      "trabajando",
+      null
+    ],
+    [
+      "yendo",
+      null
+    ]
+  ]
 }

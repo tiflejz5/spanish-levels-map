@@ -40,19 +40,91 @@
     {
       "id": "ser-estar",
       "title": "ser or estar",
-      "description": "Choose and conjugate ser or estar in everyday sentences (A1–B1). This A1 part covers identity, origin, jobs, location, states and events.",
+      "description": "Choose and conjugate ser or estar in everyday sentences (A1–B1). The A1 part covers identity, origin, jobs, location, states and events; the A2 part adds the past tenses, estar + gerund and adjectives whose meaning changes with the verb.",
       "level": "A1",
       "file": "ser-estar.json",
-      "count": 20,
+      "count": 30,
       "enabled": false
     },
     {
       "id": "verbs-stem-changing",
       "title": "Stem-changing verbs",
-      "description": "e→ie, o→ue, e→i and u→ue in the present (A1–A2).",
+      "description": "e→ie, o→ue, e→i and u→ue in the present (A1–A2); the A2 part adds -ir verbs in the preterite and the gerund, and seguir in the imperative.",
       "level": "A1",
       "file": "verbs-stem-changing.json",
+      "count": 30,
+      "enabled": false
+    },
+    {
+      "id": "vocab-a2-travel-transport",
+      "title": "Travel and transportation",
+      "description": "Trains, buses, planes, tickets and hotel rooms, for the topic a2-vocabulary-travel-transport.",
+      "level": "A2",
+      "file": "vocab-a2-travel-transport.json",
+      "count": 30,
+      "enabled": false
+    },
+    {
+      "id": "vocab-a2-free-time-weather",
+      "title": "Free time and weather",
+      "description": "Weather, sports and hobbies, for the topic a2-vocabulary-free-time-weather.",
+      "level": "A2",
+      "file": "vocab-a2-free-time-weather.json",
+      "count": 30,
+      "enabled": false
+    },
+    {
+      "id": "vocab-a2-shopping-clothes",
+      "title": "Shopping and clothes",
+      "description": "Clothes, colors and the words of a clothes shop, for the topic a2-vocabulary-shopping-clothes.",
+      "level": "A2",
+      "file": "vocab-a2-shopping-clothes.json",
+      "count": 30,
+      "enabled": false
+    },
+    {
+      "id": "vocab-a2-health-body",
+      "title": "Body and health",
+      "description": "Parts of the body, illnesses, medicine and feelings, for the topic a2-vocabulary-health-body.",
+      "level": "A2",
+      "file": "vocab-a2-health-body.json",
+      "count": 30,
+      "enabled": false
+    },
+    {
+      "id": "verbs-preterite-irregular",
+      "title": "Irregular preterites",
+      "description": "The irregular pretérito indefinido in everyday sentences: fui, tuve, estuve, hice, dije, pidió (A2).",
+      "level": "A2",
+      "file": "verbs-preterite-irregular.json",
+      "count": 40,
+      "enabled": false
+    },
+    {
+      "id": "verbs-like-gustar",
+      "title": "Verbs like gustar",
+      "description": "gustar, encantar, doler, quedar, apetecer (Spain) and faltar, where the thing is the subject (A2–B1). This A2 part covers the present and the past.",
+      "level": "A2",
+      "file": "verbs-like-gustar.json",
+      "count": 16,
+      "enabled": false
+    },
+    {
+      "id": "por-para",
+      "title": "por or para",
+      "description": "Choose por or para in everyday sentences (A2–B1). This A2 part covers purpose, people, places, deadlines, thanks, causes, means and prices.",
+      "level": "A2",
+      "file": "por-para.json",
       "count": 20,
+      "enabled": false
+    },
+    {
+      "id": "verbs-core-100",
+      "title": "100 core verbs",
+      "description": "The 100 most useful verbs (A1–A2): English to infinitive, and the present tense in sentences.",
+      "level": "A1",
+      "file": "verbs-core-100.json",
+      "count": 100,
       "enabled": false
     }
   ]

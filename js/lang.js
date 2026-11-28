@@ -108,6 +108,7 @@
     subjectPronouns: ["yo", "tú", "él", "ella", "usted", "nosotros", "nosotras", "vosotros", "vosotras", "ellos", "ellas", "ustedes"],
     genderLinks: ["estoy", "soy", "estás", "eres"],
     genderTwin: function (word) {
+      if (/(ando|iendo|yendo)$/u.test(str(word))) return null; // a gerund has no gender: estoy leyendo
       const m = /^(\p{L}{2,})([oa])(s?)$/u.exec(str(word));
       return m ? m[1] + (m[2] === "o" ? "a" : "o") + m[3] : null;
     },

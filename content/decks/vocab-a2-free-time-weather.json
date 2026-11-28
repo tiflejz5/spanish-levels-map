@@ -1,0 +1,406 @@
+{
+  "version": 1,
+  "id": "vocab-a2-free-time-weather",
+  "title": "Free time and weather",
+  "description": "Weather, sports and hobbies, for the topic a2-vocabulary-free-time-weather.",
+  "level": "A2",
+  "cards": [
+    {
+      "id": "vocab-a2-free-time-weather-001",
+      "type": "typed",
+      "front": "it's hot (the weather)",
+      "accepted": [
+        "hace calor"
+      ],
+      "back": "hace calor",
+      "note": "A person who feels hot says tengo calor.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-002",
+      "type": "typed",
+      "front": "it's cold (the weather)",
+      "accepted": [
+        "hace frío"
+      ],
+      "back": "hace frío",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-003",
+      "type": "typed",
+      "front": "it's sunny",
+      "accepted": [
+        "hace sol",
+        "hay sol"
+      ],
+      "back": "hace sol",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-004",
+      "type": "typed",
+      "front": "it's windy",
+      "accepted": [
+        "hace viento",
+        "hay viento"
+      ],
+      "back": "hace viento",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-005",
+      "type": "typed",
+      "front": "it's raining",
+      "accepted": [
+        "llueve",
+        "está lloviendo"
+      ],
+      "back": "llueve / está lloviendo",
+      "note": "llover (o → ue)",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-006",
+      "type": "typed",
+      "front": "it's snowing",
+      "accepted": [
+        "nieva",
+        "está nevando"
+      ],
+      "back": "nieva / está nevando",
+      "note": "nevar (e → ie)",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-007",
+      "type": "typed",
+      "front": "it's cloudy",
+      "accepted": [
+        "está nublado"
+      ],
+      "back": "está nublado",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-008",
+      "type": "typed",
+      "front": "the storm",
+      "accepted": [
+        "la tormenta",
+        "tormenta"
+      ],
+      "back": "la tormenta",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-009",
+      "type": "typed",
+      "front": "the rain",
+      "accepted": [
+        "la lluvia",
+        "lluvia"
+      ],
+      "back": "la lluvia",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-010",
+      "type": "typed",
+      "front": "the sport",
+      "accepted": [
+        "el deporte",
+        "deporte"
+      ],
+      "back": "el deporte",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-011",
+      "type": "typed",
+      "front": "the game, the match (soccer, tennis)",
+      "accepted": [
+        "el partido",
+        "partido"
+      ],
+      "back": "el partido",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-012",
+      "type": "typed",
+      "front": "the team",
+      "accepted": [
+        "el equipo",
+        "equipo"
+      ],
+      "back": "el equipo",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-013",
+      "type": "typed",
+      "front": "basketball",
+      "accepted": [
+        "el baloncesto",
+        "baloncesto",
+        "el básquetbol",
+        "básquetbol",
+        "el basquetbol",
+        "basquetbol",
+        "el básquet",
+        "básquet"
+      ],
+      "back": "el baloncesto (Spain) / el básquetbol (Latin America)",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-014",
+      "type": "typed",
+      "front": "to go hiking",
+      "accepted": [
+        "hacer senderismo"
+      ],
+      "back": "hacer senderismo",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-015",
+      "type": "typed",
+      "front": "free time",
+      "accepted": [
+        "el tiempo libre",
+        "tiempo libre"
+      ],
+      "back": "el tiempo libre",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-016",
+      "type": "typed",
+      "front": "to go for a walk",
+      "accepted": [
+        "pasear",
+        "dar un paseo",
+        "dar una vuelta"
+      ],
+      "back": "pasear",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-017",
+      "type": "typed",
+      "front": "to go shopping",
+      "accepted": [
+        "ir de compras"
+      ],
+      "back": "ir de compras",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-018",
+      "type": "typed",
+      "front": "the hobby",
+      "accepted": [
+        "la afición",
+        "afición",
+        "el pasatiempo",
+        "pasatiempo",
+        "el hobby",
+        "hobby"
+      ],
+      "back": "la afición (Spain) / el pasatiempo",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-019",
+      "type": "cloze",
+      "text": "¿Qué tiempo {{hace}} hoy?",
+      "hint": "is it like (the weather)",
+      "en": "What's the weather like today?",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-020",
+      "type": "cloze",
+      "text": "En verano hace {{mucho}} calor.",
+      "hint": "very (with a noun)",
+      "en": "It's very hot in summer.",
+      "note": "Calor is a noun, so mucho, not muy.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-021",
+      "type": "cloze",
+      "text": "Ayer {{llovió}} todo el día.",
+      "hint": "it rained",
+      "en": "It rained all day yesterday.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-022",
+      "type": "cloze",
+      "text": "Cuando salimos, {{hacía|había}} mucho viento.",
+      "hint": "it was (the weather, as background)",
+      "en": "When we went out, it was very windy.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-023",
+      "type": "cloze",
+      "text": "Los sábados juego {{al}} tenis con mi hermano.",
+      "hint": "a + el (play a sport)",
+      "en": "On Saturdays I play tennis with my brother.",
+      "note": "Latin America also: juego tenis.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-024",
+      "type": "cloze",
+      "text": "De niña {{tocaba}} el piano.",
+      "hint": "played (an instrument, as a habit)",
+      "en": "As a child I played the piano.",
+      "note": "Instruments take tocar; games and sports take jugar.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-025",
+      "type": "cloze",
+      "text": "¿Has visto el {{partido}}?",
+      "hint": "game, match",
+      "en": "Have you seen the game?",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-026",
+      "type": "cloze",
+      "text": "Mañana va a {{nevar}} en la montaña.",
+      "hint": "snow",
+      "en": "It's going to snow in the mountains tomorrow.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-027",
+      "type": "cloze",
+      "text": "No tengo {{tiempo}} para ver series.",
+      "hint": "time",
+      "en": "I don't have time to watch series.",
+      "note": "El tiempo is both “time” and “the weather”.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-028",
+      "type": "cloze",
+      "text": "Hoy {{hay}} niebla en la carretera.",
+      "hint": "there is (fog)",
+      "en": "It's foggy on the road today.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-029",
+      "type": "cloze",
+      "text": "Estamos a treinta {{grados}}.",
+      "hint": "degrees",
+      "en": "It's thirty degrees.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    },
+    {
+      "id": "vocab-a2-free-time-weather-030",
+      "type": "cloze",
+      "text": "Este fin de semana voy a {{salir}} con mis amigos.",
+      "hint": "go out",
+      "en": "This weekend I'm going to go out with my friends.",
+      "level": "A2",
+      "tags": [
+        "free-time-weather"
+      ]
+    }
+  ]
+}
