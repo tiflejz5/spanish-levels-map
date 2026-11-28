@@ -1,5 +1,5 @@
 /*
- * cheatsheets-pdf.js — prints the level cheat sheets to PDF and checks that each has exactly 1 A4 page
+ * cheatsheets-pdf.js — prints the level cheat sheets to PDF and checks that each has exactly 1 page on A4 and on US Letter
  * (spec 07 §3). A developer tool: NOT part of `npm run build`.
  *
  * Needs Playwright (e.g. `npm i -D playwright-core` or `npx playwright install chromium`) and a
@@ -8,7 +8,7 @@
  * Usage (from the project folder):
  *   node tools/cheatsheets-pdf.js                 # all cheat sheets in content/cheatsheets/
  *   node tools/cheatsheets-pdf.js a2 b1           # chosen levels
- *   node tools/cheatsheets-pdf.js --out tmp/pdf   # folder for the PDFs (default tmp/cheatsheets-pdf)
+ *   node tools/cheatsheets-pdf.js --out tmp/pdf   # folder for the PDFs (default tmp/cheatsheets-pdf), one per level and paper size
  *   node tools/cheatsheets-pdf.js --browser msedge  # browser channel (msedge, chrome); by default tries them in turn
  *
  * Report: level, number of pages, smallest type size in pt (must be ≥ 9.5 pt). Exit code 1 when a cheat sheet
@@ -22,6 +22,7 @@ const { pathToFileURL } = require("url");
 
 const ROOT = path.join(__dirname, "..");
 const MIN_PT = 9.5;
+const FORMATS = ["A4", "Letter"]; // spec 07 §3: one page on both
 
 function loadPlaywright() {
   for (const name of ["playwright", "playwright-core"]) {
@@ -69,7 +70,7 @@ async function main() {
   const browser = await launch(pw, opts.browser);
   const url = pathToFileURL(path.join(ROOT, "index.html")).href;
   let failed = false;
-  console.log("Sheet   Pages   Smallest type     PDF");
+  console.log("Sheet       Pages   Smallest type     PDF");
   for (const level of levels) {
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 }, colorScheme: "light", reducedMotion: "reduce" });
     const page = await ctx.newPage();
@@ -83,8 +84,12 @@ async function main() {
     await page.evaluate("document.fonts && document.fonts.ready");
     await page.evaluate("LM.print.before()");
     await page.emulateMedia({ media: "print" });
-    const file = path.join(opts.out, "cheatsheet-" + level + ".pdf");
-    const pdf = await page.pdf({ path: file, format: "A4", margin: { top: "12mm", bottom: "12mm", left: "12mm", right: "12mm" }, printBackground: true, preferCSSPageSize: true });
+    const pdfs = [];
+    for (const format of FORMATS) {
+      const file = path.join(opts.out, "cheatsheet-" + level + "-" + format.toLowerCase() + ".pdf");
+      const buf = await page.pdf({ path: file, format: format, margin: { top: "12mm", bottom: "12mm", left: "12mm", right: "12mm" }, printBackground: true, preferCSSPageSize: true });
+      pdfs.push({ format: format, file: file, pages: pageCount(buf) });
+    }
     // the smallest type size on the cheat sheet (px → pt), only elements with their own text
     const minPt = await page.evaluate(function () {
       let min = Infinity;
@@ -101,13 +106,14 @@ async function main() {
       return min;
     });
     await ctx.close();
-    const pages = pageCount(pdf);
-    const ok = pages === 1 && minPt >= MIN_PT - 0.05 && !errors.length;
-    if (!ok) failed = true;
-    console.log(level.toUpperCase().padEnd(8) + String(pages).padEnd(8) + (minPt.toFixed(1) + " pt").padEnd(18) + path.relative(ROOT, file) + (ok ? "" : "   ← " + (pages !== 1 ? "more than 1 page; cut the text" : minPt < MIN_PT ? "type below 9.5 pt" : errors[0])));
+    pdfs.forEach(function (p) {
+      const ok = p.pages === 1 && minPt >= MIN_PT - 0.05 && !errors.length;
+      if (!ok) failed = true;
+      console.log((level.toUpperCase() + " " + p.format).padEnd(12) + String(p.pages).padEnd(8) + (minPt.toFixed(1) + " pt").padEnd(18) + path.relative(ROOT, p.file) + (ok ? "" : "   ← " + (p.pages !== 1 ? "more than 1 page; cut the text" : minPt < MIN_PT ? "type below 9.5 pt" : errors[0])));
+    });
   }
   await browser.close();
-  console.log(failed ? "\nERROR: not every cheat sheet fits on 1 A4 page." : "\nOK: every cheat sheet has 1 A4 page, type ≥ " + MIN_PT + " pt.");
+  console.log(failed ? "\nERROR: not every cheat sheet fits on 1 page (A4 and US Letter)." : "\nOK: every cheat sheet has 1 page on A4 and on US Letter, type ≥ " + MIN_PT + " pt.");
   process.exit(failed ? 1 : 0);
 }
 
