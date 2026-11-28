@@ -74,6 +74,31 @@
               }
             },
             {
+              "label": "What someone is doing right now (“is doing”)",
+              "result": [
+                "estar-gerundio",
+                "ser-estar"
+              ],
+              "answer": "estar + gerund",
+              "why": "An action in progress takes estar + gerund, never ser.",
+              "example": {
+                "text": "Mis hijos están durmiendo.",
+                "en": "My children are sleeping."
+              }
+            },
+            {
+              "label": "What a thing is made of",
+              "result": [
+                "ser-estar"
+              ],
+              "answer": "ser",
+              "why": "Material is part of what something is: ser de.",
+              "example": {
+                "text": "La mesa es de madera.",
+                "en": "The table is made of wood."
+              }
+            },
+            {
               "label": "What someone or something is like, or how they are",
               "next": "describe"
             }
@@ -117,6 +142,143 @@
               "example": {
                 "text": "¿Cómo está tu padre? —Está bien, gracias.",
                 "en": "How is your father? —He's fine, thanks."
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "pick-past-tense",
+      "title": "Pick the past tense",
+      "level": "A2",
+      "intro": "You want to say something about the past. A few questions lead to the indefinido, the imperfecto or the perfecto.",
+      "start": "start",
+      "nodes": {
+        "start": {
+          "question": "Do you say when it happened?",
+          "help": "Look for a time word in your sentence.",
+          "options": [
+            {
+              "label": "Yes, a finished time: ayer, anoche, el año pasado, en 2019, hace dos años",
+              "next": "finished"
+            },
+            {
+              "label": "Yes, a time that is not over yet: hoy, esta mañana, esta semana",
+              "result": [
+                "perfecto-indefinido",
+                "preterito-perfecto"
+              ],
+              "answer": "perfecto (Spain) / indefinido (most of Latin America)",
+              "why": "In Spain a time that is not over takes the perfecto; in most of Latin America the indefinido is normal.",
+              "example": {
+                "text": "Hoy he trabajado mucho. / Hoy trabajé mucho.",
+                "en": "I've worked a lot today."
+              }
+            },
+            {
+              "label": "No, it is about my life up to now: ever, never, already, not yet",
+              "result": [
+                "preterito-perfecto",
+                "perfecto-indefinido"
+              ],
+              "answer": "perfecto (much of Latin America: also indefinido with ya / todavía no)",
+              "why": "Experiences and things done or not done yet, with no time given, take the perfecto. In many Latin American countries ya and todavía no also go with the indefinido: ¿Ya comiste?",
+              "example": {
+                "text": "¿Has estado alguna vez en Perú?",
+                "en": "Have you ever been to Peru?"
+              }
+            },
+            {
+              "label": "No, it is a description or a habit: as a child, before, always",
+              "next": "scene"
+            }
+          ]
+        },
+        "finished": {
+          "question": "Within that finished time, is it an event or the scene?",
+          "help": "An event moves the story on. The scene is what things were like or what was going on.",
+          "options": [
+            {
+              "label": "An event: something happened, once or a counted number of times",
+              "result": [
+                "preterito-indefinido",
+                "indefinido-imperfecto"
+              ],
+              "answer": "indefinido",
+              "why": "A finished event at a finished time takes the indefinido.",
+              "example": {
+                "text": "Ayer fui al cine con Diego.",
+                "en": "Yesterday I went to the movies with Diego."
+              }
+            },
+            {
+              "label": "A closed period: three years, all day, two weeks",
+              "result": [
+                "preterito-indefinido",
+                "indefinido-imperfecto"
+              ],
+              "answer": "indefinido",
+              "why": "A period with a clear end counts as one event.",
+              "example": {
+                "text": "Estuve dos semanas en Perú.",
+                "en": "I was in Peru for two weeks."
+              }
+            },
+            {
+              "label": "The scene: the weather, the time, how someone felt, what was going on",
+              "result": [
+                "preterito-imperfecto",
+                "indefinido-imperfecto"
+              ],
+              "answer": "imperfecto",
+              "why": "The background of a story takes the imperfecto, even inside a finished time.",
+              "example": {
+                "text": "Anoche hacía frío y llovía.",
+                "en": "Last night it was cold and raining."
+              }
+            }
+          ]
+        },
+        "scene": {
+          "question": "What are you describing?",
+          "options": [
+            {
+              "label": "What used to happen again and again",
+              "result": [
+                "preterito-imperfecto",
+                "indefinido-imperfecto"
+              ],
+              "answer": "imperfecto",
+              "why": "Past habits take the imperfecto.",
+              "example": {
+                "text": "De niño jugaba en la calle.",
+                "en": "As a child I used to play in the street."
+              }
+            },
+            {
+              "label": "What someone or something was like, age or the time",
+              "result": [
+                "preterito-imperfecto"
+              ],
+              "answer": "imperfecto",
+              "why": "Descriptions, age and the time in the past take the imperfecto.",
+              "example": {
+                "text": "Mi abuela era muy alta y tenía el pelo blanco.",
+                "en": "My grandmother was very tall and had white hair."
+              }
+            },
+            {
+              "label": "An action in progress when something else happened",
+              "result": [
+                "indefinido-imperfecto",
+                "preterito-imperfecto"
+              ],
+              "answer": "imperfecto + indefinido",
+              "why": "The action in progress takes the imperfecto; the event that interrupts it takes the indefinido.",
+              "example": {
+                "text": "Dormía cuando sonó el teléfono.",
+                "en": "I was sleeping when the phone rang."
               }
             }
           ]

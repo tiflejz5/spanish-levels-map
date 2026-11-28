@@ -13,9 +13,15 @@ The engine is a port of `english-levels-map` (the owner's Polish app for learnin
 | Level | Land | Status |
 |---|---|---|
 | A1 | Meadow | available: all 26 topics, summary, cheat sheet, final test |
-| A2 – C2 | Forest, Hills, Lake, Mountains, Summit | coming soon (the topics are visible) |
+| A2 | Forest | available: all 26 topics, summary, cheat sheet, final test |
+| B1 – C2 | Hills, Lake, Mountains, Summit | coming soon (the topics are visible) |
 
-Content: 130 topics in `content/syllabus.json`. A1: 26 topic pages, 26 trail quizzes (104 items), 19 exercise sets (190 items), 5 unit reviews, a level summary, a cheat sheet, a final-test pool of 30 items, 6 flashcard decks (160 cards). Placement test: 60 questions (10 per level). Lab: 4 cards, 1 contrast card, 1 decision tree.
+Content: 130 topics in `content/syllabus.json`.
+
+- A1: 26 topic pages, 26 trail quizzes (104 items), 19 exercise sets (190 items), 5 unit reviews, a level summary, a cheat sheet, a final-test pool of 30 items.
+- A2: 26 topic pages, 26 trail quizzes (104 items), 16 exercise sets (160 items), 5 unit reviews and 2 thematic mixes, a level summary, a cheat sheet, a final-test pool of 30 items.
+- Flashcards: 14 decks, 476 cards: 4 A1 and 4 A2 vocabulary decks (30 cards each) and the form decks verbs-core-100 (100), verbs-preterite-irregular (40), ser-estar (30 of 40, A1–A2 part), verbs-stem-changing (30), por-para (20 of 30, A2 part) and verbs-like-gustar (16 of 24, A2 part).
+- Placement test: 60 questions (10 per level). Lab: 8 cards, 5 contrast cards, 2 decision trees.
 
 ## Run it
 

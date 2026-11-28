@@ -2,7 +2,7 @@
   "version": 1,
   "id": "ser-estar",
   "title": "ser or estar",
-  "description": "Choose and conjugate ser or estar in everyday sentences (A1–B1). This A1 part covers identity, origin, jobs, location, states and events.",
+  "description": "Choose and conjugate ser or estar in everyday sentences (A1–B1). The A1 part covers identity, origin, jobs, location, states and events; the A2 part adds the past tenses, estar + gerund and adjectives whose meaning changes with the verb.",
   "level": "A1",
   "cards": [
     {
@@ -221,6 +221,117 @@
       "hint": "ser or estar? (ready)",
       "en": "Are you ready (to a man)? We are leaving.",
       "level": "A1",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-021",
+      "type": "cloze",
+      "text": "Ayer {{estuve}} en casa de mis abuelos.",
+      "hint": "ser or estar? (yo, preterite)",
+      "en": "Yesterday I was at my grandparents' place.",
+      "level": "A2",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-022",
+      "type": "cloze",
+      "text": "La fiesta {{fue|estuvo}} genial.",
+      "hint": "ser or estar? (preterite)",
+      "en": "The party was great.",
+      "note": "For an event, fue and estuvo are both common.",
+      "level": "A2",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-023",
+      "type": "cloze",
+      "text": "De niña, mi casa {{era}} muy pequeña.",
+      "hint": "ser or estar? (imperfect)",
+      "en": "When I was a girl, my house was very small.",
+      "level": "A2",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-024",
+      "type": "cloze",
+      "text": "Cuando llegué, la puerta {{estaba}} abierta.",
+      "hint": "ser or estar? (imperfect)",
+      "en": "When I arrived, the door was open.",
+      "level": "A2",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-025",
+      "type": "cloze",
+      "text": "{{Estoy}} leyendo un libro muy bueno.",
+      "hint": "ser or estar? (yo)",
+      "en": "I'm reading a very good book.",
+      "level": "A2",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-026",
+      "type": "cloze",
+      "text": "¿Qué {{estás}} haciendo?",
+      "hint": "ser or estar? (tú)",
+      "en": "What are you doing?",
+      "level": "A2",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-027",
+      "type": "cloze",
+      "text": "¡Qué guapa {{estás}} hoy!",
+      "hint": "ser or estar? (tú, looks today)",
+      "en": "You look really good today!",
+      "level": "A2",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-028",
+      "type": "cloze",
+      "text": "La habitación {{está}} sucia.",
+      "hint": "ser or estar? (a state now)",
+      "en": "The room is dirty.",
+      "level": "A2",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-029",
+      "type": "cloze",
+      "text": "Mi hermano {{es}} muy nervioso.",
+      "hint": "ser or estar? (a nervous person)",
+      "en": "My brother is a very nervous person.",
+      "level": "A2",
+      "tags": [
+        "ser-estar"
+      ]
+    },
+    {
+      "id": "ser-estar-030",
+      "type": "cloze",
+      "text": "Antes de un examen, mi hermana siempre {{está}} nerviosa.",
+      "hint": "ser or estar? (before an exam)",
+      "en": "My sister is always nervous before an exam.",
+      "level": "A2",
       "tags": [
         "ser-estar"
       ]

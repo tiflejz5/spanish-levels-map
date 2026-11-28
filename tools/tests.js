@@ -683,6 +683,9 @@ test("isTarget: 10 target-language sentences yes, 10 English sentences no", func
   FX.isTarget.native.forEach(function (s) { assert.ok(!LG.isTarget(s), s); });
   assert.ok(!LG.isTarget("") && !LG.isTarget(null));
 });
+test("content facts: genderTwin switches -o / -a adjectives and leaves gerunds alone (fixtures)", function () {
+  FX.genderTwin.forEach(function (c) { assert.strictEqual(LG.content.genderTwin(c[0]), c[1], c[0]); });
+});
 test("abbreviations and sentence openers come from LM.lang", function () {
   assert.ok(LG.abbreviations.length >= 8 && LG.abbreviations.every(function (a) { return /\.$/.test(a); }));
   assert.ok(typeof LG.sentenceOpeners === "string");

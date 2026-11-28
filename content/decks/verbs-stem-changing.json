@@ -2,7 +2,7 @@
   "version": 1,
   "id": "verbs-stem-changing",
   "title": "Stem-changing verbs",
-  "description": "e→ie, o→ue, e→i and u→ue in the present (A1–A2).",
+  "description": "e→ie, o→ue, e→i and u→ue in the present (A1–A2); the A2 part adds -ir verbs in the preterite and the gerund, and seguir in the imperative.",
   "level": "A1",
   "cards": [
     {
@@ -222,6 +222,120 @@
       "hint": "jugar (ellos)",
       "en": "They play cards.",
       "level": "A1",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-021",
+      "type": "cloze",
+      "text": "El camarero nos {{sirvió}} la cena.",
+      "hint": "servir (él, preterite)",
+      "en": "The waiter served us dinner.",
+      "note": "-ir verbs change e → i in the preterite only in él / ella / usted and ellos / ellas / ustedes. Camarero is Spain; Latin America: mesero, mozo.",
+      "level": "A2",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-022",
+      "type": "cloze",
+      "text": "Mis padres {{pidieron}} la cuenta.",
+      "hint": "pedir (ellos, preterite)",
+      "en": "My parents asked for the check.",
+      "level": "A2",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-023",
+      "type": "cloze",
+      "text": "Anoche {{dormí}} muy bien.",
+      "hint": "dormir (yo, preterite)",
+      "en": "I slept very well last night.",
+      "note": "No stem change in yo: dormí.",
+      "level": "A2",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-024",
+      "type": "cloze",
+      "text": "El bebé {{durmió}} toda la noche.",
+      "hint": "dormir (él, preterite)",
+      "en": "The baby slept all night.",
+      "level": "A2",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-025",
+      "type": "cloze",
+      "text": "Los niños están {{durmiendo}}.",
+      "hint": "dormir (gerund)",
+      "en": "The children are sleeping.",
+      "level": "A2",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-026",
+      "type": "cloze",
+      "text": "El camarero está {{sirviendo}} el café.",
+      "hint": "servir (gerund)",
+      "en": "The waiter is serving the coffee.",
+      "note": "Camarero is Spain; Latin America: mesero, mozo.",
+      "level": "A2",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-027",
+      "type": "cloze",
+      "text": "¿Qué me estás {{diciendo}}?",
+      "hint": "decir (gerund)",
+      "en": "What are you telling me?",
+      "level": "A2",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-028",
+      "type": "cloze",
+      "text": "{{Sigue}} todo recto.",
+      "hint": "seguir (tú, imperative)",
+      "en": "Go straight on.",
+      "level": "A2",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-029",
+      "type": "cloze",
+      "text": "{{Siga}} por esta calle.",
+      "hint": "seguir (usted, imperative)",
+      "en": "Keep going along this street.",
+      "level": "A2",
+      "tags": [
+        "stem-change"
+      ]
+    },
+    {
+      "id": "verbs-stem-changing-030",
+      "type": "cloze",
+      "text": "Ayer {{volví}} a casa a las diez.",
+      "hint": "volver (yo, preterite)",
+      "en": "Yesterday I got back home at ten.",
+      "note": "-ar and -er verbs do not change in the preterite: volví.",
+      "level": "A2",
       "tags": [
         "stem-change"
       ]

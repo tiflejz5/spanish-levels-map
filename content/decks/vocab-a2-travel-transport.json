@@ -1,0 +1,427 @@
+{
+  "version": 1,
+  "id": "vocab-a2-travel-transport",
+  "title": "Travel and transportation",
+  "description": "Trains, buses, planes, tickets and hotel rooms, for the topic a2-vocabulary-travel-transport.",
+  "level": "A2",
+  "cards": [
+    {
+      "id": "vocab-a2-travel-transport-001",
+      "type": "typed",
+      "front": "the trip",
+      "accepted": [
+        "el viaje",
+        "viaje"
+      ],
+      "back": "el viaje",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-002",
+      "type": "typed",
+      "front": "the train",
+      "accepted": [
+        "el tren",
+        "tren"
+      ],
+      "back": "el tren",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-003",
+      "type": "typed",
+      "front": "the bus",
+      "accepted": [
+        "el autobús",
+        "autobús",
+        "el camión",
+        "camión",
+        "el colectivo",
+        "colectivo"
+      ],
+      "back": "el autobús (Mexico: el camión; Argentina: el colectivo)",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-004",
+      "type": "typed",
+      "front": "the plane",
+      "accepted": [
+        "el avión",
+        "avión"
+      ],
+      "back": "el avión",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-005",
+      "type": "typed",
+      "front": "the car",
+      "accepted": [
+        "el coche",
+        "coche",
+        "el carro",
+        "carro",
+        "el auto",
+        "auto"
+      ],
+      "back": "el coche (Spain) / el carro (Latin America) / el auto (Argentina, Chile)",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-006",
+      "type": "typed",
+      "front": "the station",
+      "accepted": [
+        "la estación",
+        "estación"
+      ],
+      "back": "la estación",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-007",
+      "type": "typed",
+      "front": "the airport",
+      "accepted": [
+        "el aeropuerto",
+        "aeropuerto"
+      ],
+      "back": "el aeropuerto",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-008",
+      "type": "typed",
+      "front": "the platform (at a station)",
+      "accepted": [
+        "el andén",
+        "andén"
+      ],
+      "back": "el andén",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-009",
+      "type": "typed",
+      "front": "the ticket (for a train or a bus)",
+      "accepted": [
+        "el billete",
+        "billete",
+        "el boleto",
+        "boleto",
+        "el pasaje",
+        "pasaje"
+      ],
+      "back": "el billete (Spain) / el boleto, el pasaje (Latin America)",
+      "note": "A ticket for a show or a museum is la entrada.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-010",
+      "type": "typed",
+      "front": "round-trip (ticket)",
+      "accepted": [
+        "de ida y vuelta",
+        "ida y vuelta",
+        "el billete de ida y vuelta",
+        "billete de ida y vuelta",
+        "el boleto de ida y vuelta",
+        "boleto de ida y vuelta"
+      ],
+      "back": "de ida y vuelta",
+      "note": "One-way is de ida (Mexico: sencillo).",
+      "example": "Un billete de ida y vuelta a Toledo, por favor.",
+      "exampleEn": "A round-trip ticket to Toledo, please.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-011",
+      "type": "typed",
+      "front": "the flight",
+      "accepted": [
+        "el vuelo",
+        "vuelo"
+      ],
+      "back": "el vuelo",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-012",
+      "type": "typed",
+      "front": "the suitcase",
+      "accepted": [
+        "la maleta",
+        "maleta",
+        "la valija",
+        "valija"
+      ],
+      "back": "la maleta (Argentina: la valija)",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-013",
+      "type": "typed",
+      "front": "the luggage",
+      "accepted": [
+        "el equipaje",
+        "equipaje"
+      ],
+      "back": "el equipaje",
+      "note": "Singular in Spanish: el equipaje está aquí.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-014",
+      "type": "typed",
+      "front": "the delay",
+      "accepted": [
+        "el retraso",
+        "retraso",
+        "la demora",
+        "demora",
+        "el atraso",
+        "atraso"
+      ],
+      "back": "el retraso (Latin America also: la demora, el atraso)",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-015",
+      "type": "typed",
+      "front": "the single room",
+      "accepted": [
+        "la habitación individual",
+        "habitación individual",
+        "la habitación sencilla",
+        "habitación sencilla"
+      ],
+      "back": "la habitación individual (Latin America also: sencilla)",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-016",
+      "type": "typed",
+      "front": "the front desk (in a hotel)",
+      "accepted": [
+        "la recepción",
+        "recepción"
+      ],
+      "back": "la recepción",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-017",
+      "type": "typed",
+      "front": "to miss (a train, a bus)",
+      "accepted": [
+        "perder"
+      ],
+      "back": "perder",
+      "note": "Stem change e → ie: pierdo. Preterite: perdí.",
+      "example": "Perdí el tren de las ocho.",
+      "exampleEn": "I missed the eight o'clock train.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-018",
+      "type": "typed",
+      "front": "to book, to reserve",
+      "accepted": [
+        "reservar"
+      ],
+      "back": "reservar",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-019",
+      "type": "cloze",
+      "text": "Llegué {{a}} Madrid el lunes.",
+      "hint": "to (arrive in a place)",
+      "en": "I arrived in Madrid on Monday.",
+      "note": "The place you arrive in takes a: llegar a.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-020",
+      "type": "cloze",
+      "text": "Fuimos {{en}} avión.",
+      "hint": "by (transportation)",
+      "en": "We went by plane.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-021",
+      "type": "cloze",
+      "text": "Volví a casa {{a}} pie.",
+      "hint": "on (foot)",
+      "en": "I walked back home.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-022",
+      "type": "cloze",
+      "text": "El vuelo salió con una hora de {{retraso|demora|atraso}}.",
+      "hint": "delay",
+      "en": "The flight left an hour late.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-023",
+      "type": "cloze",
+      "text": "Perdimos el autobús y {{llegamos}} tarde.",
+      "hint": "arrived (we)",
+      "en": "We missed the bus and arrived late.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-024",
+      "type": "cloze",
+      "text": "Reservé una habitación {{doble}}.",
+      "hint": "double",
+      "en": "I booked a double room.",
+      "note": "Doble and individual go after the noun.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-025",
+      "type": "cloze",
+      "text": "Nos {{quedamos|alojamos}} en un hotel cerca de la playa.",
+      "hint": "stayed (we)",
+      "en": "We stayed at a hotel near the beach.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-026",
+      "type": "cloze",
+      "text": "¿De qué {{andén}} sale el tren?",
+      "hint": "platform",
+      "en": "Which platform does the train leave from?",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-027",
+      "type": "cloze",
+      "text": "Esta noche tengo que hacer la {{maleta|valija}}.",
+      "hint": "suitcase (to pack)",
+      "en": "Tonight I have to pack.",
+      "note": "Hacer la maleta = to pack (Latin America also: empacar).",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-028",
+      "type": "cloze",
+      "text": "Tenemos que estar en la puerta de {{embarque|abordaje}} a las diez.",
+      "hint": "boarding (gate)",
+      "en": "We have to be at the gate at ten.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-029",
+      "type": "cloze",
+      "text": "{{Tomé|Cogí}} el tren de las ocho.",
+      "hint": "took (I)",
+      "en": "I took the eight o'clock train.",
+      "note": "Coger is Spain only; tomar works everywhere.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    },
+    {
+      "id": "vocab-a2-travel-transport-030",
+      "type": "cloze",
+      "text": "La {{llegada}} del vuelo es a las cinco.",
+      "hint": "arrival",
+      "en": "The flight arrives at five.",
+      "level": "A2",
+      "tags": [
+        "travel-transport"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,785 @@
+{
+  "version": 1,
+  "id": "final-a2",
+  "kind": "level-test",
+  "level": "A2",
+  "title": "A2 final test",
+  "intro": "20 questions drawn from the whole level. Explanations come at the end.",
+  "draw": 20,
+  "passPercent": 80,
+  "defaultMode": "exam",
+  "passage": null,
+  "items": [
+    {
+      "id": "final-a2-01",
+      "type": "gap-fill",
+      "topic": "a2-verbs-preterite-regular",
+      "tags": [
+        "preterite",
+        "spelling"
+      ],
+      "context": "Yesterday I looked for my keys and arrived late.",
+      "text": "Ayer yo {{1}} las llaves por toda la casa y {{2}} tarde al trabajo.",
+      "gaps": [
+        {
+          "accepted": [
+            "busqué"
+          ],
+          "hint": "buscar"
+        },
+        {
+          "accepted": [
+            "llegué"
+          ],
+          "hint": "llegar"
+        }
+      ],
+      "explanation": "In the yo form of the preterite, -car becomes -qué and -gar becomes -gué: busqué, llegué."
+    },
+    {
+      "id": "final-a2-02",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-verbs-preterite-irregular",
+      "tags": [
+        "preterite",
+        "ser-ir"
+      ],
+      "prompt": "El verano pasado nosotros ___ a Cartagena.",
+      "options": [
+        "fueron",
+        "fuimos",
+        "fuemos",
+        "vimos"
+      ],
+      "correct": 1,
+      "explanation": "Ir has the irregular preterite fui, fuiste, fue, fuimos…; nosotros takes fuimos.",
+      "optionNotes": [
+        "Fueron is for ellos / ellas / ustedes.",
+        null,
+        "There is no form fuemos; the nosotros form is fuimos.",
+        "Vimos is the preterite of ver (we saw)."
+      ]
+    },
+    {
+      "id": "final-a2-03",
+      "type": "paradigm",
+      "topic": "a2-verbs-preterite-irregular",
+      "tags": [
+        "preterite",
+        "tener",
+        "stems"
+      ],
+      "prompt": "Write the pretérito indefinido of tener.",
+      "lemma": "tener",
+      "gloss": "to have",
+      "cells": [
+        {
+          "label": "yo",
+          "accepted": [
+            "tuve"
+          ],
+          "given": true
+        },
+        {
+          "label": "tú",
+          "accepted": [
+            "tuviste"
+          ]
+        },
+        {
+          "label": "él, ella, usted",
+          "accepted": [
+            "tuvo"
+          ]
+        },
+        {
+          "label": "nosotros",
+          "accepted": [
+            "tuvimos"
+          ]
+        },
+        {
+          "label": "ellos, ellas, ustedes",
+          "accepted": [
+            "tuvieron"
+          ]
+        }
+      ],
+      "explanation": "Tener has the stem tuv- and the endings -e, -iste, -o, -imos, -isteis, -ieron, with no written accents."
+    },
+    {
+      "id": "final-a2-04",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-verbs-imperfect",
+      "tags": [
+        "imperfect",
+        "descriptions"
+      ],
+      "prompt": "Cuando yo era pequeño, mis abuelos ___ un perro muy grande.",
+      "options": [
+        "tenía",
+        "teníamos",
+        "tienen",
+        "tenían"
+      ],
+      "correct": 3,
+      "explanation": "A description of the past takes the imperfect, and mis abuelos (ellos) takes tenían.",
+      "optionNotes": [
+        "Tenía is for yo or él / ella; mis abuelos is plural.",
+        "Teníamos is for nosotros.",
+        "Tienen is the present; the sentence is about the past (cuando era pequeño).",
+        null
+      ]
+    },
+    {
+      "id": "final-a2-05",
+      "type": "gap-fill",
+      "topic": "a2-verbs-preterite-vs-imperfect-basics",
+      "tags": [
+        "contrast",
+        "interrupted"
+      ],
+      "context": "We were watching TV when suddenly Ana arrived.",
+      "text": "{{1}} la tele cuando de repente {{2}} Ana.",
+      "gaps": [
+        {
+          "accepted": [
+            "Veíamos",
+            "Nosotros veíamos",
+            "Estábamos viendo",
+            "Nosotros estábamos viendo"
+          ],
+          "hint": "ver"
+        },
+        {
+          "accepted": [
+            "llegó"
+          ],
+          "hint": "llegar"
+        }
+      ],
+      "explanation": "The action in progress takes the imperfect (veíamos or estábamos viendo); the event that interrupts it takes the preterite (llegó)."
+    },
+    {
+      "id": "final-a2-06",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "topic": "a2-verbs-preterite-vs-imperfect-basics",
+      "tags": [
+        "contrast",
+        "habits",
+        "closed-period"
+      ],
+      "prompt": "Choose the correct sentence.",
+      "options": [
+        "De niño fui a la playa todos los veranos.",
+        "Ayer veía una película muy buena.",
+        "De niño iba a la playa todos los veranos.",
+        "Estaba en Roma tres días."
+      ],
+      "correct": 2,
+      "explanation": "A repeated habit in the past takes the imperfect: De niño iba a la playa todos los veranos.",
+      "optionNotes": [
+        "Todos los veranos is a habit, so it needs the imperfect: iba.",
+        "One finished action yesterday takes the preterite: Ayer vi una película.",
+        null,
+        "A closed period (tres días) takes the preterite: Estuve en Roma tres días."
+      ]
+    },
+    {
+      "id": "final-a2-07",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-verbs-present-perfect",
+      "tags": [
+        "present-perfect",
+        "participles",
+        "todavia-no"
+      ],
+      "prompt": "Todavía no ___ la película. (yo)",
+      "options": [
+        "he visto",
+        "he vido",
+        "ha visto",
+        "he viendo"
+      ],
+      "correct": 0,
+      "explanation": "The present perfect is he + participle, and ver has the irregular participle visto: he visto.",
+      "optionNotes": [
+        null,
+        "Ver has an irregular participle: visto, not vido.",
+        "Ha is for él / ella / usted; yo takes he.",
+        "Viendo is the gerund; the perfect needs the participle visto."
+      ]
+    },
+    {
+      "id": "final-a2-08",
+      "type": "find-error",
+      "topic": "a2-verbs-present-perfect",
+      "tags": [
+        "present-perfect",
+        "participles"
+      ],
+      "tokens": [
+        "¿Ya",
+        "has",
+        "hacido",
+        "la",
+        "cena?"
+      ],
+      "errorRange": [
+        2,
+        2
+      ],
+      "fixes": [
+        "hecho"
+      ],
+      "explanation": "Hacer has an irregular participle: has hecho."
+    },
+    {
+      "id": "final-a2-09",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-verbs-estar-gerund",
+      "tags": [
+        "estar-gerund",
+        "irregular"
+      ],
+      "prompt": "¡Silencio! Los niños están ___.",
+      "options": [
+        "dormiendo",
+        "durmiendo",
+        "dormir",
+        "duermiendo"
+      ],
+      "correct": 1,
+      "explanation": "Dormir changes o → u in the gerund: durmiendo.",
+      "optionNotes": [
+        "Dormir changes its stem in the gerund: durm-.",
+        null,
+        "After estar, an action in progress needs the gerund, not the infinitive.",
+        "The stem change in the gerund is o → u, not o → ue."
+      ]
+    },
+    {
+      "id": "final-a2-10",
+      "type": "multiple-choice",
+      "kind": "meaning",
+      "topic": "a2-verbs-obligation-ability",
+      "tags": [
+        "obligation",
+        "tener-que"
+      ],
+      "prompt": "What does “Mañana no tienes que venir” mean?",
+      "options": [
+        "You must not come tomorrow.",
+        "You can't come tomorrow.",
+        "You don't want to come tomorrow.",
+        "You don't have to come tomorrow."
+      ],
+      "correct": 3,
+      "explanation": "No tener que means “not have to”: it is not necessary, but you may. “Must not” is no deber.",
+      "optionNotes": [
+        "“Must not” is no debes venir.",
+        "“Can't” is no puedes venir.",
+        "“Don't want to” is no quieres venir.",
+        null
+      ]
+    },
+    {
+      "id": "final-a2-11",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-verbs-future-simple",
+      "tags": [
+        "future",
+        "irregular",
+        "promises"
+      ],
+      "prompt": "Te lo ___ mañana, te lo prometo.",
+      "options": [
+        "deciré",
+        "dije",
+        "diré",
+        "diró"
+      ],
+      "correct": 2,
+      "explanation": "Decir has the irregular future stem dir-: diré, dirás, dirá…",
+      "optionNotes": [
+        "Decir has a short stem in the future: dir-, not decir-.",
+        "Dije is the preterite (I said); mañana needs the future.",
+        null,
+        "The yo ending of the future is -é: diré."
+      ]
+    },
+    {
+      "id": "final-a2-12",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-verbs-imperative-affirmative",
+      "tags": [
+        "imperative",
+        "tu-irregular"
+      ],
+      "prompt": "(to a friend) ___ aquí un momento, por favor.",
+      "options": [
+        "Ven",
+        "Viene",
+        "Venga",
+        "Vienes"
+      ],
+      "correct": 0,
+      "explanation": "The tú imperative of venir is irregular: ven.",
+      "optionNotes": [
+        null,
+        "Viene is the present (he comes); the tú imperative of venir is ven.",
+        "Venga is the usted form, not for a friend.",
+        "Vienes is the present (you come), not an instruction."
+      ]
+    },
+    {
+      "id": "final-a2-13",
+      "type": "reorder",
+      "topic": "a2-grammar-direct-object-pronouns",
+      "tags": [
+        "direct-object-pronouns",
+        "infinitive"
+      ],
+      "context": "The book? I'm going to buy it tomorrow.",
+      "answers": [
+        "Voy a comprarlo mañana.",
+        "Mañana voy a comprarlo."
+      ],
+      "explanation": "With ir a + infinitive, the pronoun can be attached to the infinitive: comprarlo."
+    },
+    {
+      "id": "final-a2-14",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-grammar-indirect-object-pronouns",
+      "tags": [
+        "indirect-object-pronouns",
+        "lo-le"
+      ],
+      "prompt": "___ doy un regalo a mi hermano.",
+      "options": [
+        "Lo",
+        "La",
+        "Le",
+        "Les"
+      ],
+      "correct": 2,
+      "explanation": "Mi hermano receives the present, so he is the indirect object: le (to him).",
+      "optionNotes": [
+        "Lo is a direct object (him, it); “to him” is le.",
+        "La is a direct object (her, it).",
+        null,
+        "Les is plural (to them); mi hermano is one person."
+      ]
+    },
+    {
+      "id": "final-a2-15",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-grammar-comparatives-superlatives",
+      "tags": [
+        "comparatives",
+        "mas-de"
+      ],
+      "prompt": "En mi clase hay ___ treinta estudiantes.",
+      "options": [
+        "más que",
+        "más de",
+        "tan como",
+        "muy"
+      ],
+      "correct": 1,
+      "explanation": "Before a number, “more than” is más de.",
+      "optionNotes": [
+        "Más que compares two things; with a number use más de.",
+        null,
+        "Tan … como means “as … as” and goes around an adjective.",
+        "Muy goes before an adjective, not before a number."
+      ]
+    },
+    {
+      "id": "final-a2-16",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-grammar-indefinites-quantifiers",
+      "tags": [
+        "indefinites",
+        "negation"
+      ],
+      "prompt": "Es mi primer día en la ciudad y no conozco a ___.",
+      "options": [
+        "alguien",
+        "nada",
+        "nadie",
+        "algo"
+      ],
+      "correct": 2,
+      "explanation": "After no, Spanish uses the negative word: no conozco a nadie (I don't know anybody).",
+      "optionNotes": [
+        "After no, use the negative partner of alguien: nadie.",
+        "Nada is for things, not people.",
+        null,
+        "Algo is for things, and after no it becomes nada."
+      ]
+    },
+    {
+      "id": "final-a2-17",
+      "type": "gap-fill",
+      "topic": "a2-grammar-por-para-basics",
+      "tags": [
+        "por",
+        "para",
+        "thanks"
+      ],
+      "context": "Thanks for the invitation! This present is for you.",
+      "text": "¡Gracias {{1}} la invitación! Este regalo es {{2}} ti.",
+      "gaps": [
+        {
+          "accepted": [
+            "por"
+          ],
+          "hint": "por / para"
+        },
+        {
+          "accepted": [
+            "para"
+          ],
+          "hint": "por / para"
+        }
+      ],
+      "explanation": "Gracias + what you thank someone for takes por; the person who gets something takes para."
+    },
+    {
+      "id": "final-a2-18",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-grammar-por-para-basics",
+      "tags": [
+        "por",
+        "means"
+      ],
+      "prompt": "Te llamo ___ teléfono esta noche.",
+      "options": [
+        "para",
+        "en",
+        "con",
+        "por"
+      ],
+      "correct": 3,
+      "explanation": "The means of communication takes por: por teléfono, por correo electrónico.",
+      "optionNotes": [
+        "Para is for a goal or a person; the means takes por.",
+        "Spanish does not say en teléfono; the means takes por.",
+        "Con teléfono is not used; the means takes por.",
+        null
+      ]
+    },
+    {
+      "id": "final-a2-19",
+      "type": "gap-fill",
+      "topic": "a2-grammar-saber-conocer",
+      "tags": [
+        "saber",
+        "conocer"
+      ],
+      "context": "I don't know where Ana lives, but I know her brother.",
+      "text": "No {{1}} dónde vive Ana, pero {{2}} a su hermano.",
+      "gaps": [
+        {
+          "accepted": [
+            "sé"
+          ],
+          "hint": "saber / conocer (yo)"
+        },
+        {
+          "accepted": [
+            "conozco"
+          ],
+          "hint": "saber / conocer (yo)"
+        }
+      ],
+      "explanation": "Information after dónde takes saber (no sé); a person takes conocer (conozco a su hermano)."
+    },
+    {
+      "id": "final-a2-20",
+      "type": "find-error",
+      "topic": "a2-grammar-connectors-basic",
+      "tags": [
+        "y-e"
+      ],
+      "tokens": [
+        "Ana",
+        "y",
+        "Isabel",
+        "son",
+        "hermanas."
+      ],
+      "errorRange": [
+        1,
+        1
+      ],
+      "fixes": [
+        "e"
+      ],
+      "explanation": "Before a word that starts with the sound i (i- or hi-), y becomes e: Ana e Isabel."
+    },
+    {
+      "id": "final-a2-21",
+      "type": "multiple-choice",
+      "kind": "function",
+      "topic": "a2-functions-weekend-vacation",
+      "tags": [
+        "weekend",
+        "reacting"
+      ],
+      "prompt": "—¿Qué tal el fin de semana? —Muy bien. Fui a la playa con mis amigos y ___ muy bien.",
+      "options": [
+        "tuve un buen tiempo",
+        "lo pasé",
+        "pasé lo",
+        "lo pasado"
+      ],
+      "correct": 1,
+      "explanation": "“I had a good time” is lo pasé bien (Latin America also: la pasé bien). Tener un buen tiempo is a word-for-word translation from English.",
+      "optionNotes": [
+        "Tener un buen tiempo is a calque of English “have a good time”.",
+        null,
+        "The pronoun goes before the verb: lo pasé.",
+        "Pasado is the participle; the story needs the preterite: lo pasé."
+      ]
+    },
+    {
+      "id": "final-a2-22",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-functions-describing",
+      "tags": [
+        "describing",
+        "tener"
+      ],
+      "prompt": "Mi hermana ___ el pelo largo y rizado.",
+      "options": [
+        "es",
+        "tiene",
+        "está",
+        "hay"
+      ],
+      "correct": 1,
+      "explanation": "Features like hair and eyes take tener: tiene el pelo largo.",
+      "optionNotes": [
+        "Es el pelo largo is not Spanish: hair and eyes take tener (tiene el pelo largo).",
+        null,
+        "Estar is for location and states, not for features.",
+        "Hay means “there is” and does not describe a person."
+      ]
+    },
+    {
+      "id": "final-a2-23",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-functions-directions",
+      "tags": [
+        "directions"
+      ],
+      "prompt": "Siga todo recto y gire ___ derecha.",
+      "options": [
+        "en la",
+        "al",
+        "la",
+        "a la"
+      ],
+      "correct": 3,
+      "explanation": "Directions take a: a la derecha, a la izquierda.",
+      "optionNotes": [
+        "English says “on the right”, but turning takes a: a la derecha.",
+        "Derecha is feminine: a la derecha, not al.",
+        "The direction needs a: a la derecha.",
+        null
+      ]
+    },
+    {
+      "id": "final-a2-24",
+      "type": "multiple-choice",
+      "kind": "function",
+      "topic": "a2-functions-invitations-plans",
+      "tags": [
+        "declining"
+      ],
+      "prompt": "A friend invites you to dinner on Saturday, but you have to work. What do you say?",
+      "options": [
+        "Lo siento, no puedo. Es que tengo que trabajar.",
+        "¡Claro! Me encantaría.",
+        "¿Quedamos a las ocho?",
+        "Gracias para la invitación, pero no."
+      ],
+      "correct": 0,
+      "explanation": "To decline politely, say sorry, give a reason with es que… and, if you like, suggest another day.",
+      "optionNotes": [
+        null,
+        "This accepts the invitation.",
+        "This arranges a time, so it accepts the plan.",
+        "Thanks take por (gracias por la invitación), and the answer gives no reason."
+      ]
+    },
+    {
+      "id": "final-a2-25",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-functions-tickets-bookings-problems",
+      "tags": [
+        "booking",
+        "para"
+      ],
+      "prompt": "Buenas tardes. Quería reservar una mesa ___ cuatro personas para el sábado.",
+      "options": [
+        "por",
+        "a",
+        "para",
+        "con"
+      ],
+      "correct": 2,
+      "explanation": "The number of people in a booking takes para: una mesa para cuatro.",
+      "optionNotes": [
+        "Por is for the cause or the way; the number of people takes para.",
+        "A is not used with the number of people.",
+        null,
+        "Con would mean the table comes with four people; a booking takes para."
+      ]
+    },
+    {
+      "id": "final-a2-26",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-functions-health",
+      "tags": [
+        "doler",
+        "agreement"
+      ],
+      "prompt": "Camino mucho y por la noche me ___ los pies.",
+      "options": [
+        "duele",
+        "duelen",
+        "duelo",
+        "dolen"
+      ],
+      "correct": 1,
+      "explanation": "Doler works like gustar: the thing that hurts is the subject, so a plural (los pies) takes duelen.",
+      "optionNotes": [
+        "Duele is for one thing; los pies is plural.",
+        null,
+        "Duelo would mean “I hurt”; the subject is los pies.",
+        "Doler changes o → ue: duelen."
+      ]
+    },
+    {
+      "id": "final-a2-27",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-vocabulary-travel-transport",
+      "tags": [
+        "travel",
+        "prepositions"
+      ],
+      "prompt": "El tren salió con retraso y llegué ___ Madrid a las diez.",
+      "options": [
+        "en",
+        "a",
+        "al",
+        "con"
+      ],
+      "correct": 1,
+      "explanation": "The place you arrive in takes a: llegar a Madrid.",
+      "optionNotes": [
+        "English says “arrive in”, but llegar takes a.",
+        null,
+        "Al is a + el; a city name has no article.",
+        "Con does not mark the place you arrive in."
+      ]
+    },
+    {
+      "id": "final-a2-28",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-vocabulary-free-time-weather",
+      "tags": [
+        "weather"
+      ],
+      "prompt": "En invierno ___ mucho frío en mi ciudad.",
+      "options": [
+        "es",
+        "está",
+        "tiene",
+        "hace"
+      ],
+      "correct": 3,
+      "explanation": "Weather with frío, calor, sol and viento takes hacer: hace frío.",
+      "optionNotes": [
+        "Spanish does not use ser for the weather: hace frío.",
+        "Estar is used for está nublado, not with frío.",
+        "Tener frío is how a person feels (I'm cold), not the weather.",
+        null
+      ]
+    },
+    {
+      "id": "final-a2-29",
+      "type": "multiple-choice",
+      "kind": "form",
+      "topic": "a2-vocabulary-shopping-clothes",
+      "tags": [
+        "quedar",
+        "agreement"
+      ],
+      "prompt": "Los pantalones me ___ un poco grandes. ¿Tiene una talla más pequeña?",
+      "options": [
+        "queda",
+        "quedo",
+        "quedan",
+        "quedamos"
+      ],
+      "correct": 2,
+      "explanation": "Quedar works like gustar: los pantalones is the subject and plural, so quedan.",
+      "optionNotes": [
+        "Queda is for one thing; los pantalones is plural.",
+        "Quedo would make yo the subject; the subject is los pantalones.",
+        null,
+        "Quedamos is for nosotros; the subject is los pantalones."
+      ]
+    },
+    {
+      "id": "final-a2-30",
+      "type": "match",
+      "topic": "a2-vocabulary-health-body",
+      "tags": [
+        "body"
+      ],
+      "mode": "translation",
+      "prompt": "Match each part of the body with its meaning.",
+      "pairs": [
+        [
+          "la espalda",
+          "the back"
+        ],
+        [
+          "la rodilla",
+          "the knee"
+        ],
+        [
+          "el cuello",
+          "the neck"
+        ],
+        [
+          "la garganta",
+          "the throat"
+        ]
+      ],
+      "explanation": "La espalda is the back, la rodilla the knee, el cuello the neck and la garganta the throat."
+    }
+  ]
+}

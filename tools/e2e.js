@@ -214,7 +214,7 @@ async function main() {
     await visit(s.page, "#/trail", 1500);
     const lessons = a1Topics.length, checkpoints = a1.units.length;
     ok(await s.page.locator(".sz-level.lvl-A1 .sz-node").count() === lessons + checkpoints, "A1 nodes");
-    ok(await s.page.locator(".sz-node.is-review").count() === checkpoints, "checkpoints");
+    ok(await s.page.locator(".sz-level.lvl-A1 .sz-node.is-review").count() === checkpoints, "checkpoints");
     const soonCount = syllabus.levels.filter(function (l) { return status[l.id] !== "available"; }).length;
     ok(await s.page.locator(".sz-level.is-soon").count() === soonCount, "soon lands");
     ok(await s.page.locator(".sz-level.is-soon .chip.is-soon").count() === soonCount, "Coming soon labels");
@@ -615,15 +615,19 @@ async function main() {
     await p.waitForSelector(".lt-result");
     const level = (await p.innerText(".lt-result-code")).trim();
     const startAt = await p.evaluate(function (l) { return LM.syl.startLevelFor(l); }, level);
-    ok(startAt === "A1", "start level " + startAt + " for result " + level + " (only A1 is available)");
+    const order = syllabus.levels.map(function (l) { return l.id; });
+    const expected = order.filter(function (id, i) { return status[id] === "available" && i <= order.indexOf(level); }).pop() || "A1";
+    ok(startAt === expected, "start level " + startAt + " for result " + level + " (expected the highest available level up to it: " + expected + ")");
     const btn = (await p.textContent(".lt-result a.btn-primary")).trim();
     ok(btn === "Start the trail at " + startAt, "button: " + btn);
-    if (level !== "A1") ok(/is on its way/.test(await p.textContent(".lt-result")), "no soon note for " + level);
+    if (status[level] !== "available") ok(/is on its way/.test(await p.textContent(".lt-result")), "no soon note for " + level);
     await p.click(".lt-result a.btn-primary");
     await p.waitForTimeout(1200);
     ok(await p.locator(".sz-first").count() === 0, "first-run card after the placement test");
-    if (level !== "A1") ok(new RegExp(level + " is on its way, so the trail starts at A1").test(await p.innerText(".sz-start-note")), "start note");
-    await p.click('.sz-node[data-stop="' + FX.topic + '"] button');
+    if (status[level] !== "available") ok(new RegExp(level + " is on its way, so the trail starts at " + startAt).test(await p.innerText(".sz-start-note")), "start note");
+    // the first lesson stop of the level the trail starts at (the placement result may skip A1)
+    const stop = startAt === "A1" ? FX.topic : syllabus.levels.find(function (l) { return l.id === startAt; }).units[0].topics[0].id;
+    await p.click('.sz-node[data-stop="' + stop + '"] button');
     await p.waitForSelector("dialog[open]");
     await p.click("dialog[open] button:has-text('Quiz')");
     for (let i = 0; i < 4; i++) {
@@ -639,10 +643,10 @@ async function main() {
     }
     await p.waitForSelector(".sz-result.is-passed");
     const href = await p.getAttribute(".sz-result .report-link a", "href");
-    ok(href && href.indexOf(encodeURIComponent(FX.topic + ": ")) !== -1, "report link: " + href);
+    ok(href && href.indexOf(encodeURIComponent(stop + ": ")) !== -1, "report link: " + href);
     const pid = await p.evaluate(function () { return LM.app.getActiveProfile().id; });
     const st = await p.evaluate(function (k) { return JSON.parse(localStorage.getItem(k)); }, "slm.trail." + pid);
-    ok(st.stops[FX.topic] && st.stops[FX.topic].best === 4 && st.start && st.start.source === "test", "trail state: " + JSON.stringify(st));
+    ok(st.stops[stop] && st.stops[stop].best === 4 && st.start && st.start.source === "test", "trail state: " + JSON.stringify(st));
     ok(!(await elmUntouched(p)).length, "elm_* keys changed: " + (await elmUntouched(p)).join(", "));
     ok(!(await p.evaluate(function () { return Object.keys(localStorage).filter(function (k) { return !/^(slm\.|elm|e2e_)/.test(k); }); })).length, "a key outside slm.");
     ok(!p.errs.length, "JS errors: " + p.errs[0]);
@@ -931,6 +935,11 @@ async function main() {
     const s = await session(1280, 900, false);
     const t = labSrc.trees[0];
     await visit(s.page, "#/lab/pick", 900);
+    if (labSrc.trees.length > 1) { // more trees: #/lab/pick lists them, each tree has its own address
+      const listed = await s.page.evaluate(function () { return document.body.innerText; });
+      ok(labSrc.trees.every(function (x) { return listed.indexOf(x.title) !== -1; }), "every tree listed");
+      await visit(s.page, "#/lab/pick/" + t.id, 900);
+    }
     ok((await s.page.innerText(".lab-question")) === t.nodes[t.start].question, "first question");
     const deep = t.nodes[t.start].options.findIndex(function (o) { return o.next; });
     await s.page.click(".lab-answer >> nth=" + deep);
